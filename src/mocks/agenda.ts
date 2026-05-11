@@ -1,9 +1,16 @@
 /**
  * Central mock dataset for the Agenda module.
  *
+ * Source of truth: Figma file "Retrilhar - Admin" (key: HDCHTF7DCaSZwknQoLHVPQ)
+ * Frames inspected via Figma MCP:
+ *   - AGENDA - MÊS          (14948:75262)
+ *   - AGENDA - ATIVIDADES DO DIA (15231:80154)
+ *   - AGENDA - PARTICIPANTES (15229:62356)
+ *   - AGENDA - VISÃO GERAL  (15221:23601)
+ *
  * Rules:
  * - Deterministic: no Math.random() — IDs are sequential, dates are absolute.
- * - All names are Brazilian-Portuguese.
+ * - All names are Brazilian-Portuguese (matching the Figma design exactly).
  * - Today = 2026-05-11 (fixed reference for the usability test).
  * - Do NOT import this file in production code paths.
  */
@@ -20,10 +27,30 @@ import type {
 // Shared boarding points
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BP_PRINCIPAL = 'Ponto Principal — Praça do Viajante';
+// Boarding points — from Figma AGENDA - ATIVIDADES DO DIA frame
+const BP_PRINCIPAL = 'Parque Municipal, Sabará - Belo Horizonte';
 const BP_AUXILIAR  = 'Ponto Auxiliar — Terminal Rodoviário';
 const BP_HOTEL     = 'Hotel Serra Verde';
 const BP_POUSADA   = 'Pousada da Cachoeira';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Design system color tokens (Figma variables — collection "Variable collection")
+// Brand palette extracted via Figma MCP
+// ─────────────────────────────────────────────────────────────────────────────
+// Brand/25  → #edf0ff   Brand/400 → #1b71fd
+// Brand/50  → #d5dcfe   Brand/500 → #0b5ed7
+// Brand/100 → #adbdfe   Brand/600 → #084fb7
+// Brand/200 → #87a2fe   Brand/700 → #043b8c
+// Brand/300 → #5e89fd   Brand/800 → #02255f
+//                        Brand/900 → #011a48
+//                        Brand/950 → #000f2f
+//
+// Activity status chip colors (from AGENDA - MÊS):
+//   Confirmed (blue)  → bg:#eff6ff  dot:#2b7fff  text:#1447e6
+//   Pending (orange)  → bg:#fff2d3  dot:#ff992b  text:#e0850f
+//   Blocked (gray)    → bg:#fafafa  dot:#d5d7da  text:#919191
+//   Full (red)        → bg:#fef2f2  dot:#fb2c36  text:#c10007
+//   Holiday (purple)  → bg:#f3e8ff  text:#8200db
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. mockActivities
@@ -40,62 +67,75 @@ const BP_POUSADA   = 'Pousada da Cachoeira';
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const mockActivities: Activity[] = [
-  // ── Today ────────────────────────────────────────────────────────────────
+  // ── Today (2026-05-11) — 4 activities to trigger "+N" overflow ───────────
+  // Names match Figma frames AGENDA - ATIVIDADES DO DIA and AGENDA - VISÃO GERAL
 
   {
     id: 'act-001',
+    // Primary activity — linked to mockReservations. requiresInsurance: true.
+    // Figma: AGENDA - VISÃO GERAL (15221:23601) — "Trilha Pico do Itacolomi"
+    // location: "Parque Municipal, Sabará - Belo Horizonte"
+    // occupancy shown as "08/12" (85% ocupado), guide: João Silva (Guia Líder)
     name: 'Trilha Pico do Itacolomi',
     date: '2026-05-11',
     startTime: '08:00',
-    endTime: '13:00',
+    endTime: '11:00',
     capacity: 12,
     occupancy: 8,
-    guideName: 'Marcos Teixeira',
+    guideName: 'João Silva',
     status: 'pending',
     requiresInsurance: true,
   },
   {
     id: 'act-002',
-    name: 'Rapel Serra do Cipó',
+    // Figma: AGENDA - ATIVIDADES DO DIA (15231:80154) — "Rapel Cachoeira Alta"
+    // status "Atividade Não Iniciada", (8/8) — full capacity
+    name: 'Rapel Cachoeira Alta',
     date: '2026-05-11',
     startTime: '09:00',
     endTime: '12:00',
-    capacity: 15,
-    occupancy: 10,
-    guideName: 'Fábio Andrade',
-    status: 'confirmed',
+    capacity: 8,
+    occupancy: 8,
+    guideName: 'Maria Costa',
+    status: 'full',
     requiresInsurance: false,
   },
   {
     id: 'act-003',
-    name: 'Tirolesa Parque da Serra',
+    // Figma: AGENDA - ATIVIDADES DO DIA — "Bike Tour Vale Verde"
+    // status "Atividade Cancelada" (8/12)
+    name: 'Bike Tour Vale Verde',
     date: '2026-05-11',
-    startTime: '14:00',
+    startTime: '13:30',
     endTime: '17:00',
-    capacity: 8,
-    occupancy: 0,
+    capacity: 12,
+    occupancy: 8,
     guideName: '',
     status: 'blocked',
     requiresInsurance: false,
   },
   {
     id: 'act-004',
-    name: 'Canoagem Rio Piranga',
+    // Figma: AGENDA - ATIVIDADES DO DIA — "Escalada Morro Alto"
+    // location: "Parque Municipal, Sabará - Belo Horizonte", (8/12)
+    name: 'Escalada Morro Alto',
     date: '2026-05-11',
-    startTime: '07:30',
-    endTime: '11:30',
-    capacity: 20,
-    occupancy: 20,
-    guideName: 'Adriana Campos',
-    status: 'full',
+    startTime: '15:00',
+    endTime: '18:00',
+    capacity: 12,
+    occupancy: 8,
+    guideName: 'Pedro Santos',
+    status: 'confirmed',
     requiresInsurance: false,
   },
 
-  // ── Multi-day: Expedição Mantiqueira (3 days) ─────────────────────────────
+  // ── Multi-day: Trilha Pico do Itambé (3 days) ────────────────────────────
+  // Figma: AGENDA - ATIVIDADES DO DIA — "Atividade multi-dias"
+  // "23/03/2026 - 28/03/2026 (5 dias)" / "(Dia 3 de 5)"
 
   {
     id: 'act-005',
-    name: 'Expedição Mantiqueira',
+    name: 'Trilha Pico do Itambé',
     date: '2026-05-14',
     startTime: '07:00',
     endTime: '18:00',
@@ -109,7 +149,7 @@ export const mockActivities: Activity[] = [
   },
   {
     id: 'act-006',
-    name: 'Expedição Mantiqueira',
+    name: 'Trilha Pico do Itambé',
     date: '2026-05-15',
     startTime: '07:00',
     endTime: '18:00',
@@ -123,7 +163,7 @@ export const mockActivities: Activity[] = [
   },
   {
     id: 'act-007',
-    name: 'Expedição Mantiqueira',
+    name: 'Trilha Pico do Itambé',
     date: '2026-05-16',
     startTime: '07:00',
     endTime: '16:00',
@@ -222,13 +262,20 @@ export const mockReservations: Reservation[] = [
 
   // ══════════════════════════════════════════════════════════════════════════
   // CONFIRMED — insurance Contracted (8)
+  // Names sourced from Figma AGENDA - PARTICIPANTES (15229:62356):
+  //   João Silva (#8821, Adulto, Comprador)
+  //   Luciana Miranda (Cortesia)
+  //   Manuela Louise Malu Bernardes (Infantil)
+  //   Eduardo Lucca Victor Santos (Infantil)
+  //   Vera Gabriela da Mota (#8821, Adulto, Comprador)
+  //   Samuel Isaac Roberto Araújo (#8821, Adulto, Comprador)
   // ══════════════════════════════════════════════════════════════════════════
 
   {
     id: 'res-001',
-    orderId: '#RE-0001',
-    type: 'individual',
-    buyerName: 'Ana Paula Ferreira',
+    orderId: '#RE-9920',
+    type: 'group',
+    buyerName: 'João Silva',
     status: 'Confirmed',
     paymentStatus: 'Paid',
     insuranceStatus: 'Contracted',
@@ -236,31 +283,19 @@ export const mockReservations: Reservation[] = [
     participants: [
       {
         id: 'part-001',
-        name: 'Ana Paula Ferreira',
+        name: 'João Silva',
         tariffType: 'Adulto',
         checkInStatus: 'Pending',
         hasHealthIssue: false,
         hasImageAuth: true,
         isMinor: false,
         boardingPoint: BP_PRINCIPAL,
+        notes: 'Comprador',
       },
-    ],
-  },
-
-  {
-    id: 'res-002',
-    orderId: '#RE-0002',
-    type: 'group',
-    buyerName: 'Carlos Eduardo Mendes',
-    status: 'Confirmed',
-    paymentStatus: 'Paid',
-    insuranceStatus: 'Contracted',
-    createdAt: '2026-04-16T14:30:00',
-    participants: [
       {
         id: 'part-002',
-        name: 'Carlos Eduardo Mendes',
-        tariffType: 'Adulto',
+        name: 'Luciana Miranda',
+        tariffType: 'Cortesia',
         checkInStatus: 'Pending',
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -269,36 +304,71 @@ export const mockReservations: Reservation[] = [
       },
       {
         id: 'part-003',
-        name: 'Sofia Cristina Mendes',
-        tariffType: 'Adulto',
+        name: 'Manuela Louise Malu Bernardes',
+        tariffType: 'Infantil',
         checkInStatus: 'Pending',
         hasHealthIssue: false,
         hasImageAuth: true,
-        isMinor: false,
+        isMinor: true,
+        boardingPoint: BP_PRINCIPAL,
+      },
+      {
+        id: 'part-004',
+        name: 'Eduardo Lucca Victor Santos',
+        tariffType: 'Infantil',
+        checkInStatus: 'Pending',
+        hasHealthIssue: false,
+        hasImageAuth: true,
+        isMinor: true,
         boardingPoint: BP_PRINCIPAL,
       },
     ],
   },
 
   {
-    id: 'res-003',
-    orderId: '#RE-0003',
+    id: 'res-002',
+    orderId: '#RE-9921',
     type: 'individual',
-    buyerName: 'Beatriz Santos Lima',
+    buyerName: 'Vera Gabriela da Mota',
+    status: 'Confirmed',
+    paymentStatus: 'Paid',
+    insuranceStatus: 'Contracted',
+    createdAt: '2026-04-16T14:30:00',
+    participants: [
+      {
+        id: 'part-005',
+        name: 'Vera Gabriela da Mota',
+        tariffType: 'Adulto',
+        checkInStatus: 'Pending',
+        hasHealthIssue: false,
+        hasImageAuth: true,
+        isMinor: false,
+        boardingPoint: BP_PRINCIPAL,
+        notes: 'Comprador',
+      },
+    ],
+  },
+
+  {
+    id: 'res-003',
+    orderId: '#RE-9922',
+    type: 'individual',
+    buyerName: 'Samuel Isaac Roberto Araújo',
     status: 'Confirmed',
     paymentStatus: 'Paid',
     insuranceStatus: 'Contracted',
     createdAt: '2026-04-18T09:15:00',
     participants: [
       {
-        id: 'part-004',
-        name: 'Beatriz Santos Lima',
+        id: 'part-006',
+        name: 'Samuel Isaac Roberto Araújo',
         tariffType: 'Adulto',
         checkInStatus: 'Pending',
         hasHealthIssue: false,
         hasImageAuth: true,
         isMinor: false,
         boardingPoint: BP_HOTEL,
+        notes: 'Comprador',
       },
     ],
   },
@@ -1292,3 +1362,147 @@ export function isEligibleForBulkAction(
   const ineligible = reservations.filter((r) => !rule.test(r));
   return { eligible, ineligible, reason: rule.reason };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. mockDashboardStats
+//
+// Metric cards shown in AGENDA - MÊS (14948:75262) and AGENDA - ATUALIZAÇÕES.
+// Values are identical across all Agenda frames — confirmed via Figma MCP.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const mockDashboardStats = {
+  agendamentosHoje: {
+    label: 'Agendamentos Hoje',
+    subtitle: 'Reservas confirmadas',
+    value: 23,
+    trend: '+4 hoje',
+    trendLabel: 'vs. período anterior',
+  },
+  agendamentosUltimaHora: {
+    label: 'Agendamentos Última Hora',
+    subtitle: 'Reservas recentes',
+    value: 5,
+    trend: '+2',
+    trendLabel: 'vs. período anterior',
+  },
+  receitaEstimadaHoje: {
+    label: 'Receita Estimada Hoje',
+    subtitle: 'Total de vendas',
+    value: 'R$ 4.250',
+    trend: '+8.4%',
+    trendLabel: 'vs. período anterior',
+  },
+  ocupacaoMedia: {
+    label: 'Ocupação Média',
+    subtitle: 'Percentual de ocupação',
+    value: '85%',
+    trend: '+12%',
+    trendLabel: 'vs. mês anterior',
+  },
+} as const;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6. mockGuides
+//
+// Guides shown in AGENDA - VISÃO GERAL (15221:23601) — "EQUIPE ESCALADA (3)".
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface Guide {
+  id: string;
+  name: string;
+  initials: string;
+  role: 'Guia Líder' | 'Guia de Apoio';
+  status: 'available' | 'conflict';
+  /** Only set when status === 'conflict' */
+  conflictNote?: string;
+  whatsapp?: string;
+}
+
+export const mockGuides: Guide[] = [
+  {
+    id: 'guide-001',
+    name: 'João Silva',
+    initials: 'JS',
+    role: 'Guia Líder',
+    status: 'available',
+    whatsapp: '+5531900000001',
+  },
+  {
+    id: 'guide-002',
+    name: 'Maria Costa',
+    initials: 'MC',
+    role: 'Guia de Apoio',
+    status: 'conflict',
+    conflictNote: 'Já escalado em "Rapel Cachoeira Alta", das 09:00 às 12:00.',
+    whatsapp: '+5531900000002',
+  },
+  {
+    id: 'guide-003',
+    name: 'Pedro Santos',
+    initials: 'PS',
+    role: 'Guia de Apoio',
+    status: 'available',
+    whatsapp: '+5531900000003',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. mockWeatherForecast
+//
+// Weather data shown in AGENDA - VISÃO GERAL (15221:23601) — "PREVISÃO CLIMÁTICA".
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface WeatherDay {
+  dayLabel: string;
+  dayNumber: number;
+  high: number;
+  low: number;
+}
+
+export const mockWeather = {
+  current: {
+    tempC: 26,
+    feelsLikeC: 28,
+    humidityPct: 65,
+    windKmh: 18,
+    rainChancePct: 20,
+  },
+  forecast: [
+    { dayLabel: 'Seg', dayNumber: 12, high: 28, low: 18 },
+    { dayLabel: 'Ter', dayNumber: 13, high: 26, low: 17 },
+    { dayLabel: 'Qua', dayNumber: 14, high: 24, low: 16 },
+    { dayLabel: 'Qui', dayNumber: 15, high: 29, low: 18 },
+    { dayLabel: 'Sex', dayNumber: 16, high: 27, low: 18 },
+    { dayLabel: 'Sáb', dayNumber: 17, high: 30, low: 20 },
+    { dayLabel: 'Dom', dayNumber: 18, high: 28, low: 19 },
+  ] as WeatherDay[],
+  source: 'Dados de OpenWeather API',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. mockActivityDetail
+//
+// Static detail for act-001 (Trilha Pico do Itacolomi) used in VISÃO GERAL tab.
+// Extracted from Figma AGENDA - VISÃO GERAL (15221:23601).
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const mockActivityDetail = {
+  activityId: 'act-001',
+  name: 'Trilha Pico do Itacolomi',
+  location: 'Parque Municipal, Sabará - Belo Horizonte',
+  dateTime: '2026-05-11T08:00:00',
+  duration: '08:00 - 11:00 (3h)',
+  reservations: {
+    total: 12,
+    occupied: 8,
+    occupiedPct: 85,
+    vacantPct: 15,
+    byTariff: {
+      adultos: 4,
+      criancas: 3,
+      cortesias: 1,
+    },
+  },
+  guides: mockGuides,
+  weather: mockWeather,
+};

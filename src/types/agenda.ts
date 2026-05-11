@@ -119,3 +119,22 @@ export interface BulkActionResult {
 }
 
 export type ReservationStateMachine = Record<ReservationStatus, ReservationStatus[]>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Guide
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type GuideRole = 'Guia Líder' | 'Guia de Apoio';
+export type GuideStatus = 'available' | 'conflict';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dashboard stats (metric cards)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface DashboardStat {
+  label: string;
+  subtitle: string;
+  value: number | string;
+  trend: string;
+  trendLabel: string;
+}

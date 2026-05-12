@@ -1,6 +1,11 @@
+import { useState, useMemo } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import svgPaths from "./svg-qtw4au3g97";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
+import { mockActivities } from "../../mocks/agenda";
+import type { Activity, ActivityStatus } from "../../types/agenda";
 
 // Componentes padronizados para informações dos cards
 function InfoField({ icon, label, value, valueColor = "#252b37" }: { icon: React.ReactNode; label: string; value: string; valueColor?: string }) {
@@ -2591,76 +2596,293 @@ function Frame19() {
   );
 }
 
-export default function AgendaAtividadesDoDia({ onBackToAgenda, onViewDetails }: { onBackToAgenda?: () => void; onViewDetails?: () => void }) {
+// ─── Dynamic Atividades do Dia ──────────────────────────────────────────────
+
+const DIA_HOLIDAYS: Record<string, string> = {
+  "2026-05-01": "Dia do Trabalho",
+  "2026-05-10": "Dia das Mães",
+};
+
+const DIA_STATUS_CONFIG: Record<ActivityStatus, { label: string; bg: string; border: string; text: string; dotColor: string }> = {
+  confirmed: { label: "Atividade Não Iniciada", bg: "#fafafa", border: "#f5f5f5", text: "#535862", dotColor: "#22c55e" },
+  pending:   { label: "Atividade em Andamento", bg: "#fffaeb", border: "#fef0c7", text: "#dc6803", dotColor: "#fdb022" },
+  full:      { label: "Atividade Não Iniciada", bg: "#fafafa", border: "#f5f5f5", text: "#535862", dotColor: "#e50000" },
+  blocked:   { label: "Atividade Cancelada", bg: "#fef3f2", border: "#fee4e2", text: "#d92d20", dotColor: "#838891" },
+};
+
+function DiaChevron() {
   return (
-    <div className="bg-[#f8fafc] relative size-full" data-name="AGENDA - ATIVIDADES DO DIA">
-      <TopBar />
-      <Frame40 onViewDetails={onViewDetails} />
-      <Frame57 />
-      <div className="absolute content-stretch flex gap-[10px] items-center left-[248px] top-[112px]" data-name="Breadcrumb">
-        <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[14px] whitespace-nowrap">
-          <p className="leading-[normal]">Início</p>
-        </div>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="ellipsis">
-          <div className="absolute inset-[45.83%]" data-name="Vector">
-            <div className="absolute inset-[-37.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 2.33333 2.33333">
-                <path d={svgPaths.padc050} fill="var(--fill-0, #71717A)" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <div className="absolute bottom-[45.83%] left-3/4 right-[16.67%] top-[45.83%]" data-name="Vector">
-            <div className="absolute inset-[-37.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 2.33333 2.33333">
-                <path d={svgPaths.padc050} fill="var(--fill-0, #71717A)" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <div className="absolute bottom-[45.83%] left-[16.67%] right-3/4 top-[45.83%]" data-name="Vector">
-            <div className="absolute inset-[-37.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 2.33333 2.33333">
-                <path d={svgPaths.padc050} fill="var(--fill-0, #71717A)" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <button
-          onClick={onBackToAgenda}
-          className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[14px] whitespace-nowrap cursor-pointer hover:text-[#09090b] transition-colors"
-        >
-          <p className="leading-[normal]">Agenda</p>
-        </button>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#09090b] text-[14px] whitespace-nowrap">
-          <p className="leading-[normal]">Atividades do Dia</p>
+    <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
+      <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4">
+        <div className="absolute inset-[-6.25%_-12.5%]">
+          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
+            <path d="M0.5 8.5L4.5 4.5L0.5 0.5" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
       </div>
+    </div>
+  );
+}
+
+function DiaActivityCard({ a, expanded, onToggle, onViewDetails }: {
+  a: Activity; expanded: boolean;
+  onToggle: () => void; onViewDetails?: () => void;
+}) {
+  const cfg = DIA_STATUS_CONFIG[a.status];
+  const isFull = a.status === "full";
+  const isBlocked = a.status === "blocked";
+  const isMultiDay = !!a.dayNumber && !!a.totalDays;
+
+  return (
+    <div className="relative w-full">
+      {/* Time label */}
+      <div className="content-stretch flex gap-[8px] items-center mb-[12px] relative">
+        <div className="rounded-[9999px] shrink-0 size-[12px]" style={{ backgroundColor: cfg.dotColor }} />
+        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37]">{a.startTime}</p>
+      </div>
+      {/* Card */}
+      <div className="bg-white relative rounded-[16px] w-full">
+        <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]" />
+        <div className="content-stretch flex flex-col relative rounded-[inherit] size-full">
+          {/* Card header */}
+          <div className="content-stretch flex items-center justify-between px-[24px] py-[16px] relative shrink-0 w-full">
+            <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0">
+              <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">
+                  {a.name} ({a.occupancy}/{a.capacity})
+                </p>
+                {/* Status badge */}
+                <div className="rounded-[999px] shrink-0" style={{ backgroundColor: cfg.bg }}>
+                  <div aria-hidden="true" className="absolute border border-solid inset-0 pointer-events-none rounded-[999px]" style={{ borderColor: cfg.border, position: "relative" }} />
+                  <div className="content-stretch flex gap-[4px] items-center px-[10px] py-[2px] relative size-full">
+                    <div className="rounded-[9999px] shrink-0 size-[8px]" style={{ backgroundColor: cfg.text }} />
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap" style={{ color: cfg.text }}>{cfg.label}</p>
+                  </div>
+                </div>
+              </div>
+              {/* Sub-info */}
+              <div className="content-stretch flex gap-[8px] items-center relative shrink-0">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862]">
+                  {isMultiDay ? "Atividade multi-dias" : "Atividade comum"}
+                </p>
+                {isFull && (
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#dc6803]">· Vagas excedidas</p>
+                )}
+              </div>
+            </div>
+            {/* Actions */}
+            <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
+              <button
+                onClick={onViewDetails}
+                className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
+              >
+                <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
+                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ver Detalhes</p>
+                </div>
+              </button>
+              {!isBlocked && (
+                <button
+                  onClick={onViewDetails}
+                  className="bg-[#edf0ff] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#d5dcfe] transition-colors"
+                >
+                  <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#1b71fd] whitespace-nowrap">Ir para Check-In</p>
+                  </div>
+                </button>
+              )}
+              <button onClick={onToggle} className="cursor-pointer shrink-0 size-[24px] relative">
+                <svg className="block size-full" fill="none" viewBox="0 0 24 24">
+                  <path d={expanded ? "M18 15L12 9L6 15" : "M6 9L12 15L18 9"} stroke="#717680" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          {/* Expanded details */}
+          {expanded && (
+            <>
+              <div className="border-t border-[#e9eaeb] mx-[24px]" />
+              <div className="content-stretch flex gap-[24px] items-start px-[24px] py-[16px] relative shrink-0 w-full">
+                <InfoField
+                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="4" stroke="#535862" strokeWidth="1.5"/><path d="M2 8h16" stroke="#535862" strokeWidth="1.5"/><path d="M7 1v3M13 1v3" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
+                  label="Data da atividade"
+                  value={isMultiDay ? `${format(new Date(a.date), "dd/MM/yyyy")} (Dia ${a.dayNumber} de ${a.totalDays})` : format(new Date(a.date), "dd/MM/yyyy")}
+                />
+                <div className="bg-[#e9eaeb] h-[40px] shrink-0 w-px" />
+                <InfoField
+                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" stroke="#535862" strokeWidth="1.5"/><path d="M10 6v4l3 2" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
+                  label="Hora da atividade"
+                  value={`${a.startTime} - ${a.endTime}`}
+                />
+                <div className="bg-[#e9eaeb] h-[40px] shrink-0 w-px" />
+                <InfoField
+                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><circle cx="7" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><circle cx="14" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><path d="M1 17c0-3 3-5 6-5s6 2 6 5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
+                  label="Participantes"
+                  value={a.occupancy > 0 ? `${a.occupancy} participantes` : "Nenhum participante"}
+                />
+                <div className="bg-[#e9eaeb] h-[40px] shrink-0 w-px" />
+                <InfoField
+                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><circle cx="7" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><circle cx="14" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><path d="M1 17c0-3 3-5 6-5s6 2 6 5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
+                  label="Equipe responsável"
+                  value={a.guideName || "Sem equipe atribuída"}
+                  valueColor={a.guideName ? "#252b37" : "#dc6803"}
+                />
+              </div>
+            </>
+          )}
+          {/* Alert badges footer */}
+          <div className="bg-[#fafafa] border-t border-[#e9eaeb] content-stretch flex gap-[16px] items-center px-[24px] py-[10px] relative rounded-b-[16px] shrink-0 w-full">
+            {a.requiresInsurance ? (
+              <div className="flex gap-[6px] items-center shrink-0">
+                <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M7 1l5 2v4c0 3-2.5 5-5 6-2.5-1-5-3-5-6V3l5-2z" stroke="#F04438" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#d92d20]">Seguro obrigatório</p>
+              </div>
+            ) : (
+              <div className="flex gap-[6px] items-center shrink-0">
+                <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M7 1l5 2v4c0 3-2.5 5-5 6-2.5-1-5-3-5-6V3l5-2z" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#414651]">Seguro opcional</p>
+              </div>
+            )}
+            {!a.guideName && (
+              <div className="flex gap-[6px] items-center shrink-0">
+                <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" stroke="#DC6803" strokeWidth="1.2"/><path d="M7 4v3M7 9v.5" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803]">Equipe responsável deve ser atribuída</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiaEmptyState({ onBack }: { onBack?: () => void }) {
+  return (
+    <div className="content-stretch flex flex-col gap-[16px] items-center justify-center py-[80px] relative w-full">
+      <svg className="size-[64px]" fill="none" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" stroke="#e2e8f0" strokeWidth="2"/><path d="M22 28h20M22 36h12" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round"/></svg>
+      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[16px] text-[#717680] text-center">Não há atividades agendadas para este dia</p>
+      {onBack && (
+        <button onClick={onBack} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#414651] hover:bg-[#f8fafc] transition-colors">
+          Voltar para o calendário
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetails }: {
+  day?: number;
+  onBackToAgenda?: () => void;
+  onViewDetails?: () => void;
+}) {
+  const refDay = day ?? 11;
+  const dateObj = new Date(2026, 4, refDay); // May 2026
+  const iso = format(dateObj, "yyyy-MM-dd");
+  const holiday = DIA_HOLIDAYS[iso];
+
+  const dayActivities = useMemo(
+    () => mockActivities.filter((a) => a.date === iso).sort((a, b) => a.startTime.localeCompare(b.startTime)),
+    [iso]
+  );
+
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
+    // First 2 cards expanded by default (matching Figma)
+    const initial = new Set<string>();
+    dayActivities.slice(0, 2).forEach((a) => initial.add(a.id));
+    return initial;
+  });
+
+  const toggleCard = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const formattedDate = format(dateObj, "dd/MM/yyyy");
+  const monthAbbr = format(dateObj, "MMM", { locale: ptBR }).toUpperCase().replace(".", "");
+  const holidayText = holiday ? `(${holiday})` : "(Sem feriados)";
+
+  return (
+    <div className="bg-[#f8fafc] relative size-full overflow-auto" data-name="AGENDA - ATIVIDADES DO DIA">
+      <TopBar />
+      {/* Header */}
+      <div className="absolute content-stretch flex gap-[24px] items-end justify-between left-[248px] right-[24px] top-[148px]">
+        <div className="content-stretch flex gap-[16px] items-center relative shrink-0">
+          {/* Date icon */}
+          <div className="bg-white relative rounded-[10px] shrink-0">
+            <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[10px]" />
+            <div className="content-stretch flex flex-col items-center overflow-clip relative rounded-[inherit] size-full">
+              <div className="bg-[#f1f5f9] content-stretch flex items-center justify-center px-[12px] py-[2px] relative shrink-0 w-full">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[10px] text-[#62748e] tracking-[0.5px]">{monthAbbr}</p>
+              </div>
+              <div className="content-stretch flex items-center justify-center px-[12px] py-[4px] relative shrink-0 w-full">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[20px] text-[#0b5ed7]">{refDay}</p>
+              </div>
+            </div>
+          </div>
+          {/* Title */}
+          <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0">
+            <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">Atividades do dia</p>
+              <div className="bg-[#f04438] rounded-[8px] shrink-0">
+                <div className="content-stretch flex items-center justify-center px-[8px] py-[2px] relative size-full">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-white">{dayActivities.length}</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-[6px] items-center">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">{formattedDate}</p>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#62748e]">{holidayText}</p>
+            </div>
+          </div>
+        </div>
+        {/* Header buttons */}
+        <div className="content-stretch flex gap-[16px] items-center relative shrink-0">
+          <div className="bg-white relative rounded-[8px] shrink-0">
+            <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ficha de Operação</p>
+            </div>
+          </div>
+          <div className="relative rounded-[8px] shrink-0" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Concluir Atividades do Dia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Divider */}
+      <div className="absolute bg-[#e9eaeb] h-px left-[248px] right-[24px] top-[234px]" />
+      {/* Activity cards */}
+      <div className="absolute left-[248px] right-[24px] top-[258px]" style={{ paddingBottom: "40px" }}>
+        {dayActivities.length === 0 ? (
+          <DiaEmptyState onBack={onBackToAgenda} />
+        ) : (
+          <div className="content-stretch flex flex-col gap-[24px] items-start relative w-full">
+            {dayActivities.map((a) => (
+              <DiaActivityCard
+                key={a.id}
+                a={a}
+                expanded={expandedIds.has(a.id)}
+                onToggle={() => toggleCard(a.id)}
+                onViewDetails={onViewDetails}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+      {/* Breadcrumb */}
+      <div className="absolute content-stretch flex gap-[10px] items-center left-[248px] top-[112px]" data-name="Breadcrumb">
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#71717a] text-[14px] whitespace-nowrap">Início</p>
+        <DiaChevron />
+        <button onClick={onBackToAgenda} className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#71717a] text-[14px] whitespace-nowrap cursor-pointer hover:text-[#09090b] transition-colors">Agenda</button>
+        <DiaChevron />
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#09090b] text-[14px] whitespace-nowrap">Atividades do Dia</p>
+      </div>
+      {/* Sidebar */}
       <div className="absolute bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px]" data-name="Sidebar - Admin">
         <div aria-hidden="true" className="absolute border border-[#fafafa] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.1)]" />
         <Container15 />

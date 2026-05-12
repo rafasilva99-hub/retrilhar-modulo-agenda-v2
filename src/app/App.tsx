@@ -43,11 +43,11 @@ function InfoCard({ title, description }: { title: string; description: string }
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<"intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes">("intro");
-  const [selectedDate, setSelectedDate] = useState<{ day: number; month: string; year: number }>({ day: 9, month: "Abril", year: 2026 });
+  const [selectedDay, setSelectedDay] = useState<number>(11);
   const [atualizacoesInitialTab, setAtualizacoesInitialTab] = useState<string>("atualizacoes");
 
   const handleDayClick = (day: number) => {
-    setSelectedDate({ day, month: "Abril", year: 2026 });
+    setSelectedDay(day);
     setCurrentPage("agendaDia");
   };
 
@@ -70,7 +70,7 @@ export default function App() {
   }
 
   if (currentPage === "agendaDia") {
-    return <AgendaAtividadesDoDia onBackToAgenda={() => setCurrentPage("agenda")} onViewDetails={handleViewDetails} />;
+    return <AgendaAtividadesDoDia day={selectedDay} onBackToAgenda={() => setCurrentPage("agenda")} onViewDetails={handleViewDetails} />;
   }
 
   if (currentPage === "agenda") {

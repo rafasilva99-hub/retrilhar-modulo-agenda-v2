@@ -1,9 +1,53 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useReducer } from "react";
 import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
 import { mockReservations } from "../../mocks/agenda";
-import type { Reservation } from "../../types/agenda";
+import type { Reservation, Participant, CheckInStatus } from "../../types/agenda";
+
+// ─── Reservation state management ───────────────────────────────────────────
+
+type ResAction =
+  | { type: "CHECK_IN"; participantId: string }
+  | { type: "UNDO_CHECK_IN"; participantId: string };
+
+function reservationsReducer(state: Reservation[], action: ResAction): Reservation[] {
+  return state.map((r) => ({
+    ...r,
+    participants: r.participants.map((p) => {
+      if (p.id !== action.participantId) return p;
+      if (action.type === "CHECK_IN") return { ...p, checkInStatus: "Done" as CheckInStatus };
+      if (action.type === "UNDO_CHECK_IN") return { ...p, checkInStatus: "Pending" as CheckInStatus };
+      return p;
+    }),
+  }));
+}
+
+// Toast
+function Toast({ message, type, onClose }: { message: string; type: "success" | "error"; onClose: () => void }) {
+  return (
+    <div className={`fixed bottom-[24px] left-1/2 -translate-x-1/2 z-50 flex gap-[8px] items-center px-[16px] py-[12px] rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.15)] ${type === "success" ? "bg-[#ecfdf3] border border-[#dcfae6]" : "bg-[#fef3f2] border border-[#fee4e2]"}`}>
+      <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${type === "success" ? "text-[#079455]" : "text-[#d92d20]"}`}>{message}</p>
+      <button onClick={onClose} className="cursor-pointer ml-[8px] text-[#717680] hover:text-[#414651]">✕</button>
+    </div>
+  );
+}
+
+// Initials avatar
+function InitialsAvatar({ name }: { name: string }) {
+  const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  // Deterministic color from name
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const colors = ["#edf0ff", "#ecfdf3", "#fffaeb", "#f4f3ff", "#fef3f2", "#f0f9ff"];
+  const textColors = ["#0b5ed7", "#079455", "#dc6803", "#6941c6", "#d92d20", "#0369a1"];
+  const idx = Math.abs(hash) % colors.length;
+  return (
+    <div className="flex items-center justify-center rounded-[9999px] shrink-0 size-[36px]" style={{ backgroundColor: colors[idx] }}>
+      <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px]" style={{ color: textColors[idx] }}>{initials}</p>
+    </div>
+  );
+}
 
 function Elements() {
   return (
@@ -1091,15 +1135,52 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
+  const [reservations, dispatch] = useReducer(reservationsReducer, mockReservations);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(reservations.filter((r) => r.type === "group").map((r) => r.id)));
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleCheckIn = (p: Participant, insuranceStatus: string) => {
+    if (insuranceStatus !== "Contracted" && insuranceStatus !== "NotRequired") {
+      showToast("É obrigatório contratar o seguro antes de realizar o check-in.", "error");
+      return;
+    }
+    dispatch({ type: "CHECK_IN", participantId: p.id });
+    showToast(`Check-in de ${p.name.split(" ")[0]} realizado com sucesso!`);
+  };
+
+  const handleUndoCheckIn = (p: Participant) => {
+    dispatch({ type: "UNDO_CHECK_IN", participantId: p.id });
+    showToast(`Check-in de ${p.name.split(" ")[0]} desfeito.`);
+  };
+
+  const handleCopyId = (orderId: string) => {
+    navigator.clipboard?.writeText(orderId);
+    setCopiedId(orderId);
+    showToast("Copiado!");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const toggleGroup = (id: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
 
   // Count all participants
-  const allParticipants = useMemo(() => mockReservations.flatMap((r) => r.participants), []);
-  const totalCount = allParticipants.length;
+  const totalCount = useMemo(() => reservations.reduce((s, r) => s + r.participants.length, 0), [reservations]);
 
   // Filter counts
   const counts = useMemo(() => {
     let pending = 0, done = 0, cancelled = 0;
-    for (const r of mockReservations) {
+    for (const r of reservations) {
       if (r.status === "Cancelled") { cancelled += r.participants.length; continue; }
       for (const p of r.participants) {
         if (p.checkInStatus === "Done") done++;
@@ -1107,11 +1188,11 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
       }
     }
     return { todos: totalCount, pending, done, cancelled };
-  }, [totalCount]);
+  }, [reservations, totalCount]);
 
   // Filtered reservations
   const filteredReservations = useMemo(() => {
-    let result = mockReservations;
+    let result = reservations;
     // Tab filter
     if (activeFilter === "a-fazer-checkin") result = result.filter((r) => r.status !== "Cancelled" && r.participants.some((p) => p.checkInStatus === "Pending"));
     else if (activeFilter === "checkin-realizado") result = result.filter((r) => r.status !== "Cancelled" && r.participants.some((p) => p.checkInStatus === "Done"));
@@ -1259,12 +1340,154 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
         ))}
       </div>
 
-      {/* Placeholder for reservation list (Prompt 7) */}
+      {/* Reservation list */}
       <div className="content-stretch flex flex-col gap-[1px] items-start mt-[8px] relative w-full">
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic py-[16px] text-[#717680] text-[14px]">
-          {filteredParticipantCount} participante(s) encontrado(s)
-        </p>
+        {filteredReservations.map((r, idx) => {
+          const isGroup = r.type === "group";
+          const expanded = expandedGroups.has(r.id);
+          const pendingCount = r.participants.filter((p) => p.checkInStatus === "Pending").length;
+          const doneCount = r.participants.filter((p) => p.checkInStatus === "Done").length;
+
+          return (
+            <div key={r.id} className="bg-white relative rounded-[12px] shrink-0 w-full mb-[8px]">
+              <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[12px]" />
+              {/* Reservation header */}
+              <div className="content-stretch flex items-center gap-[12px] px-[16px] py-[12px] relative w-full">
+                <input type="checkbox" className="accent-[#0b5ed7] shrink-0 size-[16px]" readOnly />
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] min-w-[32px] not-italic text-[14px] text-[#414651] text-center">{String(idx + 1).padStart(2, "0")}</p>
+                {/* Type icon */}
+                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16">
+                  {isGroup ? (
+                    <><circle cx="5" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><circle cx="11" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><path d="M1 14c0-2.2 2-4 4-4s4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/><path d="M10 10c2 0 4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></>
+                  ) : (
+                    <><circle cx="8" cy="5" r="3" stroke="#535862" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></>
+                  )}
+                </svg>
+                {/* Type text + order ID */}
+                <div className="flex gap-[4px] items-center min-w-0">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862] whitespace-nowrap">
+                    {isGroup ? "Reserva em Grupo" : "Reserva Individual"} · ID do pedido:
+                  </p>
+                  <span className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-[#0b5ed7] underline whitespace-nowrap">{r.orderId}</span>
+                  <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[14px] hover:opacity-70 transition-opacity" title="Copiar ID">
+                    <svg className="block size-full" fill="none" viewBox="0 0 14 14"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M10 4V3a1.5 1.5 0 00-1.5-1.5H3A1.5 1.5 0 001.5 3v5.5A1.5 1.5 0 003 10h1" stroke="#717680" strokeWidth="1.2"/></svg>
+                  </button>
+                </div>
+                {/* Status badges */}
+                <div className="flex gap-[8px] items-center flex-1 min-w-0">
+                  {r.status === "Cancelled" ? (
+                    <div className="flex gap-[4px] items-center shrink-0">
+                      <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap">Reserva cancelada</p>
+                    </div>
+                  ) : (
+                    <>
+                      {r.paymentStatus === "Paid" && (
+                        <div className="flex gap-[4px] items-center shrink-0">
+                          <div className="bg-[#17b26a] rounded-[9999px] size-[6px]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] whitespace-nowrap">Pagamento confirmado</p>
+                        </div>
+                      )}
+                      {r.paymentStatus === "Pending" && (
+                        <div className="flex gap-[4px] items-center shrink-0">
+                          <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Pagamento pendente</p>
+                        </div>
+                      )}
+                      {isGroup && pendingCount > 0 && (
+                        <div className="flex gap-[4px] items-center shrink-0">
+                          <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">{pendingCount} Check-in&apos;s pendentes</p>
+                        </div>
+                      )}
+                      {isGroup && doneCount > 0 && (
+                        <div className="flex gap-[4px] items-center shrink-0">
+                          <div className="bg-[#2b7fff] rounded-[9999px] size-[6px]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#1447e6] whitespace-nowrap">{doneCount} Check-in&apos;s realizados</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                {/* Expand/collapse for groups */}
+                {isGroup && (
+                  <button onClick={() => toggleGroup(r.id)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[13px] text-[#0b5ed7] whitespace-nowrap hover:underline">
+                    {expanded ? `Ocultar Grupo (${r.participants.length})` : `Ver Grupo (${r.participants.length})`}
+                  </button>
+                )}
+              </div>
+              {/* Participant rows */}
+              {(isGroup ? expanded : true) && r.participants.map((p) => {
+                const isCancelled = r.status === "Cancelled";
+                const isDone = p.checkInStatus === "Done";
+                const showCheckIn = !isCancelled && r.status !== "AwaitingPayment" && r.status !== "NoShow";
+                return (
+                  <div key={p.id} className="border-t border-[#f5f5f5] content-stretch flex items-center gap-[12px] px-[16px] py-[10px] relative w-full">
+                    <input type="checkbox" className="accent-[#0b5ed7] shrink-0 size-[16px]" readOnly />
+                    <InitialsAvatar name={p.name} />
+                    {/* Name + buyer label + ID */}
+                    <div className="content-stretch flex flex-col gap-[2px] items-start min-w-[160px] relative shrink-0">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27] overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px]">{p.name}</p>
+                      <div className="flex gap-[6px] items-center">
+                        {p.notes?.includes("Comprador") && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Comprador -</p>}
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">ID: <span className="text-[#0b5ed7]">#8821</span></p>
+                      </div>
+                    </div>
+                    {/* Tariff type */}
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-[60px] not-italic text-[14px] text-[#535862]">{p.tariffType}</p>
+                    {/* Check-in status badge */}
+                    <div className="flex-1 min-w-0">
+                      {isCancelled ? (
+                        <div className="flex gap-[4px] items-center">
+                          <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#717680]">Reserva cancelada</p>
+                        </div>
+                      ) : isDone ? (
+                        <div className="flex gap-[6px] items-center">
+                          <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="#2b7fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#1447e6]">Check-in realizado</p>
+                        </div>
+                      ) : (
+                        <div className="flex gap-[6px] items-center">
+                          <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#dc6803]">Check-in pendente</p>
+                        </div>
+                      )}
+                    </div>
+                    {/* Alert icons */}
+                    {!isCancelled && (
+                      <div className="flex gap-[6px] items-center shrink-0">
+                        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Seguro"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke={r.insuranceStatus === "Contracted" ? "#079455" : "#dc6803"} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Imagem"><rect x="2" y="3" width="12" height="10" rx="2" stroke={p.hasImageAuth ? "#717680" : "#dc6803"} strokeWidth="1.2"/><circle cx="6" cy="7" r="1.5" stroke={p.hasImageAuth ? "#717680" : "#dc6803"} strokeWidth="1.2"/></svg>
+                        {p.hasHealthIssue && <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Atenção médica"><circle cx="8" cy="8" r="6" stroke="#6941c6" strokeWidth="1.2"/><path d="M8 5v3M8 10v.5" stroke="#6941c6" strokeWidth="1.2" strokeLinecap="round"/></svg>}
+                        {p.isMinor && <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Menor de idade"><circle cx="8" cy="5" r="3" stroke="#dc6803" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#dc6803" strokeWidth="1.2" strokeLinecap="round"/></svg>}
+                      </div>
+                    )}
+                    {/* Check-in action */}
+                    {showCheckIn && (
+                      isDone ? (
+                        <button onClick={() => handleUndoCheckIn(p)} className="bg-white border border-[#e2e8f0] border-solid content-stretch cursor-pointer flex gap-[6px] hover:bg-[#f8fafc] items-center justify-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
+                        </button>
+                      ) : (
+                        <button onClick={() => handleCheckIn(p, r.insuranceStatus)} className="content-stretch cursor-pointer flex gap-[6px] hover:bg-[#d5dcfe] items-center justify-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors" style={{ backgroundColor: "#edf0ff" }}>
+                          <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="#0b5ed7" strokeWidth="1.2"/><path d="M5 7l1.5 1.5L9.5 5" stroke="#0b5ed7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#0b5ed7] whitespace-nowrap">Realizar Check-in</p>
+                        </button>
+                      )
+                    )}
+                    {/* Three-dot menu */}
+                    <button className="cursor-pointer shrink-0 size-[20px] hover:bg-[#f1f5f9] rounded-[4px] flex items-center justify-center transition-colors">
+                      <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="13" r="1" fill="#717680"/></svg>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }

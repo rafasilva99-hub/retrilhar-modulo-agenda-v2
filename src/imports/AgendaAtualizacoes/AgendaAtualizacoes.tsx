@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
+import { mockReservations } from "../../mocks/agenda";
+import type { Reservation } from "../../types/agenda";
 
 function Elements() {
   return (
@@ -1080,6 +1082,193 @@ function Frame24() {
   );
 }
 
+// ─── Participantes Tab ──────────────────────────────────────────────────────
+
+type ParticipantesFilter = "todos" | "a-fazer-checkin" | "checkin-realizado" | "canceladas";
+
+function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => void }) {
+  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showSort, setShowSort] = useState(false);
+
+  // Count all participants
+  const allParticipants = useMemo(() => mockReservations.flatMap((r) => r.participants), []);
+  const totalCount = allParticipants.length;
+
+  // Filter counts
+  const counts = useMemo(() => {
+    let pending = 0, done = 0, cancelled = 0;
+    for (const r of mockReservations) {
+      if (r.status === "Cancelled") { cancelled += r.participants.length; continue; }
+      for (const p of r.participants) {
+        if (p.checkInStatus === "Done") done++;
+        else pending++;
+      }
+    }
+    return { todos: totalCount, pending, done, cancelled };
+  }, [totalCount]);
+
+  // Filtered reservations
+  const filteredReservations = useMemo(() => {
+    let result = mockReservations;
+    // Tab filter
+    if (activeFilter === "a-fazer-checkin") result = result.filter((r) => r.status !== "Cancelled" && r.participants.some((p) => p.checkInStatus === "Pending"));
+    else if (activeFilter === "checkin-realizado") result = result.filter((r) => r.status !== "Cancelled" && r.participants.some((p) => p.checkInStatus === "Done"));
+    else if (activeFilter === "canceladas") result = result.filter((r) => r.status === "Cancelled");
+    // Search filter
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter((r) => r.buyerName.toLowerCase().includes(q) || r.orderId.toLowerCase().includes(q) || r.participants.some((p) => p.name.toLowerCase().includes(q)));
+    }
+    return result;
+  }, [activeFilter, search]);
+
+  const filteredParticipantCount = filteredReservations.reduce((sum, r) => sum + r.participants.length, 0);
+
+  const filters: { key: ParticipantesFilter; label: string; count: number }[] = [
+    { key: "todos", label: "Todos", count: counts.todos },
+    { key: "a-fazer-checkin", label: "A fazer check-in", count: counts.pending },
+    { key: "checkin-realizado", label: "Check-in realizado", count: counts.done },
+    { key: "canceladas", label: "Reservas canceladas", count: counts.cancelled },
+  ];
+
+  return (
+    <div className="absolute left-[248px] right-[24px] top-[157px]" style={{ paddingBottom: "40px" }}>
+      {/* Header */}
+      <div className="content-stretch flex items-start justify-between relative w-full">
+        <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0">
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">Trilha Pico do Itacolomi</p>
+          <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
+            <div className="flex gap-[6px] items-center shrink-0">
+              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="5" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><circle cx="11" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><path d="M1 14c0-2.2 2-4 4-4s4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/><path d="M10 10c2 0 4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{totalCount} participantes</p>
+            </div>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#d5d7da]">·</p>
+            <div className="flex gap-[6px] items-center shrink-0">
+              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="#535862" strokeWidth="1.2"/><path d="M2 6h12" stroke="#535862" strokeWidth="1.2"/><path d="M5.5 1v2M10.5 1v2" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">11/05/2026</p>
+            </div>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#d5d7da]">·</p>
+            <div className="flex gap-[6px] items-center shrink-0">
+              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.2"/><path d="M8 5v3l2.5 1.5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">08:00 - 11:00</p>
+            </div>
+          </div>
+        </div>
+        {/* Header buttons (visual only) */}
+        <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
+          <div className="bg-white relative rounded-[8px] shrink-0">
+            <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Listas e Manifestos</p>
+            </div>
+          </div>
+          <div className="relative rounded-[8px] shrink-0" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Concluir atividade</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search bar + Sort + Filters */}
+      <div className="content-stretch flex gap-[12px] items-center mt-[24px] relative w-full">
+        <div className="bg-white flex-1 min-w-0 relative rounded-[10px]">
+          <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[10px]" />
+          <div className="content-stretch flex gap-[8px] items-center px-[14px] py-[10px] relative size-full">
+            <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#717680" strokeWidth="1.5"/><path d="M14 14l3 3" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nome, ID do pedido, etc..."
+              className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[14px] text-[#414651] placeholder:text-[#a4a7ae] bg-transparent"
+            />
+          </div>
+        </div>
+        {/* Ordenar Por (visual only) */}
+        <div className="relative">
+          <button
+            onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
+            className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
+          >
+            <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
+            <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ordenar Por</p>
+              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+          </button>
+          {showSort && (
+            <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[200px] z-20">
+              {["Alfabética", "Número de pedido", "Data da reserva"].map((opt) => (
+                <button key={opt} onClick={() => setShowSort(false)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[14px] py-[10px] text-[14px] text-[#414651] text-left transition-colors w-full">
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Filtros (visual only) */}
+        <div className="relative">
+          <button
+            onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
+            className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
+          >
+            <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
+            <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
+              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 3h12M4 8h8M6 13h4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Filtros</p>
+            </div>
+          </button>
+          {showFilters && (
+            <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[280px] z-20">
+              <div className="px-[16px] py-[12px] border-b border-[#e9eaeb]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Filtros avançados</p>
+              </div>
+              {["Problema de saúde", "Uso de imagem", "Tipo de tarifa", "Menor de idade", "Status de seguro", "Ponto de embarque", "Status de pagamento"].map((label) => (
+                <label key={label} className="content-stretch cursor-pointer flex gap-[10px] hover:bg-[#f8fafc] items-center px-[16px] py-[10px] transition-colors w-full">
+                  <input type="checkbox" className="accent-[#0b5ed7] size-[16px]" onChange={() => {/* Apenas visual */}} />
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">{label}</p>
+                </label>
+              ))}
+              <div className="border-t border-[#e9eaeb] flex gap-[8px] justify-end px-[16px] py-[12px]">
+                <button onClick={() => setShowFilters(false)} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[12px] py-[6px] rounded-[6px] text-[13px] text-[#414651] transition-colors">Limpar</button>
+                <button onClick={() => setShowFilters(false)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[12px] py-[6px] rounded-[6px] text-[13px] text-white transition-colors" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>Aplicar</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Filter tabs */}
+      <div className="content-stretch flex gap-[4px] items-center mt-[16px] relative w-full border-b border-[#e9eaeb] pb-[8px]">
+        {filters.map(({ key, label, count }) => (
+          <button
+            key={key}
+            onClick={() => setActiveFilter(key)}
+            className={`cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors ${activeFilter === key ? "bg-[#edf0ff]" : "hover:bg-[#f8fafc]"}`}
+          >
+            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#535862]"}`}>{label}</p>
+            <div className={`rounded-[6px] shrink-0 ${activeFilter === key ? "bg-[#d5dcfe]" : "bg-[#f1f5f9]"}`}>
+              <div className="px-[6px] py-[1px]">
+                <p className={`font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{count}</p>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Placeholder for reservation list (Prompt 7) */}
+      <div className="content-stretch flex flex-col gap-[1px] items-start mt-[8px] relative w-full">
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic py-[16px] text-[#717680] text-[14px]">
+          {filteredParticipantCount} participante(s) encontrado(s)
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBackToActivities }: { initialTab?: string; onBackToActivities?: () => void }) {
   const [activeTab, setActiveTab] = useState(initialTab);
 
@@ -1160,10 +1349,7 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
       </div>
       {activeTab === "atualizacoes" && <Frame24 />}
       {activeTab === "participantes" && (
-        <div className="absolute content-stretch flex flex-col gap-[20px] items-center justify-center left-[248px] top-[157px] w-[743px] h-[843px]">
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] text-[#0f172b] text-[24px]">Participantes</p>
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] text-[#535862] text-[16px]">Lista de participantes será exibida aqui</p>
-        </div>
+        <ParticipantesTab onBackToActivities={onBackToActivities} />
       )}
     </div>
   );

@@ -1,6 +1,12 @@
 import svgPaths from "./svg-fmdffnj3gf";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
+import {
+  startOfMonth, endOfMonth, startOfWeek, endOfWeek,
+  eachDayOfInterval, isSameMonth, isSameDay, format,
+} from "date-fns";
+import { mockActivities } from "../../mocks/agenda";
+import type { Activity, ActivityStatus } from "../../types/agenda";
 
 function Elements() {
   return (
@@ -467,7 +473,7 @@ function Button() {
       <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[10px]" />
       <div className="flex flex-row items-center justify-center size-full">
         <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center px-[24px] py-[10px] relative size-full">
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#314158] text-[14px] text-center whitespace-nowrap">Abril de 2026</p>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#314158] text-[14px] text-center whitespace-nowrap">Maio de 2026</p>
         </div>
       </div>
     </div>
@@ -2063,16 +2069,225 @@ function Column6() {
   );
 }
 
+// ─── Dynamic May 2026 calendar grid ─────────────────────────────────────────
+// Replaces the static April 2026 Column0-6 with a date-fns-powered grid.
+// CSS classes are verbatim copies from the Figma Make components above.
+// Everything outside Content() is untouched.
+
+const CAL_REF = new Date(2026, 4, 1); // May 2026
+const CAL_TODAY = new Date(2026, 4, 11); // Fixed "today" for usability test
+
+const CAL_HOLIDAYS: Record<string, string> = {
+  "2026-05-01": "Dia do Trabalho",
+  "2026-05-10": "Dia das Mães",
+};
+
+const CAL_WD = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"] as const;
+
+// Build grid using date-fns (42 cells = 6 complete weeks, Sun-first)
+const CAL_GRID = (() => {
+  const mStart = startOfMonth(CAL_REF);
+  const mEnd = endOfMonth(CAL_REF);
+  const gStart = startOfWeek(mStart, { weekStartsOn: 0 });
+  const gEnd = endOfWeek(mEnd, { weekStartsOn: 0 });
+  return eachDayOfInterval({ start: gStart, end: gEnd }).map((d) => ({
+    date: d,
+    day: d.getDate(),
+    iso: format(d, "yyyy-MM-dd"),
+    inMonth: isSameMonth(d, CAL_REF),
+    isToday: isSameDay(d, CAL_TODAY),
+  }));
+})();
+const CAL_ROWS = CAL_GRID.length / 7;
+
+function calGetActs(iso: string): Activity[] {
+  return mockActivities.filter((a) => a.date === iso);
+}
+
+function calLabel(a: Activity): string {
+  const words = a.name.split(" ");
+  const short = words.length > 2 ? `${words[0]} ${words[1]}` : a.name;
+  const dayTag = a.dayNumber ? ` D${a.dayNumber}` : "";
+  if (a.status === "full") return `${short} (Lotado)`;
+  if (a.status === "blocked") return short;
+  return `${short}${dayTag} (${a.occupancy}/${a.capacity})`;
+}
+
+const CAL_COLORS: Record<ActivityStatus, { bg: string; dot: string; txt: string; bdr: string; sub?: string }> = {
+  confirmed: { bg: "#eff6ff", dot: "#2b7fff", txt: "#1447e6", bdr: "#dbeafe" },
+  pending:   { bg: "#fff2d3", dot: "#ff992b", txt: "#e0850f", bdr: "#fef6db", sub: "#ba8b4e" },
+  full:      { bg: "#fef2f2", dot: "#fb2c36", txt: "#c10007", bdr: "#ffe2e2" },
+  blocked:   { bg: "#fafafa", dot: "#d5d7da", txt: "#414651", bdr: "#f2f2f2", sub: "#919191" },
+};
+
+// Single-line chip (confirmed / full)
+function CalSingleChip({ text, c }: { text: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
+  return (
+    <div className="relative rounded-[4px] shrink-0 w-full" style={{ backgroundColor: c.bg }}>
+      <div className="flex flex-row items-center overflow-clip rounded-[inherit] size-full">
+        <div className="content-stretch flex gap-[4px] items-center p-[5px] relative size-full">
+          <div className="relative rounded-[18641400px] shrink-0 size-[5.998px]" style={{ backgroundColor: c.dot }} />
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[12px] whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: c.txt }}>{text}</p>
+        </div>
+      </div>
+      <div aria-hidden="true" className="absolute border-[0.556px] border-solid inset-0 pointer-events-none rounded-[4px]" style={{ borderColor: c.bdr }} />
+    </div>
+  );
+}
+
+// Two-line chip (pending / blocked)
+function CalDoubleChip({ text, sub, c }: { text: string; sub: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
+  return (
+    <div className="flex-[1_0_0] min-w-px relative rounded-[4px]" style={{ backgroundColor: c.bg }}>
+      <div className="overflow-clip rounded-[inherit] size-full">
+        <div className="content-stretch flex gap-[4px] items-start p-[5px] relative size-full">
+          <div className="content-stretch flex items-center py-[6px] relative shrink-0">
+            <div className="relative rounded-[9999px] shrink-0 size-[5.998px]" style={{ backgroundColor: c.dot }} />
+          </div>
+          <div className="content-stretch flex flex-[1_0_0] flex-col font-['Helvetica_Neue:Regular',sans-serif] gap-[2px] items-start leading-[normal] min-w-px not-italic relative">
+            <p className="min-w-full overflow-hidden relative shrink-0 text-[12px] text-ellipsis w-[min-content]" style={{ color: c.txt }}>{text}</p>
+            <p className="overflow-hidden relative shrink-0 text-[10px] text-ellipsis w-[96.002px]" style={{ color: c.sub }}>{sub}</p>
+          </div>
+        </div>
+      </div>
+      <div aria-hidden="true" className="absolute border-[0.556px] border-solid inset-0 pointer-events-none rounded-[4px]" style={{ borderColor: c.bdr }} />
+    </div>
+  );
+}
+
+// Holiday badge (purple)
+function CalHolidayBadge({ label }: { label: string }) {
+  return (
+    <div className="bg-[#f3e8ff] relative rounded-[8px] shrink-0">
+      <div className="content-stretch flex gap-[4px] items-center justify-center overflow-clip px-[8.556px] py-[2.556px] relative rounded-[inherit] size-full">
+        <div className="relative shrink-0 size-[14px]">
+          <div className="bg-clip-padding border-0 border-[transparent] border-solid overflow-clip relative rounded-[inherit] size-full">
+            <div className="absolute inset-[8.33%]">
+              <div className="absolute inset-[-4.29%]">
+                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.6667 12.6667">
+                  <g>
+                    <path d={svgPaths.p113f5f0} stroke="var(--stroke-0, #8200DB)" />
+                    <path d={svgPaths.p2c4e4400} stroke="var(--stroke-0, #8200DB)" strokeLinecap="round" strokeLinejoin="round" />
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#8200db] text-[12px] whitespace-nowrap">{label}</p>
+      </div>
+      <div aria-hidden="true" className="absolute border-[#dab2ff] border-[0.556px] border-solid inset-0 pointer-events-none rounded-[8px]" />
+    </div>
+  );
+}
+
+// Activity chips (max 2 visible + overflow)
+function CalChips({ acts }: { acts: Activity[] }) {
+  const visible = acts.slice(0, 2);
+  const overflow = acts.length - 2;
+  return (
+    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px relative">
+      {visible.map((a) => {
+        const c = CAL_COLORS[a.status];
+        if (a.status === "pending") {
+          const sub = a.requiresInsurance ? "Seguro pendente" : "Sem equipe atribuída";
+          return <CalDoubleChip key={a.id} text={calLabel(a)} sub={sub} c={c} />;
+        }
+        if (a.status === "blocked") {
+          return <CalDoubleChip key={a.id} text={calLabel(a)} sub="Interrompida para Feriado" c={c} />;
+        }
+        return <CalSingleChip key={a.id} text={calLabel(a)} c={c} />;
+      })}
+      {overflow > 0 && (
+        <div className="opacity-60 relative shrink-0 w-full">
+          <div className="content-stretch flex items-start px-[8px] relative size-full">
+            <p className="flex-[1_0_0] font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-px not-italic overflow-hidden relative text-[#717680] text-[12px] text-ellipsis whitespace-nowrap">
+              Mais {overflow}...
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Single day cell
+function CalDayCell({
+  cell,
+  onDayClick,
+}: {
+  cell: (typeof CAL_GRID)[number];
+  onDayClick?: (day: number) => void;
+}) {
+  const holiday = CAL_HOLIDAYS[cell.iso];
+  const acts = cell.inMonth ? calGetActs(cell.iso) : [];
+  const clickable = cell.inMonth;
+
+  // Date number element
+  const dateEl = cell.isToday ? (
+    <div className="bg-[#155dfc] relative rounded-[9999px] shrink-0 size-[24px]">
+      <div className="-translate-x-1/2 -translate-y-1/2 absolute flex flex-col font-['Helvetica_Neue:Medium',sans-serif] justify-center leading-[0] left-1/2 not-italic text-[12px] text-center text-white top-[calc(50%+0.5px)] w-[24px]">
+        <p className="leading-[normal]">{cell.day}</p>
+      </div>
+    </div>
+  ) : (
+    <div className="relative rounded-[9999px] shrink-0 size-[24px]">
+      <p className={`absolute font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] left-[4px] not-italic text-[12px] top-[calc(50%-9px)] whitespace-nowrap ${cell.inMonth ? "text-[#414651]" : "text-[#717680]"}`}>
+        {cell.day}
+      </p>
+    </div>
+  );
+
+  return (
+    <div
+      onClick={clickable ? () => onDayClick?.(cell.day) : undefined}
+      className={`bg-white flex-[1_0_0] min-h-px relative w-full${clickable ? " cursor-pointer hover:bg-[#f8fafc] transition-colors" : ""}`}
+      data-name="_Calendar cell/Month view"
+    >
+      <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
+      {holiday ? (
+        /* Holiday cell: flex-col with badge at bottom-right */
+        <div className="flex flex-col items-end size-full">
+          <div className="content-stretch flex flex-col items-end justify-between p-[8px] relative size-full">
+            <div className="content-stretch flex gap-[4px] items-start relative shrink-0 w-full">
+              {dateEl}
+              {acts.length > 0 && <CalChips acts={acts} />}
+            </div>
+            <CalHolidayBadge label={holiday} />
+          </div>
+        </div>
+      ) : (
+        /* Normal cell */
+        <div className="content-stretch flex gap-[4px] items-start p-[8px] relative size-full">
+          {dateEl}
+          {acts.length > 0 && <CalChips acts={acts} />}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Content({ onDayClick }: { onDayClick?: (day: number) => void }) {
   return (
-    <div className="content-stretch flex flex-[1_0_0] items-start min-h-px relative w-full" data-name="Content">
-      <Column />
-      <Column1 onDayClick={onDayClick} />
-      <Column2 onDayClick={onDayClick} />
-      <Column3 onDayClick={onDayClick} />
-      <Column4 onDayClick={onDayClick} />
-      <Column5 onDayClick={onDayClick} />
-      <Column6 />
+    <div className="content-stretch flex flex-[1_0_0] items-stretch min-h-px relative w-full" data-name="Content">
+      {CAL_WD.map((label, colIdx) => (
+        <div key={label} className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px relative" data-name="Column">
+          {/* Column header — exact Figma Make _Calendar column header */}
+          <div className="bg-[#f8fafc] relative shrink-0 w-full" data-name="_Calendar column header">
+            <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
+            <div className="flex flex-row items-center justify-center size-full">
+              <div className="content-stretch flex gap-[4px] items-center justify-center p-[8px] relative size-full">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#90a1b9] text-[12px] whitespace-nowrap">{label}</p>
+              </div>
+            </div>
+          </div>
+          {/* Day cells — one per row */}
+          {Array.from({ length: CAL_ROWS }, (_, rowIdx) => {
+            const cell = CAL_GRID[rowIdx * 7 + colIdx];
+            return <CalDayCell key={cell.iso} cell={cell} onDayClick={onDayClick} />;
+          })}
+        </div>
+      ))}
     </div>
   );
 }

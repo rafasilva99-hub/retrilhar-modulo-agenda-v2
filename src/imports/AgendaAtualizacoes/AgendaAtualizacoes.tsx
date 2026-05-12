@@ -621,19 +621,16 @@ function Frame23() {
 
   return (
     <div className="absolute content-stretch flex flex-col gap-[20px] h-[843px] items-start left-[248px] top-[157px] w-[743px]">
-      <button
-        onClick={() => setIsActive(true)}
-        className="bg-white h-[96px] min-h-[80px] relative rounded-[12px] shrink-0 w-full cursor-pointer hover:border-[#d4d4d8] transition-colors"
+      <div
+        className="bg-white h-[96px] min-h-[80px] relative rounded-[12px] shrink-0 w-full"
         data-name="Text field area"
       >
         <div aria-hidden="true" className="absolute border border-[#e4e4e7] border-solid inset-0 pointer-events-none rounded-[12px]" />
-        <div className="content-stretch flex gap-[12px] items-start min-h-[inherit] px-[16px] py-[12px] relative size-full">
-          <div className="flex flex-[1_0_0] flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] min-w-px not-italic relative text-[#71717a] text-[14px]">
-            <p className="leading-[normal]">Digite sua mensagem</p>
-          </div>
-          <Frame />
+        <div className="absolute top-0 left-0 right-0 flex items-start px-[16px] py-[12px]">
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#71717a] text-[14px] text-left">Digite sua mensagem</p>
         </div>
-      </button>
+        <Frame />
+      </div>
       <Frame22 />
     </div>
   );

@@ -854,7 +854,7 @@ function PrimitiveDiv({ activeTab, setActiveTab }: { activeTab: string; setActiv
 
 function SidebarAdmin({ activeTab, setActiveTab, onBackToActivities }: { activeTab: string; setActiveTab: (tab: string) => void; onBackToActivities?: () => void }) {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px]" data-name="Sidebar - Admin">
+    <div className="absolute bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px] z-10" data-name="Sidebar - Admin">
       <div aria-hidden="true" className="absolute border border-[#fafafa] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.1)]" />
       <Container10 onBackToActivities={onBackToActivities} />
       <PrimitiveDiv activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -1090,7 +1090,7 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
     return (
       <div className="bg-[#f8fafc] relative size-full" data-name="AGENDA - ATUALIZAÇÕES">
         <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab} onBackToActivities={onBackToActivities} />
-        <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} />
+        <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar />
       </div>
     );
   }

@@ -1695,7 +1695,7 @@ function PrimitiveDiv({ onAtualizacoesClick }: { onAtualizacoesClick?: () => voi
 
 function SidebarAdmin({ onAtualizacoesClick, onBackToActivities }: { onAtualizacoesClick?: () => void; onBackToActivities?: () => void }) {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px]" data-name="Sidebar - Admin">
+    <div className="absolute bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px] z-10" data-name="Sidebar - Admin">
       <div aria-hidden="true" className="absolute border border-[#fafafa] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.1)]" />
       <Container33 onBackToActivities={onBackToActivities} />
       <PrimitiveDiv onAtualizacoesClick={onAtualizacoesClick} />
@@ -1975,7 +1975,7 @@ function Frame60() {
   );
 }
 
-export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActivities }: { onAtualizacoesClick?: () => void; onBackToActivities?: () => void }) {
+export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActivities, hideSidebar }: { onAtualizacoesClick?: () => void; onBackToActivities?: () => void; hideSidebar?: boolean }) {
   return (
     <div className="bg-[#f8fafc] relative size-full" data-name="AGENDA - VISÃO GERAL">
       <TopBar />
@@ -2043,7 +2043,7 @@ export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActiviti
       <Frame57 />
       <Frame />
       <Frame56 />
-      <SidebarAdmin onAtualizacoesClick={onAtualizacoesClick} onBackToActivities={onBackToActivities} />
+      {!hideSidebar && <SidebarAdmin onAtualizacoesClick={onAtualizacoesClick} onBackToActivities={onBackToActivities} />}
       <Frame60 />
     </div>
   );

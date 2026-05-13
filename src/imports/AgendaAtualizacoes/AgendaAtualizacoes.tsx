@@ -1433,62 +1433,215 @@ function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsuran
   );
 }
 
+// ─── Payment Drawer ─────────────────────────────────────────────────────────
+
+function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onClose: () => void }) {
+  const isGroup = reservation.type === "group";
+  const pCount = reservation.participants.length;
+  const adults = reservation.participants.filter((p) => p.tariffType === "Adulto").length;
+  const children = reservation.participants.filter((p) => p.tariffType === "Infantil").length;
+  const courtesy = reservation.participants.filter((p) => p.tariffType === "Cortesia").length;
+  const isPaid = reservation.paymentStatus === "Paid";
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end p-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
+        <div className="flex flex-col flex-1 gap-[16px] overflow-y-auto p-[24px]">
+          {/* Title bar */}
+          <div className="flex items-center justify-between shrink-0">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Informações do pedido</p>
+            <div className="flex gap-[16px] items-center">
+              <p className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] hover:underline">Ir para central de vendas</p>
+              <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+                <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+          {/* Reservation type card */}
+          <div className="border border-[#e9eaeb] border-solid rounded-[12px]">
+            <div className="flex items-center justify-between px-[20px] py-[16px]">
+              <div className="flex flex-col gap-[6px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{isGroup ? "Reserva em grupo" : "Reserva individual"}</p>
+                <div className="flex gap-[6px] items-center">
+                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="5" cy="6" r="2.5" stroke="#717680" strokeWidth="1.2"/><circle cx="11" cy="6" r="2.5" stroke="#717680" strokeWidth="1.2"/><path d="M1 14c0-2.2 2-4 4-4s4 1.8 4 4" stroke="#717680" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862]">{pCount} participantes</p>
+                </div>
+              </div>
+              <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M6 8l4 4 4-4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+            {/* Tariff breakdown */}
+            <div className="border-t border-[#f5f5f5] flex gap-[24px] items-center px-[20px] py-[14px]">
+              <div className="flex gap-[8px] items-center">
+                <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="6" r="3.5" stroke="#535862" strokeWidth="1.2"/><path d="M3 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <div className="flex flex-col">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Adulto(s)</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{adults}</p>
+                </div>
+              </div>
+              <div className="flex gap-[8px] items-center">
+                <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" stroke="#535862" strokeWidth="1.2"/><path d="M6 8c0 0 1.5 2 3 2s3-2 3-2" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <div className="flex flex-col">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Criança(s)</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{children}</p>
+                </div>
+              </div>
+              <div className="flex gap-[8px] items-center">
+                <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="2" y="4" width="14" height="10" rx="3" stroke="#535862" strokeWidth="1.2"/><path d="M6 9h6" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <div className="flex flex-col">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Cortesia(s)</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{courtesy}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Payment data card */}
+          <div className="border border-[#e9eaeb] border-solid rounded-[12px]">
+            <div className="flex items-center justify-between px-[20px] py-[14px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] tracking-[0.5px] uppercase">Dados de pagamento</p>
+              <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px]">
+                <div className={`rounded-[9999px] size-[6px] ${isPaid ? "bg-[#17b26a]" : "bg-[#fba12c]"}`} />
+                <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap ${isPaid ? "text-[#535862]" : "text-[#dc6803]"}`}>{isPaid ? "Pagamento confirmado" : "Pagamento pendente"}</p>
+              </div>
+            </div>
+            <div className="border-t border-[#f5f5f5] flex items-center justify-between px-[20px] py-[14px]">
+              <div className="flex gap-[10px] items-center">
+                <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="2" y="2" width="14" height="14" rx="3" stroke="#717680" strokeWidth="1.2"/><path d="M6 6h6M6 9h4M6 12h2" stroke="#717680" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <div className="flex flex-col gap-[2px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">ID do pedido</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">{reservation.orderId}</p>
+                </div>
+              </div>
+              <div className="flex gap-[10px] items-center">
+                <div className="flex flex-col gap-[2px] items-end">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Forma de pagamento</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">PIX</p>
+                </div>
+                <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="2" y="2" width="14" height="14" rx="3" stroke="#717680" strokeWidth="1.2"/><circle cx="9" cy="9" r="3" stroke="#717680" strokeWidth="1.2"/></svg>
+              </div>
+            </div>
+            {/* Pricing */}
+            <div className="border-t border-[#f5f5f5] flex flex-col gap-[8px] px-[20px] py-[14px]">
+              <div className="flex items-center justify-between">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Subtotal</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">R$ 1.350,00</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Desconto</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#17b26a]">- R$ 100,00</p>
+              </div>
+              <div className="border-t border-[#f5f5f5] flex items-center justify-between pt-[8px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Total</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">R$ 1.450,00</p>
+              </div>
+            </div>
+          </div>
+          {/* Payment history card */}
+          <div className="border border-[#e9eaeb] border-solid flex-1 rounded-[12px]">
+            <div className="flex items-center justify-between px-[20px] py-[14px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] tracking-[0.5px] uppercase">Histórico de pagamento</p>
+              <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M6 12l4-4 4 4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+            <div className="border-t border-[#f5f5f5] flex flex-col gap-[16px] px-[20px] py-[16px]">
+              {[
+                { label: "Agendamento realizado", date: "20/01/2026 às 11:54 AM" },
+                { label: "Pré-agendamento realizado", date: "20/01/2026 às 11:55 AM" },
+                { label: "E-mail de agendamento realizado", date: "20/01/2026 às 11:56 AM" },
+                { label: "Reserva confirmada", date: "20/01/2026 às 11:57 AM" },
+              ].map((item, i) => (
+                <div key={i} className="flex gap-[12px] items-start">
+                  <div className="bg-[#17b26a] mt-[6px] rounded-[9999px] shrink-0 size-[8px]" />
+                  <div className="flex flex-col gap-[2px]">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">{item.label}</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{item.date}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        {/* Footer buttons */}
+        <div className="border-t border-[#e9eaeb] flex gap-[12px] items-center justify-end px-[24px] py-[16px] shrink-0">
+          <button onClick={onClose} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[24px] py-[12px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar aba</button>
+          <button className="cursor-pointer flex gap-[8px] items-center justify-center px-[24px] py-[12px] rounded-[8px] transition-colors hover:opacity-90" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
+            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Baixar comprovante (PDF)</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ParticipantesFilter = "todos" | "a-fazer-checkin" | "checkin-realizado" | "canceladas";
 
-// ─── Three-dot menu items ───────────────────────────────────────────────────
+// ─── Three-dot menu — slot-based system ─────────────────────────────────────
 
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  destructive?: boolean;
-  separator?: boolean;
-  /** Required target status — if current status can't transition to this, item is disabled */
-  requiredTarget?: ReservationStatus;
-  /** Always enabled regardless of state machine */
-  alwaysEnabled?: boolean;
-}
+interface MenuSlot { id: string; label: string; icon: React.ReactNode; enabled: boolean; tooltip: string | null; destructive?: boolean; separator?: boolean; hasExtIcon?: boolean }
 
-const MENU_ITEMS: MenuItem[] = [
-  { id: "confirm", label: "Confirmar reserva", requiredTarget: "Confirmed",
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { id: "mark-performed", label: "Definir como realizado", requiredTarget: "Performed",
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 8l4 4L14 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 8l4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { id: "undo-payment", label: "Desfazer registro de pagamento", requiredTarget: "AwaitingPayment",
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  { id: "reschedule", label: "Remarcar reserva", requiredTarget: "Confirmed",
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 1v2M10.5 1v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  { id: "add-insurance", label: "Contratar seguro", separator: true,
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-    requiredTarget: "Confirmed" },
-  { id: "resend-voucher", label: "Reenviar voucher", requiredTarget: "Confirmed",
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M14 2L7 9M14 2l-4 12-3-5-5-3 12-4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { id: "download", label: "Baixar comprovante", alwaysEnabled: true,
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  { id: "participant-data", label: "Dados do participante", alwaysEnabled: true,
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  { id: "contact", label: "Entrar em contato", separator: true, alwaysEnabled: true,
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M13.5 2.5l-11 5 4 1.5 1.5 4 5-11z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { id: "no-show", label: "Não compareceu", separator: true, destructive: true, requiredTarget: "NoShow",
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  { id: "cancel", label: "Cancelar reserva", destructive: true, requiredTarget: "Cancelled",
-    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><path d="M12 3l-2 2M10 3l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-];
+function getMenuSlots(r: Reservation, insuranceStatus: string): MenuSlot[] {
+  const s = r.status;
+  const sm = reservationStateMachine;
+  const canTo = (target: ReservationStatus) => (sm[s] || []).includes(target);
+  const inactive = s === "Cancelled" || s === "NoShow" || s === "Expired";
+  const iconConfirm = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconDouble = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 8l4 4L14 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 8l4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconPayment = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  const iconCal = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 1v2M10.5 1v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  const iconShield = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconSend = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M14 2L7 9M14 2l-4 12-3-5-5-3 12-4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconDownload = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  const iconPerson = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  const iconContact = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M13.5 2.5l-11 5 4 1.5 1.5 4 5-11z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconCalX = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  const iconPersonX = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><path d="M12 3l-2 2M10 3l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
 
-function isMenuItemEnabled(item: MenuItem, status: ReservationStatus): boolean {
-  if (item.alwaysEnabled) return true;
-  if (!item.requiredTarget) return true;
-  const allowed = reservationStateMachine[status] || [];
-  return allowed.includes(item.requiredTarget);
-}
+  // Slot 1 — Confirmar ↔ Desfazer confirmação
+  const slot1 = s === "Confirmed" || s === "CheckedIn" || s === "Performed"
+    ? { id: "undo-confirm", label: "Desfazer confirmação de reserva", icon: iconConfirm, enabled: s === "Confirmed" && canTo("AwaitingPayment"), tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de desfazer a confirmação" : s === "Performed" ? "A atividade já foi realizada" : null }
+    : { id: "confirm", label: "Confirmar reserva", icon: iconConfirm, enabled: canTo("Confirmed"), tooltip: s === "Draft" ? "Carrinho ainda não finalizado" : inactive ? `Reserva ${s === "Cancelled" ? "cancelada" : s === "NoShow" ? "marcada como não compareceu" : "expirada"} não pode ser confirmada` : null };
 
-function getDisabledTooltip(item: MenuItem, status: ReservationStatus): string {
-  if (item.id === "confirm") return "A reserva já está confirmada.";
-  if (item.id === "mark-performed") return "A reserva precisa estar em Check-in Realizado para esta ação.";
-  if (item.id === "undo-payment") return "A reserva precisa estar Confirmada para desfazer o pagamento.";
-  if (item.id === "no-show") return "Somente reservas confirmadas podem ser marcadas como não comparecimento.";
-  if (item.id === "cancel") return `Reservas com status "${status}" não podem ser canceladas.`;
-  return `Ação não disponível para reservas com status "${status}".`;
+  // Slot 2 — Definir realizado ↔ Desfazer
+  const slot2 = s === "Performed"
+    ? { id: "undo-performed", label: "Desfazer definição de realização", icon: iconDouble, enabled: canTo("Confirmed"), tooltip: null }
+    : { id: "mark-performed", label: "Definir como realizado", icon: iconDouble, enabled: s === "CheckedIn" && canTo("Performed") && (insuranceStatus === "Contracted" || insuranceStatus === "NotRequired"), tooltip: s === "CheckedIn" && insuranceStatus !== "Contracted" && insuranceStatus !== "NotRequired" ? "É necessário contratar o seguro do participante antes de realizar essa ação" : s !== "CheckedIn" ? "É necessário realizar o check-in antes de definir como realizado" : null };
+
+  // Slot 3 — Registrar pagamento ↔ Desfazer
+  const slot3 = (s === "Confirmed" || s === "CheckedIn" || s === "Performed")
+    ? { id: "undo-payment", label: "Desfazer registro de pagamento", icon: iconPayment, enabled: canTo("AwaitingPayment"), tooltip: null }
+    : { id: "register-payment", label: "Registrar pagamento", icon: iconPayment, enabled: s === "AwaitingPayment" && canTo("Confirmed"), tooltip: s === "Draft" ? "Finalize o carrinho antes de registrar pagamento" : inactive ? "Reserva inativa não permite registro de pagamento" : null };
+
+  // Slot 4 — Remarcar ↔ Desfazer remarcação
+  const slot4: MenuSlot = { id: "reschedule", label: "Remarcar reserva", icon: iconCal, enabled: (s === "AwaitingPayment" || s === "Confirmed") && !inactive, tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de remarcar" : (s === "Performed" || inactive) ? "Reserva não pode ser remarcada no estado atual" : null };
+
+  // Slot 5 — Contratar seguro ↔ Desfazer
+  const slot5 = insuranceStatus === "Contracted"
+    ? { id: "undo-insurance", label: "Desfazer contratação de seguro", icon: iconShield, separator: true, enabled: !inactive && s !== "Draft" && s !== "Performed", tooltip: inactive || s === "Draft" || s === "Performed" ? "Reserva inativa não permite operação de seguro" : null }
+    : { id: "add-insurance", label: "Contratar seguro", icon: iconShield, separator: true, enabled: !inactive && s !== "Draft" && s !== "Performed", tooltip: inactive || s === "Draft" || s === "Performed" ? "Reserva inativa não permite operação de seguro" : null };
+
+  // Slot 6 — Reenviar voucher
+  const slot6: MenuSlot = { id: "resend-voucher", label: "Reenviar voucher", icon: iconSend, enabled: s === "Confirmed" || s === "CheckedIn" || s === "Performed", tooltip: s === "AwaitingPayment" ? "Confirme a reserva antes de enviar o voucher" : "Não há voucher disponível para envio" };
+
+  // Slot 7 — Baixar comprovante
+  const slot7: MenuSlot = { id: "download", label: "Baixar comprovante", icon: iconDownload, enabled: s === "Confirmed" || s === "CheckedIn" || s === "Performed" || s === "Cancelled", tooltip: "Comprovante disponível apenas após confirmação da reserva" };
+
+  // Slot 8 — Dados do participante (always enabled)
+  const slot8: MenuSlot = { id: "participant-data", label: "Dados do participante", icon: iconPerson, enabled: true, tooltip: null };
+
+  // Slot 9 — Entrar em contato (always enabled)
+  const slot9: MenuSlot = { id: "contact", label: "Entrar em contato", icon: iconContact, separator: true, enabled: true, tooltip: null, hasExtIcon: true };
+
+  // Slot 10 — Não compareceu ↔ Desfazer
+  const slot10 = s === "NoShow"
+    ? { id: "undo-noshow", label: "Desfazer não comparecimento", icon: iconCalX, separator: true, destructive: true, enabled: true, tooltip: null }
+    : { id: "no-show", label: "Não compareceu", icon: iconCalX, separator: true, destructive: true, enabled: s === "Confirmed", tooltip: s === "CheckedIn" || s === "Performed" ? "Participante já realizou check-in" : s !== "Confirmed" ? "Não aplicável ao estado atual" : null };
+
+  // Slot 11 — Cancelar ↔ Desfazer cancelamento
+  const slot11 = s === "Cancelled"
+    ? { id: "undo-cancel", label: "Desfazer cancelamento de reserva", icon: iconPersonX, destructive: true, enabled: true, tooltip: null }
+    : { id: "cancel", label: "Cancelar reserva", icon: iconPersonX, destructive: true, enabled: s === "AwaitingPayment" || s === "Confirmed" || s === "CheckedIn", tooltip: s === "Performed" ? "Atividade já realizada não pode ser cancelada" : s === "NoShow" ? "Reserva marcada como não compareceu" : (s === "Expired" || s === "Draft") ? "Reserva inativa" : null };
+
+  return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8, slot9, slot10, slot11];
 }
 
 function ParticipantMenu({ reservation, participant, onAction }: {
@@ -1497,6 +1650,8 @@ function ParticipantMenu({ reservation, participant, onAction }: {
   onAction: (actionId: string, r: Reservation, p: Participant) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [hoveredDisabled, setHoveredDisabled] = useState<string | null>(null);
+  const slots = useMemo(() => getMenuSlots(reservation, reservation.insuranceStatus), [reservation]);
 
   return (
     <div className="relative">
@@ -1509,33 +1664,41 @@ function ParticipantMenu({ reservation, participant, onAction }: {
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[12px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[280px] z-40 py-[4px]">
-            {MENU_ITEMS.map((item) => {
-              const enabled = isMenuItemEnabled(item, reservation.status);
-              return (
-                <div key={item.id}>
-                  {item.separator && <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />}
+          <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[12px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[300px] z-40 py-[4px]">
+            {slots.map((slot) => (
+              <div key={slot.id}>
+                {slot.separator && <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />}
+                <div className="relative"
+                  onMouseEnter={() => { if (!slot.enabled && slot.tooltip) setHoveredDisabled(slot.id); }}
+                  onMouseLeave={() => setHoveredDisabled(null)}
+                >
                   <button
                     onClick={() => {
-                      if (!enabled) return;
+                      if (!slot.enabled) return;
                       setOpen(false);
-                      onAction(item.id, reservation, participant);
+                      onAction(slot.id, reservation, participant);
                     }}
-                    className={`cursor-pointer flex gap-[10px] items-center px-[14px] py-[10px] transition-colors w-full ${
-                      !enabled ? "opacity-40 cursor-not-allowed" : item.destructive ? "hover:bg-[#fef3f2]" : "hover:bg-[#f8fafc]"
-                    } ${item.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
-                    title={!enabled ? getDisabledTooltip(item, reservation.status) : undefined}
-                    disabled={!enabled}
+                    className={`flex gap-[10px] items-center px-[14px] py-[10px] transition-colors w-full ${
+                      !slot.enabled ? "opacity-40 cursor-not-allowed" : slot.destructive ? "cursor-pointer hover:bg-[#fef3f2]" : "cursor-pointer hover:bg-[#f8fafc]"
+                    } ${slot.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
+                    aria-disabled={!slot.enabled || undefined}
                   >
-                    {item.icon}
-                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${item.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{item.label}</p>
-                    {item.id === "contact" && (
+                    {slot.icon}
+                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${slot.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{slot.label}</p>
+                    {slot.hasExtIcon && (
                       <svg className="ml-auto size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M4 10L10 4M10 4H5M10 4v5" stroke="#717680" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     )}
                   </button>
+                  {/* Tooltip for disabled items */}
+                  {hoveredDisabled === slot.id && slot.tooltip && (
+                    <div role="tooltip" className="absolute bg-[#181d27] left-[-8px] -translate-x-full px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] top-1/2 -translate-y-1/2 w-max max-w-[220px] z-50 pointer-events-none">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">{slot.tooltip}</p>
+                      <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 size-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-[#181d27]" />
+                    </div>
+                  )}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </>
       )}
@@ -1650,6 +1813,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const [cancelReason, setCancelReason] = useState("");
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
+  const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
@@ -1657,17 +1821,23 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   };
 
   const handleMenuAction = (actionId: string, r: Reservation, p: Participant) => {
+    const name = p.name.split(" ")[0];
     if (actionId === "cancel") { setCancelModal({ r, p }); setCancelReason(""); return; }
     if (actionId === "no-show") { setNoShowModal({ r, p }); return; }
     if (actionId === "contact") { showToast("Abrindo WhatsApp..."); return; }
     if (actionId === "download") { showToast("Comprovante baixado."); return; }
     if (actionId === "participant-data") { setDrawerData({ r, p }); return; }
-    if (actionId === "add-insurance") { showToast(`Seguro contratado para ${p.name.split(" ")[0]}.`); return; }
-    if (actionId === "resend-voucher") { showToast(`Voucher reenviado para ${p.name.split(" ")[0]}.`); return; }
-    if (actionId === "confirm") { showToast(`Reserva de ${p.name.split(" ")[0]} confirmada.`); return; }
-    if (actionId === "mark-performed") { showToast(`Reserva de ${p.name.split(" ")[0]} marcada como realizada.`); return; }
-    if (actionId === "undo-payment") { showToast(`Pagamento de ${p.name.split(" ")[0]} desfeito.`); return; }
-    if (actionId === "reschedule") { showToast(`Reserva de ${p.name.split(" ")[0]} remarcada.`); return; }
+    if (actionId === "add-insurance") { showToast(`Seguro contratado para ${name}.`); return; }
+    if (actionId === "undo-insurance") { showToast(`Contratação de seguro desfeita para ${name}.`); return; }
+    if (actionId === "resend-voucher") { showToast(`Voucher reenviado para ${name}.`); return; }
+    if (actionId === "confirm" || actionId === "register-payment") { showToast(`Reserva de ${name} confirmada.`); return; }
+    if (actionId === "undo-confirm") { showToast(`Confirmação de ${name} desfeita.`); return; }
+    if (actionId === "mark-performed") { showToast(`Reserva de ${name} marcada como realizada.`); return; }
+    if (actionId === "undo-performed") { showToast(`Definição de realização de ${name} desfeita.`); return; }
+    if (actionId === "undo-payment") { showToast(`Pagamento de ${name} desfeito.`); return; }
+    if (actionId === "reschedule") { showToast(`Reserva de ${name} remarcada.`); return; }
+    if (actionId === "undo-noshow") { showToast(`Não comparecimento de ${name} desfeito.`); return; }
+    if (actionId === "undo-cancel") { showToast(`Cancelamento de ${name} desfeito.`); return; }
   };
 
   const confirmCancel = () => {
@@ -1996,7 +2166,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">
                         {isGroup ? "Reserva em Grupo" : "Reserva Individual"} · ID do pedido:
                       </p>
-                      <span className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap">{r.orderId}</span>
+                      <button onClick={() => setPaymentDrawerRes(r)} className="cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
                       <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[16px] hover:opacity-70 transition-opacity" title="Copiar ID">
                         <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
                       </button>
@@ -2011,16 +2181,16 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                       ) : (
                         <>
                           {r.paymentStatus === "Paid" && (
-                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
+                            <button onClick={() => setPaymentDrawerRes(r)} className="border border-[#e9eaeb] border-solid cursor-pointer flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0 hover:bg-[#f8fafc] transition-colors">
                               <div className="bg-[#17b26a] rounded-[9999px] size-[6px]" />
                               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] whitespace-nowrap">Pagamento confirmado</p>
-                            </div>
+                            </button>
                           )}
                           {r.paymentStatus === "Pending" && (
-                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
+                            <button onClick={() => setPaymentDrawerRes(r)} className="border border-[#e9eaeb] border-solid cursor-pointer flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0 hover:bg-[#f8fafc] transition-colors">
                               <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
                               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Pagamento pendente</p>
-                            </div>
+                            </button>
                           )}
                           {isGroup && pendingCount > 0 && (
                             <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
@@ -2111,6 +2281,8 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       {/* Participant data drawer */}
       {drawerData && <ParticipantDrawer participant={drawerData.p} reservation={drawerData.r} onClose={() => setDrawerData(null)} />}
+      {/* Payment drawer */}
+      {paymentDrawerRes && <PaymentDrawer reservation={paymentDrawerRes} onClose={() => setPaymentDrawerRes(null)} />}
       {/* Cancel confirmation modal */}
       {cancelModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">

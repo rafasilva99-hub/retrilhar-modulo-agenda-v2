@@ -1378,7 +1378,7 @@ function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke
         <div
           id={`tooltip-${tooltipKey}`}
           role="tooltip"
-          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[240px] z-50 pointer-events-none"
+          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[240px] z-50 pointer-events-none text-center"
         >
           <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-white whitespace-nowrap">{content.title}</p>
           {content.subtitle && (
@@ -1392,10 +1392,37 @@ function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke
   );
 }
 
-function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsurance }: {
-  participant: Participant; insuranceStatus: string; requiresInsurance: boolean;
+const RESERVATION_STATUS_ICON: Record<string, { stroke: string; tooltipKey: string; icon: React.ReactNode }> = {
+  Confirmed:       { stroke: "#17b26a", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 9l1.5 1.5L10 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  AwaitingPayment: { stroke: "#dc6803", tooltipKey: "res-awaiting", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><circle cx="8" cy="10" r="1.5" stroke="currentColor" strokeWidth="1.2"/></svg> },
+  Cancelled:       { stroke: "#d92d20", tooltipKey: "res-cancelled", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 8.5l4 4M10 8.5l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  Draft:           { stroke: "#717680", tooltipKey: "res-draft", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 10h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  CheckedIn:       { stroke: "#1447e6", tooltipKey: "res-checkedin", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 9l1.5 1.5L10 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Performed:       { stroke: "#079455", tooltipKey: "res-performed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M4 9l2.5 2.5L12 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  NoShow:          { stroke: "#d92d20", tooltipKey: "res-noshow", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 8.5l4 4M10 8.5l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  Expired:         { stroke: "#717680", tooltipKey: "res-expired", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 10h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+};
+
+// Add reservation status tooltips to the content map
+Object.assign(TOOLTIP_CONTENT, {
+  "res-confirmed":  { title: "Reserva confirmada", subtitle: "Pagamento processado, vaga garantida" },
+  "res-awaiting":   { title: "Reserva não confirmada", subtitle: "Aguardando pagamento" },
+  "res-cancelled":  { title: "Reserva cancelada", subtitle: "Vaga estornada e devolvida" },
+  "res-draft":      { title: "Pré-reservada", subtitle: "Carrinho iniciado, não finalizado" },
+  "res-checkedin":  { title: "Reserva confirmada", subtitle: "Check-in realizado" },
+  "res-performed":  { title: "Reserva confirmada", subtitle: "Atividade realizada" },
+  "res-noshow":     { title: "Não compareceu", subtitle: "Participante não apareceu" },
+  "res-expired":    { title: "Reserva expirada", subtitle: "Expirada por inatividade" },
+});
+
+function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsurance, reservationStatus }: {
+  participant: Participant; insuranceStatus: string; requiresInsurance: boolean; reservationStatus: string;
 }) {
   const badges: { key: string; icon: React.ReactNode; stroke: string; tooltipKey: string }[] = [];
+
+  // 0. Status da reserva (always first, always shown)
+  const resStat = RESERVATION_STATUS_ICON[reservationStatus] || RESERVATION_STATUS_ICON.Confirmed;
+  badges.push({ key: "res-status", stroke: resStat.stroke, tooltipKey: resStat.tooltipKey, icon: resStat.icon });
 
   // 1. Termo de uso de imagem (always shown)
   if (p.hasImageAuth) {
@@ -2374,7 +2401,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap w-full">{p.name}</p>
                         <div className="flex gap-[4px] items-center">
                           {p.notes?.includes("Comprador") && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Comprador -</p>}
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">ID: <span className="text-[#0b5ed7]">#8821</span></p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">ID: <span className="text-[#0b5ed7]">#{p.id.replace("part-", "").padStart(4, "0")}</span></p>
                         </div>
                       </div>
                     </div>
@@ -2387,7 +2414,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                       <ReservationStatusBadge status={isCancelled ? "Cancelled" : isDone ? "CheckedIn" : r.status} tooltip={r.status === "Expired" ? "Reserva expirada por inatividade" : undefined} />
                     </div>
                     {/* Badges secundários — atributos do participante */}
-                    <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} />
+                    <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} />
                     {/* Actions cell */}
                     <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {showCheckIn && (

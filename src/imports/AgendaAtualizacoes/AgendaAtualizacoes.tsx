@@ -12,15 +12,26 @@ type ResAction =
   | { type: "UNDO_CHECK_IN"; participantId: string };
 
 function reservationsReducer(state: Reservation[], action: ResAction): Reservation[] {
-  return state.map((r) => ({
-    ...r,
-    participants: r.participants.map((p) => {
+  return state.map((r) => {
+    // Check-in actions target participants
+    if (action.type !== "CHECK_IN" && action.type !== "UNDO_CHECK_IN") return r;
+    const hasTarget = r.participants.some((p) => p.id === action.participantId);
+    if (!hasTarget) return r;
+    const newParticipants = r.participants.map((p) => {
       if (p.id !== action.participantId) return p;
       if (action.type === "CHECK_IN") return { ...p, checkInStatus: "Done" as CheckInStatus };
       if (action.type === "UNDO_CHECK_IN") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       return p;
-    }),
-  }));
+    });
+    // Derive reservation status from participants
+    const allDone = newParticipants.every((p) => p.checkInStatus === "Done");
+    const anyDone = newParticipants.some((p) => p.checkInStatus === "Done");
+    let newStatus = r.status;
+    if (action.type === "CHECK_IN" && allDone) newStatus = "CheckedIn" as ReservationStatus;
+    else if (action.type === "CHECK_IN" && anyDone && r.status === "Confirmed") newStatus = "Confirmed" as ReservationStatus;
+    else if (action.type === "UNDO_CHECK_IN" && r.status === "CheckedIn") newStatus = "Confirmed" as ReservationStatus;
+    return { ...r, status: newStatus, participants: newParticipants };
+  });
 }
 
 // Toast
@@ -1644,17 +1655,18 @@ function getMenuSlots(r: Reservation, insuranceStatus: string): MenuSlot[] {
   return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8, slot9, slot10, slot11];
 }
 
-function ParticipantMenu({ reservation, participant, onAction }: {
+function ParticipantMenu({ reservation, participant, onAction, participantInsured }: {
   reservation: Reservation;
   participant: Participant;
   onAction: (actionId: string, r: Reservation, p: Participant) => void;
+  participantInsured: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [hoveredDisabled, setHoveredDisabled] = useState<string | null>(null);
-  const slots = useMemo(() => getMenuSlots(reservation, reservation.insuranceStatus), [reservation]);
+  const slots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required"), [reservation, participantInsured]);
 
   return (
-    <div className="relative">
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => setOpen(!open)}
         className="bg-white border border-[#e4e4e7] border-solid cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[40px] hover:bg-[#f8fafc] transition-colors"
@@ -1712,7 +1724,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [reservations, dispatch] = useReducer(reservationsReducer, mockReservations);
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(reservations.filter((r) => r.type === "group").map((r) => r.id)));
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -1814,6 +1826,19 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
+  // Per-participant insurance tracking (overrides reservation-level insuranceStatus)
+  const [insuredParticipants, setInsuredParticipants] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    for (const r of mockReservations) {
+      if (r.insuranceStatus === "Contracted") {
+        for (const p of r.participants) initial.add(p.id);
+      }
+    }
+    return initial;
+  });
+  const isParticipantInsured = (pid: string) => insuredParticipants.has(pid);
+  const contractInsurance = (pid: string) => setInsuredParticipants((prev) => new Set([...prev, pid]));
+  const undoInsurance = (pid: string) => setInsuredParticipants((prev) => { const next = new Set(prev); next.delete(pid); return next; });
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
@@ -1827,8 +1852,8 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
     if (actionId === "contact") { showToast("Abrindo WhatsApp..."); return; }
     if (actionId === "download") { showToast("Comprovante baixado."); return; }
     if (actionId === "participant-data") { setDrawerData({ r, p }); return; }
-    if (actionId === "add-insurance") { showToast(`Seguro contratado para ${name}.`); return; }
-    if (actionId === "undo-insurance") { showToast(`Contratação de seguro desfeita para ${name}.`); return; }
+    if (actionId === "add-insurance") { contractInsurance(p.id); showToast(`Seguro contratado para ${name}!`); return; }
+    if (actionId === "undo-insurance") { undoInsurance(p.id); showToast(`Contratação de seguro de ${name} desfeita.`); return; }
     if (actionId === "resend-voucher") { showToast(`Voucher reenviado para ${name}.`); return; }
     if (actionId === "confirm" || actionId === "register-payment") { showToast(`Reserva de ${name} confirmada.`); return; }
     if (actionId === "undo-confirm") { showToast(`Confirmação de ${name} desfeita.`); return; }
@@ -1852,8 +1877,8 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
     setNoShowModal(null);
   };
 
-  const handleCheckIn = (p: Participant, insuranceStatus: string) => {
-    if (insuranceStatus !== "Contracted" && insuranceStatus !== "NotRequired") {
+  const handleCheckIn = (p: Participant) => {
+    if (!isParticipantInsured(p.id)) {
       showToast("É obrigatório contratar o seguro antes de realizar o check-in.", "error");
       return;
     }
@@ -1910,7 +1935,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
       result = result.filter((r) => r.buyerName.toLowerCase().includes(q) || r.orderId.toLowerCase().includes(q) || r.participants.some((p) => p.name.toLowerCase().includes(q)));
     }
     return result;
-  }, [activeFilter, search]);
+  }, [reservations, activeFilter, search]);
 
   const filteredParticipantCount = filteredReservations.reduce((sum, r) => sum + r.participants.length, 0);
 
@@ -2217,14 +2242,21 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                 </div>
               </div>
               {/* ── Participant rows ── */}
-              {(isGroup ? expanded : true) && r.participants.map((p) => {
+              {(isGroup
+                ? expanded
+                  ? r.participants
+                  : r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1).length > 0
+                    ? r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1)
+                    : r.participants.slice(0, 1)
+                : r.participants
+              ).map((p) => {
                 const isCancelled = r.status === "Cancelled";
                 const isDone = p.checkInStatus === "Done";
                 const showCheckIn = !isCancelled && r.status !== "AwaitingPayment" && r.status !== "NoShow";
                 return (
-                  <div key={p.id} className="border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full">
+                  <div key={p.id} className="border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full cursor-pointer hover:bg-[#f8fafc] transition-colors" onClick={() => setDrawerData({ r, p })}>
                     {/* Checkbox cell — 40px */}
-                    <button onClick={() => toggleSelectParticipant(p.id)} className="cursor-pointer flex items-center justify-center shrink-0" style={{ width: "40px", padding: "1px 8px" }}>
+                    <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ width: "40px", padding: "1px 8px" }}>
                       {selectedIds.has(p.id) ? (
                         <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
                           <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -2248,28 +2280,35 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                     <div className="flex items-center shrink-0" style={{ width: "133px", padding: "14px 12px" }}>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0f172b]">{p.tariffType}</p>
                     </div>
-                    {/* Badge principal — estado da reserva */}
+                    {/* Badge principal — estado do participante (derivado de check-in + reserva) */}
                     <div className="flex flex-1 gap-[10px] items-center min-w-0" style={{ padding: "14px 12px" }}>
-                      <ReservationStatusBadge status={r.status} tooltip={r.status === "Expired" ? "Reserva expirada por inatividade" : undefined} />
+                      <ReservationStatusBadge status={isCancelled ? "Cancelled" : isDone ? "CheckedIn" : r.status} tooltip={r.status === "Expired" ? "Reserva expirada por inatividade" : undefined} />
                     </div>
                     {/* Badges secundários — atributos do participante */}
-                    <ParticipantBadgesRow participant={p} insuranceStatus={r.insuranceStatus} requiresInsurance={true} />
+                    <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} />
                     {/* Actions cell */}
                     <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {showCheckIn && (
-                        isDone ? (
-                          <button onClick={() => handleUndoCheckIn(p)} className="bg-white border border-[#e4e4e7] border-solid cursor-pointer flex gap-[8px] hover:bg-[#f8fafc] items-center justify-center rounded-[6px] shrink-0 transition-colors" style={{ padding: "10px 12px" }}>
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
-                          </button>
-                        ) : (
-                          <button onClick={() => handleCheckIn(p, r.insuranceStatus)} className="cursor-pointer flex gap-[8px] hover:bg-[#d5dcfe] items-center justify-center rounded-[6px] shrink-0 transition-colors" style={{ padding: "10px 12px", backgroundColor: "#edf0ff" }}>
-                            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Realizar Check-in</p>
-                          </button>
-                        )
+                        <button
+                          onClick={(e) => { e.stopPropagation(); isDone ? handleUndoCheckIn(p) : handleCheckIn(p); }}
+                          className={`cursor-pointer flex gap-[8px] items-center justify-center rounded-[6px] shrink-0 transition-colors ${isDone ? "bg-white border border-[#e4e4e7] border-solid hover:bg-[#f8fafc]" : "hover:bg-[#d5dcfe]"}`}
+                          style={{ width: "158.48px", padding: "10px 12px", ...(!isDone ? { backgroundColor: "#edf0ff" } : {}) }}
+                        >
+                          {isDone ? (
+                            <>
+                              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Realizar Check-in</p>
+                            </>
+                          )}
+                        </button>
                       )}
                       {/* Three-dot menu */}
-                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} />
+                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
                     </div>
                   </div>
                 );

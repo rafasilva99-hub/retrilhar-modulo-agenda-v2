@@ -58,9 +58,9 @@ const BP_POUSADA   = 'Pousada da Cachoeira';
 // Distribution:
 //   - Today (2026-05-11): 4 activities → triggers "+N" overflow in the calendar
 //     • act-001  requiresInsurance: true,  status: pending    (linked to mockReservations)
-//     • act-002  requiresInsurance: false, status: confirmed
-//     • act-003  requiresInsurance: false, status: blocked
-//     • act-004  requiresInsurance: false, status: full
+//     • act-002  requiresInsurance: true, status: confirmed
+//     • act-003  requiresInsurance: true, status: blocked
+//     • act-004  requiresInsurance: true, status: full
 //   - Multi-day (2026-05-14 → 2026-05-16): acts 005-007 (Expedição Mantiqueira)
 //   - Past activities: act-008 (2026-05-08), act-011 (2026-04-28 — adjacent month)
 //   - Future activities: act-009 (2026-05-20), act-010 (2026-05-22), act-012 (2026-06-05)
@@ -98,7 +98,7 @@ export const mockActivities: Activity[] = [
     occupancy: 8,
     guideName: 'Maria Costa',
     status: 'full',
-    requiresInsurance: false,
+    requiresInsurance: true,
   },
   {
     id: 'act-003',
@@ -112,7 +112,7 @@ export const mockActivities: Activity[] = [
     occupancy: 8,
     guideName: '',
     status: 'blocked',
-    requiresInsurance: false,
+    requiresInsurance: true,
   },
   {
     id: 'act-004',
@@ -126,7 +126,7 @@ export const mockActivities: Activity[] = [
     occupancy: 8,
     guideName: 'Pedro Santos',
     status: 'confirmed',
-    requiresInsurance: false,
+    requiresInsurance: true,
   },
 
   // ── Multi-day: Trilha Pico do Itambé (3 days) ────────────────────────────
@@ -188,7 +188,7 @@ export const mockActivities: Activity[] = [
     occupancy: 9,
     guideName: 'Sônia Brandão',
     status: 'confirmed',
-    requiresInsurance: false,
+    requiresInsurance: true,
   },
   {
     id: 'act-009',
@@ -200,7 +200,7 @@ export const mockActivities: Activity[] = [
     occupancy: 5,
     guideName: 'Pedro Henrique Lima',
     status: 'pending',
-    requiresInsurance: false,
+    requiresInsurance: true,
   },
   {
     id: 'act-010',
@@ -212,7 +212,7 @@ export const mockActivities: Activity[] = [
     occupancy: 10,
     guideName: 'Mônica Duarte',
     status: 'full',
-    requiresInsurance: false,
+    requiresInsurance: true,
   },
 
   // ── Adjacent months ───────────────────────────────────────────────────────
@@ -227,7 +227,7 @@ export const mockActivities: Activity[] = [
     occupancy: 15,
     guideName: 'Jorge Cavalcanti',
     status: 'confirmed',
-    requiresInsurance: false,
+    requiresInsurance: true,
   },
   {
     id: 'act-012',

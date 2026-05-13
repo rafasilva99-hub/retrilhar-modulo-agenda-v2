@@ -28,6 +28,61 @@ function dayOffset(offset: number): string {
 const TODAY = dayOffset(0);
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Brazilian holidays — dynamic per year (includes moveable dates)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function easterSunday(year: number): Date {
+  // Meeus/Jones/Butcher algorithm
+  const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+  const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31) - 1;
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(year, month, day);
+}
+
+function fmtDate(d: Date): string {
+  return d.toISOString().split('T')[0];
+}
+
+function addDaysToDate(d: Date, n: number): Date {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+
+export function getBrazilianHolidays(year: number): Record<string, string> {
+  const easter = easterSunday(year);
+  return {
+    [`${year}-01-01`]: 'Confraternização Universal',
+    [fmtDate(addDaysToDate(easter, -49))]: 'Carnaval',
+    [fmtDate(addDaysToDate(easter, -48))]: 'Carnaval',
+    [fmtDate(addDaysToDate(easter, -47))]: 'Quarta-feira de Cinzas',
+    [fmtDate(addDaysToDate(easter, -2))]: 'Sexta-feira Santa',
+    [fmtDate(easter)]: 'Páscoa',
+    [`${year}-04-21`]: 'Tiradentes',
+    [`${year}-05-01`]: 'Dia do Trabalho',
+    [fmtDate(addDaysToDate(easter, 60))]: 'Corpus Christi',
+    [`${year}-09-07`]: 'Independência do Brasil',
+    [`${year}-10-12`]: 'Nossa Sra. Aparecida',
+    [`${year}-11-02`]: 'Finados',
+    [`${year}-11-15`]: 'Proclamação da República',
+    [`${year}-12-25`]: 'Natal',
+  };
+}
+
+// Pre-compute holidays for current year and adjacent
+const _y = new Date().getFullYear();
+export const allHolidays: Record<string, string> = {
+  ...getBrazilianHolidays(_y - 1),
+  ...getBrazilianHolidays(_y),
+  ...getBrazilianHolidays(_y + 1),
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Shared boarding points
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -245,6 +300,33 @@ export const mockActivities: Activity[] = [
     status: 'pending',
     requiresInsurance: true,
   },
+
+  // ── Extended activities — previous months ─────────────────────────────────
+
+  { id: 'act-013', name: 'Canoagem Rio das Velhas', date: dayOffset(-20), startTime: '08:00', endTime: '14:00', capacity: 10, occupancy: 8, guideName: 'Lucas Ferreira', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-014', name: 'Trilha da Lua Cheia', date: dayOffset(-22), startTime: '18:00', endTime: '22:00', capacity: 15, occupancy: 15, guideName: 'Ana Paula Reis', status: 'full', requiresInsurance: true },
+  { id: 'act-015', name: 'Escalada Paredão do Sol', date: dayOffset(-25), startTime: '07:00', endTime: '12:00', capacity: 8, occupancy: 6, guideName: 'Thiago Rocha', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-016', name: 'Rapel Cachoeira do Tabuleiro', date: dayOffset(-28), startTime: '09:00', endTime: '15:00', capacity: 12, occupancy: 4, guideName: '', status: 'pending', requiresInsurance: true },
+  { id: 'act-017', name: 'Bike Tour Serra da Moeda', date: dayOffset(-30), startTime: '06:30', endTime: '11:00', capacity: 20, occupancy: 18, guideName: 'Pedro Santos', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-018', name: 'Travessia Serra do Cipó', date: dayOffset(-35), startTime: '05:30', endTime: '18:00', capacity: 10, occupancy: 10, guideName: 'Carlos Vidal', status: 'full', requiresInsurance: true },
+  { id: 'act-019', name: 'Caminhada Noturna Inhotim', date: dayOffset(-40), startTime: '19:00', endTime: '23:00', capacity: 25, occupancy: 12, guideName: 'Sônia Brandão', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-020', name: 'Rafting Rio Jequitinhonha', date: dayOffset(-45), startTime: '08:00', endTime: '16:00', capacity: 16, occupancy: 9, guideName: 'João Silva', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-021', name: 'Trilha Pico da Bandeira', date: dayOffset(-50), startTime: '04:00', endTime: '14:00', capacity: 12, occupancy: 12, guideName: 'Maria Costa', status: 'full', requiresInsurance: true },
+  { id: 'act-022', name: 'Mergulho Gruta da Lapinha', date: dayOffset(-55), startTime: '10:00', endTime: '15:00', capacity: 6, occupancy: 3, guideName: 'Pedro Henrique Lima', status: 'pending', requiresInsurance: true },
+
+  // ── Extended activities — future months ────────────────────────────────────
+
+  { id: 'act-023', name: 'Tirolesa Vale do Rio Doce', date: dayOffset(15), startTime: '09:00', endTime: '12:00', capacity: 20, occupancy: 7, guideName: 'Lucas Ferreira', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-024', name: 'Trilha Cachoeira Grande', date: dayOffset(18), startTime: '07:00', endTime: '13:00', capacity: 15, occupancy: 11, guideName: 'Ana Paula Reis', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-025', name: 'Arvorismo Parque das Mangabeiras', date: dayOffset(20), startTime: '14:00', endTime: '17:00', capacity: 10, occupancy: 3, guideName: '', status: 'pending', requiresInsurance: true },
+  { id: 'act-026', name: 'Rapel Mirante do Mangabeiras', date: dayOffset(28), startTime: '08:00', endTime: '11:00', capacity: 8, occupancy: 8, guideName: 'Thiago Rocha', status: 'full', requiresInsurance: true },
+  { id: 'act-027', name: 'Canoagem Represa de Furnas', date: dayOffset(32), startTime: '06:30', endTime: '14:00', capacity: 12, occupancy: 5, guideName: 'Jorge Cavalcanti', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-028', name: 'Trilha Pico do Caraça', date: dayOffset(35), startTime: '05:00', endTime: '15:00', capacity: 10, occupancy: 7, guideName: 'Carlos Vidal', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-029', name: 'Bike Trail Estrada Real', date: dayOffset(38), startTime: '07:00', endTime: '16:00', capacity: 18, occupancy: 14, guideName: 'Mônica Duarte', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-030', name: 'Escalada Pedra do Elefante', date: dayOffset(42), startTime: '08:00', endTime: '13:00', capacity: 6, occupancy: 6, guideName: 'Pedro Santos', status: 'full', requiresInsurance: true },
+  { id: 'act-031', name: 'Travessia Parque Estadual', date: dayOffset(45), startTime: '06:00', endTime: '18:00', capacity: 14, occupancy: 2, guideName: 'Roberta Nogueira', status: 'pending', requiresInsurance: true },
+  { id: 'act-032', name: 'Rapel Cachoeira do Meio', date: dayOffset(50), startTime: '09:30', endTime: '14:00', capacity: 10, occupancy: 9, guideName: 'João Silva', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-033', name: 'Caminhada Serra do Gandarela', date: dayOffset(55), startTime: '07:00', endTime: '12:00', capacity: 20, occupancy: 16, guideName: 'Sônia Brandão', status: 'confirmed', requiresInsurance: true },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

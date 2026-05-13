@@ -4,7 +4,7 @@ import { ptBR } from "date-fns/locale";
 import svgPaths from "./svg-qtw4au3g97";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
-import { mockActivities } from "../../mocks/agenda";
+import { mockActivities, allHolidays } from "../../mocks/agenda";
 import type { Activity, ActivityStatus } from "../../types/agenda";
 
 // Componentes padronizados para informações dos cards
@@ -2598,13 +2598,7 @@ function Frame19() {
 
 // ─── Dynamic Atividades do Dia ──────────────────────────────────────────────
 
-const _diaYear = new Date().getFullYear();
-const DIA_HOLIDAYS: Record<string, string> = {
-  [`${_diaYear}-05-01`]: "Dia do Trabalho",
-  [`${_diaYear}-05-10`]: "Dia das Mães",
-  [`${_diaYear}-11-15`]: "Proclamação da República",
-  [`${_diaYear}-12-25`]: "Natal",
-};
+const DIA_HOLIDAYS = allHolidays;
 
 const DIA_STATUS_CONFIG: Record<ActivityStatus, { label: string; bg: string; border: string; text: string; dotColor: string }> = {
   confirmed: { label: "Atividade Não Iniciada", bg: "#fafafa", border: "#f5f5f5", text: "#535862", dotColor: "#22c55e" },

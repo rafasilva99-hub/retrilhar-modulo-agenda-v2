@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import svgPaths from "./svg-fmdffnj3gf";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
@@ -8,7 +8,7 @@ import {
   addWeeks, subWeeks, addDays, subDays,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { mockActivities } from "../../mocks/agenda";
+import { mockActivities, allHolidays } from "../../mocks/agenda";
 import type { Activity, ActivityStatus } from "../../types/agenda";
 
 type ViewMode = "mes" | "semana" | "dia";
@@ -2072,32 +2072,25 @@ function Column6() {
 const CAL_TODAY = new Date(); // Dynamic "today"
 const CAL_REF = new Date(CAL_TODAY.getFullYear(), CAL_TODAY.getMonth(), 1); // Current month
 
-// Holidays for current year — dynamic
-const curYear = CAL_TODAY.getFullYear();
-const CAL_HOLIDAYS: Record<string, string> = {
-  [`${curYear}-05-01`]: "Dia do Trabalho",
-  [`${curYear}-05-10`]: "Dia das Mães",
-  [`${curYear}-11-15`]: "Proclamação da República",
-  [`${curYear}-12-25`]: "Natal",
-};
+// Use centralized holidays from mock
+const CAL_HOLIDAYS = allHolidays;
 
 const CAL_WD = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"] as const;
 
-// Build grid using date-fns (42 cells = 6 complete weeks, Sun-first)
-const CAL_GRID = (() => {
-  const mStart = startOfMonth(CAL_REF);
-  const mEnd = endOfMonth(CAL_REF);
+// Grid builder — called dynamically per refDate
+function buildCalGrid(ref: Date) {
+  const mStart = startOfMonth(ref);
+  const mEnd = endOfMonth(ref);
   const gStart = startOfWeek(mStart, { weekStartsOn: 0 });
   const gEnd = endOfWeek(mEnd, { weekStartsOn: 0 });
   return eachDayOfInterval({ start: gStart, end: gEnd }).map((d) => ({
     date: d,
     day: d.getDate(),
     iso: format(d, "yyyy-MM-dd"),
-    inMonth: isSameMonth(d, CAL_REF),
+    inMonth: isSameMonth(d, ref),
     isToday: isSameDay(d, CAL_TODAY),
   }));
-})();
-const CAL_ROWS = CAL_GRID.length / 7;
+}
 
 function calGetActs(iso: string): Activity[] {
   return mockActivities.filter((a) => a.date === iso);
@@ -2157,8 +2150,8 @@ function CalDoubleChip({ text, sub, c }: { text: string; sub: string; c: (typeof
 // Holiday badge (purple)
 function CalHolidayBadge({ label }: { label: string }) {
   return (
-    <div className="bg-[#f3e8ff] relative rounded-[8px] shrink-0">
-      <div className="content-stretch flex gap-[4px] items-center justify-center overflow-clip px-[8.556px] py-[2.556px] relative rounded-[inherit] size-full">
+    <div className="bg-[#f3e8ff] max-w-full overflow-hidden relative rounded-[8px]">
+      <div className="flex gap-[4px] items-center overflow-hidden px-[8px] py-[2px] relative rounded-[inherit]">
         <div className="relative shrink-0 size-[14px]">
           <div className="bg-clip-padding border-0 border-[transparent] border-solid overflow-clip relative rounded-[inherit] size-full">
             <div className="absolute inset-[8.33%]">
@@ -2173,7 +2166,7 @@ function CalHolidayBadge({ label }: { label: string }) {
             </div>
           </div>
         </div>
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#8200db] text-[12px] whitespace-nowrap">{label}</p>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden relative text-[#8200db] text-[12px] text-ellipsis whitespace-nowrap">{label}</p>
       </div>
       <div aria-hidden="true" className="absolute border-[#dab2ff] border-[0.556px] border-solid inset-0 pointer-events-none rounded-[8px]" />
     </div>
@@ -2266,7 +2259,9 @@ function CalDayCell({
   );
 }
 
-function Content({ onDayClick }: { onDayClick?: (day: number) => void }) {
+function Content({ onDayClick, refDate }: { onDayClick?: (day: number) => void; refDate: Date }) {
+  const grid = useMemo(() => buildCalGrid(refDate), [refDate]);
+  const rows = grid.length / 7;
   return (
     <div className="content-stretch flex flex-[1_0_0] items-stretch min-h-px relative w-full" data-name="Content">
       {CAL_WD.map((label, colIdx) => (
@@ -2281,8 +2276,8 @@ function Content({ onDayClick }: { onDayClick?: (day: number) => void }) {
             </div>
           </div>
           {/* Day cells — one per row */}
-          {Array.from({ length: CAL_ROWS }, (_, rowIdx) => {
-            const cell = CAL_GRID[rowIdx * 7 + colIdx];
+          {Array.from({ length: rows }, (_, rowIdx) => {
+            const cell = grid[rowIdx * 7 + colIdx];
             return <CalDayCell key={cell.iso} cell={cell} onDayClick={onDayClick} />;
           })}
         </div>
@@ -2291,11 +2286,11 @@ function Content({ onDayClick }: { onDayClick?: (day: number) => void }) {
   );
 }
 
-function Main({ onDayClick }: { onDayClick?: (day: number) => void }) {
+function Main({ onDayClick, refDate }: { onDayClick?: (day: number) => void; refDate: Date }) {
   return (
     <div className="bg-white flex-[1_0_0] min-h-px relative rounded-[16px] w-full" data-name="Main">
       <div className="content-stretch flex flex-col items-start overflow-clip relative rounded-[inherit] size-full">
-        <Content onDayClick={onDayClick} />
+        <Content onDayClick={onDayClick} refDate={refDate} />
       </div>
       <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[16px]" />
     </div>
@@ -2612,7 +2607,7 @@ function CalendarCard({
           <div className={`flex flex-col rounded-[inherit] ${view === "mes" ? "overflow-clip size-full" : "w-full"}`}>
             {view === "mes" && (
               <div className="content-stretch flex flex-col items-start flex-1 min-h-0 pb-[16px] pt-[4px] px-[24px] relative w-full">
-                <Main onDayClick={onDayClick} />
+                <Main onDayClick={onDayClick} refDate={refDate} />
               </div>
             )}
             {view === "semana" && (

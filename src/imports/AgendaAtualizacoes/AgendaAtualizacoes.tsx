@@ -1584,6 +1584,124 @@ function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onC
   );
 }
 
+// ─── Filters Drawer ─────────────────────────────────────────────────────────
+
+function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[14px] py-[8px] rounded-[8px] text-[14px] transition-colors whitespace-nowrap ${
+        active ? "border-[1.5px] border-[#0b5ed7] border-solid text-[#0b5ed7]" : "border border-[#e9eaeb] border-solid text-[#414651] hover:bg-[#f8fafc]"
+      }`}
+    >{label}</button>
+  );
+}
+
+function FiltersDrawer({ onClose }: { onClose: () => void }) {
+  const [alertas, setAlertas] = useState<Set<string>>(new Set());
+  const [tarifa, setTarifa] = useState<Set<string>>(new Set());
+  const [imagem, setImagem] = useState("");
+  const [seguro, setSeguro] = useState("");
+  const [pedidos, setPedidos] = useState("");
+  const [periodo, setPeriodo] = useState("");
+
+  const toggleSet = (set: Set<string>, val: string, setter: (s: Set<string>) => void) => {
+    const next = new Set(set);
+    if (next.has(val)) next.delete(val); else next.add(val);
+    setter(next);
+  };
+
+  const hasAnyFilter = !!(alertas.size || tarifa.size || imagem || seguro || pedidos || periodo);
+  const limpar = () => { setAlertas(new Set()); setTarifa(new Set()); setImagem(""); setSeguro(""); setPedidos(""); setPeriodo(""); };
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end p-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
+        {/* Header */}
+        <div className="flex items-center justify-between px-[24px] py-[20px] shrink-0">
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Filtros</p>
+          <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+            <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </button>
+        </div>
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-[24px] pb-[24px]">
+          <div className="border border-[#e9eaeb] border-solid flex flex-col gap-[24px] p-[20px] rounded-[12px]">
+            {/* Por alertas */}
+            <div className="flex flex-col gap-[10px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Por alertas</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {["Problemas de Saúde", "Restrições Alimentares", "Necessidades Especiais"].map((o) => (
+                  <FilterChip key={o} label={o} active={alertas.has(o)} onClick={() => toggleSet(alertas, o, setAlertas)} />
+                ))}
+              </div>
+            </div>
+            {/* Por tipos de tarifa */}
+            <div className="flex flex-col gap-[10px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Por tipos de tarifa</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {["Adulto", "Infantil", "Cortesia"].map((o) => (
+                  <FilterChip key={o} label={o} active={tarifa.has(o)} onClick={() => toggleSet(tarifa, o, setTarifa)} />
+                ))}
+              </div>
+            </div>
+            {/* Termos de Uso de Imagem */}
+            <div className="flex flex-col gap-[10px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Termos de Uso de Imagem</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {["Termo Autorizado", "Termo Não Autorizado", "Termo Pendente"].map((o) => (
+                  <FilterChip key={o} label={o} active={imagem === o} onClick={() => setImagem(imagem === o ? "" : o)} />
+                ))}
+              </div>
+            </div>
+            {/* Seguro */}
+            <div className="flex flex-col gap-[10px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Seguro</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {["Contratado", "Não contratado"].map((o) => (
+                  <FilterChip key={o} label={o} active={seguro === o} onClick={() => setSeguro(seguro === o ? "" : o)} />
+                ))}
+              </div>
+            </div>
+            {/* Pedidos adicionais */}
+            <div className="flex flex-col gap-[10px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Pedidos adicionais</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {["Solicitado", "Não solicitado"].map((o) => (
+                  <FilterChip key={o} label={o} active={pedidos === o} onClick={() => setPedidos(pedidos === o ? "" : o)} />
+                ))}
+              </div>
+            </div>
+            {/* Período */}
+            <div className="flex flex-col gap-[10px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Período</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {["Últimas 24 Horas", "Últimos 7 Dias", "Último Mês"].map((o) => (
+                  <FilterChip key={o} label={o} active={periodo === o} onClick={() => setPeriodo(periodo === o ? "" : o)} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Footer */}
+        <div className="border-t border-[#e9eaeb] flex items-center justify-between px-[24px] py-[16px] shrink-0">
+          {hasAnyFilter ? (
+            <button onClick={limpar} className="cursor-pointer flex gap-[6px] items-center font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] hover:underline">
+              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 2l12 12M14 2L2 14" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              Limpar filtro
+            </button>
+          ) : <div />}
+          <div className="flex gap-[12px]">
+            <button onClick={onClose} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[20px] py-[10px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar</button>
+            <button onClick={hasAnyFilter ? onClose : undefined} disabled={!hasAnyFilter} className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[20px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors ${hasAnyFilter ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`} style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>Aplicar filtros</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ParticipantesFilter = "todos" | "a-fazer-checkin" | "checkin-realizado" | "canceladas";
 
 // ─── Three-dot menu — slot-based system ─────────────────────────────────────
@@ -2034,23 +2152,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Filtros</p>
             </div>
           </button>
-          {showFilters && (
-            <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[280px] z-20">
-              <div className="px-[16px] py-[12px] border-b border-[#e9eaeb]">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Filtros avançados</p>
-              </div>
-              {["Problema de saúde", "Uso de imagem", "Tipo de tarifa", "Menor de idade", "Status de seguro", "Ponto de embarque", "Status de pagamento"].map((label) => (
-                <label key={label} className="content-stretch cursor-pointer flex gap-[10px] hover:bg-[#f8fafc] items-center px-[16px] py-[10px] transition-colors w-full">
-                  <input type="checkbox" className="accent-[#0b5ed7] size-[16px]" onChange={() => {/* Apenas visual */}} />
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">{label}</p>
-                </label>
-              ))}
-              <div className="border-t border-[#e9eaeb] flex gap-[8px] justify-end px-[16px] py-[12px]">
-                <button onClick={() => setShowFilters(false)} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[12px] py-[6px] rounded-[6px] text-[13px] text-[#414651] transition-colors">Limpar</button>
-                <button onClick={() => setShowFilters(false)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[12px] py-[6px] rounded-[6px] text-[13px] text-white transition-colors" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>Aplicar</button>
-              </div>
-            </div>
-          )}
+          {showFilters && <FiltersDrawer onClose={() => setShowFilters(false)} />}
         </div>
       </div>
 

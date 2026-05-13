@@ -384,7 +384,7 @@ export const mockReservations: Reservation[] = [
     createdAt: '2026-04-20T11:45:00',
     participants: [
       {
-        id: 'part-005',
+        id: 'part-004-a',
         name: 'Rodrigo Oliveira Costa',
         tariffType: 'Adulto',
         checkInStatus: 'Pending',
@@ -392,9 +392,10 @@ export const mockReservations: Reservation[] = [
         hasImageAuth: true,
         isMinor: false,
         boardingPoint: BP_PRINCIPAL,
+        notes: 'Comprador',
       },
       {
-        id: 'part-006',
+        id: 'part-004-b',
         name: 'Laura Beatriz Costa',
         tariffType: 'Adulto',
         checkInStatus: 'Pending',
@@ -405,7 +406,7 @@ export const mockReservations: Reservation[] = [
         notes: 'Hipertensão controlada',
       },
       {
-        id: 'part-007',
+        id: 'part-004-c',
         name: 'Miguel Costa',
         tariffType: 'Infantil',
         checkInStatus: 'Pending',

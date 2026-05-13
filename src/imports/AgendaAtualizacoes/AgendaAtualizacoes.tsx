@@ -23,14 +23,8 @@ function reservationsReducer(state: Reservation[], action: ResAction): Reservati
       if (action.type === "UNDO_CHECK_IN") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       return p;
     });
-    // Derive reservation status from participants
-    const allDone = newParticipants.every((p) => p.checkInStatus === "Done");
-    const anyDone = newParticipants.some((p) => p.checkInStatus === "Done");
-    let newStatus = r.status;
-    if (action.type === "CHECK_IN" && allDone) newStatus = "CheckedIn" as ReservationStatus;
-    else if (action.type === "CHECK_IN" && anyDone && r.status === "Confirmed") newStatus = "Confirmed" as ReservationStatus;
-    else if (action.type === "UNDO_CHECK_IN" && r.status === "CheckedIn") newStatus = "Confirmed" as ReservationStatus;
-    return { ...r, status: newStatus, participants: newParticipants };
+    // r.status (sale cycle) does NOT change during check-in — only participants update
+    return { ...r, participants: newParticipants };
   });
 }
 
@@ -1397,7 +1391,7 @@ const RESERVATION_STATUS_ICON: Record<string, { stroke: string; tooltipKey: stri
   AwaitingPayment: { stroke: "#dc6803", tooltipKey: "res-awaiting", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><circle cx="8" cy="10" r="1.5" stroke="currentColor" strokeWidth="1.2"/></svg> },
   Cancelled:       { stroke: "#d92d20", tooltipKey: "res-cancelled", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 8.5l4 4M10 8.5l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
   Draft:           { stroke: "#717680", tooltipKey: "res-draft", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 10h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  CheckedIn:       { stroke: "#1447e6", tooltipKey: "res-checkedin", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 9l1.5 1.5L10 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  CheckedIn:       { stroke: "#17b26a", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 9l1.5 1.5L10 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   Performed:       { stroke: "#079455", tooltipKey: "res-performed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M4 9l2.5 2.5L12 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   NoShow:          { stroke: "#d92d20", tooltipKey: "res-noshow", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 8.5l4 4M10 8.5l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
   Expired:         { stroke: "#717680", tooltipKey: "res-expired", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 10h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
@@ -1409,8 +1403,7 @@ Object.assign(TOOLTIP_CONTENT, {
   "res-awaiting":   { title: "Reserva não confirmada", subtitle: "Aguardando pagamento" },
   "res-cancelled":  { title: "Reserva cancelada", subtitle: "Vaga estornada e devolvida" },
   "res-draft":      { title: "Pré-reservada", subtitle: "Carrinho iniciado, não finalizado" },
-  "res-checkedin":  { title: "Reserva confirmada", subtitle: "Check-in realizado" },
-  "res-performed":  { title: "Reserva confirmada", subtitle: "Atividade realizada" },
+  "res-performed":  { title: "Atividade realizada", subtitle: "Atividade concluída com sucesso" },
   "res-noshow":     { title: "Não compareceu", subtitle: "Participante não apareceu" },
   "res-expired":    { title: "Reserva expirada", subtitle: "Expirada por inatividade" },
 });
@@ -2200,8 +2193,12 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
               onClick={() => handleBulkAction(checkInLabel === "Realizar Check-in's" ? "check-in" : "undo-check-in", checkInLabel)}
               className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
             >
-              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">{checkInLabel}</p>
+              {checkInLabel === "Realizar Check-in's" ? (
+                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              ) : (
+                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
+              )}
+              <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${checkInLabel === "Realizar Check-in's" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>{checkInLabel}</p>
               <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(checkInLabel === "Realizar Check-in's" ? "check-in" : "undo-check-in")}</p>
               </div>

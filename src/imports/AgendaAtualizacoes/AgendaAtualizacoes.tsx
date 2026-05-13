@@ -2,8 +2,8 @@ import { useState, useMemo, useReducer } from "react";
 import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
-import { mockReservations } from "../../mocks/agenda";
-import type { Reservation, Participant, CheckInStatus } from "../../types/agenda";
+import { mockReservations, isEligibleForBulkAction, reservationStateMachine } from "../../mocks/agenda";
+import type { Reservation, Participant, CheckInStatus, BulkAction, ReservationStatus } from "../../types/agenda";
 
 // ─── Reservation state management ───────────────────────────────────────────
 
@@ -36,15 +36,9 @@ function Toast({ message, type, onClose }: { message: string; type: "success" | 
 // Initials avatar
 function InitialsAvatar({ name }: { name: string }) {
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  // Deterministic color from name
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const colors = ["#edf0ff", "#ecfdf3", "#fffaeb", "#f4f3ff", "#fef3f2", "#f0f9ff"];
-  const textColors = ["#0b5ed7", "#079455", "#dc6803", "#6941c6", "#d92d20", "#0369a1"];
-  const idx = Math.abs(hash) % colors.length;
   return (
-    <div className="flex items-center justify-center rounded-[9999px] shrink-0 size-[36px]" style={{ backgroundColor: colors[idx] }}>
-      <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px]" style={{ color: textColors[idx] }}>{initials}</p>
+    <div className="bg-[#fafafa] border border-[#f5f5f5] border-solid flex items-center justify-center rounded-[9999px] shrink-0 size-[40px]">
+      <p className="font-['Inter:Medium',sans-serif] font-medium leading-[24px] not-italic text-[16px] text-[#252b37]">{initials}</p>
     </div>
   );
 }
@@ -1128,7 +1122,284 @@ function Frame24() {
 
 // ─── Participantes Tab ──────────────────────────────────────────────────────
 
+// ─── Participant Drawer ─────────────────────────────────────────────────────
+
+function DrawerField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-[4px] relative">
+      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{label}</p>
+      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">{value}</p>
+    </div>
+  );
+}
+
+function ParticipantDrawer({ participant, reservation, onClose }: {
+  participant: Participant;
+  reservation: Reservation;
+  onClose: () => void;
+}) {
+  const initials = participant.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const phone = "(31) 99999-9999";
+  const email = participant.name.split(" ")[0].toLowerCase() + "." + (participant.name.split(" ").pop() || "").toLowerCase() + "@email.com";
+  const hasInsurance = reservation.insuranceStatus === "Contracted";
+
+  // Static mock data for the drawer (kept for backward compat)
+  const mockDetails = {
+    cpf: "123.456.789-00",
+    phone: "(31) 99876-5432",
+    email: participant.name.toLowerCase().replace(/\s+/g, ".") + "@email.com",
+    birthDate: "15/03/1990",
+    age: "36 anos",
+    street: "Rua das Palmeiras",
+    number: "456",
+    neighborhood: "Centro",
+    city: "Belo Horizonte",
+    state: "MG",
+    cep: "30130-000",
+    healthIssue: participant.hasHealthIssue ? "Sim" : "Não",
+    healthDesc: participant.hasHealthIssue ? (participant.notes || "Condição informada pelo participante") : "—",
+    healthPlan: "Unimed BH",
+    emergencyContact: "(31) 99888-7766 (Maria - Esposa)",
+    paymentStatus: reservation.paymentStatus === "Paid" ? "Pago" : "Pendente",
+    paymentValue: "R$ 350,00",
+    paymentMethod: "Cartão de crédito (3x sem juros)",
+    transactionId: "TXN-" + reservation.orderId.replace("#", ""),
+    imageAuth: participant.hasImageAuth,
+    imageAuthDate: "10/05/2026, 14:32",
+    imageAuthIp: "189.40.102.55",
+    observations: participant.notes || "Sem observações registradas.",
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end p-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[672px] z-10">
+        {/* Container with uniform 24px padding and 16px gap */}
+        <div className="flex flex-col gap-[16px] overflow-y-auto p-[24px]">
+        {/* Title bar */}
+        <div className="flex items-center justify-between shrink-0">
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Detalhes da reserva</p>
+          <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+            <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </button>
+        </div>
+        {/* Participant header card */}
+        <div className="bg-[#fafafa] border border-[#f5f5f5] border-solid rounded-[16px]">
+          <div className="flex gap-[16px] items-center p-[20px]">
+            <div className="bg-[#edf0ff] border border-[#d5dcfe] border-solid flex items-center justify-center rounded-[9999px] shrink-0 size-[48px]">
+              <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic text-[18px] text-[#0b5ed7]">{initials}</p>
+            </div>
+            <div className="flex flex-col gap-[4px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{participant.name}</p>
+              <div className="flex gap-[12px] items-center">
+                <div className="flex gap-[4px] items-center">
+                  <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><rect x="3" y="1" width="8" height="12" rx="2" stroke="#717680" strokeWidth="1.2"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862]">{phone}</p>
+                </div>
+                <div className="flex gap-[4px] items-center">
+                  <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><rect x="1" y="3" width="12" height="8" rx="2" stroke="#717680" strokeWidth="1.2"/><path d="M1 5l6 3 6-3" stroke="#717680" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862]">{email}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-[#f5f5f5] flex items-center px-[20px] py-[14px]">
+            <div className="flex flex-1 gap-[10px] items-center">
+              <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="2" y="2" width="14" height="14" rx="3" stroke="#717680" strokeWidth="1.2"/><path d="M6 6h6M6 9h4M6 12h2" stroke="#717680" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <DrawerField label="Documento" value="123.456.789-00" />
+            </div>
+            <div className="flex flex-1 gap-[10px] items-center justify-end">
+              <DrawerField label="Data de nascimento" value="08/01/2000" />
+              <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="2" y="2" width="14" height="14" rx="3" stroke="#717680" strokeWidth="1.2"/><path d="M2 7h14" stroke="#717680" strokeWidth="1.2"/><path d="M6 1v3M12 1v3" stroke="#717680" strokeWidth="1.2" strokeLinecap="round"/></svg>
+            </div>
+          </div>
+        </div>
+        {/* Content sections */}
+        <div className="flex flex-col gap-[16px]">
+          {/* DADOS DE SAÚDE */}
+          <div className="flex flex-col gap-[16px]">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] tracking-[0.5px] uppercase">Dados de saúde</p>
+            <div className="grid grid-cols-2 gap-x-[24px] gap-y-[20px]">
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" stroke="#535862" strokeWidth="1.2"/><path d="M9 6v3M9 12v.5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <DrawerField label="Alertas de Saúde" value={participant.hasHealthIssue ? `Sim - ${participant.notes || "Hipertensão"}` : "Não"} />
+              </div>
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M6 2C4 4 2 7 2 10a7 7 0 0014 0c0-3-2-6-4-8" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <DrawerField label="Restrições alimentares" value="Sim - Intolerância a Lactose" />
+              </div>
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" stroke="#535862" strokeWidth="1.2"/><path d="M9 5v4l3 2" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <DrawerField label="Necessidades especiais" value="Sim - Mobilidade Reduzida" />
+              </div>
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M9 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="#535862" strokeWidth="1.2"/></svg>
+                <DrawerField label="Possui plano de saúde" value="Sim" />
+              </div>
+            </div>
+            <div className="flex gap-[10px] items-start">
+              <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="5" r="3" stroke="#535862" strokeWidth="1.2"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <DrawerField label="Observações adicionais" value={participant.hasHealthIssue ? `ATENÇÃO: esse participante faz uso de medicação de uso contínuo.` : "Sem observações."} />
+            </div>
+            <div className="flex gap-[10px] items-start">
+              <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="3" y="1" width="8" height="12" rx="2" stroke="#535862" strokeWidth="1.2"/><path d="M13 5v10a2 2 0 01-2 2H5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <DrawerField label="Contato de emergência" value="(31) 99999-9999" />
+            </div>
+          </div>
+          <div className="bg-[#e9eaeb] h-px w-full" />
+          {/* DADOS OPERACIONAIS */}
+          <div className="flex flex-col gap-[16px]">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] tracking-[0.5px] uppercase">Dados operacionais</p>
+            <div className="grid grid-cols-2 gap-x-[24px] gap-y-[20px]">
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="5" r="3" stroke="#535862" strokeWidth="1.2"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <DrawerField label="Tipo(s) de Tarifa(s)" value={`${participant.tariffType} - 1x`} />
+              </div>
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M9 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="#535862" strokeWidth="1.2"/></svg>
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Seguro contratado</p>
+                  <div className="flex gap-[6px] items-center">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">{hasInsurance ? "Sim" : "Não"}</p>
+                    {!hasInsurance && <p className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#dc6803] underline">Contratar seguro</p>}
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M5 2h8M5 6h8M5 10h8M5 14h8" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <DrawerField label="Pedidos adicionais" value="Sim" />
+              </div>
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="2" y="3" width="14" height="12" rx="3" stroke="#535862" strokeWidth="1.2"/><circle cx="7" cy="8" r="2" stroke="#535862" strokeWidth="1.2"/></svg>
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Termo de uso de imagem</p>
+                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${participant.hasImageAuth ? "text-[#181d27]" : "text-[#dc6803]"}`}>
+                    {participant.hasImageAuth ? "Aceito" : "Pendente pelo participante"}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-[10px] items-start">
+              <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M8 2v8M5 7l3 3 3-3" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h12" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <DrawerField label="Itens pedidos adicionais" value="Botas - 2x , Kit lanche - 2x" />
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ParticipantesFilter = "todos" | "a-fazer-checkin" | "checkin-realizado" | "canceladas";
+
+// ─── Three-dot menu items ───────────────────────────────────────────────────
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  destructive?: boolean;
+  separator?: boolean;
+  /** Required target status — if current status can't transition to this, item is disabled */
+  requiredTarget?: ReservationStatus;
+  /** Always enabled regardless of state machine */
+  alwaysEnabled?: boolean;
+}
+
+const MENU_ITEMS: MenuItem[] = [
+  { id: "confirm", label: "Confirmar reserva", requiredTarget: "Confirmed",
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  { id: "mark-performed", label: "Definir como realizado", requiredTarget: "Performed",
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 8l4 4L14 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 8l4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  { id: "undo-payment", label: "Desfazer registro de pagamento", requiredTarget: "AwaitingPayment",
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  { id: "reschedule", label: "Remarcar reserva", requiredTarget: "Confirmed",
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 1v2M10.5 1v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  { id: "add-insurance", label: "Contratar seguro", separator: true,
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+    requiredTarget: "Confirmed" },
+  { id: "resend-voucher", label: "Reenviar voucher", requiredTarget: "Confirmed",
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M14 2L7 9M14 2l-4 12-3-5-5-3 12-4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  { id: "download", label: "Baixar comprovante", alwaysEnabled: true,
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  { id: "participant-data", label: "Dados do participante", alwaysEnabled: true,
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  { id: "contact", label: "Entrar em contato", separator: true, alwaysEnabled: true,
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M13.5 2.5l-11 5 4 1.5 1.5 4 5-11z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  { id: "no-show", label: "Não compareceu", separator: true, destructive: true, requiredTarget: "NoShow",
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  { id: "cancel", label: "Cancelar reserva", destructive: true, requiredTarget: "Cancelled",
+    icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><path d="M12 3l-2 2M10 3l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+];
+
+function isMenuItemEnabled(item: MenuItem, status: ReservationStatus): boolean {
+  if (item.alwaysEnabled) return true;
+  if (!item.requiredTarget) return true;
+  const allowed = reservationStateMachine[status] || [];
+  return allowed.includes(item.requiredTarget);
+}
+
+function getDisabledTooltip(item: MenuItem, status: ReservationStatus): string {
+  if (item.id === "confirm") return "A reserva já está confirmada.";
+  if (item.id === "mark-performed") return "A reserva precisa estar em Check-in Realizado para esta ação.";
+  if (item.id === "undo-payment") return "A reserva precisa estar Confirmada para desfazer o pagamento.";
+  if (item.id === "no-show") return "Somente reservas confirmadas podem ser marcadas como não comparecimento.";
+  if (item.id === "cancel") return `Reservas com status "${status}" não podem ser canceladas.`;
+  return `Ação não disponível para reservas com status "${status}".`;
+}
+
+function ParticipantMenu({ reservation, participant, onAction }: {
+  reservation: Reservation;
+  participant: Participant;
+  onAction: (actionId: string, r: Reservation, p: Participant) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="bg-white border border-[#e4e4e7] border-solid cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[40px] hover:bg-[#f8fafc] transition-colors"
+      >
+        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3" r="1.2" fill="#717680"/><circle cx="8" cy="8" r="1.2" fill="#717680"/><circle cx="8" cy="13" r="1.2" fill="#717680"/></svg>
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+          <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[12px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[280px] z-40 py-[4px]">
+            {MENU_ITEMS.map((item) => {
+              const enabled = isMenuItemEnabled(item, reservation.status);
+              return (
+                <div key={item.id}>
+                  {item.separator && <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />}
+                  <button
+                    onClick={() => {
+                      if (!enabled) return;
+                      setOpen(false);
+                      onAction(item.id, reservation, participant);
+                    }}
+                    className={`cursor-pointer flex gap-[10px] items-center px-[14px] py-[10px] transition-colors w-full ${
+                      !enabled ? "opacity-40 cursor-not-allowed" : item.destructive ? "hover:bg-[#fef3f2]" : "hover:bg-[#f8fafc]"
+                    } ${item.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
+                    title={!enabled ? getDisabledTooltip(item, reservation.status) : undefined}
+                    disabled={!enabled}
+                  >
+                    {item.icon}
+                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${item.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{item.label}</p>
+                    {item.id === "contact" && (
+                      <svg className="ml-auto size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M4 10L10 4M10 4H5M10 4v5" stroke="#717680" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => void }) {
   const [search, setSearch] = useState("");
@@ -1139,10 +1410,134 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(reservations.filter((r) => r.type === "group").map((r) => r.id)));
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showMoreActions, setShowMoreActions] = useState(false);
+
+  // Selection helpers
+  const allParticipantIds = useMemo(() => reservations.flatMap((r) => r.participants.map((p) => p.id)), [reservations]);
+  const isAllSelected = selectedIds.size > 0 && selectedIds.size === allParticipantIds.length;
+  const hasSelection = selectedIds.size > 0;
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) setSelectedIds(new Set());
+    else setSelectedIds(new Set(allParticipantIds));
+  };
+
+  const toggleSelectParticipant = (pid: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(pid)) next.delete(pid); else next.add(pid);
+      return next;
+    });
+  };
+
+  const toggleSelectReservation = (r: Reservation) => {
+    const pids = r.participants.map((p) => p.id);
+    const allSelected = pids.every((id) => selectedIds.has(id));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) pids.forEach((id) => next.delete(id));
+      else pids.forEach((id) => next.add(id));
+      return next;
+    });
+  };
+
+  const clearSelection = () => { setSelectedIds(new Set()); setShowMoreActions(false); };
+
+  // Bulk action eligibility
+  const selectedReservations = useMemo(() => {
+    return reservations.filter((r) => r.participants.some((p) => selectedIds.has(p.id)));
+  }, [reservations, selectedIds]);
+
+  const bulkEligibility = useMemo(() => {
+    if (selectedReservations.length === 0) return {} as Record<BulkAction, { eligible: number; total: number; reason: string }>;
+    const actions: BulkAction[] = ["check-in", "undo-check-in", "confirm", "undo-confirm", "mark-performed", "add-insurance", "resend-voucher", "reschedule", "no-show", "cancel"];
+    const result: Record<string, { eligible: number; total: number; reason: string }> = {};
+    for (const action of actions) {
+      const { eligible, reason } = isEligibleForBulkAction(selectedReservations, action);
+      result[action] = { eligible: eligible.length, total: selectedReservations.length, reason };
+    }
+    return result;
+  }, [selectedReservations]);
+
+  const getBadgeLabel = (action: BulkAction): string => {
+    const e = bulkEligibility[action];
+    if (!e) return "";
+    if (action === "resend-voucher") return "Para todos";
+    return `${e.eligible} de ${e.total}`;
+  };
+
+  const handleBulkAction = (action: BulkAction, label: string) => {
+    const e = bulkEligibility[action];
+    if (!e || e.eligible === 0) {
+      showToast(`Nenhuma das reservas selecionadas pode receber esta ação. ${e?.reason || ""}`, "error");
+      return;
+    }
+    const { eligible } = isEligibleForBulkAction(selectedReservations, action);
+    // Apply action to eligible
+    for (const r of eligible) {
+      for (const p of r.participants) {
+        if (!selectedIds.has(p.id)) continue;
+        if (action === "check-in") dispatch({ type: "CHECK_IN", participantId: p.id });
+        if (action === "undo-check-in") dispatch({ type: "UNDO_CHECK_IN", participantId: p.id });
+      }
+    }
+    const ignored = e.total - e.eligible;
+    if (ignored > 0) {
+      showToast(`${label} para ${e.eligible} de ${e.total} selecionados. ${ignored} reservas ignoradas.`);
+    } else {
+      showToast(`${label} para ${e.eligible} selecionados.`);
+    }
+    setShowMoreActions(false);
+  };
+
+  // Determine primary inline actions labels
+  const checkInLabel = useMemo(() => {
+    const done = selectedReservations.filter((r) => r.status === "CheckedIn").length;
+    const pending = selectedReservations.filter((r) => r.status === "Confirmed").length;
+    return done > pending ? "Desfazer Check-in's" : "Realizar Check-in's";
+  }, [selectedReservations]);
+
+  const confirmLabel = useMemo(() => {
+    const awaiting = selectedReservations.filter((r) => r.status === "AwaitingPayment").length;
+    const confirmed = selectedReservations.filter((r) => r.status === "Confirmed").length;
+    return awaiting > confirmed ? "Confirmar reservas" : "Desfazer confirmação de reservas";
+  }, [selectedReservations]);
+
+  const [cancelModal, setCancelModal] = useState<{ r: Reservation; p: Participant } | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
+  const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleMenuAction = (actionId: string, r: Reservation, p: Participant) => {
+    if (actionId === "cancel") { setCancelModal({ r, p }); setCancelReason(""); return; }
+    if (actionId === "no-show") { setNoShowModal({ r, p }); return; }
+    if (actionId === "contact") { showToast("Abrindo WhatsApp..."); return; }
+    if (actionId === "download") { showToast("Comprovante baixado."); return; }
+    if (actionId === "participant-data") { setDrawerData({ r, p }); return; }
+    if (actionId === "add-insurance") { showToast(`Seguro contratado para ${p.name.split(" ")[0]}.`); return; }
+    if (actionId === "resend-voucher") { showToast(`Voucher reenviado para ${p.name.split(" ")[0]}.`); return; }
+    if (actionId === "confirm") { showToast(`Reserva de ${p.name.split(" ")[0]} confirmada.`); return; }
+    if (actionId === "mark-performed") { showToast(`Reserva de ${p.name.split(" ")[0]} marcada como realizada.`); return; }
+    if (actionId === "undo-payment") { showToast(`Pagamento de ${p.name.split(" ")[0]} desfeito.`); return; }
+    if (actionId === "reschedule") { showToast(`Reserva de ${p.name.split(" ")[0]} remarcada.`); return; }
+  };
+
+  const confirmCancel = () => {
+    if (!cancelModal) return;
+    showToast(`Reserva de ${cancelModal.p.name.split(" ")[0]} cancelada.`);
+    setCancelModal(null);
+  };
+
+  const confirmNoShow = () => {
+    if (!noShowModal) return;
+    showToast(`${noShowModal.p.name.split(" ")[0]} marcado como não compareceu.`);
+    setNoShowModal(null);
   };
 
   const handleCheckIn = (p: Participant, insuranceStatus: string) => {
@@ -1322,26 +1717,96 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
         </div>
       </div>
 
-      {/* Filter tabs */}
-      <div className="content-stretch flex gap-[4px] items-center mt-[16px] relative w-full border-b border-[#e9eaeb] pb-[8px]">
-        {filters.map(({ key, label, count }) => (
-          <button
-            key={key}
-            onClick={() => setActiveFilter(key)}
-            className={`cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors ${activeFilter === key ? "bg-[#edf0ff]" : "hover:bg-[#f8fafc]"}`}
-          >
-            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#535862]"}`}>{label}</p>
-            <div className={`rounded-[6px] shrink-0 ${activeFilter === key ? "bg-[#d5dcfe]" : "bg-[#f1f5f9]"}`}>
-              <div className="px-[6px] py-[1px]">
-                <p className={`font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{count}</p>
+      {/* Filter tabs OR Bulk actions bar */}
+      <div className="mt-[16px] relative w-full border-b border-[#e9eaeb]">
+        {hasSelection ? (
+          /* ── Bulk actions bar ── */
+          <div className="flex items-center gap-[16px] pb-[8px] transition-all duration-200">
+            {/* Select all checkbox */}
+            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0 size-[20px]">
+              <div className={`flex items-center justify-center rounded-[4px] size-[20px] ${isAllSelected ? "bg-[#0b5ed7]" : "bg-[#0b5ed7]"}`}>
+                <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
+            </button>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">Todos os {selectedIds.size} selecionados</p>
+            {/* Primary inline actions */}
+            <button
+              onClick={() => handleBulkAction(checkInLabel === "Realizar Check-in's" ? "check-in" : "undo-check-in", checkInLabel)}
+              className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
+            >
+              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">{checkInLabel}</p>
+              <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(checkInLabel === "Realizar Check-in's" ? "check-in" : "undo-check-in")}</p>
+              </div>
+            </button>
+            <button
+              onClick={() => handleBulkAction(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm", confirmLabel)}
+              className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
+            >
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">{confirmLabel}</p>
+              <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm")}</p>
+              </div>
+            </button>
+            {/* More actions dropdown */}
+            <div className="relative">
+              <button onClick={() => setShowMoreActions(!showMoreActions)} className="cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors">
+                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2" fill="#535862"/><circle cx="8" cy="8" r="1.2" fill="#535862"/><circle cx="13" cy="8" r="1.2" fill="#535862"/></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">Mais ações</p>
+              </button>
+              {showMoreActions && (
+                <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[260px] z-20">
+                  {([
+                    { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false },
+                    { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false },
+                    { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false },
+                    { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false },
+                    { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true },
+                    { action: "cancel" as BulkAction, label: "Cancelar reservas", destructive: true },
+                  ]).map(({ action, label, destructive }) => (
+                    <button
+                      key={action}
+                      onClick={() => handleBulkAction(action, label)}
+                      className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full hover:bg-[#f8fafc] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
+                    >
+                      <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{label}</p>
+                      <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[11px] text-[#717680]">{getBadgeLabel(action)}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          </button>
-        ))}
+            {/* Clear selection */}
+            <button onClick={clearSelection} className="cursor-pointer flex items-center justify-center ml-auto rounded-[6px] shrink-0 size-[28px] hover:bg-[#f1f5f9] transition-colors">
+              <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
+          </div>
+        ) : (
+          /* ── Filter tabs ── */
+          <div className="content-stretch flex gap-[4px] items-center pb-[8px] transition-all duration-200">
+            {filters.map(({ key, label, count }) => (
+              <button
+                key={key}
+                onClick={() => setActiveFilter(key)}
+                className={`cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors ${activeFilter === key ? "bg-[#edf0ff]" : "hover:bg-[#f8fafc]"}`}
+              >
+                <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#535862]"}`}>{label}</p>
+                <div className={`rounded-[6px] shrink-0 ${activeFilter === key ? "bg-[#d5dcfe]" : "bg-[#f1f5f9]"}`}>
+                  <div className="px-[6px] py-[1px]">
+                    <p className={`font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{count}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Reservation list */}
-      <div className="content-stretch flex flex-col gap-[1px] items-start mt-[8px] relative w-full">
+      {/* Reservation list — Figma-faithful layout */}
+      <div className="content-stretch flex flex-col items-start mt-[8px] relative w-full">
         {filteredReservations.map((r, idx) => {
           const isGroup = r.type === "group";
           const expanded = expandedGroups.has(r.id);
@@ -1350,136 +1815,189 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
 
           return (
             <div key={r.id} className="bg-white relative rounded-[12px] shrink-0 w-full mb-[8px]">
-              <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[12px]" />
-              {/* Reservation header */}
-              <div className="content-stretch flex items-center gap-[12px] px-[16px] py-[12px] relative w-full">
-                <input type="checkbox" className="accent-[#0b5ed7] shrink-0 size-[16px]" readOnly />
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] min-w-[32px] not-italic text-[14px] text-[#414651] text-center">{String(idx + 1).padStart(2, "0")}</p>
-                {/* Type icon */}
-                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16">
-                  {isGroup ? (
-                    <><circle cx="5" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><circle cx="11" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><path d="M1 14c0-2.2 2-4 4-4s4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/><path d="M10 10c2 0 4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></>
-                  ) : (
-                    <><circle cx="8" cy="5" r="3" stroke="#535862" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></>
-                  )}
-                </svg>
-                {/* Type text + order ID */}
-                <div className="flex gap-[4px] items-center min-w-0">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862] whitespace-nowrap">
-                    {isGroup ? "Reserva em Grupo" : "Reserva Individual"} · ID do pedido:
-                  </p>
-                  <span className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-[#0b5ed7] underline whitespace-nowrap">{r.orderId}</span>
-                  <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[14px] hover:opacity-70 transition-opacity" title="Copiar ID">
-                    <svg className="block size-full" fill="none" viewBox="0 0 14 14"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M10 4V3a1.5 1.5 0 00-1.5-1.5H3A1.5 1.5 0 001.5 3v5.5A1.5 1.5 0 003 10h1" stroke="#717680" strokeWidth="1.2"/></svg>
+              <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
+              {/* ── Reservation header ── */}
+              <div className="flex h-[48px] items-center relative w-full" style={{ padding: "4px 16px 4px 8px" }}>
+                <div className="flex gap-[12px] items-center size-full">
+                  {/* Checkbox - reservation level */}
+                  <button onClick={() => toggleSelectReservation(r)} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
+                    {r.participants.every((p) => selectedIds.has(p.id)) ? (
+                      <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                        <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                    ) : r.participants.some((p) => selectedIds.has(p.id)) ? (
+                      <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                        <div className="bg-white h-[2px] rounded-[1px] w-[10px]" />
+                      </div>
+                    ) : (
+                      <div className="bg-white border border-[#d5d7da] border-solid rounded-[4px] shrink-0 size-[20px]" />
+                    )}
                   </button>
-                </div>
-                {/* Status badges */}
-                <div className="flex gap-[8px] items-center flex-1 min-w-0">
-                  {r.status === "Cancelled" ? (
+                  {/* Number */}
+                  <div className="flex items-center justify-center shrink-0" style={{ width: "36px", padding: "1px 0" }}>
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] text-center">{String(idx + 1).padStart(2, "0")}</p>
+                  </div>
+                  {/* Type icon */}
+                  <div className="flex items-center justify-center shrink-0" style={{ width: "48px" }}>
+                    <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20">
+                      {isGroup ? (
+                        <><circle cx="6" cy="7" r="3" stroke="#535862" strokeWidth="1.3"/><circle cx="14" cy="7" r="3" stroke="#535862" strokeWidth="1.3"/><path d="M1 18c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/><path d="M12 13c2.8 0 5 2.2 5 5" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></>
+                      ) : (
+                        <><circle cx="10" cy="6" r="3.5" stroke="#535862" strokeWidth="1.3"/><path d="M4 18c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></>
+                      )}
+                    </svg>
+                  </div>
+                  {/* Title + badges area */}
+                  <div className="flex flex-1 gap-[16px] items-center min-w-0">
+                    {/* Type text + order ID */}
                     <div className="flex gap-[4px] items-center shrink-0">
-                      <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap">Reserva cancelada</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">
+                        {isGroup ? "Reserva em Grupo" : "Reserva Individual"} · ID do pedido:
+                      </p>
+                      <span className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap">{r.orderId}</span>
+                      <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[16px] hover:opacity-70 transition-opacity" title="Copiar ID">
+                        <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
+                      </button>
                     </div>
-                  ) : (
-                    <>
-                      {r.paymentStatus === "Paid" && (
-                        <div className="flex gap-[4px] items-center shrink-0">
-                          <div className="bg-[#17b26a] rounded-[9999px] size-[6px]" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] whitespace-nowrap">Pagamento confirmado</p>
+                    {/* Status badges */}
+                    <div className="flex gap-[10px] items-center flex-1 min-w-0">
+                      {r.status === "Cancelled" ? (
+                        <div className="flex gap-[5px] items-center shrink-0">
+                          <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap">Reserva cancelada</p>
                         </div>
+                      ) : (
+                        <>
+                          {r.paymentStatus === "Paid" && (
+                            <div className="flex gap-[5px] items-center shrink-0">
+                              <div className="bg-[#17b26a] rounded-[9999px] size-[6px]" />
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] whitespace-nowrap">Pagamento confirmado</p>
+                            </div>
+                          )}
+                          {r.paymentStatus === "Pending" && (
+                            <div className="flex gap-[5px] items-center shrink-0">
+                              <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Pagamento pendente</p>
+                            </div>
+                          )}
+                          {isGroup && pendingCount > 0 && (
+                            <div className="flex gap-[5px] items-center shrink-0">
+                              <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">{pendingCount} Check-in&apos;s pendentes</p>
+                            </div>
+                          )}
+                          {isGroup && doneCount > 0 && (
+                            <div className="flex gap-[5px] items-center shrink-0">
+                              <div className="bg-[#2b7fff] rounded-[9999px] size-[6px]" />
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#1447e6] whitespace-nowrap">{doneCount} Check-in&apos;s realizados</p>
+                            </div>
+                          )}
+                        </>
                       )}
-                      {r.paymentStatus === "Pending" && (
-                        <div className="flex gap-[4px] items-center shrink-0">
-                          <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Pagamento pendente</p>
-                        </div>
-                      )}
-                      {isGroup && pendingCount > 0 && (
-                        <div className="flex gap-[4px] items-center shrink-0">
-                          <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">{pendingCount} Check-in&apos;s pendentes</p>
-                        </div>
-                      )}
-                      {isGroup && doneCount > 0 && (
-                        <div className="flex gap-[4px] items-center shrink-0">
-                          <div className="bg-[#2b7fff] rounded-[9999px] size-[6px]" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#1447e6] whitespace-nowrap">{doneCount} Check-in&apos;s realizados</p>
-                        </div>
-                      )}
-                    </>
+                    </div>
+                  </div>
+                  {/* Expand/collapse for groups */}
+                  {isGroup && (
+                    <button onClick={() => toggleGroup(r.id)} className="cursor-pointer flex gap-[8px] items-center rounded-[6px] shrink-0 hover:underline">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">{expanded ? `Ocultar Grupo (${r.participants.length})` : `Ver Grupo (${r.participants.length})`}</p>
+                    </button>
                   )}
                 </div>
-                {/* Expand/collapse for groups */}
-                {isGroup && (
-                  <button onClick={() => toggleGroup(r.id)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[13px] text-[#0b5ed7] whitespace-nowrap hover:underline">
-                    {expanded ? `Ocultar Grupo (${r.participants.length})` : `Ver Grupo (${r.participants.length})`}
-                  </button>
-                )}
               </div>
-              {/* Participant rows */}
+              {/* ── Participant rows ── */}
               {(isGroup ? expanded : true) && r.participants.map((p) => {
                 const isCancelled = r.status === "Cancelled";
                 const isDone = p.checkInStatus === "Done";
                 const showCheckIn = !isCancelled && r.status !== "AwaitingPayment" && r.status !== "NoShow";
                 return (
-                  <div key={p.id} className="border-t border-[#f5f5f5] content-stretch flex items-center gap-[12px] px-[16px] py-[10px] relative w-full">
-                    <input type="checkbox" className="accent-[#0b5ed7] shrink-0 size-[16px]" readOnly />
-                    <InitialsAvatar name={p.name} />
-                    {/* Name + buyer label + ID */}
-                    <div className="content-stretch flex flex-col gap-[2px] items-start min-w-[160px] relative shrink-0">
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27] overflow-hidden text-ellipsis whitespace-nowrap max-w-[200px]">{p.name}</p>
-                      <div className="flex gap-[6px] items-center">
-                        {p.notes?.includes("Comprador") && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Comprador -</p>}
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">ID: <span className="text-[#0b5ed7]">#8821</span></p>
-                      </div>
-                    </div>
-                    {/* Tariff type */}
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-[60px] not-italic text-[14px] text-[#535862]">{p.tariffType}</p>
-                    {/* Check-in status badge */}
-                    <div className="flex-1 min-w-0">
-                      {isCancelled ? (
-                        <div className="flex gap-[4px] items-center">
-                          <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#717680]">Reserva cancelada</p>
-                        </div>
-                      ) : isDone ? (
-                        <div className="flex gap-[6px] items-center">
-                          <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="#2b7fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#1447e6]">Check-in realizado</p>
+                  <div key={p.id} className="border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full">
+                    {/* Checkbox cell — 40px */}
+                    <button onClick={() => toggleSelectParticipant(p.id)} className="cursor-pointer flex items-center justify-center shrink-0" style={{ width: "40px", padding: "1px 8px" }}>
+                      {selectedIds.has(p.id) ? (
+                        <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                          <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </div>
                       ) : (
-                        <div className="flex gap-[6px] items-center">
-                          <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#dc6803]">Check-in pendente</p>
+                        <div className="bg-white border border-[#d5d7da] border-solid rounded-[4px] shrink-0 size-[20px]" />
+                      )}
+                    </button>
+                    {/* Name cell — 286px */}
+                    <div className="flex gap-[12px] items-center shrink-0" style={{ width: "286px", padding: "8px 12px" }}>
+                      <InitialsAvatar name={p.name} />
+                      <div className="flex flex-col gap-[4px] items-start min-w-0 flex-1">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap w-full">{p.name}</p>
+                        <div className="flex gap-[4px] items-center">
+                          {p.notes?.includes("Comprador") && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Comprador -</p>}
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">ID: <span className="text-[#0b5ed7]">#8821</span></p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Tariff cell — 133px */}
+                    <div className="flex items-center shrink-0" style={{ width: "133px", padding: "14px 12px" }}>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0f172b]">{p.tariffType}</p>
+                    </div>
+                    {/* Status + icons cell — flex */}
+                    <div className="flex flex-1 gap-[10px] items-center min-w-0" style={{ padding: "14px 12px" }}>
+                      {/* Check-in status badge */}
+                      {isCancelled ? (
+                        <div className="border border-[#e9e9eb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: "#fafafa" }}>
+                          <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap">Reserva cancelada</p>
+                        </div>
+                      ) : isDone ? (
+                        <div className="border border-[#e9e9eb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: "#fafafa" }}>
+                          <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="#2b7fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#1447e6] whitespace-nowrap">Check-in realizado</p>
+                        </div>
+                      ) : (
+                        <div className="border border-[#e9e9eb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: "#fff9eb" }}>
+                          <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Check-in pendente</p>
                         </div>
                       )}
                     </div>
-                    {/* Alert icons */}
+                    {/* Alert icon badges — circular 28px */}
                     {!isCancelled && (
-                      <div className="flex gap-[6px] items-center shrink-0">
-                        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Seguro"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke={r.insuranceStatus === "Contracted" ? "#079455" : "#dc6803"} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Imagem"><rect x="2" y="3" width="12" height="10" rx="2" stroke={p.hasImageAuth ? "#717680" : "#dc6803"} strokeWidth="1.2"/><circle cx="6" cy="7" r="1.5" stroke={p.hasImageAuth ? "#717680" : "#dc6803"} strokeWidth="1.2"/></svg>
-                        {p.hasHealthIssue && <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Atenção médica"><circle cx="8" cy="8" r="6" stroke="#6941c6" strokeWidth="1.2"/><path d="M8 5v3M8 10v.5" stroke="#6941c6" strokeWidth="1.2" strokeLinecap="round"/></svg>}
-                        {p.isMinor && <svg className="size-[16px]" fill="none" viewBox="0 0 16 16" title="Menor de idade"><circle cx="8" cy="5" r="3" stroke="#dc6803" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#dc6803" strokeWidth="1.2" strokeLinecap="round"/></svg>}
+                      <div className="flex gap-[6px] items-center shrink-0" style={{ padding: "14px 16px" }}>
+                        {[
+                          { title: "Seguro", stroke: r.insuranceStatus === "Contracted" ? "#079455" : "#dc6803", d: "M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" },
+                          { title: "Imagem", stroke: p.hasImageAuth ? "#717680" : "#dc6803", icon: "image" },
+                          ...(p.hasHealthIssue ? [{ title: "Saúde", stroke: "#6941c6", icon: "health" }] : []),
+                          ...(p.isMinor ? [{ title: "Menor", stroke: "#dc6803", icon: "minor" }] : []),
+                        ].map((ic) => (
+                          <div key={ic.title} className="bg-white border border-[#e9e9eb] border-solid flex items-center justify-center rounded-[20px] shrink-0 size-[28px]" title={ic.title}>
+                            <svg className="size-[16px]" fill="none" viewBox="0 0 16 16">
+                              {ic.icon === "image" ? (
+                                <><rect x="2" y="3" width="12" height="10" rx="2" stroke={ic.stroke} strokeWidth="1.2"/><circle cx="6" cy="7" r="1.5" stroke={ic.stroke} strokeWidth="1.2"/></>
+                              ) : ic.icon === "health" ? (
+                                <><circle cx="8" cy="8" r="6" stroke={ic.stroke} strokeWidth="1.2"/><path d="M8 5v3M8 10v.5" stroke={ic.stroke} strokeWidth="1.2" strokeLinecap="round"/></>
+                              ) : ic.icon === "minor" ? (
+                                <><circle cx="8" cy="5" r="3" stroke={ic.stroke} strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke={ic.stroke} strokeWidth="1.2" strokeLinecap="round"/></>
+                              ) : (
+                                <path d={ic.d} stroke={ic.stroke} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                              )}
+                            </svg>
+                          </div>
+                        ))}
                       </div>
                     )}
-                    {/* Check-in action */}
-                    {showCheckIn && (
-                      isDone ? (
-                        <button onClick={() => handleUndoCheckIn(p)} className="bg-white border border-[#e2e8f0] border-solid content-stretch cursor-pointer flex gap-[6px] hover:bg-[#f8fafc] items-center justify-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors">
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
-                        </button>
-                      ) : (
-                        <button onClick={() => handleCheckIn(p, r.insuranceStatus)} className="content-stretch cursor-pointer flex gap-[6px] hover:bg-[#d5dcfe] items-center justify-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors" style={{ backgroundColor: "#edf0ff" }}>
-                          <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="#0b5ed7" strokeWidth="1.2"/><path d="M5 7l1.5 1.5L9.5 5" stroke="#0b5ed7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#0b5ed7] whitespace-nowrap">Realizar Check-in</p>
-                        </button>
-                      )
-                    )}
-                    {/* Three-dot menu */}
-                    <button className="cursor-pointer shrink-0 size-[20px] hover:bg-[#f1f5f9] rounded-[4px] flex items-center justify-center transition-colors">
-                      <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="13" r="1" fill="#717680"/></svg>
-                    </button>
+                    {/* Actions cell */}
+                    <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
+                      {showCheckIn && (
+                        isDone ? (
+                          <button onClick={() => handleUndoCheckIn(p)} className="bg-white border border-[#e4e4e7] border-solid cursor-pointer flex gap-[8px] hover:bg-[#f8fafc] items-center justify-center rounded-[6px] shrink-0 transition-colors" style={{ padding: "10px 12px" }}>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
+                          </button>
+                        ) : (
+                          <button onClick={() => handleCheckIn(p, r.insuranceStatus)} className="cursor-pointer flex gap-[8px] hover:bg-[#d5dcfe] items-center justify-center rounded-[6px] shrink-0 transition-colors" style={{ padding: "10px 12px", backgroundColor: "#edf0ff" }}>
+                            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Realizar Check-in</p>
+                          </button>
+                        )
+                      )}
+                      {/* Three-dot menu */}
+                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} />
+                    </div>
                   </div>
                 );
               })}
@@ -1488,6 +2006,55 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
         })}
       </div>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {/* Participant data drawer */}
+      {drawerData && <ParticipantDrawer participant={drawerData.p} reservation={drawerData.r} onClose={() => setDrawerData(null)} />}
+      {/* Cancel confirmation modal */}
+      {cancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCancelModal(null)} />
+          <div className="bg-white max-w-[480px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            <div className="flex flex-col gap-[16px] p-[24px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Cancelar reserva</p>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[14px] text-[#535862]">
+                Tem certeza que deseja cancelar a reserva de <strong>{cancelModal.p.name}</strong>? O valor será retido para possível reembolso conforme a política vigente.
+              </p>
+              <div className="flex flex-col gap-[6px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-[#414651]">Motivo do cancelamento *</p>
+                <select value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} className="bg-white border border-[#e9eaeb] border-solid font-['Helvetica_Neue:Regular',sans-serif] not-italic outline-none px-[12px] py-[10px] rounded-[8px] text-[14px] text-[#414651]">
+                  <option value="">Selecione um motivo...</option>
+                  <option value="solicitacao-cliente">Solicitação do cliente</option>
+                  <option value="condicoes-climaticas">Condições climáticas</option>
+                  <option value="falta-quorum">Falta de quórum</option>
+                  <option value="problemas-operacionais">Problemas operacionais</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </div>
+              <div className="flex gap-[12px] justify-end mt-[8px]">
+                <button onClick={() => setCancelModal(null)} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Voltar</button>
+                <button onClick={confirmCancel} disabled={!cancelReason} className={`cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors ${cancelReason ? "bg-[#d92d20] hover:bg-[#b42318]" : "bg-[#fda29b] cursor-not-allowed"}`}>Confirmar cancelamento</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* No-show confirmation modal */}
+      {noShowModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setNoShowModal(null)} />
+          <div className="bg-white max-w-[440px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            <div className="flex flex-col gap-[16px] p-[24px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Marcar como não compareceu</p>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[14px] text-[#535862]">
+                Confirma que <strong>{noShowModal.p.name}</strong> não compareceu à atividade? Diferente de cancelar, o valor será retido para possível remarcação.
+              </p>
+              <div className="flex gap-[12px] justify-end mt-[8px]">
+                <button onClick={() => setNoShowModal(null)} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Voltar</button>
+                <button onClick={confirmNoShow} className="bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#b42318] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors">Confirmar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

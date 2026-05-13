@@ -1291,6 +1291,148 @@ function ParticipantDrawer({ participant, reservation, onClose }: {
   );
 }
 
+// ─── Badge System ───────────────────────────────────────────────────────────
+
+// 2.2 — Status → badge mapping
+const STATUS_BADGE_MAP: Record<string, { label: string; color: string; bg: string; border: string; icon: "check" | "x" | "calendar-check" | "calendar-clock" | "calendar-x" | "clipboard-check" | "clipboard-x" | "lock" | "dot" }> = {
+  CheckedIn:       { label: "Check-in realizado",   color: "#1447e6", bg: "#eff6ff", border: "#dbeafe", icon: "check" },
+  Confirmed:       { label: "Check-in pendente",    color: "#dc6803", bg: "#fff9eb", border: "#fef0c7", icon: "x" },
+  AwaitingPayment: { label: "Reserva agendada",     color: "#dc6803", bg: "#fffaeb", border: "#fef0c7", icon: "calendar-clock" },
+  Draft:           { label: "Pré-reservada",         color: "#717680", bg: "#fafafa", border: "#f5f5f5", icon: "lock" },
+  Performed:       { label: "Realizou a atividade", color: "#079455", bg: "#ecfdf3", border: "#dcfae6", icon: "clipboard-check" },
+  Cancelled:       { label: "Reserva cancelada",    color: "#d92d20", bg: "#fef3f2", border: "#fee4e2", icon: "calendar-x" },
+  NoShow:          { label: "Não compareceu",       color: "#d92d20", bg: "#fef3f2", border: "#fee4e2", icon: "calendar-x" },
+  Expired:         { label: "Reserva cancelada",    color: "#717680", bg: "#fafafa", border: "#f5f5f5", icon: "calendar-x" },
+};
+
+function StatusBadgeIcon({ icon, color }: { icon: string; color: string }) {
+  const s = { stroke: color, strokeWidth: "1.5", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  if (icon === "check") return <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" {...s}/></svg>;
+  if (icon === "x") return <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" {...s}/></svg>;
+  if (icon === "calendar-check") return <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><rect x="1" y="2" width="10" height="9" rx="2" stroke={color} strokeWidth="1.2"/><path d="M1 5h10" stroke={color} strokeWidth="1.2"/><path d="M5 8l1 1 2-2" {...s} strokeWidth="1.2"/></svg>;
+  if (icon === "calendar-clock") return <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><rect x="1" y="2" width="10" height="9" rx="2" stroke={color} strokeWidth="1.2"/><path d="M1 5h10" stroke={color} strokeWidth="1.2"/><circle cx="6" cy="8" r="1.5" stroke={color} strokeWidth="1.2"/></svg>;
+  if (icon === "calendar-x") return <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><rect x="1" y="2" width="10" height="9" rx="2" stroke={color} strokeWidth="1.2"/><path d="M1 5h10" stroke={color} strokeWidth="1.2"/><path d="M4.5 7l3 3M7.5 7l-3 3" stroke={color} strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  if (icon === "clipboard-check") return <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><rect x="2" y="1" width="8" height="10" rx="2" stroke={color} strokeWidth="1.2"/><path d="M4.5 6l1 1 2-2" {...s} strokeWidth="1.2"/></svg>;
+  if (icon === "lock") return <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><rect x="2" y="5" width="8" height="6" rx="2" stroke={color} strokeWidth="1.2"/><path d="M4 5V3.5a2 2 0 014 0V5" stroke={color} strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  return <div className="rounded-[9999px] shrink-0 size-[6px]" style={{ backgroundColor: color }} />;
+}
+
+function ReservationStatusBadge({ status, tooltip }: { status: string; tooltip?: string }) {
+  const cfg = STATUS_BADGE_MAP[status] || STATUS_BADGE_MAP.Confirmed;
+  return (
+    <div className="border border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: cfg.bg, borderColor: cfg.border }} title={tooltip}>
+      <StatusBadgeIcon icon={cfg.icon} color={cfg.color} />
+      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap" style={{ color: cfg.color }}>{cfg.label}</p>
+    </div>
+  );
+}
+
+// 3 — Attribute badges (secondary) with rich tooltips
+
+const TOOLTIP_CONTENT: Record<string, { title: string; subtitle: string }> = {
+  "image-authorized":              { title: "Termo de Uso de Imagem", subtitle: "Autorizado pelo Participante" },
+  "image-refused":                 { title: "Termo de Uso de Imagem", subtitle: "Recusado pelo Participante" },
+  "image-pending":                 { title: "Termo de Uso de Imagem", subtitle: "Pendente pelo Participante" },
+  "health-alert":                  { title: "Possui Alerta de Saúde", subtitle: "" },
+  "insurance-optional":            { title: "Sem seguro (opcional)", subtitle: "Não é obrigatório para essa atividade" },
+  "insurance-mandatory-missing":   { title: "Sem seguro (obrigatório)", subtitle: "Contratação obrigatória para essa atividade" },
+  "insurance-mandatory-contracted":{ title: "Seguro contratado (obrigatório)", subtitle: "Seguro ativo para essa atividade" },
+  "insurance-contracted":          { title: "Seguro contratado", subtitle: "Seguro contratado pelo participante" },
+  "additional-items":              { title: "Itens adicionais solicitados", subtitle: "Participante solicitou itens extras" },
+  "health-plan":                   { title: "Possui plano de saúde", subtitle: "Plano de saúde informado" },
+  "special-needs":                 { title: "Possui necessidades especiais", subtitle: "Necessidades especiais informadas" },
+  "dietary-restriction":           { title: "Possui restrição alimentar", subtitle: "Restrição alimentar informada" },
+  "minor":                         { title: "Menor de idade", subtitle: "Participante é menor de 18 anos" },
+};
+
+function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke: string; tooltipKey: string }) {
+  const [show, setShow] = useState(false);
+  const content = TOOLTIP_CONTENT[tooltipKey];
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+      onFocus={() => setShow(true)}
+      onBlur={() => setShow(false)}
+      tabIndex={0}
+      role="button"
+      aria-describedby={show ? `tooltip-${tooltipKey}` : undefined}
+    >
+      <div className="bg-white border border-[#e9e9eb] border-solid flex items-center justify-center rounded-[20px] shrink-0 size-[28px] cursor-default">
+        <div style={{ color: stroke }}>{icon}</div>
+      </div>
+      {show && content && (
+        <div
+          id={`tooltip-${tooltipKey}`}
+          role="tooltip"
+          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[240px] z-50 pointer-events-none"
+        >
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-white whitespace-nowrap">{content.title}</p>
+          {content.subtitle && (
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[4px] not-italic text-[12px] text-[#a4a7ae]">{content.subtitle}</p>
+          )}
+          {/* Arrow */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsurance }: {
+  participant: Participant; insuranceStatus: string; requiresInsurance: boolean;
+}) {
+  const badges: { key: string; icon: React.ReactNode; stroke: string; tooltipKey: string }[] = [];
+
+  // 1. Termo de uso de imagem (always shown)
+  if (p.hasImageAuth) {
+    badges.push({ key: "image", stroke: "#079455", tooltipKey: "image-authorized",
+      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><circle cx="6" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M10 13l2-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+  } else {
+    badges.push({ key: "image", stroke: "#dc6803", tooltipKey: "image-pending",
+      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M6 7l4 4M10 7l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+  }
+
+  // 2. Seguro (always shown)
+  if (requiresInsurance) {
+    if (insuranceStatus === "Contracted") {
+      badges.push({ key: "insurance", stroke: "#079455", tooltipKey: "insurance-mandatory-contracted",
+        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 8l1.5 1.5L10 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+    } else {
+      badges.push({ key: "insurance", stroke: "#d92d20", tooltipKey: "insurance-mandatory-missing",
+        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+    }
+  } else {
+    if (insuranceStatus !== "Contracted") {
+      badges.push({ key: "insurance", stroke: "#717680", tooltipKey: "insurance-optional",
+        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+    } else {
+      badges.push({ key: "insurance", stroke: "#079455", tooltipKey: "insurance-contracted",
+        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 8l1.5 1.5L10 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+    }
+  }
+
+  // 3. Alerta de saúde (only when applicable)
+  if (p.hasHealthIssue) {
+    badges.push({ key: "health", stroke: "#dc6803", tooltipKey: "health-alert",
+      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+  }
+
+  // 4. Menor de idade (only when applicable)
+  if (p.isMinor) {
+    badges.push({ key: "minor", stroke: "#6941c6", tooltipKey: "minor",
+      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+  }
+
+  return (
+    <div className="flex gap-[6px] items-center shrink-0" style={{ padding: "14px 16px" }}>
+      {badges.map((b) => <AttrBadge key={b.key} icon={b.icon} stroke={b.stroke} tooltipKey={b.tooltipKey} />)}
+    </div>
+  );
+}
+
 type ParticipantesFilter = "todos" | "a-fazer-checkin" | "checkin-realizado" | "canceladas";
 
 // ─── Three-dot menu items ───────────────────────────────────────────────────
@@ -1936,51 +2078,12 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                     <div className="flex items-center shrink-0" style={{ width: "133px", padding: "14px 12px" }}>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0f172b]">{p.tariffType}</p>
                     </div>
-                    {/* Status + icons cell — flex */}
+                    {/* Badge principal — estado da reserva */}
                     <div className="flex flex-1 gap-[10px] items-center min-w-0" style={{ padding: "14px 12px" }}>
-                      {/* Check-in status badge */}
-                      {isCancelled ? (
-                        <div className="border border-[#e9e9eb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: "#fafafa" }}>
-                          <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap">Reserva cancelada</p>
-                        </div>
-                      ) : isDone ? (
-                        <div className="border border-[#e9e9eb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: "#fafafa" }}>
-                          <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="#2b7fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#1447e6] whitespace-nowrap">Check-in realizado</p>
-                        </div>
-                      ) : (
-                        <div className="border border-[#e9e9eb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: "#fff9eb" }}>
-                          <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Check-in pendente</p>
-                        </div>
-                      )}
+                      <ReservationStatusBadge status={r.status} tooltip={r.status === "Expired" ? "Reserva expirada por inatividade" : undefined} />
                     </div>
-                    {/* Alert icon badges — circular 28px */}
-                    {!isCancelled && (
-                      <div className="flex gap-[6px] items-center shrink-0" style={{ padding: "14px 16px" }}>
-                        {[
-                          { title: "Seguro", stroke: r.insuranceStatus === "Contracted" ? "#079455" : "#dc6803", d: "M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" },
-                          { title: "Imagem", stroke: p.hasImageAuth ? "#717680" : "#dc6803", icon: "image" },
-                          ...(p.hasHealthIssue ? [{ title: "Saúde", stroke: "#6941c6", icon: "health" }] : []),
-                          ...(p.isMinor ? [{ title: "Menor", stroke: "#dc6803", icon: "minor" }] : []),
-                        ].map((ic) => (
-                          <div key={ic.title} className="bg-white border border-[#e9e9eb] border-solid flex items-center justify-center rounded-[20px] shrink-0 size-[28px]" title={ic.title}>
-                            <svg className="size-[16px]" fill="none" viewBox="0 0 16 16">
-                              {ic.icon === "image" ? (
-                                <><rect x="2" y="3" width="12" height="10" rx="2" stroke={ic.stroke} strokeWidth="1.2"/><circle cx="6" cy="7" r="1.5" stroke={ic.stroke} strokeWidth="1.2"/></>
-                              ) : ic.icon === "health" ? (
-                                <><circle cx="8" cy="8" r="6" stroke={ic.stroke} strokeWidth="1.2"/><path d="M8 5v3M8 10v.5" stroke={ic.stroke} strokeWidth="1.2" strokeLinecap="round"/></>
-                              ) : ic.icon === "minor" ? (
-                                <><circle cx="8" cy="5" r="3" stroke={ic.stroke} strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke={ic.stroke} strokeWidth="1.2" strokeLinecap="round"/></>
-                              ) : (
-                                <path d={ic.d} stroke={ic.stroke} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                              )}
-                            </svg>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {/* Badges secundários — atributos do participante */}
+                    <ParticipantBadgesRow participant={p} insuranceStatus={r.insuranceStatus} requiresInsurance={true} />
                     {/* Actions cell */}
                     <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {showCheckIn && (

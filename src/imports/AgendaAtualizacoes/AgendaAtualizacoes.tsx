@@ -2001,35 +2001,35 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                         <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
                       </button>
                     </div>
-                    {/* Status badges */}
-                    <div className="flex gap-[10px] items-center flex-1 min-w-0">
+                    {/* Status badges — with container per Figma */}
+                    <div className="flex gap-[8px] items-center flex-1 min-w-0">
                       {r.status === "Cancelled" ? (
-                        <div className="flex gap-[5px] items-center shrink-0">
+                        <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
                           <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap">Reserva cancelada</p>
                         </div>
                       ) : (
                         <>
                           {r.paymentStatus === "Paid" && (
-                            <div className="flex gap-[5px] items-center shrink-0">
+                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
                               <div className="bg-[#17b26a] rounded-[9999px] size-[6px]" />
                               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] whitespace-nowrap">Pagamento confirmado</p>
                             </div>
                           )}
                           {r.paymentStatus === "Pending" && (
-                            <div className="flex gap-[5px] items-center shrink-0">
+                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
                               <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
                               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Pagamento pendente</p>
                             </div>
                           )}
                           {isGroup && pendingCount > 0 && (
-                            <div className="flex gap-[5px] items-center shrink-0">
+                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
                               <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
                               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">{pendingCount} Check-in&apos;s pendentes</p>
                             </div>
                           )}
                           {isGroup && doneCount > 0 && (
-                            <div className="flex gap-[5px] items-center shrink-0">
+                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
                               <div className="bg-[#2b7fff] rounded-[9999px] size-[6px]" />
                               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#1447e6] whitespace-nowrap">{doneCount} Check-in&apos;s realizados</p>
                             </div>

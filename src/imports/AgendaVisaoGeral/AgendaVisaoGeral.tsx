@@ -467,7 +467,7 @@ function Container11() {
 
 function Container9() {
   return (
-    <div className="bg-[#f6faff] flex-[1_0_0] h-full min-w-px relative rounded-[14px]" data-name="Container">
+    <div className="bg-[#f6faff] flex-[1_0_0] min-h-[160px] min-w-px relative rounded-[14px]" data-name="Container">
       <div aria-hidden="true" className="absolute border-[#bedbff] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[14px] shadow-[0px_0px_0px_0px_#dbeafe]" />
       <div className="flex flex-col items-center size-full">
         <div className="content-stretch flex flex-col items-center justify-between px-[10px] py-[20px] relative size-full">
@@ -525,7 +525,7 @@ function Container14() {
 
 function Container12() {
   return (
-    <div className="bg-white flex-[1_0_0] h-full min-w-px relative rounded-[14px]" data-name="Container">
+    <div className="bg-white flex-[1_0_0] min-h-[160px] min-w-px relative rounded-[14px]" data-name="Container">
       <div aria-hidden="true" className="absolute border-[#e2e8f0] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[14px]" />
       <div className="flex flex-col items-center size-full">
         <div className="content-stretch flex flex-col items-center justify-between px-[10px] py-[20px] relative size-full">
@@ -584,7 +584,7 @@ function Container17() {
 
 function Container15() {
   return (
-    <div className="bg-white flex-[1_0_0] h-full min-w-px relative rounded-[14px]" data-name="Container">
+    <div className="bg-white flex-[1_0_0] min-h-[160px] min-w-px relative rounded-[14px]" data-name="Container">
       <div aria-hidden="true" className="absolute border-[#e2e8f0] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[14px]" />
       <div className="flex flex-col items-center size-full">
         <div className="content-stretch flex flex-col items-center justify-between px-[10px] py-[20px] relative size-full">
@@ -643,7 +643,7 @@ function Container20() {
 
 function Container18() {
   return (
-    <div className="flex-[1_0_0] h-full min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
+    <div className="flex-[1_0_0] min-h-[160px] min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
       <div aria-hidden="true" className="absolute border-[#e2e8f0] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[14px] shadow-[0px_0px_0px_0px_#dbeafe]" />
       <div className="flex flex-col items-center size-full">
         <div className="content-stretch flex flex-col items-center justify-between px-[10px] py-[20px] relative size-full">
@@ -702,7 +702,7 @@ function Container23() {
 
 function Container21() {
   return (
-    <div className="flex-[1_0_0] h-full min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
+    <div className="flex-[1_0_0] min-h-[160px] min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
       <div aria-hidden="true" className="absolute border-[#e2e8f0] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[14px] shadow-[0px_0px_0px_0px_#dbeafe]" />
       <div className="flex flex-col items-center size-full">
         <div className="content-stretch flex flex-col items-center justify-between px-[10px] py-[20px] relative size-full">
@@ -761,7 +761,7 @@ function Container26() {
 
 function Container24() {
   return (
-    <div className="flex-[1_0_0] h-full min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
+    <div className="flex-[1_0_0] min-h-[160px] min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
       <div aria-hidden="true" className="absolute border-[#e2e8f0] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[14px] shadow-[0px_0px_0px_0px_#dbeafe]" />
       <div className="flex flex-col items-center size-full">
         <div className="content-stretch flex flex-col items-center justify-between px-[10px] py-[20px] relative size-full">
@@ -820,7 +820,7 @@ function Container29() {
 
 function Container27() {
   return (
-    <div className="flex-[1_0_0] h-full min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
+    <div className="flex-[1_0_0] min-h-[160px] min-w-px relative rounded-[14px]" style={{ backgroundImage: "linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%), linear-gradient(90deg, rgb(246, 250, 255) 0%, rgb(246, 250, 255) 100%)" }} data-name="Container">
       <div aria-hidden="true" className="absolute border-[#e2e8f0] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[14px] shadow-[0px_0px_0px_0px_#dbeafe]" />
       <div className="flex flex-col items-center size-full">
         <div className="content-stretch flex flex-col items-center justify-between px-[10px] py-[20px] relative size-full">
@@ -835,7 +835,7 @@ function Container27() {
 
 function Container8() {
   return (
-    <div className="content-stretch flex flex-[1_0_0] gap-[8px] items-center min-h-px relative w-full" data-name="Container">
+    <div className="content-stretch flex gap-[8px] items-start relative w-full" data-name="Container">
       <Container9 />
       <Container12 />
       <Container15 />
@@ -893,22 +893,12 @@ function Elements13() {
 function Frame1() {
   return (
     <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full">
-      <div className="h-0 relative shrink-0 w-full">
-        <div className="absolute inset-[-1px_0_0_0]">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 478 1">
-            <line id="Line 1" stroke="var(--stroke-0, #F5F5F5)" x2="478" y1="0.5" y2="0.5" />
-          </svg>
+      <div className="bg-[#f5f5f5] h-px shrink-0 w-full" />
+      <div className="flex gap-[8px] items-center justify-center px-[16px] py-[10px] w-full">
+        <div className="relative shrink-0 size-[20px]" data-name="information-circle">
+          <Elements13 />
         </div>
-      </div>
-      <div className="bg-[rgba(255,255,255,0)] relative rounded-[6px] shrink-0 w-full" data-name="button">
-        <div className="flex flex-row items-center justify-center size-full">
-          <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-            <div className="relative shrink-0 size-[20px]" data-name="information-circle">
-              <Elements13 />
-            </div>
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#62748e] text-[14px] whitespace-nowrap">Dados de OpenWeather API</p>
-          </div>
-        </div>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#62748e] text-[14px] whitespace-nowrap">Dados de OpenWeather API</p>
       </div>
     </div>
   );

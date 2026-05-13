@@ -511,7 +511,7 @@ function NavLabel({ label, onPrev, onNext }: { label: string; onPrev: () => void
             </div>
           </div>
         </button>
-        <div className="bg-white flex-[1_0_0] min-w-px relative rounded-[10px]" data-name="Button">
+        <div className="bg-white relative rounded-[10px] shrink-0 w-[170px]" data-name="Button">
           <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[10px]" />
           <div className="flex flex-row items-center justify-center size-full">
             <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center px-[24px] py-[10px] relative size-full">
@@ -2309,7 +2309,7 @@ const WEEK_STATUS_BORDER: Record<ActivityStatus, string> = {
   blocked:   "#d5d7da",
 };
 
-function WeekActivityCard({ a }: { a: Activity }) {
+function WeekActivityCard({ a, onClick }: { a: Activity; onClick?: () => void }) {
   const c = CAL_COLORS[a.status];
   const borderColor = WEEK_STATUS_BORDER[a.status];
   const isBlocked = a.status === "blocked";
@@ -2323,7 +2323,8 @@ function WeekActivityCard({ a }: { a: Activity }) {
 
   return (
     <div
-      className="relative rounded-[12px] w-full shrink-0"
+      onClick={onClick}
+      className={`relative rounded-[12px] w-full shrink-0${onClick ? " cursor-pointer hover:shadow-md transition-shadow" : ""}`}
       style={{
         backgroundColor: isBlocked ? "#fafafa" : "white",
         borderLeft: `4px ${isBlocked ? "dashed" : "solid"} ${borderColor}`,
@@ -2352,7 +2353,7 @@ function WeekActivityCard({ a }: { a: Activity }) {
   );
 }
 
-function WeekContent({ weekStart, onDayClick }: { weekStart: Date; onDayClick?: (day: number) => void }) {
+function WeekContent({ weekStart, onDayClick, onViewDetails }: { weekStart: Date; onDayClick?: (day: number) => void; onViewDetails?: () => void }) {
   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
 
   return (
@@ -2396,7 +2397,7 @@ function WeekContent({ weekStart, onDayClick }: { weekStart: Date; onDayClick?: 
             {/* Activity cards */}
             <div className="content-stretch flex flex-col gap-[8px] items-start relative w-full">
               {acts.map((a) => (
-                <WeekActivityCard key={a.id} a={a} />
+                <WeekActivityCard key={a.id} a={a} onClick={onViewDetails} />
               ))}
             </div>
           </div>
@@ -2494,7 +2495,7 @@ function DayActivityCard({ a, onClick }: { a: Activity; onClick?: () => void }) 
   );
 }
 
-function DayContent({ dayDate, onDayClick }: { dayDate: Date; onDayClick?: (day: number) => void }) {
+function DayContent({ dayDate, onDayClick, onViewDetails }: { dayDate: Date; onDayClick?: (day: number) => void; onViewDetails?: () => void }) {
   const iso = format(dayDate, "yyyy-MM-dd");
   const acts = mockActivities.filter((a) => a.date === iso);
   const holiday = CAL_HOLIDAYS[iso];
@@ -2544,7 +2545,7 @@ function DayContent({ dayDate, onDayClick }: { dayDate: Date; onDayClick?: (day:
                   <div className="content-stretch flex gap-[12px] py-[8px] relative w-full">
                     {hourActs.map((a) => (
                       <div key={a.id} className="flex-1 min-w-0">
-                        <DayActivityCard a={a} onClick={() => onDayClick?.(dayDate.getDate())} />
+                        <DayActivityCard a={a} onClick={onViewDetails} />
                       </div>
                     ))}
                   </div>
@@ -2573,11 +2574,12 @@ function DayContent({ dayDate, onDayClick }: { dayDate: Date; onDayClick?: (day:
 // ─── Calendar Wrapper (switches between Month/Week/Day) ─────────────────────
 
 function CalendarCard({
-  view, onViewChange, onDayClick,
+  view, onViewChange, onDayClick, onViewDetails,
   refDate, onPrev, onNext,
 }: {
   view: ViewMode; onViewChange: (v: ViewMode) => void;
   onDayClick?: (day: number) => void;
+  onViewDetails?: () => void;
   refDate: Date; onPrev: () => void; onNext: () => void;
 }) {
   // Build nav label based on view
@@ -2610,10 +2612,10 @@ function CalendarCard({
               </div>
             )}
             {view === "semana" && (
-              <WeekContent weekStart={startOfWeek(refDate, { weekStartsOn: 0 })} onDayClick={onDayClick} />
+              <WeekContent weekStart={startOfWeek(refDate, { weekStartsOn: 0 })} onDayClick={onDayClick} onViewDetails={onViewDetails} />
             )}
             {view === "dia" && (
-              <DayContent dayDate={refDate} onDayClick={onDayClick} />
+              <DayContent dayDate={refDate} onDayClick={onDayClick} onViewDetails={onViewDetails} />
             )}
           </div>
         </div>
@@ -3216,12 +3218,13 @@ function Frame25({ onDayClick }: { onDayClick?: (day: number) => void }) {
   );
 }
 
-export default function AgendaMes({ onDayClick }: { onDayClick?: (day: number) => void }) {
-  const [view, setView] = useState<ViewMode>("mes");
+export default function AgendaMes({ onDayClick, onViewDetails, initialView = "mes", onViewModeChange }: { onDayClick?: (day: number) => void; onViewDetails?: () => void; initialView?: ViewMode; onViewModeChange?: (v: ViewMode) => void }) {
+  const [view, setView] = useState<ViewMode>(initialView);
   const [refDate, setRefDate] = useState<Date>(CAL_TODAY);
 
   const handleViewChange = (v: ViewMode) => {
     setView(v);
+    onViewModeChange?.(v);
   };
 
   const handlePrev = () => {
@@ -3243,6 +3246,7 @@ export default function AgendaMes({ onDayClick }: { onDayClick?: (day: number) =
         view={view}
         onViewChange={handleViewChange}
         onDayClick={onDayClick}
+        onViewDetails={onViewDetails}
         refDate={refDate}
         onPrev={handlePrev}
         onNext={handleNext}

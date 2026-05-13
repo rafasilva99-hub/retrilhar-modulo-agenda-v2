@@ -1904,6 +1904,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showMoreActions, setShowMoreActions] = useState(false);
+  const [showBulkCheckInTip, setShowBulkCheckInTip] = useState(false);
 
   // Selection helpers
   const allParticipantIds = useMemo(() => reservations.flatMap((r) => r.participants.map((p) => p.id)), [reservations]);
@@ -1960,19 +1961,76 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   };
 
   const handleBulkAction = (action: BulkAction, label: string) => {
+    // Special handling for undo insurance bulk
+    if (action === "undo-bulk-insurance" as any) {
+      let undone = 0;
+      for (const r of selectedReservations) {
+        for (const p of r.participants) {
+          if (selectedIds.has(p.id) && isParticipantInsured(p.id)) {
+            undoInsurance(p.id);
+            if (p.checkInStatus === "Done") dispatch({ type: "UNDO_CHECK_IN", participantId: p.id });
+            undone++;
+          }
+        }
+      }
+      showToast(undone > 0 ? `Contratação de seguro desfeita para ${undone} participante(s).` : "Nenhum selecionado possui seguro contratado.");
+      return;
+    }
+
+    // Special handling for insurance bulk
+    if (action === "add-insurance") {
+      let contracted = 0;
+      for (const r of selectedReservations) {
+        for (const p of r.participants) {
+          if (selectedIds.has(p.id) && !isParticipantInsured(p.id)) {
+            contractInsurance(p.id);
+            contracted++;
+          }
+        }
+      }
+      showToast(contracted > 0 ? `Seguro contratado para ${contracted} participante(s).` : "Todos os selecionados já possuem seguro.");
+      return;
+    }
+
+    // Special handling for check-in — must validate insurance per participant
+    if (action === "check-in") {
+      let done = 0, blocked = 0;
+      for (const r of selectedReservations) {
+        if (r.status !== "Confirmed") continue;
+        for (const p of r.participants) {
+          if (!selectedIds.has(p.id) || p.checkInStatus === "Done") continue;
+          if (!isParticipantInsured(p.id)) { blocked++; continue; }
+          dispatch({ type: "CHECK_IN", participantId: p.id });
+          done++;
+        }
+      }
+      if (done === 0 && blocked > 0) {
+        showToast(`Nenhum check-in realizado. ${blocked} participante(s) sem seguro contratado.`, "error");
+      } else if (blocked > 0) {
+        showToast(`Check-in realizado para ${done} participante(s). ${blocked} ignorado(s) por seguro pendente.`);
+      } else {
+        showToast(`Check-in realizado para ${done} participante(s).`);
+      }
+      return;
+    }
+
+    if (action === "undo-check-in") {
+      let undone = 0;
+      for (const r of selectedReservations) {
+        for (const p of r.participants) {
+          if (!selectedIds.has(p.id) || p.checkInStatus !== "Done") continue;
+          dispatch({ type: "UNDO_CHECK_IN", participantId: p.id });
+          undone++;
+        }
+      }
+      showToast(`Check-in desfeito para ${undone} participante(s).`);
+      return;
+    }
+
     const e = bulkEligibility[action];
     if (!e || e.eligible === 0) {
       showToast(`Nenhuma das reservas selecionadas pode receber esta ação. ${e?.reason || ""}`, "error");
       return;
-    }
-    const { eligible } = isEligibleForBulkAction(selectedReservations, action);
-    // Apply action to eligible
-    for (const r of eligible) {
-      for (const p of r.participants) {
-        if (!selectedIds.has(p.id)) continue;
-        if (action === "check-in") dispatch({ type: "CHECK_IN", participantId: p.id });
-        if (action === "undo-check-in") dispatch({ type: "UNDO_CHECK_IN", participantId: p.id });
-      }
     }
     const ignored = e.total - e.eligible;
     if (ignored > 0) {
@@ -1983,12 +2041,18 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
     setShowMoreActions(false);
   };
 
-  // Determine primary inline actions labels
+  // Determine primary inline actions labels — based on participant checkInStatus, not r.status
   const checkInLabel = useMemo(() => {
-    const done = selectedReservations.filter((r) => r.status === "CheckedIn").length;
-    const pending = selectedReservations.filter((r) => r.status === "Confirmed").length;
+    let done = 0, pending = 0;
+    for (const r of selectedReservations) {
+      for (const p of r.participants) {
+        if (!selectedIds.has(p.id)) continue;
+        if (p.checkInStatus === "Done") done++;
+        else pending++;
+      }
+    }
     return done > pending ? "Desfazer Check-in's" : "Realizar Check-in's";
-  }, [selectedReservations]);
+  }, [selectedReservations, selectedIds]);
 
   const confirmLabel = useMemo(() => {
     const awaiting = selectedReservations.filter((r) => r.status === "AwaitingPayment").length;
@@ -2006,6 +2070,27 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const isParticipantInsured = (pid: string) => insuredParticipants.has(pid);
   const contractInsurance = (pid: string) => setInsuredParticipants((prev) => new Set([...prev, pid]));
   const undoInsurance = (pid: string) => setInsuredParticipants((prev) => { const next = new Set(prev); next.delete(pid); return next; });
+
+  // Count selected participants who have insurance for bulk eligibility
+  const selectedInsuredCount = useMemo(() => {
+    let count = 0;
+    for (const r of selectedReservations) {
+      for (const p of r.participants) {
+        if (selectedIds.has(p.id) && isParticipantInsured(p.id)) count++;
+      }
+    }
+    return count;
+  }, [selectedReservations, selectedIds, insuredParticipants]);
+
+  const selectedUninsuredCount = useMemo(() => {
+    let count = 0;
+    for (const r of selectedReservations) {
+      for (const p of r.participants) {
+        if (selectedIds.has(p.id) && !isParticipantInsured(p.id)) count++;
+      }
+    }
+    return count;
+  }, [selectedReservations, selectedIds, insuredParticipants]);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
@@ -2226,21 +2311,40 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
               </div>
             </button>
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">Todos os {selectedIds.size} selecionados</p>
-            {/* Primary inline actions */}
-            <button
-              onClick={() => handleBulkAction(checkInLabel === "Realizar Check-in's" ? "check-in" : "undo-check-in", checkInLabel)}
-              className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
-            >
-              {checkInLabel === "Realizar Check-in's" ? (
-                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              ) : (
-                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
-              )}
-              <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${checkInLabel === "Realizar Check-in's" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>{checkInLabel}</p>
-              <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(checkInLabel === "Realizar Check-in's" ? "check-in" : "undo-check-in")}</p>
+            {/* Primary inline actions — Check-in */}
+            {(() => {
+              const isRealizarMode = checkInLabel === "Realizar Check-in's";
+              const checkInDisabled = isRealizarMode && selectedInsuredCount === 0;
+              const badgeText = isRealizarMode ? `${selectedInsuredCount} de ${selectedIds.size}` : getBadgeLabel("undo-check-in");
+              return (
+              <div className="relative"
+                onMouseEnter={() => checkInDisabled && setShowBulkCheckInTip(true)}
+                onMouseLeave={() => setShowBulkCheckInTip(false)}
+              >
+                <button
+                  onClick={() => !checkInDisabled && handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
+                  disabled={checkInDisabled}
+                  className={`flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 transition-colors ${checkInDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-[#f8fafc]"}`}
+                >
+                  {isRealizarMode ? (
+                    <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  ) : (
+                    <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                  )}
+                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${checkInDisabled ? "text-[#727685]" : isRealizarMode ? "text-[#0b5ed7]" : "text-[#414651]"}`}>{checkInLabel}</p>
+                  <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{badgeText}</p>
+                  </div>
+                </button>
+                {showBulkCheckInTip && checkInDisabled && (
+                  <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[300px] z-50 pointer-events-none text-center">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">É necessário contratar o seguro dos participantes antes de realizar essa ação</p>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+                  </div>
+                )}
               </div>
-            </button>
+              );
+            })()}
             <button
               onClick={() => handleBulkAction(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm", confirmLabel)}
               className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
@@ -2260,7 +2364,9 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                 <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[260px] z-20">
                   {([
                     { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false },
-                    { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false },
+                    selectedUninsuredCount >= selectedInsuredCount
+                      ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false }
+                      : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer contratação de seguros", destructive: false },
                     { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false },
                     { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false },
                     { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true },

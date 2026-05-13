@@ -80,6 +80,11 @@ export default function App() {
     navigateTo("atualizacoes");
   };
 
+  const handleGoToCheckIn = () => {
+    setAtualizacoesInitialTab("participantes");
+    navigateTo("atualizacoes");
+  };
+
   const handleAtualizacoesClick = () => {
     setAtualizacoesInitialTab("atualizacoes");
     navigateTo("atualizacoes");
@@ -94,7 +99,7 @@ export default function App() {
   }
 
   if (currentPage === "agendaDia") {
-    return <AgendaAtividadesDoDia day={selectedDay} onBackToAgenda={() => navigateTo("agenda")} onViewDetails={handleViewDetails} />;
+    return <AgendaAtividadesDoDia day={selectedDay} onBackToAgenda={() => navigateTo("agenda")} onViewDetails={handleViewDetails} onGoToCheckIn={handleGoToCheckIn} />;
   }
 
   if (currentPage === "agenda") {

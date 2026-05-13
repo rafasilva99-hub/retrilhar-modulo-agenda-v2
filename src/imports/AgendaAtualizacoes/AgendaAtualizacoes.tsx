@@ -2643,7 +2643,7 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
     <div className="bg-[#f8fafc] relative size-full" data-name="AGENDA - ATUALIZAÇÕES">
       <TopBar />
       {activeTab === "atualizacoes" && <Frame23 />}
-      <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab} />
+      <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab} onBackToActivities={onBackToActivities} />
       <div className="absolute content-stretch flex gap-[10px] items-center left-[248px] top-[116px]" data-name="Breadcrumb">
         <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[14px] whitespace-nowrap">
           <p className="leading-[normal]">Início</p>

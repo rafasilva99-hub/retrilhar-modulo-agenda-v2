@@ -2624,9 +2624,9 @@ function DiaChevron() {
   );
 }
 
-function DiaActivityCard({ a, expanded, onToggle, onViewDetails }: {
+function DiaActivityCard({ a, expanded, onToggle, onViewDetails, onGoToCheckIn }: {
   a: Activity; expanded: boolean;
-  onToggle: () => void; onViewDetails?: () => void;
+  onToggle: () => void; onViewDetails?: () => void; onGoToCheckIn?: () => void;
 }) {
   const cfg = DIA_STATUS_CONFIG[a.status];
   const isFull = a.status === "full";
@@ -2683,7 +2683,7 @@ function DiaActivityCard({ a, expanded, onToggle, onViewDetails }: {
               </button>
               {!isBlocked && (
                 <button
-                  onClick={onViewDetails}
+                  onClick={onGoToCheckIn}
                   className="bg-[#edf0ff] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#d5dcfe] transition-colors"
                 >
                   <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
@@ -2770,10 +2770,11 @@ function DiaEmptyState({ onBack }: { onBack?: () => void }) {
   );
 }
 
-export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetails }: {
+export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetails, onGoToCheckIn }: {
   day?: number;
   onBackToAgenda?: () => void;
   onViewDetails?: () => void;
+  onGoToCheckIn?: () => void;
 }) {
   const refDay = day ?? 11;
   const dateObj = new Date(2026, 4, refDay); // May 2026
@@ -2869,6 +2870,7 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
                 expanded={expandedIds.has(a.id)}
                 onToggle={() => toggleCard(a.id)}
                 onViewDetails={onViewDetails}
+                onGoToCheckIn={onGoToCheckIn}
               />
             ))}
           </div>

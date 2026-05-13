@@ -1695,7 +1695,7 @@ function PrimitiveDiv({ onAtualizacoesClick }: { onAtualizacoesClick?: () => voi
 
 function SidebarAdmin({ onAtualizacoesClick, onBackToActivities }: { onAtualizacoesClick?: () => void; onBackToActivities?: () => void }) {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px] z-10" data-name="Sidebar - Admin">
+    <div className="fixed bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px] z-20" data-name="Sidebar - Admin">
       <div aria-hidden="true" className="absolute border border-[#fafafa] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.1)]" />
       <Container33 onBackToActivities={onBackToActivities} />
       <PrimitiveDiv onAtualizacoesClick={onAtualizacoesClick} />
@@ -1977,7 +1977,7 @@ function Frame60() {
 
 export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActivities, hideSidebar }: { onAtualizacoesClick?: () => void; onBackToActivities?: () => void; hideSidebar?: boolean }) {
   return (
-    <div className="bg-[#f8fafc] relative size-full" data-name="AGENDA - VISÃO GERAL">
+    <div className="bg-[#f8fafc] relative size-full overflow-auto" data-name="AGENDA - VISÃO GERAL">
       <TopBar />
       <div className="absolute content-stretch flex gap-[10px] items-center left-[248px] top-[116px]" data-name="Breadcrumb">
         <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[14px] whitespace-nowrap">

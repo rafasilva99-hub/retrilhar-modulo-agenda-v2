@@ -2883,7 +2883,7 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#09090b] text-[14px] whitespace-nowrap">Atividades do Dia</p>
       </div>
       {/* Sidebar */}
-      <div className="absolute bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px]" data-name="Sidebar - Admin">
+      <div className="fixed bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px] z-20" data-name="Sidebar - Admin">
         <div aria-hidden="true" className="absolute border border-[#fafafa] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.1)]" />
         <Container15 />
         <PrimitiveDiv />

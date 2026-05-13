@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import svgPaths from "../imports/svg-q5jqh9fwaq";
 import imgIntroducaoAoTeste from "figma:asset/bf3f56458c51cdd59b7949f2a771c8cc1623145c.png";
 import ContextoMissao from "./components/ContextoMissao";
@@ -41,28 +41,52 @@ function InfoCard({ title, description }: { title: string; description: string }
   );
 }
 
+type Page = "intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes";
+
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<"intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes">("intro");
+  const [currentPage, setCurrentPageRaw] = useState<Page>("intro");
   const [selectedDay, setSelectedDay] = useState<number>(11);
   const [atualizacoesInitialTab, setAtualizacoesInitialTab] = useState<string>("atualizacoes");
 
+  // Navigate with browser history
+  const navigateTo = useCallback((page: Page, replace = false) => {
+    setCurrentPageRaw(page);
+    if (replace) {
+      window.history.replaceState({ page }, "", `#${page}`);
+    } else {
+      window.history.pushState({ page }, "", `#${page}`);
+    }
+  }, []);
+
+  // Listen for browser back/forward
+  useEffect(() => {
+    const onPopState = (e: PopStateEvent) => {
+      if (e.state?.page) setCurrentPageRaw(e.state.page);
+      else setCurrentPageRaw("intro");
+    };
+    window.addEventListener("popstate", onPopState);
+    // Set initial state
+    window.history.replaceState({ page: "intro" }, "", "#intro");
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   const handleDayClick = (day: number) => {
     setSelectedDay(day);
-    setCurrentPage("agendaDia");
+    navigateTo("agendaDia");
   };
 
   const handleViewDetails = () => {
     setAtualizacoesInitialTab("visao-geral");
-    setCurrentPage("atualizacoes");
+    navigateTo("atualizacoes");
   };
 
   const handleAtualizacoesClick = () => {
     setAtualizacoesInitialTab("atualizacoes");
-    setCurrentPage("atualizacoes");
+    navigateTo("atualizacoes");
   };
 
   const handleBackToActivities = () => {
-    setCurrentPage("agendaDia");
+    navigateTo("agendaDia");
   };
 
   if (currentPage === "atualizacoes") {
@@ -70,7 +94,7 @@ export default function App() {
   }
 
   if (currentPage === "agendaDia") {
-    return <AgendaAtividadesDoDia day={selectedDay} onBackToAgenda={() => setCurrentPage("agenda")} onViewDetails={handleViewDetails} />;
+    return <AgendaAtividadesDoDia day={selectedDay} onBackToAgenda={() => navigateTo("agenda")} onViewDetails={handleViewDetails} />;
   }
 
   if (currentPage === "agenda") {
@@ -78,7 +102,7 @@ export default function App() {
   }
 
   if (currentPage === "contexto") {
-    return <ContextoMissao onStart={() => setCurrentPage("agenda")} />;
+    return <ContextoMissao onStart={() => navigateTo("agenda")} />;
   }
 
   return (
@@ -121,7 +145,7 @@ export default function App() {
 
             {/* Botão */}
             <button
-              onClick={() => setCurrentPage("contexto")}
+              onClick={() => navigateTo("contexto")}
               className="relative rounded-[10px] w-full bg-[#175cd3] shadow-[inset_0px_0px_0px_1px_rgba(10,13,18,0.18),inset_0px_-2px_0px_0px_rgba(10,13,18,0.05)] border-2 border-[rgba(255,255,255,0.12)] border-solid transition-all duration-200 hover:bg-[#1a66e8] hover:shadow-[inset_0px_0px_0px_1px_rgba(10,13,18,0.18),inset_0px_-2px_0px_0px_rgba(10,13,18,0.05),0px_4px_12px_0px_rgba(23,92,211,0.4)] hover:scale-[1.02] active:scale-[0.98]"
             >
               <div className="flex items-center justify-center gap-2 px-6 py-4">

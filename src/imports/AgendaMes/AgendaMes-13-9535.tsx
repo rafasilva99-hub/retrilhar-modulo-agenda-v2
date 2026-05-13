@@ -2069,12 +2069,16 @@ function Column6() {
 // CSS classes are verbatim copies from the Figma Make components above.
 // Everything outside Content() is untouched.
 
-const CAL_REF = new Date(2026, 4, 1); // May 2026
-const CAL_TODAY = new Date(2026, 4, 11); // Fixed "today" for usability test
+const CAL_TODAY = new Date(); // Dynamic "today"
+const CAL_REF = new Date(CAL_TODAY.getFullYear(), CAL_TODAY.getMonth(), 1); // Current month
 
+// Holidays for current year — dynamic
+const curYear = CAL_TODAY.getFullYear();
 const CAL_HOLIDAYS: Record<string, string> = {
-  "2026-05-01": "Dia do Trabalho",
-  "2026-05-10": "Dia das Mães",
+  [`${curYear}-05-01`]: "Dia do Trabalho",
+  [`${curYear}-05-10`]: "Dia das Mães",
+  [`${curYear}-11-15`]: "Proclamação da República",
+  [`${curYear}-12-25`]: "Natal",
 };
 
 const CAL_WD = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"] as const;

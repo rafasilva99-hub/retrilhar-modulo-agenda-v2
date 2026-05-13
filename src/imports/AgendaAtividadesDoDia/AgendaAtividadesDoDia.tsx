@@ -2598,9 +2598,12 @@ function Frame19() {
 
 // ─── Dynamic Atividades do Dia ──────────────────────────────────────────────
 
+const _diaYear = new Date().getFullYear();
 const DIA_HOLIDAYS: Record<string, string> = {
-  "2026-05-01": "Dia do Trabalho",
-  "2026-05-10": "Dia das Mães",
+  [`${_diaYear}-05-01`]: "Dia do Trabalho",
+  [`${_diaYear}-05-10`]: "Dia das Mães",
+  [`${_diaYear}-11-15`]: "Proclamação da República",
+  [`${_diaYear}-12-25`]: "Natal",
 };
 
 const DIA_STATUS_CONFIG: Record<ActivityStatus, { label: string; bg: string; border: string; text: string; dotColor: string }> = {
@@ -2777,7 +2780,8 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
   onGoToCheckIn?: () => void;
 }) {
   const refDay = day ?? 11;
-  const dateObj = new Date(2026, 4, refDay); // May 2026
+  const today = new Date();
+  const dateObj = new Date(today.getFullYear(), today.getMonth(), refDay);
   const iso = format(dateObj, "yyyy-MM-dd");
   const holiday = DIA_HOLIDAYS[iso];
 

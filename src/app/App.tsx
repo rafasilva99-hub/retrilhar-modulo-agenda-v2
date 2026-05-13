@@ -45,7 +45,7 @@ type Page = "intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes";
 
 export default function App() {
   const [currentPage, setCurrentPageRaw] = useState<Page>("intro");
-  const [selectedDay, setSelectedDay] = useState<number>(11);
+  const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
   const [atualizacoesInitialTab, setAtualizacoesInitialTab] = useState<string>("atualizacoes");
   const [returnTo, setReturnTo] = useState<Page>("agendaDia");
   const [calendarView, setCalendarView] = useState<"mes" | "semana" | "dia">("mes");

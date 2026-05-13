@@ -1,18 +1,10 @@
 /**
  * Central mock dataset for the Agenda module.
  *
- * Source of truth: Figma file "Retrilhar - Admin" (key: HDCHTF7DCaSZwknQoLHVPQ)
- * Frames inspected via Figma MCP:
- *   - AGENDA - MÊS          (14948:75262)
- *   - AGENDA - ATIVIDADES DO DIA (15231:80154)
- *   - AGENDA - PARTICIPANTES (15229:62356)
- *   - AGENDA - VISÃO GERAL  (15221:23601)
+ * Dates are DYNAMIC — calculated relative to today so the usability test
+ * always shows relevant data regardless of the actual date.
  *
- * Rules:
- * - Deterministic: no Math.random() — IDs are sequential, dates are absolute.
- * - All names are Brazilian-Portuguese (matching the Figma design exactly).
- * - Today = 2026-05-11 (fixed reference for the usability test).
- * - Do NOT import this file in production code paths.
+ * Today = new Date() — "today" marker on calendar follows the real date.
  */
 
 import type {
@@ -22,6 +14,18 @@ import type {
   Reservation,
   ReservationStateMachine,
 } from '../types/agenda';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dynamic date helpers — all dates relative to today
+// ─────────────────────────────────────────────────────────────────────────────
+
+function dayOffset(offset: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.toISOString().split('T')[0]; // YYYY-MM-DD
+}
+
+const TODAY = dayOffset(0);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared boarding points
@@ -77,7 +81,7 @@ export const mockActivities: Activity[] = [
     // location: "Parque Municipal, Sabará - Belo Horizonte"
     // occupancy shown as "08/12" (85% ocupado), guide: João Silva (Guia Líder)
     name: 'Trilha Pico do Itacolomi',
-    date: '2026-05-11',
+    date: dayOffset(0),
     startTime: '08:00',
     endTime: '11:00',
     capacity: 12,
@@ -91,7 +95,7 @@ export const mockActivities: Activity[] = [
     // Figma: AGENDA - ATIVIDADES DO DIA (15231:80154) — "Rapel Cachoeira Alta"
     // status "Atividade Não Iniciada", (8/8) — full capacity
     name: 'Rapel Cachoeira Alta',
-    date: '2026-05-11',
+    date: dayOffset(0),
     startTime: '09:00',
     endTime: '12:00',
     capacity: 8,
@@ -105,7 +109,7 @@ export const mockActivities: Activity[] = [
     // Figma: AGENDA - ATIVIDADES DO DIA — "Bike Tour Vale Verde"
     // status "Atividade Cancelada" (8/12)
     name: 'Bike Tour Vale Verde',
-    date: '2026-05-11',
+    date: dayOffset(0),
     startTime: '13:30',
     endTime: '17:00',
     capacity: 12,
@@ -119,7 +123,7 @@ export const mockActivities: Activity[] = [
     // Figma: AGENDA - ATIVIDADES DO DIA — "Escalada Morro Alto"
     // location: "Parque Municipal, Sabará - Belo Horizonte", (8/12)
     name: 'Escalada Morro Alto',
-    date: '2026-05-11',
+    date: dayOffset(0),
     startTime: '15:00',
     endTime: '18:00',
     capacity: 12,
@@ -136,7 +140,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-005',
     name: 'Trilha Pico do Itambé',
-    date: '2026-05-14',
+    date: dayOffset(3),
     startTime: '07:00',
     endTime: '18:00',
     capacity: 10,
@@ -150,7 +154,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-006',
     name: 'Trilha Pico do Itambé',
-    date: '2026-05-15',
+    date: dayOffset(4),
     startTime: '07:00',
     endTime: '18:00',
     capacity: 10,
@@ -164,7 +168,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-007',
     name: 'Trilha Pico do Itambé',
-    date: '2026-05-16',
+    date: dayOffset(5),
     startTime: '07:00',
     endTime: '16:00',
     capacity: 10,
@@ -181,7 +185,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-008',
     name: 'Travessia Vale do Pati',
-    date: '2026-05-08',
+    date: dayOffset(-3),
     startTime: '06:30',
     endTime: '17:00',
     capacity: 12,
@@ -193,7 +197,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-009',
     name: 'Bike Trail Inhotim',
-    date: '2026-05-20',
+    date: dayOffset(9),
     startTime: '08:00',
     endTime: '14:00',
     capacity: 16,
@@ -205,7 +209,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-010',
     name: 'Rapel Cachoeira das Pedras',
-    date: '2026-05-22',
+    date: dayOffset(11),
     startTime: '09:30',
     endTime: '13:00',
     capacity: 10,
@@ -220,7 +224,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-011',
     name: 'Trilha Serra do Mar',
-    date: '2026-04-28',
+    date: dayOffset(-13),
     startTime: '07:00',
     endTime: '15:00',
     capacity: 20,
@@ -232,7 +236,7 @@ export const mockActivities: Activity[] = [
   {
     id: 'act-012',
     name: 'Expedição Chapada Diamantina',
-    date: '2026-06-05',
+    date: dayOffset(25),
     startTime: '06:00',
     endTime: '20:00',
     capacity: 14,

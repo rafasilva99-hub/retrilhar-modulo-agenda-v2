@@ -1617,6 +1617,44 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
+function CheckInButton({ isDone, insured, onCheckIn, onUndo }: { isDone: boolean; insured: boolean; onCheckIn: () => void; onUndo: () => void }) {
+  const [showTip, setShowTip] = useState(false);
+  const canCheckIn = !isDone && insured;
+  const disabled = !isDone && !insured;
+
+  return (
+    <div className="relative" onClick={(e) => e.stopPropagation()}
+      onMouseEnter={() => disabled && setShowTip(true)}
+      onMouseLeave={() => setShowTip(false)}
+    >
+      <button
+        onClick={() => isDone ? onUndo() : canCheckIn ? onCheckIn() : undefined}
+        disabled={disabled}
+        className={`flex gap-[8px] items-center justify-center rounded-[6px] shrink-0 transition-colors ${isDone ? "cursor-pointer bg-white border border-[#e4e4e7] border-solid hover:bg-[#f8fafc]" : canCheckIn ? "cursor-pointer hover:bg-[#d5dcfe]" : "cursor-not-allowed opacity-50"}`}
+        style={{ width: "158.48px", padding: "10px 12px", ...(!isDone ? { backgroundColor: disabled ? "#f5f5f5" : "#edf0ff" } : {}) }}
+      >
+        {isDone ? (
+          <>
+            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
+          </>
+        ) : (
+          <>
+            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={disabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={disabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${disabled ? "text-[#727685]" : "text-[#0b5ed7]"}`}>Realizar Check-in</p>
+          </>
+        )}
+      </button>
+      {showTip && (
+        <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[260px] z-50 pointer-events-none text-center">
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">É necessário contratar o seguro do participante antes de realizar essa ação</p>
+          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function FiltersDrawer({ onClose }: { onClose: () => void }) {
   const [alertas, setAlertas] = useState<Set<string>>(new Set());
   const [tarifa, setTarifa] = useState<Set<string>>(new Set());
@@ -1825,7 +1863,6 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
                   <button
                     onClick={() => {
                       if (!slot.enabled) return;
-                      setOpen(false);
                       onAction(slot.id, reservation, participant);
                     }}
                     className={`flex gap-[10px] items-center px-[14px] py-[10px] transition-colors w-full ${
@@ -1964,16 +2001,8 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
-  // Per-participant insurance tracking (overrides reservation-level insuranceStatus)
-  const [insuredParticipants, setInsuredParticipants] = useState<Set<string>>(() => {
-    const initial = new Set<string>();
-    for (const r of mockReservations) {
-      if (r.insuranceStatus === "Contracted") {
-        for (const p of r.participants) initial.add(p.id);
-      }
-    }
-    return initial;
-  });
+  // Per-participant insurance tracking — all start uninsured so user must contract
+  const [insuredParticipants, setInsuredParticipants] = useState<Set<string>>(new Set());
   const isParticipantInsured = (pid: string) => insuredParticipants.has(pid);
   const contractInsurance = (pid: string) => setInsuredParticipants((prev) => new Set([...prev, pid]));
   const undoInsurance = (pid: string) => setInsuredParticipants((prev) => { const next = new Set(prev); next.delete(pid); return next; });
@@ -1991,7 +2020,16 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
     if (actionId === "download") { showToast("Comprovante baixado."); return; }
     if (actionId === "participant-data") { setDrawerData({ r, p }); return; }
     if (actionId === "add-insurance") { contractInsurance(p.id); showToast(`Seguro contratado para ${name}!`); return; }
-    if (actionId === "undo-insurance") { undoInsurance(p.id); showToast(`Contratação de seguro de ${name} desfeita.`); return; }
+    if (actionId === "undo-insurance") {
+      undoInsurance(p.id);
+      if (p.checkInStatus === "Done") {
+        dispatch({ type: "UNDO_CHECK_IN", participantId: p.id });
+        showToast(`Contratação de seguro de ${name} desfeita. Check-in também desfeito.`);
+      } else {
+        showToast(`Contratação de seguro de ${name} desfeita.`);
+      }
+      return;
+    }
     if (actionId === "resend-voucher") { showToast(`Voucher reenviado para ${name}.`); return; }
     if (actionId === "confirm" || actionId === "register-payment") { showToast(`Reserva de ${name} confirmada.`); return; }
     if (actionId === "undo-confirm") { showToast(`Confirmação de ${name} desfeita.`); return; }
@@ -2415,23 +2453,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
                     {/* Actions cell */}
                     <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {showCheckIn && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); isDone ? handleUndoCheckIn(p) : handleCheckIn(p); }}
-                          className={`cursor-pointer flex gap-[8px] items-center justify-center rounded-[6px] shrink-0 transition-colors ${isDone ? "bg-white border border-[#e4e4e7] border-solid hover:bg-[#f8fafc]" : "hover:bg-[#d5dcfe]"}`}
-                          style={{ width: "158.48px", padding: "10px 12px", ...(!isDone ? { backgroundColor: "#edf0ff" } : {}) }}
-                        >
-                          {isDone ? (
-                            <>
-                              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
-                            </>
-                          ) : (
-                            <>
-                              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Realizar Check-in</p>
-                            </>
-                          )}
-                        </button>
+                        <CheckInButton isDone={isDone} insured={isParticipantInsured(p.id)} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                       )}
                       {/* Three-dot menu */}
                       <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />

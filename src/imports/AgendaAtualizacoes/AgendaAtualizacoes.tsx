@@ -151,7 +151,7 @@ function Container() {
 
 function TopBar() {
   return (
-    <div className="absolute content-stretch flex gap-[24px] items-center pl-[248px] pr-[24px] py-[24px] right-0 top-0 w-[1440px]" data-name="TopBar">
+    <div className="absolute content-stretch flex gap-[24px] items-center pl-[248px] pr-[24px] py-[24px] left-0 right-0 top-0" data-name="TopBar">
       <SearchBar />
       <TopBar1 />
       <SlotClone />

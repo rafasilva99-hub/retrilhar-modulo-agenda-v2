@@ -283,8 +283,7 @@ function Frame62() {
 
 function Frame57() {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col gap-[12px] items-start left-[248px] p-[24px] rounded-[16px] top-[153px] w-[526px]">
-      <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[16px]" />
+    <div className="bg-white border border-[#f5f5f5] border-solid content-stretch flex flex-col gap-[12px] items-start p-[24px] relative rounded-[16px] w-full">
       <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#62748e] text-[12px] w-full">ESPECIFICAÇÕES DA ATIVIDADE</p>
       <Frame62 />
     </div>
@@ -850,7 +849,7 @@ function Container8() {
 
 function Container7() {
   return (
-    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[16px] items-start min-h-px overflow-clip relative w-full" data-name="Container">
+    <div className="content-stretch flex flex-col gap-[16px] items-start relative w-full" data-name="Container">
       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#45556c] text-[12px] whitespace-nowrap">Próximos 7 dias</p>
       <Container8 />
     </div>
@@ -859,7 +858,7 @@ function Container7() {
 
 function Frame63() {
   return (
-    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[16px] items-start min-h-px relative w-full">
+    <div className="content-stretch flex flex-col gap-[16px] items-start relative w-full">
       <Frame59 />
       <Container7 />
     </div>
@@ -868,7 +867,7 @@ function Frame63() {
 
 function Frame2() {
   return (
-    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-h-px relative w-full">
+    <div className="content-stretch flex flex-col gap-[12px] items-start relative w-full">
       <Frame38 />
       <Frame63 />
     </div>
@@ -917,8 +916,7 @@ function Frame1() {
 
 function Frame() {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col gap-[20px] h-[439px] items-start left-[248px] pb-[20px] pt-[24px] px-[24px] rounded-[16px] top-[561px] w-[526px]">
-      <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[16px]" />
+    <div className="bg-white border border-[#f5f5f5] border-solid content-stretch flex flex-col gap-[20px] items-start pb-[20px] pt-[24px] px-[24px] relative rounded-[16px] w-full">
       <Frame2 />
       <Frame1 />
     </div>
@@ -1496,12 +1494,11 @@ function Frame53() {
 
 function Frame56() {
   return (
-    <div className="absolute bg-white h-[847px] left-[798px] rounded-[16px] top-[153px] w-[618px]">
-      <div className="content-stretch flex flex-col gap-[20px] items-start overflow-clip p-[24px] relative rounded-[inherit] size-full">
+    <div className="bg-white border border-[#f5f5f5] border-solid relative rounded-[16px] w-full">
+      <div className="content-stretch flex flex-col gap-[20px] items-start overflow-clip p-[24px] rounded-[inherit] size-full">
         <Frame44 />
         <Frame53 />
       </div>
-      <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[16px]" />
     </div>
   );
 }
@@ -1965,8 +1962,7 @@ function Frame24() {
 
 function Frame60() {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col gap-[12px] items-start left-[248px] p-[24px] rounded-[16px] top-[364px] w-[526px]">
-      <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[16px]" />
+    <div className="bg-white border border-[#f5f5f5] border-solid content-stretch flex flex-col gap-[12px] items-start p-[24px] relative rounded-[16px] w-full">
       <Frame26 />
       <Frame27 />
       <PrimitiveDiv1 />
@@ -2040,11 +2036,20 @@ export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActiviti
           <p className="leading-[normal]">Trilha Pico do Itacolomi</p>
         </div>
       </div>
-      <Frame57 />
-      <Frame />
-      <Frame56 />
+      {/* Content wrapper — responsive 2-column layout */}
+      <div className="absolute flex gap-[24px] left-[248px] right-[24px] top-[153px]" style={{ paddingBottom: "40px" }}>
+        {/* Left column */}
+        <div className="flex flex-col flex-1 gap-[24px] min-w-0">
+          <Frame57 />
+          <Frame60 />
+          <Frame />
+        </div>
+        {/* Right column — Equipe Escalada */}
+        <div className="shrink-0 w-[45%] max-w-[618px]">
+          <Frame56 />
+        </div>
+      </div>
       {!hideSidebar && <SidebarAdmin onAtualizacoesClick={onAtualizacoesClick} onBackToActivities={onBackToActivities} />}
-      <Frame60 />
     </div>
   );
 }

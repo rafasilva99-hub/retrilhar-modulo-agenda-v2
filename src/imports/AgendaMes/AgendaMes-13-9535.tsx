@@ -2096,13 +2096,13 @@ function calGetActs(iso: string): Activity[] {
   return mockActivities.filter((a) => a.date === iso);
 }
 
-function calLabel(a: Activity): string {
+function calLabel(a: Activity): { name: string; info: string } {
   const words = a.name.split(" ");
   const short = words.length > 2 ? `${words[0]} ${words[1]}` : a.name;
   const dayTag = a.dayNumber ? ` D${a.dayNumber}` : "";
-  if (a.status === "full") return `${short} (Lotado)`;
-  if (a.status === "blocked") return short;
-  return `${short}${dayTag} (${a.occupancy}/${a.capacity})`;
+  if (a.status === "full") return { name: short, info: "(Lotado)" };
+  if (a.status === "blocked") return { name: short, info: "" };
+  return { name: `${short}${dayTag}`, info: `(${a.occupancy}/${a.capacity})` };
 }
 
 const CAL_COLORS: Record<ActivityStatus, { bg: string; dot: string; txt: string; bdr: string; sub?: string }> = {
@@ -2113,13 +2113,14 @@ const CAL_COLORS: Record<ActivityStatus, { bg: string; dot: string; txt: string;
 };
 
 // Single-line chip (confirmed / full)
-function CalSingleChip({ text, c }: { text: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
+function CalSingleChip({ name, info, c }: { name: string; info: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
   return (
     <div className="relative rounded-[4px] shrink-0 w-full" style={{ backgroundColor: c.bg }}>
-      <div className="flex flex-row items-center overflow-clip rounded-[inherit] size-full">
-        <div className="content-stretch flex gap-[4px] items-center p-[5px] relative size-full">
-          <div className="relative rounded-[18641400px] shrink-0 size-[5.998px]" style={{ backgroundColor: c.dot }} />
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[12px] whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: c.txt }}>{text}</p>
+      <div className="flex items-center overflow-hidden rounded-[inherit] w-full">
+        <div className="flex gap-[4px] items-center min-w-0 p-[5px] w-full">
+          <div className="rounded-[9999px] shrink-0 size-[6px]" style={{ backgroundColor: c.dot }} />
+          <p className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[12px] text-ellipsis whitespace-nowrap" style={{ color: c.txt }}>{name}</p>
+          {info && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[12px] whitespace-nowrap" style={{ color: c.txt }}>{info}</p>}
         </div>
       </div>
       <div aria-hidden="true" className="absolute border-[0.556px] border-solid inset-0 pointer-events-none rounded-[4px]" style={{ borderColor: c.bdr }} />
@@ -2128,18 +2129,17 @@ function CalSingleChip({ text, c }: { text: string; c: (typeof CAL_COLORS)[Activ
 }
 
 // Two-line chip (pending / blocked)
-function CalDoubleChip({ text, sub, c }: { text: string; sub: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
+function CalDoubleChip({ name, info, sub, c }: { name: string; info: string; sub: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
   return (
-    <div className="flex-[1_0_0] min-w-px relative rounded-[4px]" style={{ backgroundColor: c.bg }}>
-      <div className="overflow-clip rounded-[inherit] size-full">
-        <div className="content-stretch flex gap-[4px] items-start p-[5px] relative size-full">
-          <div className="content-stretch flex items-center py-[6px] relative shrink-0">
-            <div className="relative rounded-[9999px] shrink-0 size-[5.998px]" style={{ backgroundColor: c.dot }} />
+    <div className="min-w-0 relative rounded-[4px] w-full" style={{ backgroundColor: c.bg }}>
+      <div className="overflow-hidden rounded-[inherit] w-full">
+        <div className="flex flex-col gap-[2px] p-[5px] w-full">
+          <div className="flex gap-[4px] items-center min-w-0 w-full">
+            <div className="rounded-[9999px] shrink-0 size-[6px]" style={{ backgroundColor: c.dot }} />
+            <p className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[12px] text-ellipsis whitespace-nowrap" style={{ color: c.txt }}>{name}</p>
+            {info && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[12px] whitespace-nowrap" style={{ color: c.txt }}>{info}</p>}
           </div>
-          <div className="content-stretch flex flex-[1_0_0] flex-col font-['Helvetica_Neue:Regular',sans-serif] gap-[2px] items-start leading-[normal] min-w-px not-italic relative">
-            <p className="min-w-full overflow-hidden relative shrink-0 text-[12px] text-ellipsis w-[min-content]" style={{ color: c.txt }}>{text}</p>
-            <p className="overflow-hidden relative shrink-0 text-[10px] text-ellipsis w-[96.002px]" style={{ color: c.sub }}>{sub}</p>
-          </div>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden pl-[10px] text-[10px] text-ellipsis whitespace-nowrap" style={{ color: c.sub }}>{sub}</p>
         </div>
       </div>
       <div aria-hidden="true" className="absolute border-[0.556px] border-solid inset-0 pointer-events-none rounded-[4px]" style={{ borderColor: c.bdr }} />
@@ -2178,26 +2178,23 @@ function CalChips({ acts }: { acts: Activity[] }) {
   const visible = acts.slice(0, 2);
   const overflow = acts.length - 2;
   return (
-    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[6px] items-start min-w-px relative">
+    <div className="flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-0 overflow-hidden relative">
       {visible.map((a) => {
         const c = CAL_COLORS[a.status];
+        const { name, info } = calLabel(a);
         if (a.status === "pending") {
           const sub = a.requiresInsurance ? "Seguro pendente" : "Sem equipe atribuída";
-          return <CalDoubleChip key={a.id} text={calLabel(a)} sub={sub} c={c} />;
+          return <CalDoubleChip key={a.id} name={name} info={info} sub={sub} c={c} />;
         }
         if (a.status === "blocked") {
-          return <CalDoubleChip key={a.id} text={calLabel(a)} sub="Interrompida para Feriado" c={c} />;
+          return <CalDoubleChip key={a.id} name={name} info={info} sub="Interrompida p/ Feriado" c={c} />;
         }
-        return <CalSingleChip key={a.id} text={calLabel(a)} c={c} />;
+        return <CalSingleChip key={a.id} name={name} info={info} c={c} />;
       })}
       {overflow > 0 && (
-        <div className="opacity-60 relative shrink-0 w-full">
-          <div className="content-stretch flex items-start px-[8px] relative size-full">
-            <p className="flex-[1_0_0] font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-px not-italic overflow-hidden relative text-[#717680] text-[12px] text-ellipsis whitespace-nowrap">
-              Mais {overflow}...
-            </p>
-          </div>
-        </div>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic opacity-60 px-[5px] text-[#717680] text-[12px] whitespace-nowrap">
+          Mais {overflow}...
+        </p>
       )}
     </div>
   );
@@ -2233,7 +2230,7 @@ function CalDayCell({
   return (
     <div
       onClick={clickable ? () => onDayClick?.(cell.day) : undefined}
-      className={`bg-white flex-[1_0_0] min-h-px relative w-full${clickable ? " cursor-pointer hover:bg-[#f8fafc] transition-colors" : ""}`}
+      className={`bg-white h-[100px] overflow-hidden relative shrink-0 w-full${clickable ? " cursor-pointer hover:bg-[#f8fafc] transition-colors" : ""}`}
       data-name="_Calendar cell/Month view"
     >
       <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
@@ -2263,7 +2260,7 @@ function Content({ onDayClick, refDate }: { onDayClick?: (day: number) => void; 
   const grid = useMemo(() => buildCalGrid(refDate), [refDate]);
   const rows = grid.length / 7;
   return (
-    <div className="content-stretch flex flex-[1_0_0] items-stretch min-h-px relative w-full" data-name="Content">
+    <div className="content-stretch flex items-stretch relative w-full" data-name="Content">
       {CAL_WD.map((label, colIdx) => (
         <div key={label} className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px relative" data-name="Column">
           {/* Column header — exact Figma Make _Calendar column header */}
@@ -2288,8 +2285,8 @@ function Content({ onDayClick, refDate }: { onDayClick?: (day: number) => void; 
 
 function Main({ onDayClick, refDate }: { onDayClick?: (day: number) => void; refDate: Date }) {
   return (
-    <div className="bg-white flex-[1_0_0] min-h-px relative rounded-[16px] w-full" data-name="Main">
-      <div className="content-stretch flex flex-col items-start overflow-clip relative rounded-[inherit] size-full">
+    <div className="bg-white relative rounded-[16px] w-full" data-name="Main">
+      <div className="content-stretch flex flex-col items-start overflow-clip relative rounded-[inherit] w-full">
         <Content onDayClick={onDayClick} refDate={refDate} />
       </div>
       <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[16px]" />
@@ -2356,7 +2353,7 @@ function WeekContent({ weekStart, onDayClick, onViewDetails }: { weekStart: Date
   const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
 
   return (
-    <div className="content-stretch flex flex-[1_0_0] items-stretch min-h-px relative w-full" data-name="WeekContent">
+    <div className="content-stretch flex items-start relative w-full" style={{ minHeight: "500px" }} data-name="WeekContent">
       {days.map((day) => {
         const iso = format(day, "yyyy-MM-dd");
         const isToday = isSameDay(day, CAL_TODAY);
@@ -2603,10 +2600,10 @@ function CalendarCard({
     <div className="absolute bg-white left-[248px] right-[24px] rounded-[24px] top-[363px]" data-name="Container">
       <div className="content-stretch flex flex-col items-start overflow-clip py-px relative rounded-[inherit] size-full">
         <CalendarHeader navLabel={navLabel} onPrev={onPrev} onNext={onNext} view={view} onViewChange={onViewChange} />
-        <div className="bg-white relative shrink-0 w-full" data-name="CalendarBody" style={{ height: view === "mes" ? "611px" : "auto", minHeight: view === "mes" ? undefined : "520px" }}>
-          <div className={`flex flex-col rounded-[inherit] ${view === "mes" ? "overflow-clip size-full" : "w-full"}`}>
+        <div className="bg-white relative shrink-0 w-full" data-name="CalendarBody" style={{ minHeight: view === "dia" ? "520px" : undefined }}>
+          <div className={`flex flex-col rounded-[inherit] w-full`}>
             {view === "mes" && (
-              <div className="content-stretch flex flex-col items-start flex-1 min-h-0 pb-[16px] pt-[4px] px-[24px] relative w-full">
+              <div className="content-stretch flex flex-col items-start pb-[16px] pt-[4px] px-[24px] relative w-full">
                 <Main onDayClick={onDayClick} refDate={refDate} />
               </div>
             )}

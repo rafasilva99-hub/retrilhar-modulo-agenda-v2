@@ -327,6 +327,10 @@ export const mockActivities: Activity[] = [
   { id: 'act-031', name: 'Travessia Parque Estadual', date: dayOffset(45), startTime: '06:00', endTime: '18:00', capacity: 14, occupancy: 2, guideName: 'Roberta Nogueira', status: 'pending', requiresInsurance: true },
   { id: 'act-032', name: 'Rapel Cachoeira do Meio', date: dayOffset(50), startTime: '09:30', endTime: '14:00', capacity: 10, occupancy: 9, guideName: 'João Silva', status: 'confirmed', requiresInsurance: true },
   { id: 'act-033', name: 'Caminhada Serra do Gandarela', date: dayOffset(55), startTime: '07:00', endTime: '12:00', capacity: 20, occupancy: 16, guideName: 'Sônia Brandão', status: 'confirmed', requiresInsurance: true },
+
+  // ── Fixed date: May 14, 2026 — extra activities for usability test ────────
+  { id: 'act-034', name: 'Canoagem Represa da Pampulha', date: '2026-05-14', startTime: '10:00', endTime: '13:00', capacity: 12, occupancy: 7, guideName: 'Lucas Ferreira', status: 'confirmed', requiresInsurance: true },
+  { id: 'act-035', name: 'Trilha Mirante do Cruzeiro', date: '2026-05-14', startTime: '14:00', endTime: '17:00', capacity: 15, occupancy: 10, guideName: 'Ana Paula Reis', status: 'pending', requiresInsurance: true },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

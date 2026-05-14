@@ -2623,7 +2623,7 @@ function DiaChevron() {
 
 function DiaActivityCard({ a, expanded, onToggle, onViewDetails, onGoToCheckIn }: {
   a: Activity; expanded: boolean;
-  onToggle: () => void; onViewDetails?: () => void; onGoToCheckIn?: () => void;
+  onToggle: () => void; onViewDetails?: (activityId?: string) => void; onGoToCheckIn?: (activityId?: string) => void;
 }) {
   const cfg = DIA_STATUS_CONFIG[a.status];
   const isFull = a.status === "full";
@@ -2670,7 +2670,7 @@ function DiaActivityCard({ a, expanded, onToggle, onViewDetails, onGoToCheckIn }
             {/* Actions */}
             <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
               <button
-                onClick={onViewDetails}
+                onClick={() => onViewDetails?.(a.id)}
                 className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
               >
                 <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
@@ -2680,7 +2680,7 @@ function DiaActivityCard({ a, expanded, onToggle, onViewDetails, onGoToCheckIn }
               </button>
               {!isBlocked && (
                 <button
-                  onClick={onGoToCheckIn}
+                  onClick={() => onGoToCheckIn?.(a.id)}
                   className="bg-[#edf0ff] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#d5dcfe] transition-colors"
                 >
                   <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
@@ -2770,8 +2770,8 @@ function DiaEmptyState({ onBack }: { onBack?: () => void }) {
 export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetails, onGoToCheckIn }: {
   day?: number;
   onBackToAgenda?: () => void;
-  onViewDetails?: () => void;
-  onGoToCheckIn?: () => void;
+  onViewDetails?: (activityId?: string) => void;
+  onGoToCheckIn?: (activityId?: string) => void;
 }) {
   const refDay = day ?? 11;
   const today = new Date();

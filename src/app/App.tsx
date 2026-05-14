@@ -49,6 +49,7 @@ export default function App() {
   const [atualizacoesInitialTab, setAtualizacoesInitialTab] = useState<string>("atualizacoes");
   const [returnTo, setReturnTo] = useState<Page>("agendaDia");
   const [calendarView, setCalendarView] = useState<"mes" | "semana" | "dia">("mes");
+  const [selectedActivityId, setSelectedActivityId] = useState<string>("act-001");
 
   // Navigate with browser history
   const navigateTo = useCallback((page: Page, replace = false) => {
@@ -77,13 +78,15 @@ export default function App() {
     navigateTo("agendaDia");
   };
 
-  const handleViewDetails = () => {
+  const handleViewDetails = (activityId?: string) => {
+    if (activityId) setSelectedActivityId(activityId);
     setReturnTo(currentPage === "agenda" ? "agenda" : "agendaDia");
     setAtualizacoesInitialTab("visao-geral");
     navigateTo("atualizacoes");
   };
 
-  const handleGoToCheckIn = () => {
+  const handleGoToCheckIn = (activityId?: string) => {
+    if (activityId) setSelectedActivityId(activityId);
     setReturnTo(currentPage === "agenda" ? "agenda" : "agendaDia");
     setAtualizacoesInitialTab("participantes");
     navigateTo("atualizacoes");
@@ -99,7 +102,7 @@ export default function App() {
   };
 
   if (currentPage === "atualizacoes") {
-    return <AgendaAtualizacoes initialTab={atualizacoesInitialTab} onBackToActivities={handleBackToActivities} />;
+    return <AgendaAtualizacoes initialTab={atualizacoesInitialTab} onBackToActivities={handleBackToActivities} activityId={selectedActivityId} />;
   }
 
   if (currentPage === "agendaDia") {

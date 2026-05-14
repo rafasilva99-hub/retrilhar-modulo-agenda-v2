@@ -1,5 +1,11 @@
 import svgPaths from "./svg-3hal38zdc4";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
+import { mockActivities } from "../../mocks/agenda";
+
+// Module-level activity data — set by the export component, read by static sub-components
+let _dynActName = "Trilha Pico do Itacolomi";
+let _dynActDate = "18/02/2026, 08:00";
+let _dynActDuration = "08:00 - 11:00 (2h)";
 
 function Elements() {
   return (
@@ -140,7 +146,7 @@ function Container1() {
   return (
     <div className="flex-[1_0_0] min-w-px relative" data-name="Container">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex flex-col gap-[6px] items-start relative size-full">
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#0f172b] text-[20px] whitespace-nowrap">Trilha Pico do Itacolomi</p>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#0f172b] text-[20px] whitespace-nowrap">{_dynActName}</p>
         <Frame40 />
       </div>
     </div>
@@ -190,7 +196,7 @@ function Frame16() {
 function Frame58() {
   return (
     <div className="content-stretch flex gap-[4px] items-center relative shrink-0 text-[14px]">
-      <p className="relative shrink-0 text-[#252b37]">18/02/2026, 08:00</p>
+      <p className="relative shrink-0 text-[#252b37]">{_dynActDate}</p>
       <p className="relative shrink-0 text-[#717680]">(GMT+5:30)</p>
     </div>
   );
@@ -242,7 +248,7 @@ function Frame18() {
   return (
     <div className="content-stretch flex flex-col font-['Helvetica_Neue:Regular',sans-serif] gap-[2px] items-start leading-[normal] not-italic relative shrink-0 whitespace-nowrap">
       <p className="relative shrink-0 text-[#535862] text-[12px]">Duração da atividade</p>
-      <p className="relative shrink-0 text-[#252b37] text-[14px]">08:00 - 11:00 (2h)</p>
+      <p className="relative shrink-0 text-[#252b37] text-[14px]">{_dynActDuration}</p>
     </div>
   );
 }
@@ -1961,7 +1967,16 @@ function Frame60() {
   );
 }
 
-export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActivities, hideSidebar }: { onAtualizacoesClick?: () => void; onBackToActivities?: () => void; hideSidebar?: boolean }) {
+export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActivities, hideSidebar, activityId }: { onAtualizacoesClick?: () => void; onBackToActivities?: () => void; hideSidebar?: boolean; activityId?: string }) {
+  const _act = activityId ? mockActivities.find((a) => a.id === activityId) : undefined;
+  const actName = _act?.name || "Trilha Pico do Itacolomi";
+  const actDate = _act ? _act.date.split("-").reverse().join("/") + ", " + _act.startTime : "18/02/2026, 08:00";
+  const _durH = _act ? Math.floor((parseInt(_act.endTime.split(":")[0]) * 60 + parseInt(_act.endTime.split(":")[1]) - parseInt(_act.startTime.split(":")[0]) * 60 - parseInt(_act.startTime.split(":")[1])) / 60) : 2;
+  const actDurationFull = _act ? `${_act.startTime} - ${_act.endTime} (${_durH}h)` : "08:00 - 11:00 (2h)";
+  // Set module-level vars for static Figma Make sub-components
+  _dynActName = actName;
+  _dynActDate = actDate;
+  _dynActDuration = actDurationFull;
   return (
     <div className="bg-[#f8fafc] relative size-full overflow-auto" data-name="AGENDA - VISÃO GERAL">
       <TopBar />
@@ -2023,7 +2038,7 @@ export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActiviti
           </div>
         </div>
         <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#09090b] text-[14px] whitespace-nowrap">
-          <p className="leading-[normal]">Trilha Pico do Itacolomi</p>
+          <p className="leading-[normal]">{actName}</p>
         </div>
       </div>
       {/* Content wrapper — responsive 2-column layout */}

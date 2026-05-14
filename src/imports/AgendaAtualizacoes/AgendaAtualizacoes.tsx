@@ -2,8 +2,8 @@ import { useState, useMemo, useReducer } from "react";
 import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
-import { mockReservations, isEligibleForBulkAction, reservationStateMachine } from "../../mocks/agenda";
-import type { Reservation, Participant, CheckInStatus, BulkAction, ReservationStatus } from "../../types/agenda";
+import { mockReservations, mockActivities, isEligibleForBulkAction, reservationStateMachine } from "../../mocks/agenda";
+import type { Activity, Reservation, Participant, CheckInStatus, BulkAction, ReservationStatus } from "../../types/agenda";
 
 // ─── Reservation state management ───────────────────────────────────────────
 
@@ -1893,7 +1893,7 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
   );
 }
 
-function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => void }) {
+function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities?: () => void; activity: Activity }) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
@@ -2212,7 +2212,7 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
       {/* Header */}
       <div className="content-stretch flex items-start justify-between relative w-full">
         <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0">
-          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">Trilha Pico do Itacolomi</p>
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">{activity.name}</p>
           <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
             <div className="flex gap-[6px] items-center shrink-0">
               <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="5" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><circle cx="11" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><path d="M1 14c0-2.2 2-4 4-4s4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/><path d="M10 10c2 0 4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
@@ -2221,12 +2221,12 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#d5d7da]">·</p>
             <div className="flex gap-[6px] items-center shrink-0">
               <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="#535862" strokeWidth="1.2"/><path d="M2 6h12" stroke="#535862" strokeWidth="1.2"/><path d="M5.5 1v2M10.5 1v2" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">11/05/2026</p>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{activity.date.split("-").reverse().join("/")}</p>
             </div>
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#d5d7da]">·</p>
             <div className="flex gap-[6px] items-center shrink-0">
               <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.2"/><path d="M8 5v3l2.5 1.5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">08:00 - 11:00</p>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{activity.startTime} - {activity.endTime}</p>
             </div>
           </div>
         </div>
@@ -2627,14 +2627,15 @@ function ParticipantesTab({ onBackToActivities }: { onBackToActivities?: () => v
   );
 }
 
-export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBackToActivities }: { initialTab?: string; onBackToActivities?: () => void }) {
+export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBackToActivities, activityId = "act-001" }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
+  const activity = mockActivities.find((a) => a.id === activityId) || mockActivities[0];
 
   if (activeTab === "visao-geral") {
     return (
       <div className="bg-[#f8fafc] relative size-full overflow-auto" data-name="AGENDA - ATUALIZAÇÕES">
         <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab} onBackToActivities={onBackToActivities} />
-        <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar />
+        <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
       </div>
     );
   }
@@ -2702,12 +2703,12 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
           </div>
         </div>
         <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#09090b] text-[14px] whitespace-nowrap">
-          <p className="leading-[normal]">Trilha Pico do Itacolomi</p>
+          <p className="leading-[normal]">{activity.name}</p>
         </div>
       </div>
       {activeTab === "atualizacoes" && <Frame24 />}
       {activeTab === "participantes" && (
-        <ParticipantesTab onBackToActivities={onBackToActivities} />
+        <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} />
       )}
     </div>
   );

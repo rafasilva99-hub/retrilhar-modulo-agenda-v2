@@ -993,14 +993,7 @@ function Elements15() {
 }
 
 function Text() {
-  return (
-    <div className="bg-[#ecfdf3] relative rounded-[4px] shrink-0" data-name="Text">
-      <div className="content-stretch flex items-center justify-center overflow-clip px-[6.5px] py-[2.5px] relative rounded-[inherit] size-full">
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#079455] text-[12px] whitespace-nowrap">Disponível p/ atividade</p>
-      </div>
-      <div aria-hidden="true" className="absolute border-[#dcfae6] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[4px]" />
-    </div>
-  );
+  return null;
 }
 
 function Frame65() {
@@ -1142,14 +1135,7 @@ function Elements18() {
 }
 
 function Text1() {
-  return (
-    <div className="bg-[#fffaeb] relative rounded-[4px] shrink-0" data-name="Text">
-      <div className="content-stretch flex items-center justify-center overflow-clip px-[6.5px] py-[2.5px] relative rounded-[inherit] size-full">
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#dc6803] text-[12px] whitespace-nowrap">Conflito de horário</p>
-      </div>
-      <div aria-hidden="true" className="absolute border-[#fef0c7] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[4px]" />
-    </div>
-  );
+  return null;
 }
 
 function Frame64() {
@@ -1352,14 +1338,7 @@ function Elements22() {
 }
 
 function Text3() {
-  return (
-    <div className="bg-[#ecfdf3] relative rounded-[4px] shrink-0" data-name="Text">
-      <div className="content-stretch flex items-center justify-center overflow-clip px-[6.5px] py-[2.5px] relative rounded-[inherit] size-full">
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#079455] text-[12px] whitespace-nowrap">Disponível p/ atividade</p>
-      </div>
-      <div aria-hidden="true" className="absolute border-[#dcfae6] border-[0.5px] border-solid inset-0 pointer-events-none rounded-[4px]" />
-    </div>
-  );
+  return null;
 }
 
 function Frame67() {

@@ -1,4 +1,4 @@
-import { useState, useMemo, useReducer } from "react";
+import React, { useState, useMemo, useReducer, useRef, useEffect } from "react";
 import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
@@ -819,7 +819,7 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
       >
         <div className="flex flex-row items-center size-full">
           <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">
-            <div className="relative shrink-0 size-[20px]" data-name="file-view">
+            <div className="relative shrink-0 size-[20px]" data-name="file-view" style={{ "--stroke-0": activeTab === "visao-geral" ? "#0b5ed7" : "#414651" } as React.CSSProperties}>
               <div className="absolute inset-[8.33%_20.83%_8.33%_12.5%]" data-name="Vector">
                 <div className="absolute inset-[-4.5%_-5.63%]">
                   <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 14.8335 18.1668">
@@ -854,7 +854,7 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
       >
         <div className="flex flex-row items-center size-full">
           <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">
-            <div className="relative shrink-0 size-[20px]" data-name="user-group-02">
+            <div className="relative shrink-0 size-[20px]" data-name="user-group-02" style={{ "--stroke-0": activeTab === "participantes" ? "#0b5ed7" : "#414651" } as React.CSSProperties}>
               <Elements3 />
             </div>
             <Frame3 isActive={activeTab === "participantes"} />
@@ -869,7 +869,7 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
       >
         <div className="flex flex-row items-center size-full">
           <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">
-            <div className="overflow-clip relative shrink-0 size-[20px]" data-name="notification-square">
+            <div className="overflow-clip relative shrink-0 size-[20px]" data-name="notification-square" style={{ "--stroke-0": activeTab === "atualizacoes" ? "#0b5ed7" : "#414651", "--stroke-1": activeTab === "atualizacoes" ? "#0b5ed7" : "#414651" } as React.CSSProperties}>
               <Elements4 />
             </div>
             <Frame1 isActive={activeTab === "atualizacoes"} />
@@ -1840,9 +1840,22 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
   const [open, setOpen] = useState(false);
   const [hoveredDisabled, setHoveredDisabled] = useState<string | null>(null);
   const slots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required"), [reservation, participantInsured]);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click without blocking the target click
+  useEffect(() => {
+    if (!open) return;
+    const handleMouseDown = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, [open]);
 
   return (
-    <div className="relative" onClick={(e) => e.stopPropagation()}>
+    <div className="relative" ref={menuRef} onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => setOpen(!open)}
         className="bg-white border border-[#e4e4e7] border-solid cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[40px] hover:bg-[#f8fafc] transition-colors"
@@ -1851,7 +1864,6 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
       </button>
       {open && (
         <>
-          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
           <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[12px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[300px] z-40 py-[4px]">
             {slots.map((slot) => (
               <div key={slot.id}>

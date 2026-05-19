@@ -2224,7 +2224,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       {/* Header */}
       <div className="content-stretch flex items-start justify-between relative w-full">
         <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0">
-          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">{activity.name}</p>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">{activity.name}</p>
           <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
             <div className="flex gap-[6px] items-center shrink-0">
               <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="5" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><circle cx="11" cy="6" r="2.5" stroke="#535862" strokeWidth="1.2"/><path d="M1 14c0-2.2 2-4 4-4s4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/><path d="M10 10c2 0 4 1.8 4 4" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
@@ -2312,17 +2312,20 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Filter tabs OR Bulk actions bar */}
-      <div className="mt-[16px] relative w-full border-b border-[#e9eaeb]">
+      <div className="mt-[16px] relative w-full bg-white rounded-[12px] h-[40px] flex items-center" style={{ padding: "0 8px 0 16px" }}>
+        <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
         {hasSelection ? (
           /* ── Bulk actions bar ── */
-          <div className="flex items-center gap-[16px] pb-[8px] transition-all duration-200">
+          <div className="flex items-center gap-[12px] relative transition-all duration-200 w-full">
             {/* Select all checkbox */}
-            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0 size-[20px]">
+            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
               <div className={`flex items-center justify-center rounded-[4px] size-[20px] ${isAllSelected ? "bg-[#0b5ed7]" : "bg-[#0b5ed7]"}`}>
                 <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
             </button>
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">Todos os {selectedIds.size} selecionados</p>
+            {/* Actions group — aligned right */}
+            <div className="flex items-center gap-[12px] ml-auto">
             {/* Primary inline actions — Check-in */}
             {(() => {
               const isRealizarMode = checkInLabel === "Realizar Check-in's";
@@ -2399,13 +2402,18 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               )}
             </div>
             {/* Clear selection */}
-            <button onClick={clearSelection} className="cursor-pointer flex items-center justify-center ml-auto rounded-[6px] shrink-0 size-[28px] hover:bg-[#f1f5f9] transition-colors">
+            <button onClick={clearSelection} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[28px] hover:bg-[#f1f5f9] transition-colors">
               <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
+            </div>
           </div>
         ) : (
           /* ── Filter tabs ── */
-          <div className="content-stretch flex gap-[4px] items-center pb-[8px] transition-all duration-200">
+          <div className="content-stretch flex gap-[4px] items-center relative transition-all duration-200">
+            {/* Select-all checkbox (unchecked) */}
+            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0 mr-[8px]" style={{ padding: "1px 0", width: "20px" }}>
+              <div className="flex items-center justify-center rounded-[6px] size-[20px] border border-[#d5d7da] bg-white hover:border-[#a4a7ae] transition-colors" />
+            </button>
             {filters.map(({ key, label, count }) => (
               <button
                 key={key}
@@ -2436,7 +2444,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
             <div key={r.id} className="bg-white relative rounded-[12px] shrink-0 w-full mb-[8px]">
               <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
               {/* ── Reservation header ── */}
-              <div className="flex h-[48px] items-center relative w-full" style={{ padding: "4px 16px 4px 8px" }}>
+              <div className="flex h-[48px] items-center relative w-full" style={{ padding: "4px 16px 4px 16px" }}>
                 <div className="flex gap-[12px] items-center size-full">
                   {/* Checkbox - reservation level */}
                   <button onClick={() => toggleSelectReservation(r)} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
@@ -2473,7 +2481,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">
                         {isGroup ? "Reserva em Grupo" : "Reserva Individual"} · ID do pedido:
                       </p>
-                      <button onClick={() => setPaymentDrawerRes(r)} className="cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
+                      <button onClick={() => setPaymentDrawerRes(r)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
                       <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[16px] hover:opacity-70 transition-opacity" title="Copiar ID">
                         <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
                       </button>
@@ -2536,9 +2544,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                 const isDone = p.checkInStatus === "Done";
                 const showCheckIn = !isCancelled && r.status !== "AwaitingPayment" && r.status !== "NoShow";
                 return (
-                  <div key={p.id} className="border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full cursor-pointer hover:bg-[#f8fafc] transition-colors" onClick={() => setDrawerData({ r, p })}>
-                    {/* Checkbox cell — 40px */}
-                    <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ width: "40px", padding: "1px 8px" }}>
+                  <div key={p.id} className="border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full cursor-pointer hover:bg-[#f8fafc] transition-colors" style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                    {/* Checkbox cell */}
+                    <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
                       {selectedIds.has(p.id) ? (
                         <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
                           <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -2553,8 +2561,8 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       <div className="flex flex-col gap-[4px] items-start min-w-0 flex-1">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap w-full">{p.name}</p>
                         <div className="flex gap-[4px] items-center">
-                          {p.notes?.includes("Comprador") && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Comprador -</p>}
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">ID: <span className="text-[#0b5ed7]">#{p.id.replace("part-", "").padStart(4, "0")}</span></p>
+                          {p.notes?.includes("Comprador") && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">Comprador -</p>}
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">ID: <span className="text-[#90A1B9]">#{p.id.replace("part-", "").padStart(4, "0")}</span></p>
                         </div>
                       </div>
                     </div>

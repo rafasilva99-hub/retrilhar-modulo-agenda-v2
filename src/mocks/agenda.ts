@@ -373,7 +373,7 @@ export const mockReservations: Reservation[] = [
     participants: [
       {
         id: 'part-001',
-        name: 'João Silva',
+        name: 'Rafael Mendes',
         tariffType: 'Adulto',
         checkInStatus: 'Pending',
         hasHealthIssue: false,

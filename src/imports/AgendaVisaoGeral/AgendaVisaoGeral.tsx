@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import svgPaths from "./svg-3hal38zdc4";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import { mockActivities } from "../../mocks/agenda";
@@ -105,8 +106,15 @@ function Container() {
 }
 
 function TopBar() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <div className="absolute content-stretch flex gap-[24px] items-center pl-[248px] pr-[24px] py-[24px] left-0 right-0 top-0" data-name="TopBar">
+    <div className={`fixed content-stretch flex gap-[24px] items-center pl-[248px] pr-[24px] py-[24px] left-0 right-0 top-0 z-10 transition-[background-color,box-shadow] duration-200 ${scrolled ? "bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)]" : "bg-[#f8fafc]"}`} data-name="TopBar">
       <SearchBar />
       <TopBar1 />
       <SlotClone />

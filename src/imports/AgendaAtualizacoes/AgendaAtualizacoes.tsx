@@ -150,8 +150,15 @@ function Container() {
 }
 
 function TopBar() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <div className="absolute content-stretch flex gap-[24px] items-center pl-[248px] pr-[24px] py-[24px] left-0 right-0 top-0" data-name="TopBar">
+    <div className={`fixed content-stretch flex gap-[24px] items-center pl-[248px] pr-[24px] py-[24px] left-0 right-0 top-0 z-10 transition-[background-color,box-shadow] duration-200 ${scrolled ? "bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)]" : "bg-[#f8fafc]"}`} data-name="TopBar">
       <SearchBar />
       <TopBar1 />
       <SlotClone />
@@ -1143,6 +1150,7 @@ function ParticipantDrawer({ participant, reservation, onClose }: {
   reservation: Reservation;
   onClose: () => void;
 }) {
+  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
   const initials = participant.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   const phone = "(31) 99999-9999";
   const email = participant.name.split(" ")[0].toLowerCase() + "." + (participant.name.split(" ").pop() || "").toLowerCase() + "@email.com";
@@ -1374,7 +1382,7 @@ function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke
           role="tooltip"
           className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[240px] z-50 pointer-events-none text-center"
         >
-          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-white whitespace-nowrap">{content.title}</p>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-white whitespace-nowrap">{content.title}</p>
           {content.subtitle && (
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[4px] not-italic text-[12px] text-[#a4a7ae]">{content.subtitle}</p>
           )}
@@ -1467,6 +1475,7 @@ function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsuran
 // ─── Payment Drawer ─────────────────────────────────────────────────────────
 
 function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onClose: () => void }) {
+  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
   const isGroup = reservation.type === "group";
   const pCount = reservation.participants.length;
   const adults = reservation.participants.filter((p) => p.tariffType === "Adulto").length;
@@ -1656,6 +1665,7 @@ function CheckInButton({ isDone, insured, onCheckIn, onUndo }: { isDone: boolean
 }
 
 function FiltersDrawer({ onClose }: { onClose: () => void }) {
+  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
   const [alertas, setAlertas] = useState<Set<string>>(new Set());
   const [tarifa, setTarifa] = useState<Set<string>>(new Set());
   const [imagem, setImagem] = useState("");

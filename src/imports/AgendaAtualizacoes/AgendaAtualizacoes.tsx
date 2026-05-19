@@ -2087,6 +2087,14 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
+
+  // Block body scroll when any modal is open
+  useEffect(() => {
+    if (cancelModal || noShowModal) {
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = ""; };
+    }
+  }, [cancelModal, noShowModal]);
   // Per-participant insurance tracking — all start uninsured so user must contract
   const [insuredParticipants, setInsuredParticipants] = useState<Set<string>>(new Set());
   const isParticipantInsured = (pid: string) => insuredParticipants.has(pid);

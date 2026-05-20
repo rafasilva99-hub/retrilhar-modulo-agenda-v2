@@ -1356,6 +1356,8 @@ const TOOLTIP_CONTENT: Record<string, { title: string; subtitle: string }> = {
   "special-needs":                 { title: "Possui necessidades especiais", subtitle: "Necessidades especiais informadas" },
   "dietary-restriction":           { title: "Possui restrição alimentar", subtitle: "Restrição alimentar informada" },
   "minor":                         { title: "Menor de idade", subtitle: "Participante é menor de 18 anos" },
+  "payment-paid":                  { title: "Pagamento confirmado", subtitle: "Pagamento processado com sucesso" },
+  "payment-pending":               { title: "Pagamento pendente", subtitle: "Aguardando confirmação do pagamento" },
 };
 
 function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke: string; tooltipKey: string }) {
@@ -1394,6 +1396,43 @@ function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke
   );
 }
 
+function PaymentBadge({ isPaid, onClick }: { isPaid: boolean; onClick: () => void }) {
+  const [show, setShow] = useState(false);
+  const tooltipKey = isPaid ? "payment-paid" : "payment-pending";
+  const stroke = isPaid ? "#079455" : "#dc6803";
+  const content = TOOLTIP_CONTENT[tooltipKey];
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      <button
+        onClick={(e) => { e.stopPropagation(); onClick(); }}
+        className="bg-white border border-[#e9e9eb] border-solid flex items-center justify-center rounded-[20px] shrink-0 size-[28px] cursor-pointer hover:bg-[#f8fafc] transition-colors"
+      >
+        <svg className="size-[16px]" fill="none" viewBox="0 0 48 48" style={{ color: stroke }}>
+          <path d="M36.8333 16.2963C36.8333 11.7144 31.0877 8 24 8C16.9123 8 11.1667 11.7144 11.1667 16.2963C11.1667 20.8782 14.6667 23.4074 24 23.4074C33.3333 23.4074 38 25.7778 38 31.7037C38 37.6296 31.732 40 24 40C16.268 40 10 36.2856 10 31.7037" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+          <path d="M24 4V44" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+      {show && content && (
+        <div
+          role="tooltip"
+          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[240px] z-50 pointer-events-none text-center"
+        >
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-white whitespace-nowrap">{content.title}</p>
+          {content.subtitle && (
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[4px] not-italic text-[12px] text-[#a4a7ae]">{content.subtitle}</p>
+          )}
+          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 const RESERVATION_STATUS_ICON: Record<string, { stroke: string; tooltipKey: string; icon: React.ReactNode }> = {
   Confirmed:       { stroke: "#17b26a", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 9l1.5 1.5L10 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   AwaitingPayment: { stroke: "#dc6803", tooltipKey: "res-awaiting", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><circle cx="8" cy="10" r="1.5" stroke="currentColor" strokeWidth="1.2"/></svg> },
@@ -1416,12 +1455,13 @@ Object.assign(TOOLTIP_CONTENT, {
   "res-expired":    { title: "Reserva expirada", subtitle: "Expirada por inatividade" },
 });
 
-function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsurance, reservationStatus }: {
+function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsurance, reservationStatus, paymentStatus, onPaymentClick, isBuyer }: {
   participant: Participant; insuranceStatus: string; requiresInsurance: boolean; reservationStatus: string;
+  paymentStatus: string; onPaymentClick: () => void; isBuyer: boolean;
 }) {
   const badges: { key: string; icon: React.ReactNode; stroke: string; tooltipKey: string }[] = [];
 
-  // 0. Status da reserva (always first, always shown)
+  // 0. Status da reserva
   const resStat = RESERVATION_STATUS_ICON[reservationStatus] || RESERVATION_STATUS_ICON.Confirmed;
   badges.push({ key: "res-status", stroke: resStat.stroke, tooltipKey: resStat.tooltipKey, icon: resStat.icon });
 
@@ -1467,6 +1507,7 @@ function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsuran
 
   return (
     <div className="flex gap-[6px] items-center shrink-0" style={{ padding: "14px 16px" }}>
+      {isBuyer && <PaymentBadge isPaid={paymentStatus === "Paid"} onClick={onPaymentClick} />}
       {badges.map((b) => <AttrBadge key={b.key} icon={b.icon} stroke={b.stroke} tooltipKey={b.tooltipKey} />)}
     </div>
   );
@@ -1921,7 +1962,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [reservations, dispatch] = useReducer(reservationsReducer, mockReservations);
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(mockReservations.filter((r) => r.type === "group").map((r) => r.id)));
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -1937,6 +1978,17 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
     const el = bulkBarRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(([entry]) => setBulkBarHidden(!entry.isIntersecting), { threshold: 0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Sticky TopBar: track when search+sort+filters scrolls out of view
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const [searchBarHidden, setSearchBarHidden] = useState(false);
+  useEffect(() => {
+    const el = searchBarRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setSearchBarHidden(!entry.isIntersecting), { threshold: 0 });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -2252,105 +2304,154 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
 
   return (
     <div className="absolute left-[248px] right-[24px] top-[157px]" style={{ paddingBottom: "40px" }}>
-      {/* ── Sticky bulk actions bar integrated into TopBar ── */}
-      {hasSelection && bulkBarHidden && (
+      {/* ── Sticky TopBar: search + sort + filters (+ bulk actions when selected) ── */}
+      {searchBarHidden && (
         <div
-          className="fixed left-0 right-0 top-[80px] z-10 bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] animate-[slideDown_250ms_ease-out]"
-          style={{ animationFillMode: "both", paddingTop: "16px", paddingBottom: "8px" }}
+          className="fixed left-0 right-0 top-0 z-[11] bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] animate-[fadeSlideDown_350ms_cubic-bezier(0.22,1,0.36,1)]"
+          style={{ animationFillMode: "both" }}
         >
-          <div className="border-t border-[#f5f5f5]" style={{ marginLeft: "248px", marginRight: "24px" }} />
-          <div className="flex items-center gap-[12px] w-full" style={{ padding: "16px 40px 10px 264px" }}>
-            {/* Select all checkbox */}
-            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
-              <div className="flex items-center justify-center rounded-[4px] size-[20px] bg-[#0b5ed7]">
-                <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          {/* Search + Sort + Filters row */}
+          <div className="flex gap-[12px] items-center" style={{ padding: "24px 24px 20px 248px" }}>
+            <div className="bg-white flex-1 min-w-0 relative rounded-[10px]">
+              <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[10px]" />
+              <div className="content-stretch flex gap-[8px] items-center px-[14px] py-[10px] relative size-full">
+                <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#717680" strokeWidth="1.5"/><path d="M14 14l3 3" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar por nome, ID do pedido, etc..."
+                  className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[14px] text-[#414651] placeholder:text-[#a4a7ae] bg-transparent"
+                />
               </div>
-            </button>
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">Todos os {selectedIds.size} selecionados</p>
-            {/* Actions group — aligned right */}
-            <div className="flex items-center gap-[12px] ml-auto">
-              {/* Check-in action */}
-              {(() => {
-                const isRealizarMode = checkInLabel === "Realizar Check-in's";
-                const checkInDisabled = isRealizarMode && selectedInsuredCount === 0;
-                const badgeText = isRealizarMode ? `${selectedInsuredCount} de ${selectedIds.size}` : getBadgeLabel("undo-check-in");
-                return (
-                  <div className="relative"
-                    onMouseEnter={() => checkInDisabled && setShowBulkCheckInTipStickyBar(true)}
-                    onMouseLeave={() => setShowBulkCheckInTipStickyBar(false)}
-                  >
-                    <button
-                      onClick={() => !checkInDisabled && handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
-                      disabled={checkInDisabled}
-                      className={`flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 transition-colors ${checkInDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-[#f8fafc]"}`}
-                    >
-                      {isRealizarMode ? (
-                        <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      ) : (
-                        <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                      )}
-                      <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${checkInDisabled ? "text-[#727685]" : isRealizarMode ? "text-[#0b5ed7]" : "text-[#414651]"}`}>{checkInLabel}</p>
-                      <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
-                        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{badgeText}</p>
-                      </div>
+            </div>
+            <div className="relative">
+              <button
+                onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
+                className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
+              >
+                <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
+                <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ordenar Por</p>
+                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+              </button>
+              {showSort && (
+                <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[200px] z-20">
+                  {["Alfabética", "Número de pedido", "Data da reserva"].map((opt) => (
+                    <button key={opt} onClick={() => setShowSort(false)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[14px] py-[10px] text-[14px] text-[#414651] text-left transition-colors w-full">
+                      {opt}
                     </button>
-                    {showBulkCheckInTipStickyBar && checkInDisabled && (
-                      <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[300px] z-50 pointer-events-none text-center">
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">É necessário contratar o seguro dos participantes antes de realizar essa ação</p>
-                        <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <button
+                onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
+                className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
+              >
+                <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
+                <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
+                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 3h12M4 8h8M6 13h4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Filtros</p>
+                </div>
+              </button>
+              {showFilters && <FiltersDrawer onClose={() => setShowFilters(false)} />}
+            </div>
+          </div>
+          {/* Bulk actions row — only when selected + scrolled past bulk bar */}
+          {hasSelection && bulkBarHidden && (
+            <div className="animate-[slideDown_250ms_ease-out]" style={{ animationFillMode: "both" }}>
+              <div className="border-t border-[#f5f5f5]" style={{ marginLeft: "248px", marginRight: "24px" }} />
+              <div className="flex items-center gap-[12px] w-full" style={{ padding: "12px 40px 16px 264px" }}>
+                <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
+                  <div className="flex items-center justify-center rounded-[4px] size-[20px] bg-[#0b5ed7]">
+                    <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                </button>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">Todos os {selectedIds.size} selecionados</p>
+                <div className="flex items-center gap-[12px] ml-auto">
+                  {(() => {
+                    const isRealizarMode = checkInLabel === "Realizar Check-in's";
+                    const checkInDisabled = isRealizarMode && selectedInsuredCount === 0;
+                    const badgeText = isRealizarMode ? `${selectedInsuredCount} de ${selectedIds.size}` : getBadgeLabel("undo-check-in");
+                    return (
+                      <div className="relative"
+                        onMouseEnter={() => checkInDisabled && setShowBulkCheckInTipStickyBar(true)}
+                        onMouseLeave={() => setShowBulkCheckInTipStickyBar(false)}
+                      >
+                        <button
+                          onClick={() => !checkInDisabled && handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
+                          disabled={checkInDisabled}
+                          className={`flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 transition-colors ${checkInDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-[#f8fafc]"}`}
+                        >
+                          {isRealizarMode ? (
+                            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          ) : (
+                            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                          )}
+                          <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${checkInDisabled ? "text-[#727685]" : isRealizarMode ? "text-[#0b5ed7]" : "text-[#414651]"}`}>{checkInLabel}</p>
+                          <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{badgeText}</p>
+                          </div>
+                        </button>
+                        {showBulkCheckInTipStickyBar && checkInDisabled && (
+                          <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[300px] z-50 pointer-events-none text-center">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">É necessário contratar o seguro dos participantes antes de realizar essa ação</p>
+                            <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                  <button
+                    onClick={() => handleBulkAction(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm", confirmLabel)}
+                    className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
+                  >
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">{confirmLabel}</p>
+                    <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm")}</p>
+                    </div>
+                  </button>
+                  <div className="relative">
+                    <button onClick={() => setShowMoreActionsStickyBar(!showMoreActionsStickyBar)} className="cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors">
+                      <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2" fill="#535862"/><circle cx="8" cy="8" r="1.2" fill="#535862"/><circle cx="13" cy="8" r="1.2" fill="#535862"/></svg>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">Mais ações</p>
+                    </button>
+                    {showMoreActionsStickyBar && (
+                      <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[260px] z-20">
+                        {([
+                          { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false },
+                          selectedUninsuredCount >= selectedInsuredCount
+                            ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false }
+                            : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer contratação de seguros", destructive: false },
+                          { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false },
+                          { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false },
+                          { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true },
+                          { action: "cancel" as BulkAction, label: "Cancelar reservas", destructive: true },
+                        ]).map(({ action, label, destructive }) => (
+                          <button
+                            key={action}
+                            onClick={() => handleBulkAction(action, label)}
+                            className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full hover:bg-[#f8fafc] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
+                          >
+                            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{label}</p>
+                            <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[11px] text-[#717680]">{getBadgeLabel(action)}</p>
+                            </div>
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
-                );
-              })()}
-              {/* Confirm action */}
-              <button
-                onClick={() => handleBulkAction(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm", confirmLabel)}
-                className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
-              >
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">{confirmLabel}</p>
-                <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm")}</p>
+                  <button onClick={clearSelection} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[28px] hover:bg-[#f1f5f9] transition-colors">
+                    <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  </button>
                 </div>
-              </button>
-              {/* More actions dropdown */}
-              <div className="relative">
-                <button onClick={() => setShowMoreActionsStickyBar(!showMoreActionsStickyBar)} className="cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors">
-                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2" fill="#535862"/><circle cx="8" cy="8" r="1.2" fill="#535862"/><circle cx="13" cy="8" r="1.2" fill="#535862"/></svg>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">Mais ações</p>
-                </button>
-                {showMoreActionsStickyBar && (
-                  <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[260px] z-20">
-                    {([
-                      { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false },
-                      selectedUninsuredCount >= selectedInsuredCount
-                        ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false }
-                        : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer contratação de seguros", destructive: false },
-                      { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false },
-                      { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false },
-                      { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true },
-                      { action: "cancel" as BulkAction, label: "Cancelar reservas", destructive: true },
-                    ]).map(({ action, label, destructive }) => (
-                      <button
-                        key={action}
-                        onClick={() => handleBulkAction(action, label)}
-                        className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full hover:bg-[#f8fafc] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
-                      >
-                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{label}</p>
-                        <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
-                          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[11px] text-[#717680]">{getBadgeLabel(action)}</p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
-              {/* Clear selection */}
-              <button onClick={clearSelection} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[28px] hover:bg-[#f1f5f9] transition-colors">
-                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              </button>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -2392,7 +2493,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Search bar + Sort + Filters */}
-      <div className="content-stretch flex gap-[12px] items-center mt-[24px] relative w-full">
+      <div ref={searchBarRef} className="content-stretch flex gap-[12px] items-center mt-[24px] relative w-full">
         <div className="bg-white flex-1 min-w-0 relative rounded-[10px]">
           <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[10px]" />
           <div className="content-stretch flex gap-[8px] items-center px-[14px] py-[10px] relative size-full">
@@ -2597,22 +2698,12 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                   <div className="flex items-center justify-center shrink-0" style={{ width: "36px", padding: "1px 0" }}>
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] text-center">{String(idx + 1).padStart(2, "0")}</p>
                   </div>
-                  {/* Type icon */}
-                  <div className="flex items-center justify-center shrink-0" style={{ width: "48px" }}>
-                    <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20">
-                      {isGroup ? (
-                        <><circle cx="6" cy="7" r="3" stroke="#535862" strokeWidth="1.3"/><circle cx="14" cy="7" r="3" stroke="#535862" strokeWidth="1.3"/><path d="M1 18c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/><path d="M12 13c2.8 0 5 2.2 5 5" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></>
-                      ) : (
-                        <><circle cx="10" cy="6" r="3.5" stroke="#535862" strokeWidth="1.3"/><path d="M4 18c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></>
-                      )}
-                    </svg>
-                  </div>
                   {/* Title + badges area */}
                   <div className="flex flex-1 gap-[16px] items-center min-w-0">
                     {/* Type text + order ID */}
                     <div className="flex gap-[4px] items-center shrink-0">
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">
-                        {isGroup ? "Reserva em Grupo" : "Reserva Individual"} · ID do pedido:
+                        Reserva de {r.buyerName} · {r.participants.length} {r.participants.length === 1 ? "ingresso" : "ingressos"} · ID do pedido:
                       </p>
                       <button onClick={() => setPaymentDrawerRes(r)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
                       <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[16px] hover:opacity-70 transition-opacity" title="Copiar ID">
@@ -2628,18 +2719,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                         </div>
                       ) : (
                         <>
-                          {r.paymentStatus === "Paid" && (
-                            <button onClick={() => setPaymentDrawerRes(r)} className="border border-[#e9eaeb] border-solid cursor-pointer flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0 hover:bg-[#f8fafc] transition-colors">
-                              <div className="bg-[#17b26a] rounded-[9999px] size-[6px]" />
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#535862] whitespace-nowrap">Pagamento confirmado</p>
-                            </button>
-                          )}
-                          {r.paymentStatus === "Pending" && (
-                            <button onClick={() => setPaymentDrawerRes(r)} className="border border-[#e9eaeb] border-solid cursor-pointer flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0 hover:bg-[#f8fafc] transition-colors">
-                              <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">Pagamento pendente</p>
-                            </button>
-                          )}
+                          {/* Payment badges moved to ParticipantBadgesRow */}
                           {isGroup && pendingCount > 0 && (
                             <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
                               <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
@@ -2658,8 +2738,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                   </div>
                   {/* Expand/collapse for groups */}
                   {isGroup && (
-                    <button onClick={() => toggleGroup(r.id)} className="cursor-pointer flex gap-[8px] items-center rounded-[6px] shrink-0 hover:underline">
-                      <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">{expanded ? `Ocultar Grupo (${r.participants.length})` : `Ver Grupo (${r.participants.length})`}</p>
+                    <button onClick={() => toggleGroup(r.id)} className="cursor-pointer flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0 border border-[#e9eaeb] hover:bg-[#f8fafc] transition-colors">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862] whitespace-nowrap">{expanded ? `Recolher (${r.participants.length})` : `Ver grupo (${r.participants.length})`}</p>
+                      <svg className={`shrink-0 size-[14px] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </button>
                   )}
                 </div>
@@ -2694,7 +2775,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       <div className="flex flex-col gap-[4px] items-start min-w-0 flex-1">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap w-full">{p.name}</p>
                         <div className="flex gap-[4px] items-center">
-                          {p.notes?.includes("Comprador") && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">Comprador -</p>}
+                          {r.participants[0].id === p.id && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">Comprador -</p>}
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">ID: <span className="text-[#90A1B9]">#{p.id.replace("part-", "").padStart(4, "0")}</span></p>
                         </div>
                       </div>
@@ -2708,7 +2789,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       <ReservationStatusBadge status={isCancelled ? "Cancelled" : isDone ? "CheckedIn" : r.status} tooltip={r.status === "Expired" ? "Reserva expirada por inatividade" : undefined} />
                     </div>
                     {/* Badges secundários — atributos do participante */}
-                    <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} />
+                    <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
                     {/* Actions cell */}
                     <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {showCheckIn && (

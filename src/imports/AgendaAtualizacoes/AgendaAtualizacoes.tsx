@@ -1926,7 +1926,20 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showMoreActions, setShowMoreActions] = useState(false);
+  const [showMoreActionsStickyBar, setShowMoreActionsStickyBar] = useState(false);
   const [showBulkCheckInTip, setShowBulkCheckInTip] = useState(false);
+  const [showBulkCheckInTipStickyBar, setShowBulkCheckInTipStickyBar] = useState(false);
+
+  // Sticky bulk bar: track when original bar scrolls out of view
+  const bulkBarRef = useRef<HTMLDivElement>(null);
+  const [bulkBarHidden, setBulkBarHidden] = useState(false);
+  useEffect(() => {
+    const el = bulkBarRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setBulkBarHidden(!entry.isIntersecting), { threshold: 0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Selection helpers
   const allParticipantIds = useMemo(() => reservations.flatMap((r) => r.participants.map((p) => p.id)), [reservations]);
@@ -2239,6 +2252,108 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
 
   return (
     <div className="absolute left-[248px] right-[24px] top-[157px]" style={{ paddingBottom: "40px" }}>
+      {/* ── Sticky bulk actions bar integrated into TopBar ── */}
+      {hasSelection && bulkBarHidden && (
+        <div
+          className="fixed left-0 right-0 top-[80px] z-10 bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] animate-[slideDown_250ms_ease-out]"
+          style={{ animationFillMode: "both", paddingTop: "16px", paddingBottom: "8px" }}
+        >
+          <div className="border-t border-[#f5f5f5]" style={{ marginLeft: "248px", marginRight: "24px" }} />
+          <div className="flex items-center gap-[12px] w-full" style={{ padding: "16px 40px 10px 264px" }}>
+            {/* Select all checkbox */}
+            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
+              <div className="flex items-center justify-center rounded-[4px] size-[20px] bg-[#0b5ed7]">
+                <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+            </button>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">Todos os {selectedIds.size} selecionados</p>
+            {/* Actions group — aligned right */}
+            <div className="flex items-center gap-[12px] ml-auto">
+              {/* Check-in action */}
+              {(() => {
+                const isRealizarMode = checkInLabel === "Realizar Check-in's";
+                const checkInDisabled = isRealizarMode && selectedInsuredCount === 0;
+                const badgeText = isRealizarMode ? `${selectedInsuredCount} de ${selectedIds.size}` : getBadgeLabel("undo-check-in");
+                return (
+                  <div className="relative"
+                    onMouseEnter={() => checkInDisabled && setShowBulkCheckInTipStickyBar(true)}
+                    onMouseLeave={() => setShowBulkCheckInTipStickyBar(false)}
+                  >
+                    <button
+                      onClick={() => !checkInDisabled && handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
+                      disabled={checkInDisabled}
+                      className={`flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 transition-colors ${checkInDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-[#f8fafc]"}`}
+                    >
+                      {isRealizarMode ? (
+                        <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      ) : (
+                        <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                      )}
+                      <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${checkInDisabled ? "text-[#727685]" : isRealizarMode ? "text-[#0b5ed7]" : "text-[#414651]"}`}>{checkInLabel}</p>
+                      <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{badgeText}</p>
+                      </div>
+                    </button>
+                    {showBulkCheckInTipStickyBar && checkInDisabled && (
+                      <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[300px] z-50 pointer-events-none text-center">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">É necessário contratar o seguro dos participantes antes de realizar essa ação</p>
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+              {/* Confirm action */}
+              <button
+                onClick={() => handleBulkAction(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm", confirmLabel)}
+                className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
+              >
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">{confirmLabel}</p>
+                <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm")}</p>
+                </div>
+              </button>
+              {/* More actions dropdown */}
+              <div className="relative">
+                <button onClick={() => setShowMoreActionsStickyBar(!showMoreActionsStickyBar)} className="cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors">
+                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2" fill="#535862"/><circle cx="8" cy="8" r="1.2" fill="#535862"/><circle cx="13" cy="8" r="1.2" fill="#535862"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">Mais ações</p>
+                </button>
+                {showMoreActionsStickyBar && (
+                  <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[260px] z-20">
+                    {([
+                      { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false },
+                      selectedUninsuredCount >= selectedInsuredCount
+                        ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false }
+                        : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer contratação de seguros", destructive: false },
+                      { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false },
+                      { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false },
+                      { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true },
+                      { action: "cancel" as BulkAction, label: "Cancelar reservas", destructive: true },
+                    ]).map(({ action, label, destructive }) => (
+                      <button
+                        key={action}
+                        onClick={() => handleBulkAction(action, label)}
+                        className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full hover:bg-[#f8fafc] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
+                      >
+                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{label}</p>
+                        <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[11px] text-[#717680]">{getBadgeLabel(action)}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Clear selection */}
+              <button onClick={clearSelection} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[28px] hover:bg-[#f1f5f9] transition-colors">
+                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="content-stretch flex items-start justify-between relative w-full">
         <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0">
@@ -2330,7 +2445,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Filter tabs OR Bulk actions bar */}
-      <div className="mt-[16px] relative w-full bg-white rounded-[12px] h-[40px] flex items-center" style={{ padding: "0 8px 0 16px" }}>
+      <div ref={bulkBarRef} className="mt-[16px] relative w-full bg-white rounded-[12px] h-[40px] flex items-center" style={{ padding: "0 8px 0 16px" }}>
         <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
         {hasSelection ? (
           /* ── Bulk actions bar ── */

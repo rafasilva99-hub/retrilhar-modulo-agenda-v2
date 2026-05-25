@@ -30,10 +30,32 @@ function reservationsReducer(state: Reservation[], action: ResAction): Reservati
 
 // Toast
 function Toast({ message, type, onClose }: { message: string; type: "success" | "error"; onClose: () => void }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    requestAnimationFrame(() => setVisible(true));
+  }, []);
+  const handleClose = () => { setVisible(false); setTimeout(onClose, 200); };
+
   return (
-    <div className={`fixed bottom-[24px] left-1/2 -translate-x-1/2 z-50 flex gap-[8px] items-center px-[16px] py-[12px] rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.15)] ${type === "success" ? "bg-[#ecfdf3] border border-[#dcfae6]" : "bg-[#fef3f2] border border-[#fee4e2]"}`}>
-      <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${type === "success" ? "text-[#079455]" : "text-[#d92d20]"}`}>{message}</p>
-      <button onClick={onClose} className="cursor-pointer ml-[8px] text-[#717680] hover:text-[#414651]">✕</button>
+    <div
+      className={`fixed top-[24px] right-[24px] z-[60] w-[384px] flex overflow-clip rounded-[8px] border border-[#e4e4e7] border-solid bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)] transition-all duration-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-[8px]"}`}
+    >
+      {/* Left color stripe with icon */}
+      <div className={`flex items-center justify-center shrink-0 w-[60px] ${type === "success" ? "bg-[#ecfdf3]" : "bg-[#fef3f2]"}`}>
+        {type === "success" ? (
+          <svg className="size-[28px]" viewBox="0 0 28 28" fill="none"><path d="M23.8004 11.3614C25.0444 12.6053 25.6663 13.2273 25.6663 14.0001C25.6663 14.773 25.0443 15.395 23.8004 16.639C22.9641 17.4752 22.7073 18.0152 22.7073 19.1894C22.7073 20.1186 22.8876 21.4407 22.1553 22.1668C21.4288 22.8872 20.1122 22.7078 19.1889 22.7078C18.0556 22.7078 17.5098 22.9295 16.701 23.7384C16.0123 24.4271 15.089 25.6668 13.9997 25.6668C12.9104 25.6668 11.9871 24.4271 11.2983 23.7384C10.4895 22.9295 9.94375 22.7078 8.81042 22.7078C7.88713 22.7078 6.57056 22.8872 5.84408 22.1668C5.11178 21.4407 5.292 20.1186 5.292 19.1894C5.292 18.0152 5.03519 17.4752 4.19895 16.639C2.955 15.395 2.33303 14.773 2.33301 14.0001C2.33302 13.2273 2.95499 12.6053 4.19892 11.3614C4.94541 10.6149 5.292 9.87515 5.292 8.8109C5.292 7.88759 5.11258 6.571 5.83301 5.84452C6.55917 5.11224 7.88121 5.29246 8.81043 5.29246C9.87466 5.29246 10.6144 4.9459 11.3609 4.19943C12.6048 2.95547 13.2268 2.3335 13.9997 2.3335C14.7726 2.3335 15.3945 2.95547 16.6385 4.19943M22.1553 22.1668H22.1663" stroke="#079455" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.91699 11.0833L14.0003 15.1667L24.5006 3.5" stroke="#079455" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        ) : (
+          <svg className="size-[28px]" viewBox="0 0 28 28" fill="none"><path d="M2.91699 13.9998C2.91699 8.7751 2.91699 6.16274 4.54011 4.53962C6.16323 2.9165 8.77559 2.9165 14.0003 2.9165C19.2251 2.9165 21.8374 2.9165 23.4605 4.53962C25.0837 6.16274 25.0837 8.7751 25.0837 13.9998C25.0837 19.2246 25.0837 21.8369 23.4605 23.4601C21.8374 25.0832 19.2251 25.0832 14.0003 25.0832C8.77559 25.0832 6.16323 25.0832 4.54011 23.4601C2.91699 21.8369 2.91699 19.2246 2.91699 13.9998Z" stroke="#D92D20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.3335V14.5835" stroke="#D92D20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 18.6528V18.6645" stroke="#D92D20" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        )}
+      </div>
+      {/* Content area */}
+      <div className="flex flex-col justify-center gap-[4px] flex-1 px-[16px] py-[16px]">
+        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37]">{message}</p>
+      </div>
+      {/* Close button */}
+      <button onClick={handleClose} className="cursor-pointer flex items-center justify-center shrink-0 w-[40px] hover:bg-[#f8fafc] transition-colors">
+        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+      </button>
     </div>
   );
 }
@@ -1679,21 +1701,13 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function CheckInButton({ isDone, insured, onCheckIn, onUndo }: { isDone: boolean; insured: boolean; onCheckIn: () => void; onUndo: () => void }) {
-  const [showTip, setShowTip] = useState(false);
-  const canCheckIn = !isDone && insured;
-  const disabled = !isDone && !insured;
-
+function CheckInButton({ isDone, onCheckIn, onUndo }: { isDone: boolean; insured?: boolean; onCheckIn: () => void; onUndo: () => void }) {
   return (
-    <div className="relative" onClick={(e) => e.stopPropagation()}
-      onMouseEnter={() => disabled && setShowTip(true)}
-      onMouseLeave={() => setShowTip(false)}
-    >
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
       <button
-        onClick={() => isDone ? onUndo() : canCheckIn ? onCheckIn() : undefined}
-        disabled={disabled}
-        className={`flex gap-[8px] items-center justify-center rounded-[6px] shrink-0 transition-colors ${isDone ? "cursor-pointer bg-white border border-[#e4e4e7] border-solid hover:bg-[#f8fafc]" : canCheckIn ? "cursor-pointer hover:bg-[#d5dcfe]" : "cursor-not-allowed opacity-50"}`}
-        style={{ width: "158.48px", padding: "10px 12px", ...(!isDone ? { backgroundColor: disabled ? "#f5f5f5" : "#edf0ff" } : {}) }}
+        onClick={() => isDone ? onUndo() : onCheckIn()}
+        className={`flex gap-[8px] items-center justify-center rounded-[6px] shrink-0 transition-colors ${isDone ? "cursor-pointer bg-white border border-[#e4e4e7] border-solid hover:bg-[#f8fafc]" : "cursor-pointer hover:bg-[#d5dcfe]"}`}
+        style={{ width: "158.48px", padding: "10px 12px", ...(!isDone ? { backgroundColor: "#edf0ff" } : {}) }}
       >
         {isDone ? (
           <>
@@ -1702,17 +1716,11 @@ function CheckInButton({ isDone, insured, onCheckIn, onUndo }: { isDone: boolean
           </>
         ) : (
           <>
-            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={disabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={disabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${disabled ? "text-[#727685]" : "text-[#0b5ed7]"}`}>Realizar Check-in</p>
+            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#0b5ed7]">Realizar Check-in</p>
           </>
         )}
       </button>
-      {showTip && (
-        <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[260px] z-50 pointer-events-none text-center">
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">É necessário contratar o seguro do participante antes de realizar essa ação</p>
-          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
-        </div>
-      )}
     </div>
   );
 }
@@ -2091,25 +2099,21 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       return;
     }
 
-    // Special handling for check-in — must validate insurance per participant
+    // Special handling for check-in — open confirmation modal with eligible participants
     if (action === "check-in") {
-      let done = 0, blocked = 0;
+      const eligible: Participant[] = [];
       for (const r of selectedReservations) {
         if (r.status !== "Confirmed") continue;
         for (const p of r.participants) {
           if (!selectedIds.has(p.id) || p.checkInStatus === "Done") continue;
-          if (!isParticipantInsured(p.id)) { blocked++; continue; }
-          dispatch({ type: "CHECK_IN", participantId: p.id });
-          done++;
+          eligible.push(p);
         }
       }
-      if (done === 0 && blocked > 0) {
-        showToast(`Nenhum check-in realizado. ${blocked} participante(s) sem seguro contratado.`, "error");
-      } else if (blocked > 0) {
-        showToast(`Check-in realizado para ${done} participante(s). ${blocked} ignorado(s) por seguro pendente.`);
-      } else {
-        showToast(`Check-in realizado para ${done} participante(s).`);
+      if (eligible.length === 0) {
+        showToast("Nenhum participante elegível para check-in.", "error");
+        return;
       }
+      setCheckInModal(eligible);
       return;
     }
 
@@ -2162,16 +2166,17 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [cancelModal, setCancelModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
+  const [checkInModal, setCheckInModal] = useState<Participant[] | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
 
   // Block body scroll when any modal is open
   useEffect(() => {
-    if (cancelModal || noShowModal) {
+    if (cancelModal || noShowModal || checkInModal) {
       document.body.style.overflow = "hidden";
       return () => { document.body.style.overflow = ""; };
     }
-  }, [cancelModal, noShowModal]);
+  }, [cancelModal, noShowModal, checkInModal]);
   // Per-participant insurance tracking — all start uninsured so user must contract
   const [insuredParticipants, setInsuredParticipants] = useState<Set<string>>(new Set());
   const isParticipantInsured = (pid: string) => insuredParticipants.has(pid);
@@ -2201,7 +2206,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+    setTimeout(() => setToast(null), 4000);
   };
 
   const handleMenuAction = (actionId: string, r: Reservation, p: Participant) => {
@@ -2246,12 +2251,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   };
 
   const handleCheckIn = (p: Participant) => {
-    if (!isParticipantInsured(p.id)) {
-      showToast("É obrigatório contratar o seguro antes de realizar o check-in.", "error");
-      return;
-    }
-    dispatch({ type: "CHECK_IN", participantId: p.id });
-    showToast(`Check-in de ${p.name.split(" ")[0]} realizado com sucesso!`);
+    setCheckInModal([p]);
   };
 
   const handleUndoCheckIn = (p: Participant) => {
@@ -2771,9 +2771,22 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                 const showCheckIn = !isCancelled && r.status !== "AwaitingPayment" && r.status !== "NoShow";
                 return (
                   <div key={p.id} className="border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full cursor-pointer hover:bg-[#f8fafc] transition-colors" style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
-                    {/* Checkbox cell */}
-                    <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
-                      {selectedIds.has(p.id) ? (
+                    {/* Checkbox cell — when group is collapsed, selecting the visible participant selects the whole reservation */}
+                    <button onClick={(e) => { e.stopPropagation(); (isGroup && !expanded) ? toggleSelectReservation(r) : toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
+                      {(isGroup && !expanded) ? (
+                        // When group is collapsed, show reservation-level checkbox state
+                        r.participants.every((pp) => selectedIds.has(pp.id)) ? (
+                          <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                            <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </div>
+                        ) : r.participants.some((pp) => selectedIds.has(pp.id)) ? (
+                          <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                            <div className="bg-white h-[2px] rounded-[1px] w-[10px]" />
+                          </div>
+                        ) : (
+                          <div className="bg-white border border-[#d5d7da] border-solid rounded-[4px] shrink-0 size-[20px]" />
+                        )
+                      ) : selectedIds.has(p.id) ? (
                         <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
                           <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </div>
@@ -2823,6 +2836,152 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       {/* Payment drawer */}
       {paymentDrawerRes && <PaymentDrawer reservation={paymentDrawerRes} onClose={() => setPaymentDrawerRes(null)} />}
       {/* Cancel confirmation modal */}
+      {/* Check-in confirmation modal */}
+      {checkInModal && (() => {
+        const participants = checkInModal;
+        const isBulk = participants.length > 1;
+        const requiresIns = activity.requiresInsurance;
+        const insuredList = participants.filter(p => isParticipantInsured(p.id));
+        const pendingList = participants.filter(p => !isParticipantInsured(p.id));
+        const allInsured = pendingList.length === 0;
+        const insuranceCost = 29.90; // valor mock do seguro por participante
+
+        const CheckInModalContent = () => {
+          const [insuranceAccepted, setInsuranceAccepted] = useState(allInsured);
+          const canConfirm = !requiresIns || insuranceAccepted;
+
+          const handleConfirm = () => {
+            // Contract insurance for pending participants
+            if (requiresIns && !allInsured) {
+              for (const p of pendingList) contractInsurance(p.id);
+            }
+            // Execute check-in for all
+            for (const p of participants) {
+              dispatch({ type: "CHECK_IN", participantId: p.id });
+            }
+            setCheckInModal(null);
+            showToast(isBulk
+              ? `Check-in realizado para ${participants.length} participante(s).`
+              : `Check-in de ${participants[0].name.split(" ")[0]} realizado com sucesso!`
+            );
+          };
+
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center" onKeyDown={(e) => e.key === "Escape" && setCheckInModal(null)}>
+              <div className="absolute inset-0 bg-black/40" onClick={() => setCheckInModal(null)} />
+              <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10 flex flex-col max-h-[90vh]">
+                {/* Header */}
+                <div className="flex flex-col gap-[6px] px-[24px] pt-[24px] pb-[16px] border-b border-[#f5f5f5] shrink-0">
+                  <div className="flex items-center justify-between">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Confirmar check-in</p>
+                    <button onClick={() => setCheckInModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+                      <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                    </button>
+                  </div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[14px] text-[#535862]">Confirme a chegada {isBulk ? `de ${participants.length} participantes` : "do participante"} para registrar o check-in.</p>
+                </div>
+                {/* Body */}
+                <div className="flex flex-col gap-[16px] px-[24px] py-[16px] overflow-y-auto flex-1">
+                  {/* Participant list */}
+                  {isBulk ? (
+                    <div className="flex flex-col gap-[8px]">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">{participants.length} participantes selecionados</p>
+                      <div className="flex flex-col gap-[4px] max-h-[180px] overflow-y-auto border border-[#f5f5f5] border-solid rounded-[8px] p-[12px]">
+                        {participants.map(p => (
+                          <div key={p.id} className="flex items-center gap-[8px] py-[4px]">
+                            <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="5" r="2.5" stroke="#535862" strokeWidth="1.2"/><path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#414651]">{p.name}</p>
+                            {requiresIns && isParticipantInsured(p.id) && (
+                              <svg className="shrink-0 size-[14px] ml-auto" fill="none" viewBox="0 0 14 14"><path d="M4 7l2 2 4-4" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-[10px] bg-[#f8fafc] border border-[#f5f5f5] border-solid rounded-[10px] px-[16px] py-[12px]">
+                      <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5" stroke="#535862" strokeWidth="1.5"/><path d="M3 18c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[15px] text-[#181d27]">{participants[0].name}</p>
+                    </div>
+                  )}
+                  {/* Insurance section — only for activities with required insurance */}
+                  {requiresIns && (
+                    <>
+                      {allInsured ? (
+                        /* B.2 — all already insured */
+                        <div className="flex items-center gap-[10px] bg-[#ecfdf3] border border-[#dcfae6] border-solid rounded-[10px] px-[16px] py-[12px]">
+                          <svg className="shrink-0 size-[20px]" viewBox="0 0 20 20" fill="none"><path d="M15.5908 2.91298C13.8888 2.12838 11.8341 1.6665 9.75 1.6665C7.66589 1.6665 5.61125 2.12838 3.90931 2.91298C3.1356 3.28525 2.74874 3.49014 2.37467 4.09503C2.00059 4.69991 2 5.28561 2 6.45702L2 9.36441C2 14.1007 5.78531 16.7339 7.97754 17.8618C8.58891 18.1762 8.89459 18.3335 9.75 18.3335C10.6054 18.3335 10.9111 18.1762 11.5225 17.8618C13.7147 16.7339 17.5 14.1007 17.5 9.36441L17.5 6.45702C17.5 5.28561 17.5 4.69991 17.1253 4.09503C16.7513 3.49013 16.364 3.28524 15.5908 2.91298Z" stroke="#079455" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.5 9.58333C7.5 9.58333 8.67326 9.79349 9.16667 11.2498C9.16667 11.2498 10.4167 8.74984 12.5 7.9165" stroke="#079455" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[14px] text-[#079455]">
+                            {isBulk ? "Todos os participantes já possuem seguro contratado" : "Seguro já contratado para este participante"}
+                          </p>
+                        </div>
+                      ) : (
+                        /* B.1 / B.3 — some or all need insurance */
+                        <div className="flex flex-col gap-[12px]">
+                          {/* Warning banner */}
+                          <div className="flex gap-[10px] bg-[#fef3c7] border border-[#fde68a] border-solid rounded-[10px] px-[16px] py-[12px]">
+                            <svg className="shrink-0 size-[20px] mt-[2px]" viewBox="0 0 20 20" fill="none"><path d="M10 7.5V10.833M10 13.333v.5M18.333 10c0 4.602-3.731 8.333-8.333 8.333S1.667 14.602 1.667 10 5.398 1.667 10 1.667 18.333 5.398 18.333 10z" stroke="#92400E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <div className="flex flex-col gap-[4px]">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#92400E]">Seguro obrigatório</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[13px] text-[#92400E]">
+                                Esta atividade exige contratação de seguro. {pendingList.length === 1 ? "1 participante precisa" : `${pendingList.length} participantes precisam`} de contratação.
+                              </p>
+                            </div>
+                          </div>
+                          {/* B.3 — mixed: show already insured count */}
+                          {isBulk && insuredList.length > 0 && (
+                            <div className="flex items-center gap-[8px] px-[4px]">
+                              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 8l2.5 2.5L12 5" stroke="#079455" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#079455]">{insuredList.length} participante(s) com seguro já contratado</p>
+                            </div>
+                          )}
+                          {/* Cost summary */}
+                          <div className="flex items-center justify-between bg-[#f8fafc] border border-[#f5f5f5] border-solid rounded-[10px] px-[16px] py-[12px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">
+                              Seguro obrigatório · {pendingList.length} participante{pendingList.length > 1 ? "s" : ""}
+                            </p>
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">
+                              R$ {(pendingList.length * insuranceCost).toFixed(2).replace(".", ",")}
+                            </p>
+                          </div>
+                          {/* Checkbox to accept insurance */}
+                          <label className="flex items-start gap-[10px] cursor-pointer px-[4px]">
+                            <button
+                              type="button"
+                              onClick={() => setInsuranceAccepted(!insuranceAccepted)}
+                              className={`shrink-0 size-[20px] rounded-[4px] flex items-center justify-center mt-[1px] transition-colors ${insuranceAccepted ? "bg-[#0b5ed7]" : "bg-white border border-[#d5d7da] border-solid"}`}
+                            >
+                              {insuranceAccepted && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                            </button>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[13px] text-[#414651]">
+                              Confirmo a contratação do seguro obrigatório para {pendingList.length === 1 ? "o participante" : `os ${pendingList.length} participantes`} listados acima.
+                            </p>
+                          </label>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                {/* Footer */}
+                <div className="flex items-center justify-between gap-[12px] px-[24px] pt-[16px] pb-[24px] border-t border-[#f5f5f5] shrink-0">
+                  {!canConfirm && (
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803]">Contrate o seguro para concluir o check-in</p>
+                  )}
+                  <div className="flex gap-[12px] ml-auto">
+                    <button onClick={() => setCheckInModal(null)} className="bg-white border border-[#d92d20] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#fef3f2] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#d92d20] transition-colors">Cancelar</button>
+                    <button
+                      onClick={handleConfirm}
+                      disabled={!canConfirm}
+                      className={`font-['Helvetica_Neue:Regular',sans-serif] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors ${canConfirm ? "bg-[#0b5ed7] cursor-pointer hover:bg-[#084fb7]" : "bg-[#93b4ed] cursor-not-allowed"}`}
+                    >Confirmar check-in</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+        return <CheckInModalContent />;
+      })()}
       {cancelModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setCancelModal(null)} />

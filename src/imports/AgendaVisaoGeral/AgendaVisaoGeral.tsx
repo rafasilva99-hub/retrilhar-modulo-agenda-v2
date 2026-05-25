@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import svgPaths from "./svg-3hal38zdc4";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
-import { mockActivities } from "../../mocks/agenda";
+import { mockActivities, mockGuides } from "../../mocks/agenda";
 
 // Module-level activity data — set by the export component, read by static sub-components
 let _dynActName = "Trilha Pico do Itacolomi";
@@ -970,7 +970,7 @@ function Select() {
 function Frame44() {
   return (
     <div className="bg-white content-stretch flex flex-col gap-[12px] items-start relative shrink-0 w-full">
-      <p className="font-['Helvetica_Neue:Medium',sans-serif] h-[15px] leading-[normal] not-italic relative shrink-0 text-[#62748e] text-[12px] w-full">EQUIPE ESCALADA (3)</p>
+      <p className="font-['Helvetica_Neue:Medium',sans-serif] h-[15px] leading-[normal] not-italic relative shrink-0 text-[#62748e] text-[12px] w-full">EQUIPE RESPONSÁVEL ({mockGuides.length})</p>
       <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 w-full" data-name="Select">
         <Select />
       </div>

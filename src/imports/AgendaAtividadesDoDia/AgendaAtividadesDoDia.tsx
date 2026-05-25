@@ -6,6 +6,15 @@ import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
 import { mockActivities, allHolidays } from "../../mocks/agenda";
 import type { Activity, ActivityStatus } from "../../types/agenda";
+import {
+  getActivityStatusBadge,
+  getOccupancyDisplay,
+  getContextualBadges,
+  getTeamDisplay,
+  getDateDisplay,
+  getMultiDayRange,
+} from "../../lib/agenda/activityCard";
+import type { ContextualBadge as ContextualBadgeType } from "../../lib/agenda/activityCard";
 
 // Componentes padronizados para informações dos cards
 function InfoField({ icon, label, value, valueColor = "#252b37" }: { icon: React.ReactNode; label: string; value: string; valueColor?: string }) {
@@ -17,8 +26,8 @@ function InfoField({ icon, label, value, valueColor = "#252b37" }: { icon: React
           {icon}
         </div>
       </div>
-      <div className="content-stretch flex flex-col font-['Helvetica_Neue:Regular',sans-serif] gap-[6px] items-start justify-center leading-[normal] not-italic relative shrink-0">
-        <p className="relative shrink-0 text-[#62748e] text-[12px]">{label}</p>
+      <div className="content-stretch flex flex-col font-['Helvetica_Neue:Regular',sans-serif] gap-[2px] items-start justify-center leading-[normal] not-italic relative shrink-0">
+        <p className="relative shrink-0 text-[#535862] text-[12px]">{label}</p>
         <p className="relative shrink-0 text-[14px]" style={{ color: valueColor }}>{value}</p>
       </div>
     </div>
@@ -2607,12 +2616,7 @@ function Frame19() {
 
 const DIA_HOLIDAYS = allHolidays;
 
-const DIA_STATUS_CONFIG: Record<ActivityStatus, { label: string; bg: string; border: string; text: string; dotColor: string }> = {
-  confirmed: { label: "Atividade Não Iniciada", bg: "#fafafa", border: "#f5f5f5", text: "#535862", dotColor: "#22c55e" },
-  pending:   { label: "Atividade em Andamento", bg: "#fffaeb", border: "#fef0c7", text: "#dc6803", dotColor: "#fdb022" },
-  full:      { label: "Atividade Não Iniciada", bg: "#fafafa", border: "#f5f5f5", text: "#535862", dotColor: "#e50000" },
-  blocked:   { label: "Atividade Cancelada", bg: "#fef3f2", border: "#fee4e2", text: "#d92d20", dotColor: "#838891" },
-};
+// Status config moved to src/lib/agenda/activityCard.ts (getActivityStatusBadge)
 
 function DiaChevron() {
   return (
@@ -2628,131 +2632,273 @@ function DiaChevron() {
   );
 }
 
-function DiaActivityCard({ a, expanded, onToggle, onViewDetails, onGoToCheckIn }: {
-  a: Activity; expanded: boolean;
-  onToggle: () => void; onViewDetails?: (activityId?: string) => void; onGoToCheckIn?: (activityId?: string) => void;
+// ─── Figma-exact Badge Icon Components ─────────────────────────────────────
+
+function BadgeIcon({ badge }: { badge: ContextualBadgeType }) {
+  // security-warning (Seguro obrigatório — red)
+  if (badge.icon === 'shield-alert') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <path d="M8 7.3335V4.66683M12.4727 2.33016C11.2113 1.70283 9.66667 1.3335 8 1.3335C6.33333 1.3335 4.78933 1.70283 3.52733 2.33016C2.90867 2.63816 2.59933 2.79216 2.3 3.27616C2.00067 3.76016 2 4.22816 2 5.1655V7.49216C2 11.2808 5.028 13.3868 6.782 14.2895C7.27133 14.5408 7.51533 14.6668 8 14.6668C8.48467 14.6668 8.72867 14.5408 9.218 14.2895C10.9713 13.3868 14 11.2802 14 7.4915V5.1655C14 4.22816 14 3.76016 13.7 3.27616C13.4 2.79216 13.0913 2.63816 12.4727 2.33016Z" stroke="#F04438" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8.083 9.83317H8M8.16634 9.83317C8.16634 9.87737 8.14878 9.91977 8.11753 9.95102C8.08627 9.98228 8.04388 9.99984 8 9.99984C7.95547 9.99984 7.91308 9.98228 7.88182 9.95102C7.85057 9.91977 7.83301 9.87737 7.83301 9.83317C7.83301 9.78897 7.85057 9.74658 7.88182 9.71532C7.91308 9.68406 7.95547 9.6665 8 9.6665C8.04388 9.6665 8.08627 9.68406 8.11753 9.71532C8.14878 9.74658 8.16634 9.78897 8.16634 9.83317Z" stroke="#F04438" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // shield-01 (Seguro opcional — gray)
+  if (badge.icon === 'shield') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <path d="M12.4726 2.33039C11.211 1.70271 9.66727 1.3335 8 1.3335C6.33273 1.3335 4.789 1.70271 3.52744 2.33039C2.90879 2.6382 2.59946 2.79211 2.29973 3.27602C2 3.75993 2 4.22848 2 5.16559L2 7.49153C2 11.2805 5.02824 13.3871 6.78203 14.2894C7.27112 14.541 7.51567 14.6668 7.99999 14.6668C8.48431 14.6668 8.72886 14.541 9.21796 14.2894C10.9717 13.3871 14 11.2805 14 7.49153L14 5.16559C14 4.22849 14 3.75993 13.7003 3.27602C13.4005 2.7921 13.0912 2.6382 12.4726 2.33039Z" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // security-check (Todos assegurados — green)
+  if (badge.icon === 'shield-check') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <path d="M12.4726 2.33039C11.211 1.70271 9.66727 1.3335 8 1.3335C6.33273 1.3335 4.789 1.70271 3.52744 2.33039C2.90879 2.6382 2.59946 2.79211 2.29973 3.27602C2 3.75993 2 4.22848 2 5.16559L2 7.49153C2 11.2805 5.02824 13.3871 6.78203 14.2894C7.27112 14.541 7.51567 14.6668 7.99999 14.6668C8.48431 14.6668 8.72886 14.541 9.21796 14.2894C10.9717 13.3871 14 11.2805 14 7.49153L14 5.16559C14 4.22849 14 3.75993 13.7003 3.27602C13.4005 2.7921 13.0912 2.6382 12.4726 2.33039Z" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M6 7.66683C6 7.66683 6.93861 7.83479 7.33333 9.00016C7.33333 9.00016 8.33333 7.00016 10 6.3335" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // stethoscope (Atenção médica — purple)
+  if (badge.icon === 'stethoscope') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <path d="M8.66759 1.3335C9.40356 1.3335 10.0002 1.95434 10.0002 2.72018C10.0002 3.35293 10.0241 3.91599 9.5128 4.38147C7.83911 5.90504 7.00226 6.66683 6.00018 6.66683C4.99809 6.66683 4.16125 5.90504 2.48755 4.38147C1.97617 3.91596 2.00018 3.35283 2.00018 2.72004C2.00018 1.95427 2.59673 1.3335 3.33262 1.3335" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M6 9.3335L6 11.6667C6 13.3236 7.34325 14.6669 9.00022 14.6669C10.6572 14.6669 12.0004 13.3236 12.0004 11.6667V10.6668" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9.33366 4.6665L8.46551 6.83687C8.23473 7.41382 8.11934 7.7023 7.9261 7.93933C7.73286 8.17636 7.47355 8.3475 6.95492 8.68978L5.98006 9.33317L5.02221 8.68807C4.51513 8.34655 4.26158 8.17579 4.07246 7.94159C3.88334 7.70738 3.76981 7.42356 3.54276 6.85592L2.66699 4.6665" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M14 8.6665C14 9.77107 13.1046 10.6665 12 10.6665C10.8954 10.6665 10 9.77107 10 8.6665C10 7.56193 10.8954 6.6665 12 6.6665C13.1046 6.6665 14 7.56193 14 8.6665Z" stroke="#6941C6" strokeWidth="1.2"/>
+        <path d="M12.005 8.6665L11.999 8.6665" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // alert-circle (team deadline — orange / cancellation — orange)
+  const stroke = badge.color === 'orange' ? '#DC6803' : '#535862';
+  return (
+    <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+      <circle cx="7.99967" cy="8.00016" r="6.66667" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M8 5.3335V8.3335" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M8 10.6587V10.6654" stroke={stroke} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function ContextualBadgeItem({ badge }: { badge: ContextualBadgeType }) {
+  // Figma-exact contextual badge styling
+  // Layout: px:6 pt:2 pb:3 gap:6 radius:4 clip:true strokeWeight:0.5px
+  const styleMap: Record<string, { bg: string; borderColor: string; textColor: string }> = {
+    red:    { bg: '#fef3f2', borderColor: '#e9eaeb', textColor: '#d92d20' },   // Seguro obrigatório
+    gray:   { bg: '#ffffff', borderColor: '#e9eaeb', textColor: '#414651' },   // Seguro opcional
+    green:  { bg: '#ffffff', borderColor: '#e9eaeb', textColor: '#079455' },   // Todos assegurados
+    purple: { bg: '#f9f5ff', borderColor: '#e9d7fe', textColor: '#6941c6' },   // Atenção médica
+    orange: { bg: '#fffaeb', borderColor: '#fef0c7', textColor: '#dc6803' },   // Equipe / Cancelamento
+  };
+  const s = styleMap[badge.color] || styleMap.gray;
+
+  return (
+    <div
+      className="content-stretch flex gap-[6px] items-center overflow-clip pb-[3px] pt-[2px] px-[6px] rounded-[4px] shrink-0 border-[0.5px] border-solid"
+      style={{ backgroundColor: s.bg, borderColor: s.borderColor }}
+    >
+      <BadgeIcon badge={badge} />
+      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap" style={{ color: s.textColor }}>{badge.label}</p>
+    </div>
+  );
+}
+
+// ─── Figma-exact Status Badge Icons ────────────────────────────────────────
+
+function StatusBadgeIcon({ icon, color }: { icon: string; color: string }) {
+  // checkmark-circle-03 (Realizada)
+  if (icon === 'check-circle') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <path d="M11.333 2.22505C10.3524 1.65782 9.21396 1.33317 7.99967 1.33317C4.31778 1.33317 1.33301 4.31794 1.33301 7.99984C1.33301 11.6817 4.31778 14.6665 7.99967 14.6665C11.6816 14.6665 14.6663 11.6817 14.6663 7.99984C14.6663 7.54322 14.6204 7.09732 14.533 6.6665" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+        <path d="M5.33301 8.3335C5.33301 8.3335 6.33301 8.3335 7.66634 10.6668C7.66634 10.6668 11.3722 4.55572 14.6663 3.3335" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // share-location-01 (Em Andamento)
+  if (icon === 'activity') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1.3335C11.6825 1.3335 14.6667 4.31868 14.6667 8.00016C14.6667 11.6816 11.6825 14.6668 8 14.6668" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M5.99967 14.3332C5.20743 14.0633 4.46322 13.6736 3.81502 13.1639M3.81502 2.83574C4.46322 2.33356 5.20743 1.93633 5.99967 1.6665M1.33301 6.83058C1.47705 6.05859 1.77313 5.30908 2.19726 4.62703M1.33301 9.16909C1.47705 9.94109 1.77313 10.6906 2.19726 11.3726" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8.47869 10.8101C8.3502 10.9319 8.17846 11 7.99973 11C7.821 11 7.64927 10.9319 7.52078 10.8101C6.34417 9.68779 4.76737 8.43408 5.53633 6.6139C5.9521 5.62975 6.95013 5 7.99973 5C9.04934 5 10.0474 5.62975 10.4631 6.6139C11.2311 8.43178 9.6582 9.69166 8.47869 10.8101Z" stroke={color} strokeWidth="1.2"/>
+        <path d="M7.99707 7.6665H8.0013" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // timer-02 (Não Iniciada)
+  if (icon === 'timer') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <path d="M10.0003 1.3335H6.66699" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M2 14.6668H8.33333C11.4629 14.6668 14 12.1298 14 9.00016C14 7.43536 13.3657 6.01869 12.3403 4.99322C11.3148 3.96776 9.89814 3.3335 8.33333 3.3335C5.20372 3.3335 2.66667 5.87055 2.66667 9.00016M12.3403 4.99322L13.3333 4.00016" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M5.33333 12.6665H2" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M4 10.6665H2" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8.33301 8.99984L10.6663 6.6665" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // cancel-circle (Cancelada)
+  return (
+    <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+      <path d="M14.6663 7.99984C14.6663 4.31794 11.6816 1.33317 7.99967 1.33317C4.31778 1.33317 1.33301 4.31794 1.33301 7.99984C1.33301 11.6817 4.31778 14.6665 7.99967 14.6665C11.6816 14.6665 14.6663 11.6817 14.6663 7.99984Z" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9.99957 10L6 6M6.00043 10L10 6" stroke={color} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+// ─── Figma-exact Activity Type Icons ───────────────────────────────────────
+
+function ActivityTypeIcon({ type }: { type: string }) {
+  // route-01 (multi-dias)
+  if (type === 'multi-dias') {
+    return (
+      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+        <circle cx="12" cy="3.3335" r="2" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="4" cy="12.6665" r="2" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7.99967 3.3335H5.66634C4.37768 3.3335 3.33301 4.37817 3.33301 5.66683C3.33301 6.95549 4.37768 8.00016 5.66634 8.00016H10.333C11.6217 8.00016 12.6663 9.04483 12.6663 10.3335C12.6663 11.6222 11.6217 12.6668 10.333 12.6668H7.99967" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  // pin-location-01 (comum)
+  return (
+    <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none">
+      <circle cx="7.99967" cy="4.66667" r="2.66667" stroke="#535862" strokeWidth="1.5"/>
+      <path d="M8 7.3335L8 12.0002" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M10.5647 10.6665C11.6629 12.0752 12.212 12.7795 11.9243 13.3372C11.8977 13.3887 11.8666 13.4384 11.8313 13.4858C11.4482 13.9998 10.4583 13.9998 8.47852 13.9998H7.52149C5.54167 13.9998 4.55177 13.9998 4.16874 13.4858C4.13337 13.4384 4.10226 13.3887 4.0757 13.3372C3.78804 12.7795 4.33714 12.0752 5.43534 10.6665" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
+function DiaActivityCard({ a, onGoToCheckIn }: {
+  a: Activity;
+  onGoToCheckIn?: (activityId?: string) => void;
 }) {
-  const cfg = DIA_STATUS_CONFIG[a.status];
-  const isFull = a.status === "full";
-  const isBlocked = a.status === "blocked";
-  const isMultiDay = !!a.dayNumber && !!a.totalDays;
+  const statusBadge = getActivityStatusBadge(a);
+  const occupancy = getOccupancyDisplay(a);
+  const contextualBadges = getContextualBadges(a);
+  const team = getTeamDisplay(a);
+  const dateDisplay = getDateDisplay(a);
+  const multiDayRange = getMultiDayRange(a);
+
+  const navigate = () => onGoToCheckIn?.(a.id);
+
+  // Lifecycle status dot color (timeline indicator)
+  const dotColorMap: Record<string, string> = {
+    Realizada: '#22c55e',
+    EmAndamento: '#fdb022',
+    NaoIniciada: '#0b5ed7',
+    Cancelada: '#e50000',
+  };
+  const dotColor = dotColorMap[a.lifecycleStatus] || '#0b5ed7';
 
   return (
     <div className="relative w-full">
       {/* Time label */}
       <div className="content-stretch flex gap-[8px] items-center mb-[12px] relative">
-        <div className="rounded-[9999px] shrink-0 size-[12px]" style={{ backgroundColor: cfg.dotColor }} />
+        <div className="rounded-[9999px] shrink-0 size-[12px]" style={{ backgroundColor: dotColor }} />
         <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37]">{a.startTime}</p>
       </div>
-      {/* Card */}
-      <div className="bg-white relative rounded-[16px] w-full">
-        <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]" />
-        <div className="content-stretch flex flex-col relative rounded-[inherit] size-full">
-          {/* Card header */}
-          <div className="content-stretch flex items-center justify-between px-[24px] py-[16px] relative shrink-0 w-full">
-            <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0">
-              <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">
-                  {a.name} ({a.occupancy}/{a.capacity})
+      {/* Card — entire surface clickable */}
+      <div
+        role="link"
+        tabIndex={0}
+        aria-label={`Abrir atividade ${a.name}`}
+        onClick={navigate}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(); } }}
+        className="bg-white relative rounded-[12px] w-full cursor-pointer transition-[background-color,box-shadow] duration-150 hover:shadow-[0px_4px_12px_0px_rgba(10,13,18,0.1)] hover:bg-[#fafcff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1b71fd] border border-[#E2E8F0] border-solid"
+      >
+        <div className="content-stretch flex flex-col gap-[20px] relative rounded-[inherit] size-full overflow-clip pt-[20px]">
+          {/* Região 1 — Cabeçalho */}
+          <div className="content-stretch flex items-center justify-between px-[20px] relative shrink-0 w-full">
+            <div className="content-stretch flex flex-col gap-[6px] items-start relative shrink-0 flex-1 min-w-0">
+              {/* Title + status badge */}
+              <div className="content-stretch flex gap-[12px] items-center relative shrink-0 flex-wrap">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[18px] text-[#252b37]">
+                  {a.name} {occupancy.counter}
                 </p>
-                {/* Status badge */}
-                <div className="rounded-[999px] shrink-0" style={{ backgroundColor: cfg.bg }}>
-                  <div aria-hidden="true" className="absolute border border-solid inset-0 pointer-events-none rounded-[999px]" style={{ borderColor: cfg.border, position: "relative" }} />
-                  <div className="content-stretch flex gap-[4px] items-center px-[10px] py-[2px] relative size-full">
-                    <div className="rounded-[9999px] shrink-0 size-[8px]" style={{ backgroundColor: cfg.text }} />
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap" style={{ color: cfg.text }}>{cfg.label}</p>
-                  </div>
+                {/* Status badge — Figma: px:8 py:3 gap:5 radius:4 border:1px */}
+                <div
+                  className="content-stretch flex gap-[5px] items-center px-[8px] py-[3px] rounded-[4px] shrink-0 border border-solid"
+                  style={{ backgroundColor: statusBadge.bg, borderColor: statusBadge.border }}
+                >
+                  <StatusBadgeIcon icon={statusBadge.icon} color={statusBadge.text} />
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap" style={{ color: statusBadge.text }}>{statusBadge.label}</p>
                 </div>
               </div>
-              {/* Sub-info */}
-              <div className="content-stretch flex gap-[8px] items-center relative shrink-0">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862]">
-                  {isMultiDay ? "Atividade multi-dias" : "Atividade comum"}
+              {/* Subtitle: type + optional alerts */}
+              <div className="content-stretch flex gap-[6px] items-center relative shrink-0">
+                <ActivityTypeIcon type={a.activityType} />
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">
+                  {a.activityType === 'multi-dias' ? 'Atividade multi-dias' : 'Atividade comum'}
                 </p>
-                {isFull && (
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#dc6803]">· Vagas excedidas</p>
+                {multiDayRange && (
+                  <>
+                    <span className="text-[#717680] text-[14px]">·</span>
+                    <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6663 1.3335V4.00016M5.33301 1.3335V4.00016" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.66667 2.6665H7.33333C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984V9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665H8.66667C11.1808 14.6665 12.4379 14.6665 13.219 13.8855C14 13.1044 14 11.8473 14 9.33317V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.33301 9.3335H10.6663M5.33301 9.3335H5.339M8.66634 12.0002H5.33301M10.6663 12.0002H10.6604" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{multiDayRange}</p>
+                  </>
+                )}
+                {occupancy.hasExceededCapacity && (
+                  <>
+                    <span className="text-[#717680] text-[14px]">·</span>
+                    <div className="flex gap-[6px] items-center">
+                      <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><circle cx="7.99967" cy="8.00016" r="6.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 5.3335V8.3335" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 10.6587V10.6654" stroke="#535862" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Vagas excedidas</p>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
-            {/* Actions */}
-            <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
-              <button
-                onClick={() => onViewDetails?.(a.id)}
-                className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
-              >
-                <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
-                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ver Detalhes</p>
-                </div>
-              </button>
-              {!isBlocked && (
-                <button
-                  onClick={() => onGoToCheckIn?.(a.id)}
-                  className="bg-[#edf0ff] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#d5dcfe] transition-colors"
-                >
-                  <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#1b71fd] whitespace-nowrap">Ir para Check-In</p>
-                  </div>
-                </button>
-              )}
-              <button onClick={onToggle} className="cursor-pointer shrink-0 size-[24px] relative">
-                <svg className="block size-full" fill="none" viewBox="0 0 24 24">
-                  <path d={expanded ? "M18 15L12 9L6 15" : "M6 9L12 15L18 9"} stroke="#717680" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-                </svg>
-              </button>
-            </div>
+            {/* Arrow icon button — matches Figma: 32x32, border #E2E8F0, radius 6, padding 8 */}
+            <button
+              type="button"
+              aria-label={`Abrir atividade ${a.name}`}
+              onClick={(e) => { e.stopPropagation(); navigate(); }}
+              className="bg-white shrink-0 size-[32px] flex items-center justify-center rounded-[6px] cursor-pointer hover:bg-[#f1f5f9] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1b71fd] relative"
+            >
+              <div aria-hidden="true" className="absolute border border-[#E2E8F0] border-solid inset-0 pointer-events-none rounded-[6px]" />
+              <svg className="size-[16px] relative" fill="none" viewBox="0 0 16 16">
+                <path d="M4.667 11.333L11.333 4.667M11.333 4.667H6M11.333 4.667V10" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
-          {/* Expanded details */}
-          {expanded && (
-            <>
-              <div className="border-t border-[#e9eaeb] mx-[24px]" />
-              <div className="content-stretch flex gap-[24px] items-start px-[24px] py-[16px] relative shrink-0 w-full">
-                <InfoField
-                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="4" stroke="#535862" strokeWidth="1.5"/><path d="M2 8h16" stroke="#535862" strokeWidth="1.5"/><path d="M7 1v3M13 1v3" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
-                  label="Data da atividade"
-                  value={isMultiDay ? `${format(new Date(a.date), "dd/MM/yyyy")} (Dia ${a.dayNumber} de ${a.totalDays})` : format(new Date(a.date), "dd/MM/yyyy")}
-                />
-                <div className="bg-[#e9eaeb] h-[40px] shrink-0 w-px" />
-                <InfoField
-                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" stroke="#535862" strokeWidth="1.5"/><path d="M10 6v4l3 2" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
-                  label="Hora da atividade"
-                  value={`${a.startTime} - ${a.endTime}`}
-                />
-                <div className="bg-[#e9eaeb] h-[40px] shrink-0 w-px" />
-                <InfoField
-                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><circle cx="7" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><circle cx="14" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><path d="M1 17c0-3 3-5 6-5s6 2 6 5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
-                  label="Participantes"
-                  value={a.occupancy > 0 ? `${a.occupancy} participantes` : "Nenhum participante"}
-                />
-                <div className="bg-[#e9eaeb] h-[40px] shrink-0 w-px" />
-                <InfoField
-                  icon={<svg className="block size-full" fill="none" viewBox="0 0 20 20"><circle cx="7" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><circle cx="14" cy="7" r="3" stroke="#535862" strokeWidth="1.5"/><path d="M1 17c0-3 3-5 6-5s6 2 6 5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round"/></svg>}
-                  label="Equipe responsável"
-                  value={a.guideName || "Sem equipe atribuída"}
-                  valueColor={a.guideName ? "#252b37" : "#dc6803"}
-                />
-              </div>
-            </>
-          )}
-          {/* Alert badges footer */}
-          <div className="bg-[#fafafa] border-t border-[#e9eaeb] content-stretch flex gap-[16px] items-center px-[24px] py-[10px] relative rounded-b-[16px] shrink-0 w-full">
-            {a.requiresInsurance ? (
-              <div className="flex gap-[6px] items-center shrink-0">
-                <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M7 1l5 2v4c0 3-2.5 5-5 6-2.5-1-5-3-5-6V3l5-2z" stroke="#F04438" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#d92d20]">Seguro obrigatório</p>
-              </div>
-            ) : (
-              <div className="flex gap-[6px] items-center shrink-0">
-                <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M7 1l5 2v4c0 3-2.5 5-5 6-2.5-1-5-3-5-6V3l5-2z" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#414651]">Seguro opcional</p>
-              </div>
-            )}
-            {!a.guideName && (
-              <div className="flex gap-[6px] items-center shrink-0">
-                <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" stroke="#DC6803" strokeWidth="1.2"/><path d="M7 4v3M7 9v.5" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803]">Equipe responsável deve ser atribuída</p>
-              </div>
-            )}
+          {/* Região 2 — Metadados (Figma-exact icons) */}
+          <div className="content-stretch flex gap-[32px] items-center px-[20px] relative shrink-0 w-full">
+            <InfoField
+              icon={<svg className="block size-full" viewBox="0 0 20 20" fill="none"><path d="M13.3337 1.6665V4.99984M6.66699 1.6665L6.66699 4.99984" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 11.6668V10.0002C17.5 6.85747 17.5 5.28612 16.5237 4.30981C15.5474 3.3335 13.976 3.3335 10.8333 3.3335L9.16667 3.3335C6.02397 3.3335 4.45262 3.3335 3.47631 4.30981C2.5 5.28612 2.5 6.85747 2.5 10.0002L2.5 11.6668C2.5 14.8095 2.5 16.3809 3.47631 17.3572C4.45262 18.3335 6.02397 18.3335 9.16667 18.3335H10" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.5 8.3335L17.5 8.3335" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.0876 12.9212L15.6008 13.9563C15.6708 14.1003 15.8575 14.2385 16.015 14.265L16.9453 14.4208C17.5402 14.5208 17.6802 14.956 17.2515 15.3853L16.5282 16.1145C16.4057 16.238 16.3387 16.4762 16.3766 16.6468L16.5836 17.5495C16.747 18.264 16.3707 18.5404 15.7437 18.167L14.8717 17.6465C14.7143 17.5524 14.4547 17.5524 14.2943 17.6465L13.4223 18.167C12.7982 18.5404 12.4191 18.2611 12.5824 17.5495L12.7895 16.6468C12.8274 16.4762 12.7603 16.238 12.6378 16.1145L11.9146 15.3853C11.4888 14.956 11.6259 14.5208 12.2208 14.4208L13.1511 14.265C13.3057 14.2385 13.4923 14.1003 13.5623 13.9563L14.0756 12.9212C14.3556 12.3596 14.8105 12.3596 15.0876 12.9212Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              label="Data da atividade"
+              value={dateDisplay}
+            />
+            <div className="bg-[#f5f5f5] self-stretch shrink-0 w-px" />
+            <InfoField
+              icon={<svg className="block size-full" viewBox="0 0 20 20" fill="none"><path d="M10.0003 18.3332C14.6027 18.3332 18.3337 14.6022 18.3337 9.99984C18.3337 5.39746 14.6027 1.6665 10.0003 1.6665C5.39795 1.6665 1.66699 5.39746 1.66699 9.99984C1.66699 14.6022 5.39795 18.3332 10.0003 18.3332Z" stroke="#535862" strokeWidth="1.5"/><path d="M10.0068 8.75682C9.31648 8.75682 8.75684 9.31646 8.75684 10.0068C8.75684 10.6972 9.31648 11.2568 10.0068 11.2568C10.6972 11.2568 11.2568 10.6972 11.2568 10.0068C11.2568 9.31646 10.6972 8.75682 10.0068 8.75682ZM10.0068 8.75682V5.83252M12.5126 12.5165L10.8887 10.8927" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              label="Hora da atividade"
+              value={`${a.startTime} - ${a.endTime} (${a.timezone})`}
+            />
+            <div className="bg-[#f5f5f5] self-stretch shrink-0 w-px" />
+            <InfoField
+              icon={<svg className="block size-full" viewBox="0 0 20 20" fill="none"><path d="M6.25 16.2502C6.25 15.4455 6.52378 14.6315 7.19243 14.1838C7.99435 13.6469 8.96035 13.3335 10 13.3335C11.0397 13.3335 12.0057 13.6469 12.8076 14.1838C13.4762 14.6315 13.75 15.4455 13.75 16.2502" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9.99935" cy="9.16683" r="2.08333" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14.583 9.1665C15.5081 9.1665 16.3676 9.48057 17.0809 10.0185C17.6855 10.4745 17.9163 11.2458 17.9163 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="14.5827" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.41634 9.1665C4.49123 9.1665 3.63173 9.48057 2.91847 10.0185C2.31389 10.4745 2.08301 11.2458 2.08301 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="5.41667" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              label="Participantes"
+              value={a.occupancy > 0 ? `${a.occupancy} participante${a.occupancy > 1 ? 's' : ''}` : 'Nenhum participante'}
+            />
+            <div className="bg-[#f5f5f5] self-stretch shrink-0 w-px" />
+            <InfoField
+              icon={<svg className="block size-full" viewBox="0 0 20 20" fill="none"><path d="M6.25 16.2502C6.25 15.4455 6.52378 14.6315 7.19243 14.1838C7.99435 13.6469 8.96035 13.3335 10 13.3335C11.0397 13.3335 12.0057 13.6469 12.8076 14.1838C13.4762 14.6315 13.75 15.4455 13.75 16.2502" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9.99935" cy="9.16683" r="2.08333" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14.583 9.1665C15.5081 9.1665 16.3676 9.48057 17.0809 10.0185C17.6855 10.4745 17.9163 11.2458 17.9163 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="14.5827" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.41634 9.1665C4.49123 9.1665 3.63173 9.48057 2.91847 10.0185C2.31389 10.4745 2.08301 11.2458 2.08301 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="5.41667" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              label="Equipe responsável"
+              value={team.label}
+              valueColor={team.color}
+            />
+          </div>
+          {/* Região 3 — Faixa de badges contextuais */}
+          <div className="bg-[#fafafa] content-stretch flex gap-[12px] items-center px-[20px] py-[12px] relative rounded-b-[12px] shrink-0 w-full">
+            {contextualBadges.map((badge) => (
+              <ContextualBadgeItem key={badge.type} badge={badge} />
+            ))}
           </div>
         </div>
       </div>
@@ -2791,21 +2937,7 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
     [iso]
   );
 
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
-    // First 2 cards expanded by default (matching Figma)
-    const initial = new Set<string>();
-    dayActivities.slice(0, 2).forEach((a) => initial.add(a.id));
-    return initial;
-  });
-
-  const toggleCard = (id: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+  // Cards are no longer expandable/collapsible — always show full info
 
   const formattedDate = format(dateObj, "dd/MM/yyyy");
   const monthAbbr = format(dateObj, "MMM", { locale: ptBR }).toUpperCase().replace(".", "");
@@ -2818,21 +2950,18 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
       <div className="absolute content-stretch flex gap-[24px] items-end justify-between left-[248px] right-[24px] top-[148px]">
         <div className="content-stretch flex gap-[16px] items-center relative shrink-0">
           {/* Date icon */}
-          <div className="bg-white relative rounded-[10px] shrink-0">
-            <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[10px]" />
-            <div className="content-stretch flex flex-col items-center overflow-clip relative rounded-[inherit] size-full">
-              <div className="bg-[#f1f5f9] content-stretch flex items-center justify-center px-[12px] py-[2px] relative shrink-0 w-full">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[10px] text-[#62748e] tracking-[0.5px]">{monthAbbr}</p>
-              </div>
-              <div className="content-stretch flex items-center justify-center px-[12px] py-[4px] relative shrink-0 w-full">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[20px] text-[#0b5ed7]">{refDay}</p>
-              </div>
+          <div className="bg-white relative rounded-[10px] shrink-0 border border-[#E2E8F0] border-solid overflow-clip">
+            <div className="bg-[#f1f5f9] content-stretch flex items-center justify-center px-[12px] py-[2px] relative shrink-0 w-full">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[10px] text-[#62748e] tracking-[0.5px]">{monthAbbr}</p>
+            </div>
+            <div className="content-stretch flex items-center justify-center px-[12px] py-[4px] relative shrink-0 w-full">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[20px] text-[#0b5ed7]">{refDay}</p>
             </div>
           </div>
           {/* Title */}
           <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0">
             <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
-              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">Atividades do dia</p>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">Atividades do dia</p>
               <div className="bg-[#f04438] rounded-[8px] shrink-0">
                 <div className="content-stretch flex items-center justify-center px-[8px] py-[2px] relative size-full">
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-white">{dayActivities.length}</p>
@@ -2872,9 +3001,6 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
               <DiaActivityCard
                 key={a.id}
                 a={a}
-                expanded={expandedIds.has(a.id)}
-                onToggle={() => toggleCard(a.id)}
-                onViewDetails={onViewDetails}
                 onGoToCheckIn={onGoToCheckIn}
               />
             ))}

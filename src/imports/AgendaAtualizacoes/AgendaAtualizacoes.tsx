@@ -730,7 +730,7 @@ function Container10({ onBackToActivities }: { onBackToActivities?: () => void }
 function Frame2({ isActive }: { isActive?: boolean }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start justify-center min-w-px relative">
-      <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${isActive ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Visão Geral</p>
+      <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${isActive ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Resumo</p>
     </div>
   );
 }
@@ -819,6 +819,23 @@ function Container11() {
 function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab: (tab: string) => void }) {
   return (
     <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-full">
+      {/* 1. Participantes (first position) */}
+      <button
+        onClick={() => setActiveTab("participantes")}
+        className={`${activeTab === "participantes" ? "bg-[#edf0ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
+        data-name="Menu action component"
+      >
+        <div className="flex flex-row items-center size-full">
+          <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">
+            <div className="relative shrink-0 size-[20px]" data-name="user-group-02" style={{ "--stroke-0": activeTab === "participantes" ? "#0b5ed7" : "#414651" } as React.CSSProperties}>
+              <Elements3 />
+            </div>
+            <Frame3 isActive={activeTab === "participantes"} />
+            {activeTab === "participantes" && <Container11 />}
+          </div>
+        </div>
+      </button>
+      {/* 2. Resumo (second position, formerly "Visão Geral") */}
       <button
         onClick={() => setActiveTab("visao-geral")}
         className={`${activeTab === "visao-geral" ? "bg-[#edf0ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
@@ -854,21 +871,7 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
           </div>
         </div>
       </button>
-      <button
-        onClick={() => setActiveTab("participantes")}
-        className={`${activeTab === "participantes" ? "bg-[#edf0ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
-        data-name="Menu action component"
-      >
-        <div className="flex flex-row items-center size-full">
-          <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">
-            <div className="relative shrink-0 size-[20px]" data-name="user-group-02" style={{ "--stroke-0": activeTab === "participantes" ? "#0b5ed7" : "#414651" } as React.CSSProperties}>
-              <Elements3 />
-            </div>
-            <Frame3 isActive={activeTab === "participantes"} />
-            {activeTab === "participantes" && <Container11 />}
-          </div>
-        </div>
-      </button>
+      {/* 3. Atualizações (third position) */}
       <button
         onClick={() => setActiveTab("atualizacoes")}
         className={`${activeTab === "atualizacoes" ? "bg-[#edf0ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
@@ -1375,7 +1378,7 @@ function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke
       role="button"
       aria-describedby={show ? `tooltip-${tooltipKey}` : undefined}
     >
-      <div className="bg-white border border-[#e9e9eb] border-solid flex items-center justify-center rounded-[20px] shrink-0 size-[28px] cursor-default">
+      <div className="bg-white border-[0.5px] border-[#e9eaeb] border-solid flex items-center justify-center rounded-[20px] shrink-0 size-[28px] cursor-default">
         <div style={{ color: stroke }}>{icon}</div>
       </div>
       {show && content && (
@@ -1433,15 +1436,16 @@ function PaymentBadge({ isPaid, onClick }: { isPaid: boolean; onClick: () => voi
   );
 }
 
+// Figma-exact reservation status icons (from BADGES SECUNDÁRIOS section)
 const RESERVATION_STATUS_ICON: Record<string, { stroke: string; tooltipKey: string; icon: React.ReactNode }> = {
-  Confirmed:       { stroke: "#17b26a", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 9l1.5 1.5L10 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  AwaitingPayment: { stroke: "#dc6803", tooltipKey: "res-awaiting", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><circle cx="8" cy="10" r="1.5" stroke="currentColor" strokeWidth="1.2"/></svg> },
-  Cancelled:       { stroke: "#d92d20", tooltipKey: "res-cancelled", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 8.5l4 4M10 8.5l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  Draft:           { stroke: "#717680", tooltipKey: "res-draft", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 10h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  CheckedIn:       { stroke: "#17b26a", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 9l1.5 1.5L10 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  Performed:       { stroke: "#079455", tooltipKey: "res-performed", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M4 9l2.5 2.5L12 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  NoShow:          { stroke: "#d92d20", tooltipKey: "res-noshow", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 8.5l4 4M10 8.5l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  Expired:         { stroke: "#717680", tooltipKey: "res-expired", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M6 10h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  Confirmed:       { stroke: "#079455", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.6665 12.9998C8.6665 12.9998 9.56547 13.3376 9.99984 14.6665C9.99984 14.6665 12.1175 11.3332 13.9998 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  AwaitingPayment: { stroke: "#dc6803", tooltipKey: "res-awaiting", icon: <svg className="size-[16px]" viewBox="0 0 16 19" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665H8" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.0002 16.0668V15.3335M12.0002 13.9366V13.934M14.6668 15.0002C14.6668 16.4729 13.4729 17.6668 12.0002 17.6668C10.5274 17.6668 9.3335 16.4729 9.3335 15.0002C9.3335 13.5274 10.5274 12.3335 12.0002 12.3335C13.4729 12.3335 14.6668 13.5274 14.6668 15.0002Z" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Cancelled:       { stroke: "#d92d20", tooltipKey: "res-cancelled", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.33366V8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H8" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.1855 10.8147L10.1618 13.8384M14.0002 12.3333C14.0002 13.622 12.9555 14.6667 11.6668 14.6667C10.3782 14.6667 9.3335 13.622 9.3335 12.3333C9.3335 11.0447 10.3782 10 11.6668 10C12.9555 10 14.0002 11.0447 14.0002 12.3333Z" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Draft:           { stroke: "#535862", tooltipKey: "res-draft", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H7.66667" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.4905 10.7834L10.4905 9.85653C10.4905 9.71962 10.4962 9.58101 10.5453 9.45316C10.6759 9.11284 11.0219 8.66699 11.6519 8.66699C12.2818 8.66699 12.6415 9.11284 12.7721 9.45316C12.8212 9.58101 12.8269 9.71962 12.8269 9.85653L12.8269 10.7834M10.5368 14.6654H12.7941C13.4587 14.6654 13.9974 14.1276 13.9974 13.4643V12.1301C13.9974 11.4668 13.4587 10.9291 12.7941 10.9291H10.5368C9.87223 10.9291 9.3335 11.4668 9.3335 12.1301V13.4643C9.3335 14.1276 9.87223 14.6654 10.5368 14.6654Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  CheckedIn:       { stroke: "#079455", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.6665 12.9998C8.6665 12.9998 9.56547 13.3376 9.99984 14.6665C9.99984 14.6665 12.1175 11.3332 13.9998 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Performed:       { stroke: "#079455", tooltipKey: "res-performed", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.6665 12.9998C8.6665 12.9998 9.56547 13.3376 9.99984 14.6665C9.99984 14.6665 12.1175 11.3332 13.9998 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  NoShow:          { stroke: "#d92d20", tooltipKey: "res-noshow", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.33366V8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H8" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.1855 10.8147L10.1618 13.8384M14.0002 12.3333C14.0002 13.622 12.9555 14.6667 11.6668 14.6667C10.3782 14.6667 9.3335 13.622 9.3335 12.3333C9.3335 11.0447 10.3782 10 11.6668 10C12.9555 10 14.0002 11.0447 14.0002 12.3333Z" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Expired:         { stroke: "#535862", tooltipKey: "res-expired", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H7.66667" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.4905 10.7834L10.4905 9.85653C10.4905 9.71962 10.4962 9.58101 10.5453 9.45316C10.6759 9.11284 11.0219 8.66699 11.6519 8.66699C12.2818 8.66699 12.6415 9.11284 12.7721 9.45316C12.8212 9.58101 12.8269 9.71962 12.8269 9.85653L12.8269 10.7834M10.5368 14.6654H12.7941C13.4587 14.6654 13.9974 14.1276 13.9974 13.4643V12.1301C13.9974 11.4668 13.4587 10.9291 12.7941 10.9291H10.5368C9.87223 10.9291 9.3335 11.4668 9.3335 12.1301V13.4643C9.3335 14.1276 9.87223 14.6654 10.5368 14.6654Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
 };
 
 // Add reservation status tooltips to the content map
@@ -1461,48 +1465,56 @@ function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsuran
 }) {
   const badges: { key: string; icon: React.ReactNode; stroke: string; tooltipKey: string }[] = [];
 
-  // 0. Status da reserva
+  // ── Priority order: Pagamento > Reserva > Seguro > Itens adicionais > (condicionais) ──
+
+  // 1. Status da reserva (always shown)
   const resStat = RESERVATION_STATUS_ICON[reservationStatus] || RESERVATION_STATUS_ICON.Confirmed;
   badges.push({ key: "res-status", stroke: resStat.stroke, tooltipKey: resStat.tooltipKey, icon: resStat.icon });
 
-  // 1. Termo de uso de imagem (always shown)
-  if (p.hasImageAuth) {
-    badges.push({ key: "image", stroke: "#079455", tooltipKey: "image-authorized",
-      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><circle cx="6" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M10 13l2-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
-  } else {
-    badges.push({ key: "image", stroke: "#dc6803", tooltipKey: "image-pending",
-      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M6 7l4 4M10 7l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
-  }
-
-  // 2. Seguro (always shown)
+  // 2. Seguro (always shown) — Figma: security-check / security-warning / security-block
   if (requiresInsurance) {
     if (insuranceStatus === "Contracted") {
       badges.push({ key: "insurance", stroke: "#079455", tooltipKey: "insurance-mandatory-contracted",
-        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 8l1.5 1.5L10 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+        icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M12.4726 2.33039C11.211 1.70271 9.66727 1.3335 8 1.3335C6.33273 1.3335 4.789 1.70271 3.52744 2.33039C2.90879 2.6382 2.59946 2.79211 2.29973 3.27602C2 3.75993 2 4.22848 2 5.16559L2 7.49153C2 11.2805 5.02824 13.3871 6.78203 14.2894C7.27112 14.541 7.51567 14.6668 7.99999 14.6668C8.48431 14.6668 8.72886 14.541 9.21796 14.2894C10.9717 13.3871 14 11.2805 14 7.49153L14 5.16559C14 4.22849 14 3.75993 13.7003 3.27602C13.4005 2.7921 13.0912 2.6382 12.4726 2.33039Z" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 7.66683C6 7.66683 6.93861 7.83479 7.33333 9.00016C7.33333 9.00016 8.33333 7.00016 10 6.3335" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
     } else {
       badges.push({ key: "insurance", stroke: "#d92d20", tooltipKey: "insurance-mandatory-missing",
-        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+        icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M8 7.3335V4.66683M12.4727 2.33016C11.2113 1.70283 9.66667 1.3335 8 1.3335C6.33333 1.3335 4.78933 1.70283 3.52733 2.33016C2.90867 2.63816 2.59933 2.79216 2.3 3.27616C2.00067 3.76016 2 4.22816 2 5.1655V7.49216C2 11.2808 5.028 13.3868 6.782 14.2895C7.27133 14.5408 7.51533 14.6668 8 14.6668C8.48467 14.6668 8.72867 14.5408 9.218 14.2895C10.9713 13.3868 14 11.2802 14 7.4915V5.1655C14 4.22816 14 3.76016 13.7 3.27616C13.4 2.79216 13.0913 2.63816 12.4727 2.33016Z" stroke="#F04438" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.083 9.83317H8M8.16634 9.83317C8.16634 9.87737 8.14878 9.91977 8.11753 9.95102C8.08627 9.98228 8.04388 9.99984 8 9.99984C7.95547 9.99984 7.91308 9.98228 7.88182 9.95102C7.85057 9.91977 7.83301 9.87737 7.83301 9.83317C7.83301 9.78897 7.85057 9.74658 7.88182 9.71532C7.91308 9.68406 7.95547 9.6665 8 9.6665C8.04388 9.6665 8.08627 9.68406 8.11753 9.71532C8.14878 9.74658 8.16634 9.78897 8.16634 9.83317Z" stroke="#F04438" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> });
     }
   } else {
     if (insuranceStatus !== "Contracted") {
-      badges.push({ key: "insurance", stroke: "#717680", tooltipKey: "insurance-optional",
-        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+      badges.push({ key: "insurance", stroke: "#414651", tooltipKey: "insurance-optional",
+        icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M13.2399 10.5734C13.7024 9.70158 14 8.67921 14 7.49153L14 5.16559C14 4.22849 14 3.75993 13.7003 3.27602C13.4005 2.7921 13.0912 2.6382 12.4726 2.33039C11.211 1.70271 9.66727 1.3335 8 1.3335C6.76497 1.3335 5.59773 1.53609 4.56276 1.89625M2.76107 2.76123C2.58427 2.89332 2.44094 3.04805 2.29973 3.27602C2 3.75993 2 4.22848 2 5.16559L2 7.49153C2 11.2805 5.02824 13.3871 6.78203 14.2894C7.27112 14.541 7.51567 14.6668 7.99999 14.6668C8.48431 14.6668 8.72886 14.541 9.21796 14.2894C10.0536 13.8594 11.1786 13.1561 12.1275 12.1276" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M1.3335 1.3335L14.6668 14.6668" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
     } else {
       badges.push({ key: "insurance", stroke: "#079455", tooltipKey: "insurance-contracted",
-        icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 8l1.5 1.5L10 6.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+        icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M12.4726 2.33039C11.211 1.70271 9.66727 1.3335 8 1.3335C6.33273 1.3335 4.789 1.70271 3.52744 2.33039C2.90879 2.6382 2.59946 2.79211 2.29973 3.27602C2 3.75993 2 4.22848 2 5.16559L2 7.49153C2 11.2805 5.02824 13.3871 6.78203 14.2894C7.27112 14.541 7.51567 14.6668 7.99999 14.6668C8.48431 14.6668 8.72886 14.541 9.21796 14.2894C10.9717 13.3871 14 11.2805 14 7.49153L14 5.16559C14 4.22849 14 3.75993 13.7003 3.27602C13.4005 2.7921 13.0912 2.6382 12.4726 2.33039Z" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 7.66683C6 7.66683 6.93861 7.83479 7.33333 9.00016C7.33333 9.00016 8.33333 7.00016 10 6.3335" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
     }
   }
 
-  // 3. Alerta de saúde (only when applicable)
+  // 3. Itens adicionais (only buyer line) — Figma: file-add
+  if (isBuyer) badges.push({ key: "additional", stroke: "#0b5ed7", tooltipKey: "additional-items",
+    icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M2.6665 7.99996L2.6665 9.69606C2.6665 11.8594 2.6665 12.9411 3.25722 13.6737C3.37656 13.8218 3.51138 13.9566 3.65939 14.0759C4.39204 14.6666 5.47372 14.6666 7.63707 14.6666C8.10742 14.6666 8.3426 14.6666 8.55796 14.5906C8.60275 14.5748 8.64666 14.5566 8.68951 14.5361C8.89554 14.4376 9.06183 14.2713 9.39443 13.9387L12.5521 10.781C12.9375 10.3956 13.1302 10.2029 13.2317 9.95792C13.3332 9.71289 13.3332 9.44039 13.3332 8.89539V6.66663C13.3332 4.15247 13.3332 2.89539 12.5521 2.11434C11.846 1.40824 10.7508 1.34049 8.68951 1.33398M8.6665 14.3333V14C8.6665 12.1143 8.6665 11.1715 9.25229 10.5857C9.83808 9.99996 10.7809 9.99996 12.6665 9.99996H12.9998" stroke="#0B5ED7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.99984 4.00016L2.6665 4.00016M5.33317 1.3335L5.33317 6.66683" stroke="#0B5ED7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+
+  // ── Conditional badges (only appear when applicable) ──
+
+  // 4. Alerta de saúde — Figma: stethoscope
   if (p.hasHealthIssue) {
-    badges.push({ key: "health", stroke: "#dc6803", tooltipKey: "health-alert",
-      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+    badges.push({ key: "health", stroke: "#6941C6", tooltipKey: "health-alert",
+      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M8.66759 1.3335C9.40356 1.3335 10.0002 1.95434 10.0002 2.72018C10.0002 3.35293 10.0241 3.91599 9.5128 4.38147C7.83911 5.90504 7.00226 6.66683 6.00018 6.66683C4.99809 6.66683 4.16125 5.90504 2.48755 4.38147C1.97617 3.91596 2.00018 3.35283 2.00018 2.72004C2.00018 1.95427 2.59673 1.3335 3.33262 1.3335" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 9.3335L6 11.6667C6 13.3236 7.34325 14.6669 9.00022 14.6669C10.6572 14.6669 12.0004 13.3236 12.0004 11.6667V10.6668" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.33366 4.6665L8.46551 6.83687C8.23473 7.41382 8.11934 7.7023 7.9261 7.93933C7.73286 8.17636 7.47355 8.3475 6.95492 8.68978L5.98006 9.33317L5.02221 8.68807C4.51513 8.34655 4.26158 8.17579 4.07246 7.94159C3.88334 7.70738 3.76981 7.42356 3.54276 6.85592L2.66699 4.6665" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665C14 9.77107 13.1046 10.6665 12 10.6665C10.8954 10.6665 10 9.77107 10 8.6665C10 7.56193 10.8954 6.6665 12 6.6665C13.1046 6.6665 14 7.56193 14 8.6665Z" stroke="#6941C6" strokeWidth="1.2"/><path d="M12.005 8.6665L11.999 8.6665" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
   }
 
-  // 4. Menor de idade (only when applicable)
+  // 5. Menor de idade — Figma: kid (rosto de criança)
   if (p.isMinor) {
-    badges.push({ key: "minor", stroke: "#6941c6", tooltipKey: "minor",
-      icon: <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> });
+    badges.push({ key: "minor", stroke: "#414651", tooltipKey: "minor",
+      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><circle cx="8.00016" cy="8.00016" r="6.66667" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.3335 3.82543C9.3335 3.82543 8.59011 4.15888 8.06793 3.9045C7.43112 3.59428 6.79953 2.29762 8.06109 1.3335" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.33948 6H5.3335M10.6668 6H10.6608" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.3335 10C5.94158 10.8096 6.90972 11.3333 8.00016 11.3333C9.09061 11.3333 10.0587 10.8096 10.6668 10" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+  }
+
+  // 6. Termo de uso de imagem (conditional) — Figma: file-verified / file-view / file-remove-02
+  if (p.hasImageAuth) {
+    badges.push({ key: "image", stroke: "#079455", tooltipKey: "image-authorized",
+      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M8 13.3332C8 13.3332 8.66667 13.3332 9.33333 14.6665C9.33333 14.6665 11.451 11.3332 13.3333 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.3332 8.67002V7.10724C13.3332 6.562 13.3332 6.28938 13.2317 6.04425C13.1302 5.79911 12.9375 5.60634 12.5521 5.2208L9.39443 2.06173C9.06184 1.729 8.89554 1.56263 8.68951 1.46405C8.64666 1.44355 8.60275 1.42535 8.55796 1.40953C8.3426 1.3335 8.10742 1.3335 7.63707 1.3335C5.47372 1.3335 4.39204 1.3335 3.65939 1.92447C3.51138 2.04386 3.37656 2.17874 3.25722 2.32681C2.6665 3.05978 2.6665 4.14193 2.6665 6.30622V9.33697C2.6665 11.8522 2.6665 13.1098 3.44755 13.8912C4.07628 14.5202 5.01346 14.6429 6.6665 14.6668M8.6665 1.66697V2.00045C8.6665 3.88689 8.6665 4.83011 9.25229 5.41615C9.83808 6.00219 10.7809 6.00219 12.6665 6.00219H12.9998" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
+  } else {
+    badges.push({ key: "image", stroke: "#dc6803", tooltipKey: "image-pending",
+      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M12.6667 8.67031V7.10724C12.6667 6.562 12.6667 6.28938 12.5652 6.04425C12.4637 5.79911 12.271 5.60634 11.8856 5.2208L8.72792 2.06173C8.39533 1.729 8.22904 1.56263 8.02301 1.46405C7.98016 1.44355 7.93625 1.42535 7.89146 1.40953C7.67609 1.3335 7.44092 1.3335 6.97056 1.3335C4.80721 1.3335 3.72554 1.3335 2.99289 1.92447C2.84488 2.04386 2.71005 2.17874 2.59072 2.32681C2 3.05978 2 4.14193 2 6.30622V9.33697C2 11.8522 2 13.1098 2.78105 13.8912C3.40977 14.5202 4.34696 14.6429 6 14.6668M8 1.66697V2.00045C8 3.88689 8 4.83011 8.58579 5.41615C9.17157 6.00219 10.1144 6.00219 12 6.00219H12.3333" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.6668 14.6665C12.5078 14.6665 14.0002 12.6665 14.0002 12.6665C14.0002 12.6665 12.5078 10.6665 10.6668 10.6665C8.8259 10.6665 7.3335 12.6665 7.3335 12.6665C7.3335 12.6665 8.8259 14.6665 10.6668 14.6665Z" stroke="#DC6803" strokeWidth="1.2" strokeLinejoin="round"/><path d="M10.6616 12.6665H10.6676" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
   }
 
   return (
@@ -2770,8 +2782,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       )}
                     </button>
                     {/* Name cell — 286px */}
-                    <div className="flex gap-[12px] items-center shrink-0" style={{ width: "286px", padding: "8px 12px" }}>
-                      <InitialsAvatar name={p.name} />
+                    <div className="flex gap-[12px] items-center shrink-0" style={{ width: "286px", padding: "8px 16px" }}>
                       <div className="flex flex-col gap-[4px] items-start min-w-0 flex-1">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap w-full">{p.name}</p>
                         <div className="flex gap-[4px] items-center">
@@ -2781,8 +2792,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       </div>
                     </div>
                     {/* Tariff cell — 133px */}
-                    <div className="flex items-center shrink-0" style={{ width: "133px", padding: "14px 12px" }}>
+                    <div className="flex flex-col justify-center shrink-0" style={{ width: "133px", padding: "14px 12px" }}>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0f172b]">{p.tariffType}</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">{p.age} anos</p>
                     </div>
                     {/* Badge principal — estado do participante (derivado de check-in + reserva) */}
                     <div className="flex flex-1 gap-[10px] items-center min-w-0" style={{ padding: "14px 12px" }}>

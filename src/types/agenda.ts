@@ -11,6 +11,14 @@
  */
 export type ActivityStatus = 'confirmed' | 'pending' | 'blocked' | 'full';
 
+/**
+ * Lifecycle status of an activity (for the Day Panel cards).
+ * Different from the calendar chip status above.
+ */
+export type ActivityLifecycleStatus = 'NaoIniciada' | 'EmAndamento' | 'Realizada' | 'Cancelada';
+
+export type ActivityType = 'comum' | 'multi-dias';
+
 export interface Activity {
   id: string;
   name: string;
@@ -30,6 +38,29 @@ export interface Activity {
   dayNumber?: number;
   /** Total number of days for a multi-day activity */
   totalDays?: number;
+
+  // ── Day Panel card fields (Prompt 11) ──────────────────────────────────────
+
+  /** Lifecycle status for Day Panel cards */
+  lifecycleStatus: ActivityLifecycleStatus;
+  /** Activity type for subtitle display */
+  activityType: ActivityType;
+  /** Timezone label */
+  timezone: string;
+  /** Number of assigned guides */
+  assignedGuides: string[];
+  /** Deadline to assign team (ISO date) */
+  teamAssignmentDeadline?: string;
+  /** Whether all participants have contracted insurance */
+  allParticipantsInsured: boolean;
+  /** Number of participants needing medical attention */
+  participantsNeedingMedicalAttention: number;
+  /** Cancellation reason (when lifecycleStatus === 'Cancelada') */
+  cancellationReason?: string;
+  /** Multi-day: start date of the range */
+  startDate?: string;
+  /** Multi-day: end date of the range */
+  endDate?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -73,6 +104,8 @@ export interface Participant {
   /** Whether the participant authorized the use of their image */
   hasImageAuth: boolean;
   isMinor: boolean;
+  /** Participant age in years */
+  age: number;
   boardingPoint: string;
   notes?: string;
 }

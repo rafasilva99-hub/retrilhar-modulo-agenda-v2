@@ -174,7 +174,7 @@ function Container() {
 function TopBar() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 0);
+    const onScroll = () => setScrolled(window.scrollY > 2);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
@@ -1348,7 +1348,7 @@ const STATUS_BADGE_MAP: Record<string, { label: string; color: string; icon: Rea
 function ReservationStatusBadge({ status, tooltip }: { status: string; tooltip?: string }) {
   const cfg = STATUS_BADGE_MAP[status] || STATUS_BADGE_MAP.Confirmed;
   return (
-    <div className="border-[0.5px] border-[#e9eaeb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" title={tooltip}>
+    <div className="bg-white border-[0.5px] border-[#e9eaeb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" title={tooltip}>
       {cfg.icon}
       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap" style={{ color: cfg.color }}>{cfg.label}</p>
     </div>
@@ -1674,23 +1674,24 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function CheckInButton({ isDone, onCheckIn, onUndo }: { isDone: boolean; insured?: boolean; onCheckIn: () => void; onUndo: () => void }) {
+function CheckInButton({ isDone, disabled, onCheckIn, onUndo }: { isDone: boolean; disabled?: boolean; insured?: boolean; onCheckIn: () => void; onUndo: () => void }) {
   return (
     <div className="relative" onClick={(e) => e.stopPropagation()}>
       <button
-        onClick={() => isDone ? onUndo() : onCheckIn()}
-        className={`flex gap-[8px] items-center justify-center rounded-[6px] shrink-0 transition-colors ${isDone ? "cursor-pointer bg-white border border-[#e4e4e7] border-solid hover:bg-[#f8fafc]" : "cursor-pointer hover:bg-[#d5dcfe]"}`}
-        style={{ width: "158.48px", padding: "10px 12px", ...(!isDone ? { backgroundColor: "#edf0ff" } : {}) }}
+        onClick={() => disabled ? undefined : isDone ? onUndo() : onCheckIn()}
+        disabled={disabled}
+        className={`flex gap-[8px] items-center justify-center rounded-[6px] shrink-0 transition-colors ${disabled ? "cursor-not-allowed border border-[#e9eaeb] border-solid" : isDone ? "cursor-pointer bg-white border border-[#e4e4e7] border-solid hover:bg-[#f8fafc]" : "cursor-pointer hover:bg-[#d5dcfe]"}`}
+        style={{ width: "158.48px", padding: "10px 12px", ...(!isDone ? { backgroundColor: disabled ? "#fafafa" : "#edf0ff" } : {}) }}
       >
-        {isDone ? (
+        {isDone && !disabled ? (
           <>
             <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Desfazer Check-in</p>
           </>
         ) : (
           <>
-            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#0b5ed7" strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="#0b5ed7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#0b5ed7]">Realizar Check-in</p>
+            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={disabled ? "#a4a7ae" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={disabled ? "#a4a7ae" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${disabled ? "text-[#a4a7ae]" : "text-[#0b5ed7]"}`}>Realizar Check-in</p>
           </>
         )}
       </button>
@@ -1970,7 +1971,8 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   useEffect(() => {
     const el = bulkBarRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => setBulkBarHidden(!entry.isIntersecting), { threshold: 0 });
+    // rootMargin -1px avoids flicker when element is exactly at viewport edge (no scroll)
+    const observer = new IntersectionObserver(([entry]) => setBulkBarHidden(!entry.isIntersecting), { threshold: 0, rootMargin: "-1px 0px 0px 0px" });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -1981,7 +1983,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   useEffect(() => {
     const el = searchBarRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => setSearchBarHidden(!entry.isIntersecting), { threshold: 0 });
+    const observer = new IntersectionObserver(([entry]) => setSearchBarHidden(!entry.isIntersecting), { threshold: 0, rootMargin: "-1px 0px 0px 0px" });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -2662,7 +2664,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Reservation list — Figma-faithful layout */}
-      <div className="content-stretch flex flex-col items-start mt-[8px] relative w-full">
+      <div className="content-stretch flex flex-col items-start mt-[20px] relative w-full" style={{ minHeight: "calc(100vh - 320px)" }}>
         {filteredReservations.map((r, idx) => {
           const isGroup = r.type === "group";
           const expanded = expandedGroups.has(r.id);
@@ -2670,8 +2672,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
           const doneCount = r.participants.filter((p) => p.checkInStatus === "Done").length;
 
           return (
-            <div key={r.id} className="bg-white relative rounded-[12px] shrink-0 w-full mb-[8px]">
-              <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
+            <div key={r.id} className={`bg-white relative rounded-[12px] shrink-0 w-full mb-[20px] border border-solid shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] transition-shadow duration-150 hover:shadow-[0px_2px_4px_0px_rgba(10,13,18,0.08)] ${r.participants.some((p) => selectedIds.has(p.id)) ? "border-[#0b5ed7]" : "border-[#EEF0F4]"}`}>
               {/* ── Reservation header ── */}
               <div className="flex h-[48px] items-center relative w-full" style={{ padding: "4px 16px 4px 16px" }}>
                 <div className="flex gap-[12px] items-center size-full">
@@ -2701,9 +2702,15 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                         Reserva de {r.buyerName} · {r.participants.length} {r.participants.length === 1 ? "ingresso" : "ingressos"} · ID do pedido:
                       </p>
                       <button onClick={() => setPaymentDrawerRes(r)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
-                      <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[16px] hover:opacity-70 transition-opacity" title="Copiar ID">
-                        <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
-                      </button>
+                      <div className="relative group">
+                        <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[16px] hover:opacity-70 transition-opacity">
+                          <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
+                        </button>
+                        <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[6px] px-[8px] py-[4px] rounded-[6px] text-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-white">{copiedId === r.orderId ? "Copiado!" : "Copiar ID"}</p>
+                          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-[#181d27]" />
+                        </div>
+                      </div>
                     </div>
                     {/* Status badges — with container per Figma */}
                     <div className="flex gap-[8px] items-center flex-1 min-w-0">
@@ -2741,19 +2748,21 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                 </div>
               </div>
               {/* ── Participant rows ── */}
-              {(isGroup
-                ? expanded
-                  ? r.participants
-                  : r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1).length > 0
-                    ? r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1)
-                    : r.participants.slice(0, 1)
-                : r.participants
-              ).map((p) => {
+              {(() => {
+                const visibleParticipants = isGroup
+                  ? expanded
+                    ? r.participants
+                    : r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1).length > 0
+                      ? r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1)
+                      : r.participants.slice(0, 1)
+                  : r.participants;
+                return visibleParticipants.map((p, pIdx) => {
                 const isCancelled = r.status === "Cancelled";
                 const isDone = p.checkInStatus === "Done";
-                const showCheckIn = !isCancelled && r.status !== "AwaitingPayment" && r.status !== "NoShow";
+                const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || r.status === "NoShow";
+                const isLastRow = pIdx === visibleParticipants.length - 1;
                 return (
-                  <div key={p.id} className="border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full cursor-pointer hover:bg-[#f8fafc] transition-colors" style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                  <div key={p.id} className={`border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full cursor-pointer hover:bg-[#f8fafc] transition-colors ${isLastRow ? "rounded-b-[12px]" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
                     {/* Checkbox cell — when group is collapsed, selecting the visible participant selects the whole reservation */}
                     <button onClick={(e) => { e.stopPropagation(); (isGroup && !expanded) ? toggleSelectReservation(r) : toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
                       {(isGroup && !expanded) ? (
@@ -2800,15 +2809,14 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
                     {/* Actions cell */}
                     <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
-                      {showCheckIn && (
-                        <CheckInButton isDone={isDone} insured={isParticipantInsured(p.id)} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
-                      )}
+                      <CheckInButton isDone={isDone} disabled={checkInDisabled} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                       {/* Three-dot menu */}
                       <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
                     </div>
                   </div>
                 );
-              })}
+              });
+              })()}
             </div>
           );
         })}
@@ -3029,7 +3037,7 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
   }
 
   return (
-    <div className="bg-[#f8fafc] relative size-full" data-name="AGENDA - ATUALIZAÇÕES">
+    <div className="bg-[#f8fafc] relative w-full min-h-full" data-name="AGENDA - ATUALIZAÇÕES">
       <TopBar />
       {activeTab === "atualizacoes" && <Frame23 />}
       <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab} onBackToActivities={onBackToActivities} />

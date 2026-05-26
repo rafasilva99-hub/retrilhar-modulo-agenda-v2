@@ -3243,7 +3243,7 @@ export default function AgendaMes({ onDayClick, onViewDetails, initialView = "me
   };
 
   return (
-    <div className="bg-[#f8fafc] relative size-full overflow-auto min-h-[1068px]" data-name="AGENDA - MÊS">
+    <div className="bg-[#f8fafc] relative w-full min-h-[calc(100vh+24px)]" data-name="AGENDA - MÊS">
       <Container />
       <CalendarCard
         view={view}

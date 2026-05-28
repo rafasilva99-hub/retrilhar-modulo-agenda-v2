@@ -2945,7 +2945,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                               {insuranceAccepted && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                             </button>
                             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[13px] text-[#414651]">
-                              Confirmo a contratação do seguro obrigatório para {pendingList.length === 1 ? "o participante" : `os ${pendingList.length} participantes`} listados acima.
+                              Confirmo a contratação do seguro obrigatório para o(s) participante(s) listado(s) acima.
                             </p>
                           </label>
                         </div>
@@ -2954,11 +2954,8 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                   )}
                 </div>
                 {/* Footer */}
-                <div className="flex items-center justify-between gap-[12px] px-[24px] pt-[16px] pb-[24px] border-t border-[#f5f5f5] shrink-0">
-                  {!canConfirm && (
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803]">Contrate o seguro para concluir o check-in</p>
-                  )}
-                  <div className="flex gap-[12px] ml-auto">
+                <div className="flex items-center justify-end gap-[12px] px-[24px] pt-[16px] pb-[24px] border-t border-[#f5f5f5] shrink-0">
+                  <div className="flex gap-[12px]">
                     <button onClick={() => setCheckInModal(null)} className="bg-white border border-[#d92d20] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#fef3f2] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#d92d20] transition-colors">Cancelar</button>
                     <button
                       onClick={handleConfirm}

@@ -2518,80 +2518,96 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
         </div>
       )}
 
-      {/* Header — Activity banner */}
-      <div className="relative w-full overflow-hidden border-b border-[#e9eaeb]" style={{ background: "linear-gradient(135deg, #edf0ff 0%, #f0f5ff 30%, #f8fafc 60%, #ecfdf3 100%)" }}>
-        {/* Decorative shapes */}
-        <div className="absolute right-[80px] top-[-20px] size-[120px] rounded-full opacity-[0.06] pointer-events-none" style={{ background: "radial-gradient(circle, #0b5ed7 0%, transparent 70%)" }} />
-        <div className="absolute right-[20px] bottom-[-30px] size-[80px] rounded-full opacity-[0.05] pointer-events-none" style={{ background: "radial-gradient(circle, #079455 0%, transparent 70%)" }} />
-        {/* Decorative emoji */}
-        <div className="absolute right-[32px] top-[50%] -translate-y-[50%] text-[56px] opacity-[0.1] select-none pointer-events-none">🌙</div>
-        <div className="flex items-center justify-between relative z-[1]" style={{ padding: "20px 32px" }}>
-          <div className="flex items-center gap-[16px]">
-            {/* Activity icon */}
-            <div className="flex items-center justify-center shrink-0 size-[44px] rounded-[12px] bg-white/80 border border-[#e9eaeb]/60 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)]">
-              <svg className="size-[22px]" fill="none" viewBox="0 0 24 24">
-                <path d="M12 2C8 2 4 6 4 10c0 6 8 12 8 12s8-6 8-12c0-4-4-8-8-8z" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M9 10l2 2 4-4" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+      {/* Header — Activity banner with pattern */}
+      <div className="relative w-full overflow-hidden" style={{ background: "linear-gradient(135deg, #0b5ed7 0%, #084fb7 100%)" }}>
+        {/* Topographic pattern SVG */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.08] pointer-events-none" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <pattern id="topo-pattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+              <path d="M0,50 Q50,40 100,50 T200,50" fill="none" stroke="white" strokeWidth="1.5" opacity="0.6"/>
+              <path d="M0,80 Q50,70 100,80 T200,80" fill="none" stroke="white" strokeWidth="1.5" opacity="0.4"/>
+              <path d="M0,110 Q50,100 100,110 T200,110" fill="none" stroke="white" strokeWidth="1.5" opacity="0.3"/>
+              <path d="M0,140 Q50,130 100,140 T200,140" fill="none" stroke="white" strokeWidth="1.5" opacity="0.2"/>
+              <circle cx="60" cy="60" r="3" fill="white" opacity="0.3"/>
+              <circle cx="140" cy="90" r="2" fill="white" opacity="0.3"/>
+              <circle cx="180" cy="130" r="2.5" fill="white" opacity="0.3"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#topo-pattern)"/>
+        </svg>
+
+        {/* Mountain silhouette decoration */}
+        <div className="absolute bottom-0 left-0 right-0 h-[60px] opacity-[0.12] pointer-events-none">
+          <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1200 60">
+            <path d="M0,60 L0,40 L150,15 L300,35 L450,10 L600,30 L750,20 L900,40 L1050,25 L1200,45 L1200,60 Z" fill="white"/>
+          </svg>
+        </div>
+
+        <div className="flex items-center justify-between relative z-[1]" style={{ padding: "28px 32px 32px" }}>
+          <div className="flex flex-col gap-[16px]">
+            {/* Title + capacity badge */}
+            <div className="flex items-center gap-[12px]">
+              <h1 className="font-['Helvetica_Neue:Medium',sans-serif] leading-[1.2] not-italic text-[24px] text-white">{activity.name}</h1>
+              <div className="flex items-center gap-[6px] bg-white/15 backdrop-blur-sm border border-white/20 rounded-[8px] px-[12px] py-[6px]">
+                <p className="font-['Helvetica_Neue:Bold',sans-serif] leading-[normal] not-italic text-[16px] text-white">{totalCount}</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white/60">/</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white/80">{activity.capacity}</p>
+              </div>
             </div>
-            <div className="flex flex-col gap-[4px]">
-              {/* Row 1: Name + capacity */}
-              <div className="flex items-center gap-[10px]">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#0f172b]">{activity.name}</p>
-                <div className="flex items-center gap-[4px] bg-white/70 border border-[#e9eaeb]/60 rounded-[6px] px-[8px] py-[2px]">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-[#0b5ed7]">{totalCount}</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#c0c5ce]">/</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#a1a1aa]">{activity.capacity}</p>
-                </div>
+
+            {/* Metadata row */}
+            <div className="flex items-center gap-[20px]">
+              <div className="flex items-center gap-[8px]">
+                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16">
+                  <path d="M10.667 1.333V4M5.333 1.333V4M2 6.667h12M14 8c0-2.514 0-3.771-.781-4.552C12.438 2.667 11.18 2.667 8.667 2.667H7.333c-2.514 0-3.771 0-4.552.781C2 4.229 2 5.486 2 8v1.333c0 2.514 0 3.771.781 4.552.781.781 2.038.781 4.552.781" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" opacity="0.9"/>
+                </svg>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white/95">{activity.date.split("-").reverse().join("/")}</p>
               </div>
-              {/* Row 2: Metadata */}
-              <div className="flex items-center gap-[12px]">
-                <div className="flex items-center gap-[5px]">
-                  <svg className="shrink-0 size-[13px]" fill="none" viewBox="0 0 16 16"><path d="M10.667 1.333V4M5.333 1.333V4M2 6.667h12M14 8c0-2.514 0-3.771-.781-4.552C12.438 2.667 11.18 2.667 8.667 2.667H7.333c-2.514 0-3.771 0-4.552.781C2 4.229 2 5.486 2 8v1.333c0 2.514 0 3.771.781 4.552.781.781 2.038.781 4.552.781" stroke="#a1a1aa" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#717680]">{activity.date.split("-").reverse().join("/")}</p>
-                </div>
-                <div className="flex items-center gap-[5px]">
-                  <svg className="shrink-0 size-[13px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" stroke="#a1a1aa" strokeWidth="1.2"/><path d="M8 5v3l2 2" stroke="#a1a1aa" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#717680]">{activity.startTime} - {activity.endTime}</p>
-                </div>
-                {activity.requiresInsurance && (
-                  <div className="flex items-center gap-[5px]">
-                    <svg className="shrink-0 size-[13px]" viewBox="0 0 16 16" fill="none"><path d="M12.473 2.331C11.211 1.703 9.667 1.334 8 1.334c-1.667 0-3.211.37-4.473.997-.618.308-.928.462-1.228.946C2 3.76 2 4.229 2 5.166v2.326c0 3.789 3.028 5.895 4.782 6.798.489.251.734.377 1.218.377s.729-.126 1.218-.377C10.972 13.387 14 11.281 14 7.492V5.166c0-.937 0-1.406-.3-1.89-.3-.483-.609-.637-1.227-.945Z" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#079455]">Seguro obrigatório</p>
-                  </div>
-                )}
+              <div className="flex items-center gap-[8px]">
+                <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16">
+                  <circle cx="8" cy="8" r="6.5" stroke="white" strokeWidth="1.3" opacity="0.9"/>
+                  <path d="M8 5v3l2 2" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" opacity="0.9"/>
+                </svg>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white/95">{activity.startTime} - {activity.endTime}</p>
               </div>
+              {activity.requiresInsurance && (
+                <div className="flex items-center gap-[8px] bg-[#079455]/20 backdrop-blur-sm border border-[#079455]/30 rounded-[6px] px-[10px] py-[4px]">
+                  <svg className="shrink-0 size-[14px]" viewBox="0 0 16 16" fill="none">
+                    <path d="M12.473 2.331C11.211 1.703 9.667 1.334 8 1.334c-1.667 0-3.211.37-4.473.997-.618.308-.928.462-1.228.946C2 3.76 2 4.229 2 5.166v2.326c0 3.789 3.028 5.895 4.782 6.798.489.251.734.377 1.218.377s.729-.126 1.218-.377C10.972 13.387 14 11.281 14 7.492V5.166c0-.937 0-1.406-.3-1.89-.3-.483-.609-.637-1.227-.945Z" stroke="#ecfdf3" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-[#ecfdf3]">Seguro obrigatório</p>
+                </div>
+              )}
             </div>
           </div>
-          {/* Buttons — untouched */}
+
+          {/* Buttons */}
           <div className="flex gap-[12px] items-center shrink-0">
-            <div className="bg-white relative rounded-[8px] shrink-0">
-              <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
+            <button className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 relative rounded-[8px] shrink-0 transition-all duration-200">
               <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Listas e Manifestos</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Listas e Manifestos</p>
               </div>
-            </div>
-            <div className="relative rounded-[8px] shrink-0" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
+            </button>
+            <button className="bg-white hover:bg-white/95 relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
               <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Concluir atividade</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Concluir atividade</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Search bar + Sort + Filters */}
-      <div ref={searchBarRef} className="content-stretch flex gap-[12px] items-center mt-[24px] relative w-full" style={{ padding: "0 32px" }}>
-        <div className="bg-white flex-1 min-w-0 relative rounded-[10px]">
-          <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[10px]" />
-          <div className="content-stretch flex gap-[8px] items-center px-[14px] py-[10px] relative size-full">
-            <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#717680" strokeWidth="1.5"/><path d="M14 14l3 3" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+      <div ref={searchBarRef} className="content-stretch flex gap-[10px] items-center mt-[24px] relative w-full" style={{ padding: "0 32px" }}>
+        <div className="bg-white flex-1 min-w-0 relative rounded-[10px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]">
+          <div className="content-stretch flex gap-[12px] items-center px-[16px] py-[12px] relative size-full">
+            <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="8" cy="8" r="5.5" stroke="#9ca3af" strokeWidth="1.4"/><path d="M12 12l3 3" stroke="#9ca3af" strokeWidth="1.4" strokeLinecap="round"/></svg>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome, ID do pedido, etc..."
-              className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[14px] text-[#414651] placeholder:text-[#a4a7ae] bg-transparent"
+              className="flex-1 font-['Helvetica_Neue:Light',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[14px] text-[#1f2937] placeholder:text-[#9ca3af] bg-transparent"
             />
           </div>
         </div>
@@ -2599,18 +2615,17 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
         <div className="relative">
           <button
             onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
-            className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
+            className="bg-white relative rounded-[8px] border border-[#e5e7eb] shrink-0 cursor-pointer hover:bg-[#f9fafb] hover:border-[#d1d5db] transition-all shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]"
           >
-            <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
-            <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ordenar Por</p>
-              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[12px] relative size-full">
+              <p className="font-['Helvetica_Neue:Light',sans-serif] leading-[normal] not-italic text-[13px] text-[#4b5563] whitespace-nowrap">Ordenar</p>
+              <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M3.5 5.25l3.5 3.5 3.5-3.5" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </div>
           </button>
           {showSort && (
-            <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[200px] z-20">
+            <div className="absolute bg-white border border-[#e9ecef] border-solid mt-[4px] right-0 rounded-[8px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] w-[180px] z-20 overflow-hidden">
               {["Alfabética", "Número de pedido", "Data da reserva"].map((opt) => (
-                <button key={opt} onClick={() => setShowSort(false)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[14px] py-[10px] text-[14px] text-[#414651] text-left transition-colors w-full">
+                <button key={opt} onClick={() => setShowSort(false)} className="cursor-pointer font-['Helvetica_Neue:Light',sans-serif] hover:bg-[#f8f9fa] leading-[normal] not-italic px-[12px] py-[8px] text-[13px] text-[#4a5568] text-left transition-colors w-full">
                   {opt}
                 </button>
               ))}
@@ -2621,12 +2636,11 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
         <div className="relative">
           <button
             onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
-            className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
+            className="bg-white relative rounded-[8px] border border-[#e5e7eb] shrink-0 cursor-pointer hover:bg-[#f9fafb] hover:border-[#d1d5db] transition-all shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]"
           >
-            <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
-            <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
-              <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 3h12M4 8h8M6 13h4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Filtros</p>
+            <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[12px] relative size-full">
+              <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M1.75 2.625h10.5M3.5 7h7M4.9 11.375h4.2" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/></svg>
+              <p className="font-['Helvetica_Neue:Light',sans-serif] leading-[normal] not-italic text-[13px] text-[#4b5563] whitespace-nowrap">Filtros</p>
             </div>
           </button>
           {showFilters && <FiltersDrawer onClose={() => setShowFilters(false)} />}
@@ -2731,22 +2745,20 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
           </div>
         ) : (
           /* ── Filter tabs ── */
-          <div className="content-stretch flex gap-[4px] items-center relative transition-all duration-200">
+          <div className="content-stretch flex gap-[3px] items-center relative transition-all duration-200">
             {/* Select-all checkbox (unchecked) */}
-            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0 mr-[8px]" style={{ padding: "1px 0", width: "20px" }}>
-              <div className="flex items-center justify-center rounded-[6px] size-[20px] border border-[#d5d7da] bg-white hover:border-[#a4a7ae] transition-colors" />
+            <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0 mr-[10px]" style={{ padding: "1px 0", width: "18px" }}>
+              <div className="flex items-center justify-center rounded-[4px] size-[18px] border border-[#dfe3e8] bg-white hover:border-[#b8bcc4] transition-colors" />
             </button>
             {filters.map(({ key, label, count }) => (
               <button
                 key={key}
                 onClick={() => setActiveFilter(key)}
-                className={`cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors ${activeFilter === key ? "bg-[#f0f5ff]" : "hover:bg-[#f8fafc]"}`}
+                className={`cursor-pointer flex gap-[6px] items-center px-[10px] py-[5px] relative rounded-[6px] shrink-0 transition-all ${activeFilter === key ? "bg-[#f8fafc]" : "hover:bg-[#fafbfc]"}`}
               >
-                <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#535862]"}`}>{label}</p>
-                <div className={`rounded-[6px] shrink-0 ${activeFilter === key ? "bg-[#d5dcfe]" : "bg-[#f1f5f9]"}`}>
-                  <div className="px-[6px] py-[1px]">
-                    <p className={`font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{count}</p>
-                  </div>
+                <p className={`font-['Helvetica_Neue:Light',sans-serif] leading-[normal] not-italic text-[13px] whitespace-nowrap ${activeFilter === key ? "text-[#1a202c] font-['Helvetica_Neue:Regular',sans-serif]" : "text-[#64748b]"}`}>{label}</p>
+                <div className={`rounded-[4px] shrink-0 px-[5px] py-[1px] ${activeFilter === key ? "bg-[#e2e8f0]" : "bg-[#f1f5f9]"}`}>
+                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] ${activeFilter === key ? "text-[#475569]" : "text-[#94a3b8]"}`}>{count}</p>
                 </div>
               </button>
             ))}

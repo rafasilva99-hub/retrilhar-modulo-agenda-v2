@@ -365,7 +365,7 @@ function Container3() {
 function Container5() {
   return (
     <div className="content-stretch flex gap-[4px] items-start leading-[0] relative shrink-0 w-full" data-name="Container">
-      <div className="flex flex-col justify-center relative shrink-0 text-[#0f172b] text-[36px] tracking-[-0.72px] whitespace-nowrap">
+      <div className="flex flex-col justify-center relative shrink-0 text-[#0f172b] text-[36px] whitespace-nowrap">
         <p className="leading-[normal]">26</p>
       </div>
       <div className="flex flex-col h-[34px] justify-center relative shrink-0 text-[#90a1b9] text-[20px] w-[23px]">

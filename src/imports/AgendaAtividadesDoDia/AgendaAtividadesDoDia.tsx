@@ -177,12 +177,12 @@ function Frame50() {
 
 function Frame93() {
   return (
-    <div className="content-stretch flex font-['Helvetica_Neue:Regular',sans-serif] gap-[5px] items-center leading-[0] not-italic relative shrink-0 text-[#252b37] text-[18px] whitespace-nowrap">
+    <div className="content-stretch flex font-['Helvetica_Neue:Light',sans-serif] gap-[3px] items-baseline leading-[0] not-italic relative shrink-0 text-[16px] whitespace-nowrap">
       <div className="flex flex-col justify-center relative shrink-0">
-        <p className="leading-[normal]">Trilha Pico do Itambé</p>
+        <p className="leading-[normal] text-[#1a1f2e]">Trilha Pico do Itambé</p>
       </div>
       <div className="flex flex-col justify-center relative shrink-0">
-        <p className="leading-[normal]">(0/0)</p>
+        <p className="leading-[normal] text-[13px] text-[#8b92a4] font-['Helvetica_Neue:Light',sans-serif]">(0/0)</p>
       </div>
     </div>
   );
@@ -376,9 +376,9 @@ function Frame36() {
 
 function Frame22() {
   return (
-    <div className="content-stretch flex gap-[4px] items-center relative shrink-0 text-[14px]">
-      <p className="relative shrink-0 text-[#252b37]">24/02/2026</p>
-      <p className="relative shrink-0 text-[#717680]">(Dia 3 de 5)</p>
+    <div className="content-stretch flex gap-[4px] items-center relative shrink-0 text-[13px] font-['Helvetica_Neue:Light',sans-serif]">
+      <p className="relative shrink-0 text-[#4a5568]">24/02/2026</p>
+      <p className="relative shrink-0 text-[#9ca3af]">(Dia 3 de 5)</p>
     </div>
   );
 }
@@ -427,9 +427,9 @@ function Frame9() {
 
 function Frame91() {
   return (
-    <div className="content-stretch flex gap-[6px] items-start relative shrink-0 text-[14px] w-full whitespace-nowrap">
-      <p className="relative shrink-0 text-[#252b37]">08:00 - 11:00</p>
-      <p className="relative shrink-0 text-[#717680]">(GMT+5:30)</p>
+    <div className="content-stretch flex gap-[6px] items-start relative shrink-0 text-[13px] font-['Helvetica_Neue:Light',sans-serif] w-full whitespace-nowrap">
+      <p className="relative shrink-0 text-[#4a5568]">08:00 - 11:00</p>
+      <p className="relative shrink-0 text-[#9ca3af]">(GMT+5:30)</p>
     </div>
   );
 }
@@ -750,10 +750,10 @@ function Frame52() {
 
 function Frame94() {
   return (
-    <div className="content-stretch flex font-['Helvetica_Neue:Regular',sans-serif] gap-[5px] items-center not-italic relative shrink-0 text-[#252b37] text-[18px] whitespace-nowrap">
-      <p className="leading-[normal] relative shrink-0">Trilha Pico do Itacolomi</p>
+    <div className="content-stretch flex font-['Helvetica_Neue:Light',sans-serif] gap-[3px] items-baseline not-italic relative shrink-0 text-[16px] whitespace-nowrap">
+      <p className="leading-[normal] relative shrink-0 text-[#1a1f2e]">Trilha Pico do Itacolomi</p>
       <div className="flex flex-col justify-center leading-[0] relative shrink-0">
-        <p className="leading-[normal]">(220/200)</p>
+        <p className="leading-[normal] text-[13px] text-[#8b92a4] font-['Helvetica_Neue:Light',sans-serif]">(220/200)</p>
       </div>
     </div>
   );
@@ -942,8 +942,8 @@ function Frame38() {
 
 function Frame24() {
   return (
-    <div className="content-stretch flex gap-[4px] items-center relative shrink-0 text-[14px]">
-      <p className="relative shrink-0 text-[#252b37]">26/02/2026</p>
+    <div className="content-stretch flex gap-[4px] items-center relative shrink-0 text-[13px] font-['Helvetica_Neue:Light',sans-serif]">
+      <p className="relative shrink-0 text-[#4a5568]">26/02/2026</p>
       <p className="relative shrink-0 text-[transparent]">(Dia 3 de 5)</p>
     </div>
   );
@@ -993,9 +993,9 @@ function Frame13() {
 
 function Frame92() {
   return (
-    <div className="content-stretch flex gap-[6px] items-start relative shrink-0 text-[14px] w-full whitespace-nowrap">
-      <p className="relative shrink-0 text-[#252b37]">08:00- 11:00</p>
-      <p className="relative shrink-0 text-[#717680]">(GMT+5:30)</p>
+    <div className="content-stretch flex gap-[6px] items-start relative shrink-0 text-[13px] font-['Helvetica_Neue:Light',sans-serif] w-full whitespace-nowrap">
+      <p className="relative shrink-0 text-[#4a5568]">08:00- 11:00</p>
+      <p className="relative shrink-0 text-[#9ca3af]">(GMT+5:30)</p>
     </div>
   );
 }

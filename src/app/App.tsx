@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
 import imgIntroducaoAoTeste from "figma:asset/bf3f56458c51cdd59b7949f2a771c8cc1623145c.png";
 
 import { AppShell } from "../components/layout/app-shell";
 import svgPaths from "../imports/svg-q5jqh9fwaq";
-import { type AppPage, shellNavItems, shellOrganization, shellProfile } from "../mocks/shell";
+import { shellNavItems, shellOrganization, shellProfile } from "../mocks/shell";
 import {
   AgendaDayPage,
   AgendaMonthPage,
   AgendaUpdatesPage,
-  type AgendaViewMode,
-  getDefaultActivityId,
+  useAgendaPrototypeNavigation,
 } from "../modules/agenda";
 
 import ContextoMissao from "./components/ContextoMissao";
@@ -72,121 +70,59 @@ function InfoCard({ title, description }: { title: string; description: string }
   );
 }
 
-type Page = AppPage;
-
-const pages: Page[] = ["intro", "contexto", "agenda", "agendaDia", "atualizacoes"];
-
-function getPageFromHash(): Page {
-  const value = window.location.hash.replace("#", "") as Page;
-  return pages.includes(value) ? value : "intro";
-}
-
 export default function App() {
-  const [currentPage, setCurrentPageRaw] = useState<Page>(() => getPageFromHash());
-  const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
-  const [atualizacoesInitialTab, setAtualizacoesInitialTab] = useState<string>("atualizacoes");
-  const [returnTo, setReturnTo] = useState<Page>("agendaDia");
-  const [calendarView, setCalendarView] = useState<AgendaViewMode>("mes");
-  const [selectedActivityId, setSelectedActivityId] = useState<string>(() =>
-    getDefaultActivityId()
-  );
+  const agenda = useAgendaPrototypeNavigation();
 
-  // Navigate with browser history
-  const navigateTo = useCallback((page: Page, replace = false) => {
-    setCurrentPageRaw(page);
-    if (replace) {
-      window.history.replaceState({ page }, "", `#${page}`);
-    } else {
-      window.history.pushState({ page }, "", `#${page}`);
-    }
-  }, []);
-
-  // Listen for browser back/forward
-  useEffect(() => {
-    const onPopState = (e: PopStateEvent) => {
-      if (e.state?.page) setCurrentPageRaw(e.state.page);
-      else setCurrentPageRaw(getPageFromHash());
-    };
-    window.addEventListener("popstate", onPopState);
-    const initialPage = getPageFromHash();
-    setCurrentPageRaw(initialPage);
-    window.history.replaceState({ page: initialPage }, "", `#${initialPage}`);
-    return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-
-  const handleDayClick = (day: number) => {
-    setSelectedDay(day);
-    navigateTo("agendaDia");
-  };
-
-  const handleViewDetails = (activityId?: string) => {
-    if (activityId) setSelectedActivityId(activityId);
-    setReturnTo(currentPage === "agenda" ? "agenda" : "agendaDia");
-    setAtualizacoesInitialTab("visao-geral");
-    navigateTo("atualizacoes");
-  };
-
-  const handleGoToCheckIn = (activityId?: string) => {
-    if (activityId) setSelectedActivityId(activityId);
-    setReturnTo(currentPage === "agenda" ? "agenda" : "agendaDia");
-    setAtualizacoesInitialTab("participantes");
-    navigateTo("atualizacoes");
-  };
-
-  const handleBackToActivities = () => {
-    navigateTo(returnTo);
-  };
-
-  if (currentPage === "atualizacoes") {
+  if (agenda.currentPage === "atualizacoes") {
     return (
       <AgendaUpdatesPage
-        initialTab={atualizacoesInitialTab}
-        onBackToActivities={handleBackToActivities}
-        activityId={selectedActivityId}
+        initialTab={agenda.atualizacoesInitialTab}
+        onBackToActivities={agenda.handleBackToActivities}
+        activityId={agenda.selectedActivityId}
       />
     );
   }
 
-  if (currentPage === "agendaDia") {
+  if (agenda.currentPage === "agendaDia") {
     return (
       <AppShell
-        activePage={currentPage}
+        activePage={agenda.currentPage}
         navItems={shellNavItems}
         organization={shellOrganization}
         profile={shellProfile}
-        onNavigate={navigateTo}
+        onNavigate={agenda.navigateTo}
       >
         <AgendaDayPage
-          day={selectedDay}
-          onBackToAgenda={() => navigateTo("agenda")}
-          onViewDetails={handleViewDetails}
-          onGoToCheckIn={handleGoToCheckIn}
+          day={agenda.selectedDay}
+          onBackToAgenda={agenda.handleBackToAgenda}
+          onViewDetails={agenda.handleViewDetails}
+          onGoToCheckIn={agenda.handleGoToCheckIn}
         />
       </AppShell>
     );
   }
 
-  if (currentPage === "agenda") {
+  if (agenda.currentPage === "agenda") {
     return (
       <AppShell
-        activePage={currentPage}
+        activePage={agenda.currentPage}
         navItems={shellNavItems}
         organization={shellOrganization}
         profile={shellProfile}
-        onNavigate={navigateTo}
+        onNavigate={agenda.navigateTo}
       >
         <AgendaMonthPage
-          onDayClick={handleDayClick}
-          onViewDetails={handleViewDetails}
-          initialView={calendarView}
-          onViewModeChange={setCalendarView}
+          onDayClick={agenda.handleDayClick}
+          onViewDetails={agenda.handleViewDetails}
+          initialView={agenda.calendarView}
+          onViewModeChange={agenda.setCalendarView}
         />
       </AppShell>
     );
   }
 
-  if (currentPage === "contexto") {
-    return <ContextoMissao onStart={() => navigateTo("agenda")} />;
+  if (agenda.currentPage === "contexto") {
+    return <ContextoMissao onStart={() => agenda.navigateTo("agenda")} />;
   }
 
   return (
@@ -243,7 +179,7 @@ export default function App() {
 
             {/* Botão */}
             <button
-              onClick={() => navigateTo("contexto")}
+              onClick={() => agenda.navigateTo("contexto")}
               className="relative w-full rounded-[10px] border-2 border-solid border-[rgba(255,255,255,0.12)] bg-[#175cd3] shadow-[inset_0px_0px_0px_1px_rgba(10,13,18,0.18),inset_0px_-2px_0px_0px_rgba(10,13,18,0.05)] transition-all duration-200 hover:scale-[1.02] hover:bg-[#1a66e8] hover:shadow-[inset_0px_0px_0px_1px_rgba(10,13,18,0.18),inset_0px_-2px_0px_0px_rgba(10,13,18,0.05),0px_4px_12px_0px_rgba(23,92,211,0.4)] active:scale-[0.98]"
             >
               <div className="flex items-center justify-center gap-2 px-6 py-4">

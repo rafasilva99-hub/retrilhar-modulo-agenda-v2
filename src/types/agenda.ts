@@ -77,11 +77,12 @@ export type ReservationStatus =
   | "NoShow"
   | "Expired";
 
-export type PaymentStatus = "Pending" | "Paid" | "Refunded" | "Failed";
+export type PaymentStatus = "Pending" | "Partial" | "Paid" | "Refunded" | "Failed";
 
 export type InsuranceStatus =
   | "NotRequired"
   | "Required" // activity requires it but customer hasn't contracted yet
+  | "Pending" // waiting for provider response
   | "Contracted" // insurance confirmed and active
   | "Declined"; // customer explicitly declined (not applicable when required)
 

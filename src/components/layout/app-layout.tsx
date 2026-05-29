@@ -31,9 +31,16 @@ export function AppLayout({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const shellOffset = collapsed ? "112px" : "248px";
+  // Content offset includes the TopBar's inner pl-[0.75em] (12px) so content aligns with the search bar
+  const contentOffset = collapsed ? "124px" : "260px";
+
   return (
-    <div className="bg-muted/30 text-foreground min-h-screen">
-      <div className="prototype-shell-surface h-screen min-h-screen overflow-hidden">
+    <div className="bg-muted/30 text-foreground h-screen overflow-hidden">
+      <div
+        className="prototype-shell-surface h-full overflow-y-auto overflow-x-hidden"
+        style={{ "--shell-offset": contentOffset } as React.CSSProperties}
+      >
         {children}
       </div>
       <AppSidebar

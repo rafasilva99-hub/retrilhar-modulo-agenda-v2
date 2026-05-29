@@ -450,7 +450,7 @@ function Container22() {
 
 function Container() {
   return (
-    <div className="absolute content-stretch flex gap-[16px] items-start left-[248px] right-[24px] top-[192px]" data-name="Container">
+    <div className="absolute content-stretch flex gap-[16px] items-start left-[var(--shell-offset,248px)] right-[24px] top-[192px]" data-name="Container">
       <Container1 />
       <Container8 />
       <Container15 />
@@ -2598,7 +2598,7 @@ function CalendarCard({
   }
 
   return (
-    <div className="absolute bg-white left-[248px] right-[24px] rounded-[24px] top-[363px]" data-name="Container">
+    <div className="absolute bg-white left-[var(--shell-offset,248px)] right-[24px] rounded-[24px] top-[363px]" data-name="Container">
       <div className="content-stretch flex flex-col items-start overflow-clip py-px relative rounded-[inherit] size-full">
         <CalendarHeader navLabel={navLabel} onPrev={onPrev} onNext={onNext} view={view} onViewChange={onViewChange} />
         <div className="bg-white relative shrink-0 w-full" data-name="CalendarBody" style={{ minHeight: view === "dia" ? "520px" : undefined }}>
@@ -3215,7 +3215,7 @@ function Frame24() {
 
 function Frame25({ onDayClick }: { onDayClick?: (day: number) => void }) {
   return (
-    <div className="absolute content-stretch flex gap-[24px] items-end left-[248px] right-[24px] top-[112px]">
+    <div className="absolute content-stretch flex gap-[24px] items-end left-[var(--shell-offset,248px)] right-[24px] top-[112px]">
       <DashboardContent />
       <Frame24 />
     </div>

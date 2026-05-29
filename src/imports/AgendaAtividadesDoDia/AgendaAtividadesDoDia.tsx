@@ -2015,7 +2015,7 @@ function Container13() {
 
 function Frame40({ onViewDetails }: { onViewDetails?: () => void }) {
   return (
-    <div className="absolute content-stretch flex flex-col gap-[20px] h-[812px] items-start left-[248px] right-[24px] top-[242px]">
+    <div className="absolute content-stretch flex flex-col gap-[20px] h-[812px] items-start left-[var(--shell-offset,248px)] right-[24px] top-[242px]">
       <Frame37 onViewDetails={onViewDetails} />
       <Container3 />
       <Container4 />
@@ -2189,7 +2189,7 @@ function Frame31() {
 
 function Frame57() {
   return (
-    <div className="absolute content-stretch flex flex-col gap-[20px] items-start left-[248px] right-[24px] top-[148px]">
+    <div className="absolute content-stretch flex flex-col gap-[20px] items-start left-[var(--shell-offset,248px)] right-[24px] top-[148px]">
       <Frame31 />
       <div className="h-0 relative shrink-0 w-full">
         <div className="absolute inset-[-1px_0_0_0]">
@@ -2950,7 +2950,7 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
     <div className="bg-[#f8fafc] relative size-full overflow-auto" data-name="AGENDA - ATIVIDADES DO DIA">
       <TopBar />
       {/* Header */}
-      <div className="absolute content-stretch flex gap-[24px] items-end justify-between left-[248px] right-[24px] top-[148px]">
+      <div className="absolute content-stretch flex gap-[24px] items-end justify-between left-[var(--shell-offset,248px)] right-[24px] top-[148px]">
         <div className="content-stretch flex gap-[16px] items-center relative shrink-0">
           {/* Date icon */}
           <div className="bg-white relative rounded-[10px] shrink-0 border border-[#E2E8F0] border-solid overflow-clip">
@@ -2993,9 +2993,9 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
         </div>
       </div>
       {/* Divider */}
-      <div className="absolute bg-[#e9eaeb] h-px left-[248px] right-[24px] top-[234px]" />
+      <div className="absolute bg-[#e9eaeb] h-px left-[var(--shell-offset,248px)] right-[24px] top-[234px]" />
       {/* Activity cards */}
-      <div className="absolute left-[248px] right-[24px] top-[258px]" style={{ paddingBottom: "40px" }}>
+      <div className="absolute left-[var(--shell-offset,248px)] right-[24px] top-[258px]" style={{ paddingBottom: "40px" }}>
         {dayActivities.length === 0 ? (
           <DiaEmptyState onBack={onBackToAgenda} />
         ) : (
@@ -3012,7 +3012,7 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
         )}
       </div>
       {/* Breadcrumb */}
-      <div className="absolute content-stretch flex gap-[10px] items-center left-[248px] top-[112px]" data-name="Breadcrumb">
+      <div className="absolute content-stretch flex gap-[10px] items-center left-[var(--shell-offset,248px)] top-[112px]" data-name="Breadcrumb">
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#71717a] text-[14px] whitespace-nowrap">Início</p>
         <DiaChevron />
         <button onClick={onBackToAgenda} className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#71717a] text-[14px] whitespace-nowrap cursor-pointer hover:text-[#09090b] transition-colors">Agenda</button>

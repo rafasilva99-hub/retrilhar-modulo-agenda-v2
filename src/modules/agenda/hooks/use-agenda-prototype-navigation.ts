@@ -61,7 +61,7 @@ export function useAgendaPrototypeNavigation() {
     (activityId?: string) => {
       if (activityId) setSelectedActivityId(activityId);
       setReturnTo(currentPage === "agenda" ? "agenda" : "agendaDia");
-      setAtualizacoesInitialTab("visao-geral");
+      setAtualizacoesInitialTab("participantes");
       navigateTo("atualizacoes");
     },
     [currentPage, navigateTo]

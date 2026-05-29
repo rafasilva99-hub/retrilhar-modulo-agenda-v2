@@ -170,3 +170,8 @@ html.dark {
 .prototype-shell-surface > [data-name^="AGENDA"] [data-name="TopBar"] {
   display: none !important;
 }
+
+/* Smooth sidebar transition for Figma-exported content */
+.prototype-shell-surface [data-name^="AGENDA"] > [class*="left-[var(--shell-offset"] {
+  transition: left 200ms ease;
+}

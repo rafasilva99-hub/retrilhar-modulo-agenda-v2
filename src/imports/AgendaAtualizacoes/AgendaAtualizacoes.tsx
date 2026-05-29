@@ -601,7 +601,7 @@ function Frame23() {
   if (isActive) {
     return (
       <div className="absolute content-stretch flex flex-col gap-[20px] h-[843px] items-start left-[248px] top-[157px] w-[743px]">
-        <div className="bg-white flex-[1_0_0] min-h-[80px] relative rounded-[12px] w-full" data-name="Text field area">
+        <div className="bg-white flex-[1_0_0] min-h-[52px] relative rounded-[12px] w-full" data-name="Text field area">
           <div aria-hidden="true" className="absolute border border-[#e4e4e7] border-solid inset-0 pointer-events-none rounded-[12px]" />
           <div className="content-stretch flex gap-[12px] items-start min-h-[inherit] px-[16px] py-[12px] relative size-full">
             <textarea
@@ -683,7 +683,7 @@ function Frame23() {
               <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[6px]" />
               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#414651] text-[16px] whitespace-nowrap">Cancelar</p>
             </button>
-            <button className="bg-[#edf0ff] content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[6px] shrink-0 hover:bg-[#dbe4ff] transition-colors" data-name="button">
+            <button className="bg-[#f0f5ff] content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[6px] shrink-0 hover:bg-[#dbe4ff] transition-colors" data-name="button">
               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#0b5ed7] text-[16px] whitespace-nowrap">Salvar registro</p>
             </button>
           </div>
@@ -696,7 +696,7 @@ function Frame23() {
   return (
     <div className="absolute content-stretch flex flex-col gap-[20px] h-[843px] items-start left-[248px] top-[157px] w-[743px]">
       <div
-        className="bg-white h-[96px] min-h-[80px] relative rounded-[12px] shrink-0 w-full"
+        className="bg-white h-[96px] min-h-[52px] relative rounded-[12px] shrink-0 w-full"
         data-name="Text field area"
       >
         <div aria-hidden="true" className="absolute border border-[#e4e4e7] border-solid inset-0 pointer-events-none rounded-[12px]" />
@@ -844,7 +844,7 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
       {/* 1. Participantes (first position) */}
       <button
         onClick={() => setActiveTab("participantes")}
-        className={`${activeTab === "participantes" ? "bg-[#edf0ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
+        className={`${activeTab === "participantes" ? "bg-[#f0f5ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
         data-name="Menu action component"
       >
         <div className="flex flex-row items-center size-full">
@@ -860,7 +860,7 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
       {/* 2. Resumo (second position, formerly "Visão Geral") */}
       <button
         onClick={() => setActiveTab("visao-geral")}
-        className={`${activeTab === "visao-geral" ? "bg-[#edf0ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
+        className={`${activeTab === "visao-geral" ? "bg-[#f0f5ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
         data-name="Menu action component"
       >
         <div className="flex flex-row items-center size-full">
@@ -896,7 +896,7 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
       {/* 3. Atualizações (third position) */}
       <button
         onClick={() => setActiveTab("atualizacoes")}
-        className={`${activeTab === "atualizacoes" ? "bg-[#edf0ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
+        className={`${activeTab === "atualizacoes" ? "bg-[#f0f5ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
         data-name="Component 4"
       >
         <div className="flex flex-row items-center size-full">
@@ -1224,7 +1224,7 @@ function ParticipantDrawer({ participant, reservation, onClose }: {
         {/* Participant header card */}
         <div className="bg-[#fafafa] border border-[#f5f5f5] border-solid rounded-[16px]">
           <div className="flex gap-[16px] items-center p-[20px]">
-            <div className="bg-[#edf0ff] border border-[#d5dcfe] border-solid flex items-center justify-center rounded-[9999px] shrink-0 size-[48px]">
+            <div className="bg-[#f0f5ff] border border-[#d5dcfe] border-solid flex items-center justify-center rounded-[9999px] shrink-0 size-[48px]">
               <p className="font-['Inter:Medium',sans-serif] font-medium leading-[normal] not-italic text-[18px] text-[#0b5ed7]">{initials}</p>
             </div>
             <div className="flex flex-col gap-[4px]">
@@ -1292,6 +1292,10 @@ function ParticipantDrawer({ participant, reservation, onClose }: {
               <div className="flex gap-[10px] items-start">
                 <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="5" r="3" stroke="#535862" strokeWidth="1.2"/><path d="M3 16c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 <DrawerField label="Tipo(s) de Tarifa(s)" value={`${participant.tariffType} - 1x`} />
+              </div>
+              <div className="flex gap-[10px] items-start">
+                <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#535862" strokeWidth="1.2"/><path d="M7 6h4M7 9h4M7 12h2" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <DrawerField label="Idade" value={`${participant.age} anos`} />
               </div>
               <div className="flex gap-[10px] items-start">
                 <svg className="mt-[2px] shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M9 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="#535862" strokeWidth="1.2"/></svg>
@@ -1471,51 +1475,92 @@ Object.assign(TOOLTIP_CONTENT, {
   "res-expired":    { title: "Reserva expirada", subtitle: "Expirada por inatividade" },
 });
 
+function LabeledBadge({ icon, label, color, tooltipTitle, tooltipSub, onClick }: { icon: React.ReactNode; label: string; color: string; tooltipTitle?: string; tooltipSub?: string; onClick?: () => void }) {
+  const [show, setShow] = useState(false);
+  const Tag = onClick ? "button" : "div";
+  return (
+    <div className="relative" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      <Tag
+        {...(onClick ? { onClick: (e: React.MouseEvent) => { e.stopPropagation(); onClick(); } } : {})}
+        className={`flex gap-[4px] items-center shrink-0 border border-[#e2e5ea] rounded-[4px] px-[5px] py-[2px] transition-opacity ${onClick ? "cursor-pointer hover:opacity-70" : ""}`}
+      >
+        <div style={{ color }} className="shrink-0">{icon}</div>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[10px] text-[#a1a1aa] whitespace-nowrap">{label}</p>
+      </Tag>
+      {show && tooltipTitle && (
+        <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[10px] py-[6px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[220px] z-50 pointer-events-none text-center">
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-white whitespace-nowrap">{tooltipTitle}</p>
+          {tooltipSub && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[3px] not-italic text-[11px] text-[#a4a7ae]">{tooltipSub}</p>}
+          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ParticipantBadgesRow({ participant: p, insuranceStatus, requiresInsurance, reservationStatus, paymentStatus, onPaymentClick, isBuyer }: {
   participant: Participant; insuranceStatus: string; requiresInsurance: boolean; reservationStatus: string;
   paymentStatus: string; onPaymentClick: () => void; isBuyer: boolean;
 }) {
-  const badges: { key: string; icon: React.ReactNode; stroke: string; tooltipKey: string }[] = [];
-
-  // ── Priority order: Pagamento > Reserva > Seguro > Itens adicionais > (condicionais) ──
-
-  // 1. Status da reserva (always shown)
-  const resStat = RESERVATION_STATUS_ICON[reservationStatus] || RESERVATION_STATUS_ICON.Confirmed;
-  badges.push({ key: "res-status", stroke: resStat.stroke, tooltipKey: resStat.tooltipKey, icon: resStat.icon });
-
-  // 2. Seguro — removido dos badges individuais, agora exibido no subtítulo do header da atividade
-
-  // 3. Itens adicionais (only buyer line) — Figma: file-add
-  if (isBuyer) badges.push({ key: "additional", stroke: "#0b5ed7", tooltipKey: "additional-items",
-    icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M2.6665 7.99996L2.6665 9.69606C2.6665 11.8594 2.6665 12.9411 3.25722 13.6737C3.37656 13.8218 3.51138 13.9566 3.65939 14.0759C4.39204 14.6666 5.47372 14.6666 7.63707 14.6666C8.10742 14.6666 8.3426 14.6666 8.55796 14.5906C8.60275 14.5748 8.64666 14.5566 8.68951 14.5361C8.89554 14.4376 9.06183 14.2713 9.39443 13.9387L12.5521 10.781C12.9375 10.3956 13.1302 10.2029 13.2317 9.95792C13.3332 9.71289 13.3332 9.44039 13.3332 8.89539V6.66663C13.3332 4.15247 13.3332 2.89539 12.5521 2.11434C11.846 1.40824 10.7508 1.34049 8.68951 1.33398M8.6665 14.3333V14C8.6665 12.1143 8.6665 11.1715 9.25229 10.5857C9.83808 9.99996 10.7809 9.99996 12.6665 9.99996H12.9998" stroke="#0B5ED7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.99984 4.00016L2.6665 4.00016M5.33317 1.3335L5.33317 6.66683" stroke="#0B5ED7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
-
-  // ── Conditional badges (only appear when applicable) ──
-
-  // 4. Alerta de saúde — Figma: stethoscope
-  if (p.hasHealthIssue) {
-    badges.push({ key: "health", stroke: "#6941C6", tooltipKey: "health-alert",
-      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M8.66759 1.3335C9.40356 1.3335 10.0002 1.95434 10.0002 2.72018C10.0002 3.35293 10.0241 3.91599 9.5128 4.38147C7.83911 5.90504 7.00226 6.66683 6.00018 6.66683C4.99809 6.66683 4.16125 5.90504 2.48755 4.38147C1.97617 3.91596 2.00018 3.35283 2.00018 2.72004C2.00018 1.95427 2.59673 1.3335 3.33262 1.3335" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 9.3335L6 11.6667C6 13.3236 7.34325 14.6669 9.00022 14.6669C10.6572 14.6669 12.0004 13.3236 12.0004 11.6667V10.6668" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.33366 4.6665L8.46551 6.83687C8.23473 7.41382 8.11934 7.7023 7.9261 7.93933C7.73286 8.17636 7.47355 8.3475 6.95492 8.68978L5.98006 9.33317L5.02221 8.68807C4.51513 8.34655 4.26158 8.17579 4.07246 7.94159C3.88334 7.70738 3.76981 7.42356 3.54276 6.85592L2.66699 4.6665" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665C14 9.77107 13.1046 10.6665 12 10.6665C10.8954 10.6665 10 9.77107 10 8.6665C10 7.56193 10.8954 6.6665 12 6.6665C13.1046 6.6665 14 7.56193 14 8.6665Z" stroke="#6941C6" strokeWidth="1.2"/><path d="M12.005 8.6665L11.999 8.6665" stroke="#6941C6" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
-  }
-
-  // 5. Menor de idade — Figma: kid (rosto de criança)
-  if (p.isMinor) {
-    badges.push({ key: "minor", stroke: "#414651", tooltipKey: "minor",
-      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><circle cx="8.00016" cy="8.00016" r="6.66667" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.3335 3.82543C9.3335 3.82543 8.59011 4.15888 8.06793 3.9045C7.43112 3.59428 6.79953 2.29762 8.06109 1.3335" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.33948 6H5.3335M10.6668 6H10.6608" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.3335 10C5.94158 10.8096 6.90972 11.3333 8.00016 11.3333C9.09061 11.3333 10.0587 10.8096 10.6668 10" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
-  }
-
-  // 6. Termo de uso de imagem (conditional) — Figma: file-verified / file-view / file-remove-02
-  if (p.hasImageAuth) {
-    badges.push({ key: "image", stroke: "#079455", tooltipKey: "image-authorized",
-      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M8 13.3332C8 13.3332 8.66667 13.3332 9.33333 14.6665C9.33333 14.6665 11.451 11.3332 13.3333 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.3332 8.67002V7.10724C13.3332 6.562 13.3332 6.28938 13.2317 6.04425C13.1302 5.79911 12.9375 5.60634 12.5521 5.2208L9.39443 2.06173C9.06184 1.729 8.89554 1.56263 8.68951 1.46405C8.64666 1.44355 8.60275 1.42535 8.55796 1.40953C8.3426 1.3335 8.10742 1.3335 7.63707 1.3335C5.47372 1.3335 4.39204 1.3335 3.65939 1.92447C3.51138 2.04386 3.37656 2.17874 3.25722 2.32681C2.6665 3.05978 2.6665 4.14193 2.6665 6.30622V9.33697C2.6665 11.8522 2.6665 13.1098 3.44755 13.8912C4.07628 14.5202 5.01346 14.6429 6.6665 14.6668M8.6665 1.66697V2.00045C8.6665 3.88689 8.6665 4.83011 9.25229 5.41615C9.83808 6.00219 10.7809 6.00219 12.6665 6.00219H12.9998" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
-  } else {
-    badges.push({ key: "image", stroke: "#dc6803", tooltipKey: "image-pending",
-      icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M12.6667 8.67031V7.10724C12.6667 6.562 12.6667 6.28938 12.5652 6.04425C12.4637 5.79911 12.271 5.60634 11.8856 5.2208L8.72792 2.06173C8.39533 1.729 8.22904 1.56263 8.02301 1.46405C7.98016 1.44355 7.93625 1.42535 7.89146 1.40953C7.67609 1.3335 7.44092 1.3335 6.97056 1.3335C4.80721 1.3335 3.72554 1.3335 2.99289 1.92447C2.84488 2.04386 2.71005 2.17874 2.59072 2.32681C2 3.05978 2 4.14193 2 6.30622V9.33697C2 11.8522 2 13.1098 2.78105 13.8912C3.40977 14.5202 4.34696 14.6429 6 14.6668M8 1.66697V2.00045C8 3.88689 8 4.83011 8.58579 5.41615C9.17157 6.00219 10.1144 6.00219 12 6.00219H12.3333" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.6668 14.6665C12.5078 14.6665 14.0002 12.6665 14.0002 12.6665C14.0002 12.6665 12.5078 10.6665 10.6668 10.6665C8.8259 10.6665 7.3335 12.6665 7.3335 12.6665C7.3335 12.6665 8.8259 14.6665 10.6668 14.6665Z" stroke="#DC6803" strokeWidth="1.2" strokeLinejoin="round"/><path d="M10.6616 12.6665H10.6676" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> });
-  }
+  // Reservation status config
+  const resConfig: Record<string, { label: string; color: string; bg: string }> = {
+    Confirmed: { label: "Confirmada", color: "#079455", bg: "#ecfdf3" },
+    AwaitingPayment: { label: "Pendente", color: "#dc6803", bg: "#fffaeb" },
+    Cancelled: { label: "Cancelada", color: "#d92d20", bg: "#fef3f2" },
+    Draft: { label: "Rascunho", color: "#535862", bg: "#f5f5f5" },
+    CheckedIn: { label: "Confirmada", color: "#079455", bg: "#ecfdf3" },
+    Performed: { label: "Confirmada", color: "#079455", bg: "#ecfdf3" },
+    NoShow: { label: "Ausente", color: "#d92d20", bg: "#fef3f2" },
+    Expired: { label: "Expirada", color: "#535862", bg: "#f5f5f5" },
+  };
+  const res = resConfig[reservationStatus] || resConfig.Confirmed;
 
   return (
-    <div className="flex gap-[6px] items-center shrink-0" style={{ padding: "14px 16px" }}>
-      {isBuyer && <PaymentBadge isPaid={paymentStatus === "Paid"} onClick={onPaymentClick} />}
-      {badges.map((b) => <AttrBadge key={b.key} icon={b.icon} stroke={b.stroke} tooltipKey={b.tooltipKey} />)}
+    <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "8px 12px" }}>
+      {/* Pagamento — only buyer */}
+      {isBuyer && (
+        <LabeledBadge
+          label={paymentStatus === "Paid" ? "Pago" : "Pendente"}
+          color={paymentStatus === "Paid" ? "#079455" : "#dc6803"}
+          tooltipTitle={paymentStatus === "Paid" ? "Pagamento confirmado" : "Aguardando pagamento"}
+          onClick={onPaymentClick}
+          icon={<svg className="size-[12px]" fill="none" viewBox="0 0 48 48"><path d="M36.8333 16.2963C36.8333 11.7144 31.0877 8 24 8C16.9123 8 11.1667 11.7144 11.1667 16.2963C11.1667 20.8782 14.6667 23.4074 24 23.4074C33.3333 23.4074 38 25.7778 38 31.7037C38 37.6296 31.732 40 24 40C16.268 40 10 36.2856 10 31.7037" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/><path d="M24 4V44" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+        />
+      )}
+      {/* Reserva */}
+      <LabeledBadge
+        label={res.label}
+        color={res.color}
+        tooltipTitle={`Reserva ${res.label.toLowerCase()}`}
+        icon={<svg className="size-[12px]" fill="none" viewBox="0 0 16 16"><path d="M10.667 1.333V4M5.333 1.333V4M2 6.667h12M14 8c0-2.514 0-3.771-.781-4.552C12.438 2.667 11.18 2.667 8.667 2.667H7.333c-2.514 0-3.771 0-4.552.781C2 4.229 2 5.486 2 8v1.333c0 2.514 0 3.771.781 4.552.781.781 2.038.781 4.552.781" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+      />
+      {/* Adicionais — only buyer */}
+      {isBuyer && (
+        <LabeledBadge
+          label="Adicionais"
+          color="#a1a1aa"
+          tooltipTitle="Itens adicionais"
+          tooltipSub="Pedidos extras vinculados"
+          icon={<svg className="size-[12px]" viewBox="0 0 16 16" fill="none"><path d="M2.667 8v1.696c0 2.163 0 3.245.59 3.978.12.148.255.283.403.402.733.591 1.814.591 3.977.591.47 0 .706 0 .921-.076l.132-.054c.206-.099.372-.265.705-.598l3.157-3.157c.386-.385.578-.578.68-.823.101-.245.101-.518.101-1.063V6.667c0-2.514 0-3.771-.781-4.553C11.846 1.408 10.751 1.34 8.69 1.334M8.667 14.333V14c0-1.886 0-2.829.586-3.414C9.838 10 10.78 10 12.667 10H13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 4H2.667M5.333 1.333v5.334" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+        />
+      )}
+      {/* Saúde */}
+      {p.hasHealthIssue && (
+        <LabeledBadge
+          label="Saúde"
+          color="#6941C6"
+          tooltipTitle="Alerta de saúde"
+          tooltipSub="Condição informada pelo participante"
+          icon={<svg className="size-[12px]" viewBox="0 0 16 16" fill="none"><path d="M8.668 1.333c.736 0 1.332.621 1.332 1.387 0 .633.024 1.196-.487 1.661-1.674 1.524-2.511 2.286-3.513 2.286s-1.837-.762-3.511-2.286c-.511-.465-.487-1.028-.487-1.661 0-.766.597-1.387 1.333-1.387" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 9.333v2.334c0 1.656 1.343 3 3 3 1.657 0 3-1.344 3-3v-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+        />
+      )}
+      {/* Imagem */}
+      <LabeledBadge
+        label={p.hasImageAuth ? "Imagem" : "Imagem"}
+        color={p.hasImageAuth ? "#079455" : "#dc6803"}
+        tooltipTitle={p.hasImageAuth ? "Uso de imagem autorizado" : "Termo de imagem pendente"}
+        icon={<svg className="size-[12px]" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><circle cx="6" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M9 13l2.5-3.5L14 13" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+      />
     </div>
   );
 }
@@ -2290,7 +2335,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   ];
 
   return (
-    <div className="absolute left-[248px] right-[24px] top-[157px]" style={{ paddingBottom: "40px" }}>
+    <div className="w-full" style={{ paddingBottom: "40px" }}>
       {/* ── Sticky TopBar: search + sort + filters (+ bulk actions when selected) ── */}
       {searchBarHidden && (
         <div
@@ -2442,55 +2487,70 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
         </div>
       )}
 
-      {/* Header */}
-      <div className="content-stretch flex items-start justify-between relative w-full">
-        <div className="content-stretch flex flex-col gap-[8px] items-start relative shrink-0">
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[24px] text-[#0f172b]">{activity.name} ({totalCount}/{activity.capacity})</p>
-          {/* Subtitle — Figma: [seguro] · [data] · [horário] */}
-          <div className="content-stretch flex items-center relative shrink-0">
-            {/* Insurance indicator — Figma: Insurance component (security-warning / shield-01) */}
-            <div className="flex gap-[6px] items-center shrink-0">
-              {activity.requiresInsurance ? (
-                <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M8 7.33398V4.66732M12.4727 2.33065C11.2113 1.70332 9.66667 1.33398 8 1.33398C6.33333 1.33398 4.78933 1.70332 3.52733 2.33065C2.90867 2.63865 2.59933 2.79265 2.3 3.27665C2.00067 3.76065 2 4.22865 2 5.16598V7.49265C2 11.2813 5.028 13.3873 6.782 14.29C7.27133 14.5413 7.51533 14.6673 8 14.6673C8.48467 14.6673 8.72867 14.5413 9.218 14.29C10.9713 13.3873 14 11.2807 14 7.49198V5.16598C14 4.22865 14 3.76065 13.7 3.27665C13.4 2.79265 13.0913 2.63865 12.4727 2.33065Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.08333 9.83268H7.99999M8.16666 9.83268C8.16666 9.87689 8.1491 9.91928 8.11785 9.95053C8.08659 9.98179 8.0442 9.99935 7.99999 9.99935C7.95579 9.99935 7.9134 9.98179 7.88214 9.95053C7.85089 9.91928 7.83333 9.87689 7.83333 9.83268C7.83333 9.78848 7.85089 9.74609 7.88214 9.71483C7.9134 9.68357 7.95579 9.66602 7.99999 9.66602C8.0442 9.66602 8.08659 9.68357 8.11785 9.71483C8.1491 9.74609 8.16666 9.78848 8.16666 9.83268Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              ) : (
-                <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M12.4726 2.33088C11.211 1.70319 9.66727 1.33398 8 1.33398C6.33273 1.33398 4.789 1.7032 3.52744 2.33088C2.90879 2.63869 2.59946 2.79259 2.29973 3.27651C2 3.76042 2 4.22897 2 5.16607L2 7.49202C2 11.281 5.02824 13.3876 6.78203 14.2899C7.27112 14.5415 7.51567 14.6673 7.99999 14.6673C8.48431 14.6673 8.72886 14.5415 9.21796 14.2899C10.9717 13.3876 14 11.281 14 7.49202L14 5.16608C14 4.22897 14 3.76042 13.7003 3.27651C13.4005 2.79259 13.0912 2.63869 12.4726 2.33088Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              )}
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{activity.requiresInsurance ? "Seguro obrigatório" : "Seguro opcional"}</p>
+      {/* Header — Activity banner */}
+      <div className="relative w-full overflow-hidden border-b border-[#e9eaeb]" style={{ background: "linear-gradient(135deg, #edf0ff 0%, #f0f5ff 30%, #f8fafc 60%, #ecfdf3 100%)" }}>
+        {/* Decorative shapes */}
+        <div className="absolute right-[80px] top-[-20px] size-[120px] rounded-full opacity-[0.06] pointer-events-none" style={{ background: "radial-gradient(circle, #0b5ed7 0%, transparent 70%)" }} />
+        <div className="absolute right-[20px] bottom-[-30px] size-[80px] rounded-full opacity-[0.05] pointer-events-none" style={{ background: "radial-gradient(circle, #079455 0%, transparent 70%)" }} />
+        {/* Decorative emoji */}
+        <div className="absolute right-[32px] top-[50%] -translate-y-[50%] text-[56px] opacity-[0.1] select-none pointer-events-none">🌙</div>
+        <div className="flex items-center justify-between relative z-[1]" style={{ padding: "20px 32px" }}>
+          <div className="flex items-center gap-[16px]">
+            {/* Activity icon */}
+            <div className="flex items-center justify-center shrink-0 size-[44px] rounded-[12px] bg-white/80 border border-[#e9eaeb]/60 shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)]">
+              <svg className="size-[22px]" fill="none" viewBox="0 0 24 24">
+                <path d="M12 2C8 2 4 6 4 10c0 6 8 12 8 12s8-6 8-12c0-4-4-8-8-8z" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 10l2 2 4-4" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-            {/* Separator · */}
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] mx-[4px]">·</p>
-            {/* Date — Figma: calendar-04 */}
-            <div className="flex gap-[6px] items-center shrink-0">
-              <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6667 1.33398V4.00065M5.33334 1.33398V4.00065" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.66667 2.66602H7.33333C4.81918 2.66602 3.5621 2.66602 2.78105 3.44706C2 4.22811 2 5.48519 2 7.99935V9.33268C2 11.8468 2 13.1039 2.78105 13.885C3.5621 14.666 4.81918 14.666 7.33333 14.666H8.66667C11.1808 14.666 12.4379 14.666 13.219 13.885C14 13.1039 14 11.8468 14 9.33268V7.99935C14 5.48519 14 4.22811 13.219 3.44706C12.4379 2.66602 11.1808 2.66602 8.66667 2.66602Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66602H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{activity.date.split("-").reverse().join("/")}</p>
-            </div>
-            {/* Separator · */}
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] mx-[4px]">·</p>
-            {/* Time — Figma: time-02 */}
-            <div className="flex gap-[6px] items-center shrink-0">
-              <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M7.99998 14.6673C11.6819 14.6673 14.6666 11.6825 14.6666 8.00065C14.6666 4.31875 11.6819 1.33398 7.99998 1.33398C4.31808 1.33398 1.33331 4.31875 1.33331 8.00065C1.33331 11.6825 4.31808 14.6673 7.99998 14.6673Z" stroke="#535862" strokeWidth="1.2"/><path d="M8.00519 7.00545C7.4529 7.00545 7.00519 7.45317 7.00519 8.00545C7.00519 8.55774 7.4529 9.00545 8.00519 9.00545C8.55747 9.00545 9.00519 8.55774 9.00519 8.00545C9.00519 7.45317 8.55747 7.00545 8.00519 7.00545ZM8.00519 7.00545V4.66602M10.0098 10.0132L8.71071 8.71414" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{activity.startTime} - {activity.endTime}</p>
+            <div className="flex flex-col gap-[4px]">
+              {/* Row 1: Name + capacity */}
+              <div className="flex items-center gap-[10px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#0f172b]">{activity.name}</p>
+                <div className="flex items-center gap-[4px] bg-white/70 border border-[#e9eaeb]/60 rounded-[6px] px-[8px] py-[2px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-[#0b5ed7]">{totalCount}</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#c0c5ce]">/</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#a1a1aa]">{activity.capacity}</p>
+                </div>
+              </div>
+              {/* Row 2: Metadata */}
+              <div className="flex items-center gap-[12px]">
+                <div className="flex items-center gap-[5px]">
+                  <svg className="shrink-0 size-[13px]" fill="none" viewBox="0 0 16 16"><path d="M10.667 1.333V4M5.333 1.333V4M2 6.667h12M14 8c0-2.514 0-3.771-.781-4.552C12.438 2.667 11.18 2.667 8.667 2.667H7.333c-2.514 0-3.771 0-4.552.781C2 4.229 2 5.486 2 8v1.333c0 2.514 0 3.771.781 4.552.781.781 2.038.781 4.552.781" stroke="#a1a1aa" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#717680]">{activity.date.split("-").reverse().join("/")}</p>
+                </div>
+                <div className="flex items-center gap-[5px]">
+                  <svg className="shrink-0 size-[13px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" stroke="#a1a1aa" strokeWidth="1.2"/><path d="M8 5v3l2 2" stroke="#a1a1aa" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#717680]">{activity.startTime} - {activity.endTime}</p>
+                </div>
+                {activity.requiresInsurance && (
+                  <div className="flex items-center gap-[5px]">
+                    <svg className="shrink-0 size-[13px]" viewBox="0 0 16 16" fill="none"><path d="M12.473 2.331C11.211 1.703 9.667 1.334 8 1.334c-1.667 0-3.211.37-4.473.997-.618.308-.928.462-1.228.946C2 3.76 2 4.229 2 5.166v2.326c0 3.789 3.028 5.895 4.782 6.798.489.251.734.377 1.218.377s.729-.126 1.218-.377C10.972 13.387 14 11.281 14 7.492V5.166c0-.937 0-1.406-.3-1.89-.3-.483-.609-.637-1.227-.945Z" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#079455]">Seguro obrigatório</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        {/* Header buttons (visual only) */}
-        <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
-          <div className="bg-white relative rounded-[8px] shrink-0">
-            <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
-            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Listas e Manifestos</p>
+          {/* Buttons — untouched */}
+          <div className="flex gap-[12px] items-center shrink-0">
+            <div className="bg-white relative rounded-[8px] shrink-0">
+              <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
+              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Listas e Manifestos</p>
+              </div>
             </div>
-          </div>
-          <div className="relative rounded-[8px] shrink-0" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
-            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Concluir atividade</p>
+            <div className="relative rounded-[8px] shrink-0" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
+              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Concluir atividade</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search bar + Sort + Filters */}
-      <div ref={searchBarRef} className="content-stretch flex gap-[12px] items-center mt-[24px] relative w-full">
+      <div ref={searchBarRef} className="content-stretch flex gap-[12px] items-center mt-[24px] relative w-full" style={{ padding: "0 32px" }}>
         <div className="bg-white flex-1 min-w-0 relative rounded-[10px]">
           <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[10px]" />
           <div className="content-stretch flex gap-[8px] items-center px-[14px] py-[10px] relative size-full">
@@ -2543,7 +2603,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Filter tabs OR Bulk actions bar */}
-      <div ref={bulkBarRef} className="mt-[16px] relative w-full bg-white rounded-[12px] h-[40px] flex items-center" style={{ padding: "0 8px 0 16px" }}>
+      <div ref={bulkBarRef} className="mt-[16px] relative w-full bg-white rounded-[12px] h-[40px] flex items-center" style={{ padding: "0 8px 0 16px", margin: "16px 32px 0 32px", width: "calc(100% - 64px)" }}>
         <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
         {hasSelection ? (
           /* ── Bulk actions bar ── */
@@ -2649,7 +2709,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               <button
                 key={key}
                 onClick={() => setActiveFilter(key)}
-                className={`cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors ${activeFilter === key ? "bg-[#edf0ff]" : "hover:bg-[#f8fafc]"}`}
+                className={`cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] relative rounded-[8px] shrink-0 transition-colors ${activeFilter === key ? "bg-[#f0f5ff]" : "hover:bg-[#f8fafc]"}`}
               >
                 <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${activeFilter === key ? "text-[#0b5ed7]" : "text-[#535862]"}`}>{label}</p>
                 <div className={`rounded-[6px] shrink-0 ${activeFilter === key ? "bg-[#d5dcfe]" : "bg-[#f1f5f9]"}`}>
@@ -2664,7 +2724,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Reservation list — Figma-faithful layout */}
-      <div className="content-stretch flex flex-col items-start mt-[20px] relative w-full" style={{ minHeight: "calc(100vh - 320px)" }}>
+      <div className="content-stretch flex flex-col items-start mt-[20px] relative w-full" style={{ minHeight: "calc(100vh - 320px)", padding: "0 32px" }}>
         {filteredReservations.map((r, idx) => {
           const isGroup = r.type === "group";
           const expanded = expandedGroups.has(r.id);
@@ -2672,141 +2732,109 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
           const doneCount = r.participants.filter((p) => p.checkInStatus === "Done").length;
 
           return (
-            <div key={r.id} className={`bg-white relative rounded-[12px] shrink-0 w-full mb-[20px] border border-solid shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] transition-shadow duration-150 hover:shadow-[0px_2px_4px_0px_rgba(10,13,18,0.08)] ${r.participants.some((p) => selectedIds.has(p.id)) ? "border-[#0b5ed7]" : "border-[#EEF0F4]"}`}>
+            <div key={r.id} className={`relative rounded-[12px] shrink-0 w-full mb-[20px] border border-solid shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] transition-all duration-150 hover:shadow-[0px_2px_4px_0px_rgba(10,13,18,0.08)] ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff] border-[#c7d4f4]" : "bg-white border-[#EEF0F4]"}`}>
               {/* ── Reservation header ── */}
-              <div className="flex h-[48px] items-center relative w-full" style={{ padding: "4px 16px 4px 16px" }}>
-                <div className="flex gap-[12px] items-center size-full">
-                  {/* Checkbox - reservation level */}
-                  <button onClick={() => toggleSelectReservation(r)} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
-                    {r.participants.every((p) => selectedIds.has(p.id)) ? (
-                      <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
-                        <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      </div>
-                    ) : r.participants.some((p) => selectedIds.has(p.id)) ? (
-                      <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
-                        <div className="bg-white h-[2px] rounded-[1px] w-[10px]" />
-                      </div>
+              <div className={`flex h-[40px] items-center relative w-full rounded-t-[12px] overflow-hidden transition-colors ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff]" : ""}`}>
+                {/* Left bar — blue for groups, green for individual */}
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-tl-[12px] ${isGroup ? "bg-[#0b5ed7]" : "bg-[#079455]"}`} />
+                <div className="flex gap-[8px] items-center size-full" style={{ padding: "0 16px 0 16px" }}>
+                  {/* Type icon */}
+                  <div className="shrink-0 size-[14px]">
+                    {isGroup ? (
+                      <svg className="size-full" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     ) : (
-                      <div className="bg-white border border-[#d5d7da] border-solid rounded-[4px] shrink-0 size-[20px]" />
+                      <svg className="size-full" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="7" r="4" stroke="#a1a1aa" strokeWidth="1.5"/></svg>
                     )}
-                  </button>
-                  {/* Number */}
-                  <div className="flex items-center justify-center shrink-0" style={{ width: "36px", padding: "1px 0" }}>
-                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] text-center">{String(idx + 1).padStart(2, "0")}</p>
                   </div>
-                  {/* Title + badges area */}
-                  <div className="flex flex-1 gap-[16px] items-center min-w-0">
-                    {/* Type text + order ID */}
-                    <div className="flex gap-[4px] items-center shrink-0">
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">
-                        Reserva de {r.buyerName} · {r.participants.length} {r.participants.length === 1 ? "ingresso" : "ingressos"} · ID do pedido:
-                      </p>
-                      <button onClick={() => setPaymentDrawerRes(r)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] underline whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
-                      <div className="relative group">
-                        <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[16px] hover:opacity-70 transition-opacity">
-                          <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
-                        </button>
-                        <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[6px] px-[8px] py-[4px] rounded-[6px] text-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50">
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-white">{copiedId === r.orderId ? "Copiado!" : "Copiar ID"}</p>
-                          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-[#181d27]" />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Status badges — with container per Figma */}
-                    <div className="flex gap-[8px] items-center flex-1 min-w-0">
-                      {r.status === "Cancelled" ? (
-                        <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
-                          <div className="bg-[#d5d7da] rounded-[9999px] size-[6px]" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap">Reserva cancelada</p>
-                        </div>
-                      ) : (
-                        <>
-                          {/* Payment badges moved to ParticipantBadgesRow */}
-                          {isGroup && pendingCount > 0 && (
-                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
-                              <div className="bg-[#fba12c] rounded-[9999px] size-[6px]" />
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#dc6803] whitespace-nowrap">{pendingCount} Check-in&apos;s pendentes</p>
-                            </div>
-                          )}
-                          {isGroup && doneCount > 0 && (
-                            <div className="border border-[#e9eaeb] border-solid flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0">
-                              <div className="bg-[#2b7fff] rounded-[9999px] size-[6px]" />
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#1447e6] whitespace-nowrap">{doneCount} Check-in&apos;s realizados</p>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  {/* Expand/collapse for groups */}
-                  {isGroup && (
-                    <button onClick={() => toggleGroup(r.id)} className="cursor-pointer flex gap-[6px] items-center px-[10px] py-[4px] rounded-[6px] shrink-0 border border-[#e9eaeb] hover:bg-[#f8fafc] transition-colors">
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862] whitespace-nowrap">{expanded ? `Recolher (${r.participants.length})` : `Ver grupo (${r.participants.length})`}</p>
-                      <svg className={`shrink-0 size-[14px] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </button>
+                  {/* Title */}
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] whitespace-nowrap">{isGroup ? "Reserva em grupo" : "Reserva individual"}</p>
+                  {r.status === "Cancelled" && (
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-[#a1a1aa] whitespace-nowrap">· Cancelada</p>
                   )}
+                  <button onClick={() => setPaymentDrawerRes(r)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#c0c5ce] whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
+                  <div className="relative group">
+                    <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[12px] hover:opacity-70 transition-opacity">
+                      <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#d5d7da" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#d5d7da" strokeWidth="1.2"/></svg>
+                    </button>
+                    <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[6px] px-[8px] py-[4px] rounded-[6px] text-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-white">{copiedId === r.orderId ? "Copiado!" : "Copiar ID"}</p>
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-[#181d27]" />
+                    </div>
+                  </div>
+                  {/* Spacer */}
+                  <div className="flex-1" />
+                  {/* Ticket count — right side */}
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#c0c5ce] whitespace-nowrap">{r.participants.length} {r.participants.length === 1 ? "ingresso" : "ingressos"}</p>
                 </div>
               </div>
               {/* ── Participant rows ── */}
               {(() => {
-                const visibleParticipants = isGroup
-                  ? expanded
-                    ? r.participants
-                    : r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1).length > 0
-                      ? r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1)
-                      : r.participants.slice(0, 1)
-                  : r.participants;
-                return visibleParticipants.map((p, pIdx) => {
+                const allParticipants = r.participants;
+                const firstParticipant = r.participants.filter((p) => p.notes?.includes("Comprador")).slice(0, 1).length > 0
+                  ? r.participants.filter((p) => p.notes?.includes("Comprador"))[0]
+                  : r.participants[0];
+                const restParticipants = isGroup ? allParticipants.filter((p) => p.id !== firstParticipant.id) : [];
+                const visibleParticipants = isGroup ? [firstParticipant] : allParticipants;
+
+                return (
+                  <>
+                    {visibleParticipants.map((p, pIdx) => {
                 const isCancelled = r.status === "Cancelled";
                 const isDone = p.checkInStatus === "Done";
                 const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || r.status === "NoShow";
                 const isLastRow = pIdx === visibleParticipants.length - 1;
                 return (
-                  <div key={p.id} className={`border-t border-[#f5f5f5] flex h-[56px] items-center relative w-full cursor-pointer hover:bg-[#f8fafc] transition-colors ${isLastRow ? "rounded-b-[12px]" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
-                    {/* Checkbox cell — when group is collapsed, selecting the visible participant selects the whole reservation */}
-                    <button onClick={(e) => { e.stopPropagation(); (isGroup && !expanded) ? toggleSelectReservation(r) : toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
+                  <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isLastRow ? "rounded-b-[12px]" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                    {/* Blue left bar — only when selected */}
+                    {selectedIds.has(p.id) && (
+                      <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
+                    )}
+                    {/* Checkbox cell */}
+                    <button onClick={(e) => { e.stopPropagation(); (isGroup && !expanded) ? toggleSelectReservation(r) : toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "24px" }}>
                       {(isGroup && !expanded) ? (
-                        // When group is collapsed, show reservation-level checkbox state
                         r.participants.every((pp) => selectedIds.has(pp.id)) ? (
-                          <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                          <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] shrink-0 size-[22px]">
                             <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </div>
                         ) : r.participants.some((pp) => selectedIds.has(pp.id)) ? (
-                          <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                          <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] shrink-0 size-[22px]">
                             <div className="bg-white h-[2px] rounded-[1px] w-[10px]" />
                           </div>
                         ) : (
-                          <div className="bg-white border border-[#d5d7da] border-solid rounded-[4px] shrink-0 size-[20px]" />
+                          <div className="bg-white border border-[#d5d7da] border-solid rounded-[6px] shrink-0 size-[22px]" />
                         )
                       ) : selectedIds.has(p.id) ? (
-                        <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[4px] shrink-0 size-[20px]">
+                        <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] shrink-0 size-[22px]">
                           <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </div>
                       ) : (
-                        <div className="bg-white border border-[#d5d7da] border-solid rounded-[4px] shrink-0 size-[20px]" />
+                        <div className="bg-white border border-[#d5d7da] border-solid rounded-[6px] shrink-0 size-[22px]" />
                       )}
                     </button>
-                    {/* Name cell — 286px */}
+                    {/* Name cell */}
                     <div className="flex gap-[12px] items-center shrink-0" style={{ width: "286px", padding: "8px 16px" }}>
-                      <div className="flex flex-col gap-[4px] items-start min-w-0 flex-1">
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap w-full">{p.name}</p>
+                      <div className="flex flex-col gap-[2px] items-start min-w-0 flex-1">
+                        <div className="flex gap-[6px] items-center w-full min-w-0">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap min-w-0">{p.name}</p>
+                          {isGroup && r.participants[0].id === p.id && (
+                            <span className="flex gap-[4px] items-center font-['Helvetica_Neue:Regular',sans-serif] text-[10px] text-[#a1a1aa] shrink-0 border border-[#e2e5ea] rounded-[4px] px-[5px] py-[0px] leading-[16px]"><span className="bg-[#0b5ed7] rounded-[9999px] size-[5px] shrink-0 inline-block" />comprador</span>
+                          )}
+                        </div>
                         <div className="flex gap-[4px] items-center">
-                          {r.participants[0].id === p.id && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">Comprador -</p>}
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">ID: <span className="text-[#90A1B9]">#{p.id.replace("part-", "").padStart(4, "0")}</span></p>
+                          {!isGroup ? (
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa]">{p.tariffType} · {p.age} anos</p>
+                          ) : (
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa]">{p.tariffType} · {p.age} anos</p>
+                          )}
                         </div>
                       </div>
                     </div>
-                    {/* Tariff cell — 133px */}
-                    <div className="flex flex-col justify-center shrink-0" style={{ width: "133px", padding: "14px 12px" }}>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0f172b]">{p.tariffType}</p>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#90A1B9]">{p.age} anos</p>
+                    {/* Vertical divider */}
+                    <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                    {/* Badges — atributos do participante */}
+                    <div className="flex flex-1 items-center min-w-0" style={{ padding: "10px 12px" }}>
+                      <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
                     </div>
-                    {/* Badge principal — estado do participante (derivado de check-in + reserva) */}
-                    <div className="flex flex-1 gap-[10px] items-center min-w-0" style={{ padding: "14px 12px" }}>
-                      <ReservationStatusBadge status={isCancelled ? "Cancelled" : isDone ? "CheckedIn" : r.status} tooltip={r.status === "Expired" ? "Reserva expirada por inatividade" : undefined} />
-                    </div>
-                    {/* Badges secundários — atributos do participante */}
-                    <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
                     {/* Actions cell */}
                     <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       <CheckInButton isDone={isDone} disabled={checkInDisabled} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
@@ -2815,8 +2843,71 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     </div>
                   </div>
                 );
-              });
+              })}
+                    {/* Expandable rest of group */}
+                    {isGroup && restParticipants.length > 0 && (
+                      <div
+                        className="overflow-hidden transition-all duration-300 ease-in-out"
+                        style={{ maxHeight: expanded ? `${restParticipants.length * 60}px` : "0px", opacity: expanded ? 1 : 0 }}
+                      >
+                        {restParticipants.map((p, pIdx) => {
+                          const isCancelled = r.status === "Cancelled";
+                          const isDone = p.checkInStatus === "Done";
+                          const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || r.status === "NoShow";
+                          const isLastRow = pIdx === restParticipants.length - 1;
+                          return (
+                            <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                              {selectedIds.has(p.id) && (
+                                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
+                              )}
+                              <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "24px" }}>
+                                {selectedIds.has(p.id) ? (
+                                  <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] shrink-0 size-[22px]">
+                                    <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                  </div>
+                                ) : (
+                                  <div className="bg-white border border-[#d5d7da] border-solid rounded-[6px] shrink-0 size-[22px]" />
+                                )}
+                              </button>
+                              <div className="flex gap-[12px] items-center shrink-0" style={{ width: "286px", padding: "8px 16px" }}>
+                                <div className="flex flex-col gap-[2px] items-start min-w-0 flex-1">
+                                  <div className="flex gap-[6px] items-center w-full min-w-0">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[14px] text-[#0a0a0a] text-ellipsis whitespace-nowrap min-w-0">{p.name}</p>
+                                  </div>
+                                  <div className="flex gap-[4px] items-center">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa]">{p.tariffType} · {p.age} anos</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                              <div className="flex flex-1 items-center min-w-0" style={{ padding: "8px 12px" }}>
+                                <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} />
+                              </div>
+                              <div className="flex gap-[8px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
+                                <CheckInButton isDone={isDone} disabled={checkInDisabled} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
+                                <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
+                );
               })()}
+              {/* Collapsed: +X participantes / Expanded: Recolher */}
+              {isGroup && r.participants.length > 1 && (
+                <button
+                  onClick={() => toggleGroup(r.id)}
+                  className="flex items-center justify-center gap-[6px] px-[16px] py-[8px] w-full cursor-pointer hover:bg-[#f8fafc] transition-colors rounded-b-[12px] border-t border-[#f5f5f5]"
+                >
+                  <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#0b5ed7]">
+                    {expanded ? `Recolher (${r.participants.length})` : `+${r.participants.length - 1} participante${r.participants.length - 1 > 1 ? "s" : ""}`}
+                  </p>
+                  <svg className={`size-[12px] text-[#0b5ed7] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              )}
             </div>
           );
         })}
@@ -3024,85 +3115,69 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
   const [activeTab, setActiveTab] = useState(initialTab);
   const activity = mockActivities.find((a) => a.id === activityId) || mockActivities[0];
 
-  if (activeTab === "visao-geral") {
-    return (
-      <div className="bg-[#f8fafc] relative size-full overflow-auto" data-name="AGENDA - ATUALIZAÇÕES">
-        <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab} onBackToActivities={onBackToActivities} />
-        <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-[#f8fafc] relative w-full min-h-full" data-name="AGENDA - ATUALIZAÇÕES">
-      <TopBar />
-      {activeTab === "atualizacoes" && <Frame23 />}
-      <SidebarAdmin activeTab={activeTab} setActiveTab={setActiveTab} onBackToActivities={onBackToActivities} />
-      <div className="absolute content-stretch flex gap-[10px] items-center left-[248px] top-[116px]" data-name="Breadcrumb">
-        <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[14px] whitespace-nowrap">
-          <p className="leading-[normal]">Início</p>
-        </div>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
+    <div className="fixed inset-0 z-50 bg-[#f8fafc] flex flex-col" data-name="AGENDA - ATUALIZAÇÕES">
+      {/* ── Fullscreen header ── */}
+      <header className="shrink-0 border-b border-[#e9eaeb] bg-white">
+        <div className="flex h-[56px] items-center px-[20px]">
+          {/* Left: title */}
+          <div className="flex items-center gap-[12px]">
+            <div className="h-[20px] w-[3px] bg-[#0b5ed7] rounded-[2px]" />
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[15px] text-[#252b37]">{activity.name}</p>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#a1a1aa]">Participantes e check-in</p>
           </div>
+          {/* Right: close */}
+          <button
+            onClick={onBackToActivities}
+            className="ml-auto flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+          >
+            <svg className="size-[14px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#535862]">Fechar</p>
+          </button>
         </div>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="ellipsis">
-          <div className="absolute inset-[45.83%]" data-name="Vector">
-            <div className="absolute inset-[-37.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 2.33333 2.33333">
-                <path d={svgPaths.padc050} fill="var(--fill-0, #71717A)" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+      </header>
+
+      {/* ── Body: sidebar + content ── */}
+      <div className="flex flex-1 min-h-0">
+        {/* Sidebar */}
+        <nav className="flex flex-col w-[220px] shrink-0 border-r border-[#e9eaeb] bg-white py-[16px] px-[12px] overflow-y-auto gap-[4px]">
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[10px] text-[#a1a1aa] uppercase tracking-[1px] px-[10px] pb-[8px]">Navegação</p>
+          {([
+            { id: "participantes", label: "Participantes", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+            { id: "atualizacoes", label: "Atualizações", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M12 8v4l3 3M3 12a9 9 0 1018 0 9 9 0 00-18 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+            { id: "visao-geral", label: "Visão geral", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+          ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`flex items-center gap-[8px] px-[10px] py-[8px] rounded-[8px] text-left transition-colors cursor-pointer ${
+                activeTab === item.id
+                  ? "bg-[#edf0ff] text-[#0b5ed7]"
+                  : "text-[#717680] hover:text-[#252b37] hover:bg-[#f8fafc]"
+              }`}
+            >
+              <div className="shrink-0">{item.icon}</div>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px]">{item.label}</p>
+            </button>
+          ))}
+        </nav>
+
+        {/* Content */}
+        <main className="flex-1 overflow-y-auto">
+          {activeTab === "atualizacoes" && (
+            <div className="relative">
+              <Frame23 />
+              <Frame24 />
             </div>
-          </div>
-          <div className="absolute bottom-[45.83%] left-3/4 right-[16.67%] top-[45.83%]" data-name="Vector">
-            <div className="absolute inset-[-37.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 2.33333 2.33333">
-                <path d={svgPaths.padc050} fill="var(--fill-0, #71717A)" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <div className="absolute bottom-[45.83%] left-[16.67%] right-3/4 top-[45.83%]" data-name="Vector">
-            <div className="absolute inset-[-37.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 2.33333 2.33333">
-                <path d={svgPaths.padc050} fill="var(--fill-0, #71717A)" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <button onClick={onBackToActivities} className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[14px] whitespace-nowrap cursor-pointer hover:text-[#0b5ed7] transition-colors">
-          <p className="leading-[normal]">Atividades do Dia</p>
-        </button>
-        <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#09090b] text-[14px] whitespace-nowrap">
-          <p className="leading-[normal]">{activity.name}</p>
-        </div>
+          )}
+          {activeTab === "visao-geral" && (
+            <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
+          )}
+          {activeTab === "participantes" && (
+            <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} />
+          )}
+        </main>
       </div>
-      {activeTab === "atualizacoes" && <Frame24 />}
-      {activeTab === "participantes" && (
-        <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} />
-      )}
     </div>
   );
 }

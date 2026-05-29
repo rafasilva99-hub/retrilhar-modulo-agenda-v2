@@ -456,7 +456,7 @@ export const mockReservations: Reservation[] = [
     participants: [
       {
         id: 'part-001',
-        name: 'Rafael Mendes',
+        name: 'Rafael Augusto Mendes de Albuquerque Figueiredo',
         tariffType: 'Adulto',
         checkInStatus: 'Pending',
         hasHealthIssue: false,

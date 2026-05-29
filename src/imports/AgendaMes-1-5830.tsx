@@ -1,3 +1,4 @@
+// @ts-nocheck
 import svgPaths from "./svg-6irsur4td9";
 import imgTopBar from "figma:asset/4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "figma:asset/87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";

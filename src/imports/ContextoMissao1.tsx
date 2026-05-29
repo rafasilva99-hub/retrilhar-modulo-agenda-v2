@@ -1,3 +1,4 @@
+// @ts-nocheck
 import svgPaths from "./svg-o3cnx04bbw";
 import imgContextoMissao1 from "figma:asset/bf3f56458c51cdd59b7949f2a771c8cc1623145c.png";
 

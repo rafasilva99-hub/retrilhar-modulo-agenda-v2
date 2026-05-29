@@ -1,0 +1,11 @@
+dist
+node_modules
+coverage
+.vite
+.playwright-mcp
+package-lock.json
+
+# Figma exports are intentionally noisy and should not gate hand-written changes.
+src/imports
+src/app/components/ui
+src/app/components/figma

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import svgPaths from "./svg-2j746pul94";
 
 function Frame() {

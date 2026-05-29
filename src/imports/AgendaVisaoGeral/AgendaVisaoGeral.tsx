@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from "react";
 import svgPaths from "./svg-3hal38zdc4";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";

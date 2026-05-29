@@ -1,3 +1,4 @@
+// @ts-nocheck
 import svgPaths from "./svg-q5jqh9fwaq";
 import imgIntroducaoAoTeste from "figma:asset/bf3f56458c51cdd59b7949f2a771c8cc1623145c.png";
 

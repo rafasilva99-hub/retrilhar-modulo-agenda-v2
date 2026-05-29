@@ -1,5 +1,38 @@
 # Regras de fidelidade ao Figma — Retrilhar
 
+## Direção de maturidade do front mockado
+
+Este projeto é um protótipo de usabilidade, mas deve seguir a disciplina visual e estrutural do
+`Retrilhar Admin` sempre que isso não trouxer backend, autenticação real ou rotas Next.js.
+
+### Arquitetura alvo
+
+- `src/components/ui/` — shadcn/ui gerenciado pelo preset; evitar edição manual salvo correção de integração.
+- `src/components/layout/` — shell, sidebar, topbar, logo, `AppPage` e componentes de navegação.
+- `src/components/custom/` — componentes reutilizáveis específicos da Retrilhar.
+- `src/modules/[feature]/` — entrada de cada feature, com `components/`, `services/`, `types.ts` e `index.ts`.
+- `src/mocks/` — dados mockados tipados e commitados; neste protótipo mocks são fonte de verdade.
+- `src/imports/` — legado exportado do Figma Make; pode ser usado, mas deve ser encapsulado e refatorado gradualmente.
+
+### Regras adaptadas do Retrilhar Admin
+
+- Usar HugeIcons via `@hugeicons/react` + `@hugeicons/core-free-icons`; não introduzir novos pacotes de ícones.
+- Preferir shadcn/ui e componentes de `src/components/layout/` antes de criar elementos nativos.
+- Código novo não deve expor textos como "mock" na UI; mocks são implementação interna.
+- Código novo deve consumir serviços mockados em `src/modules/*/services`, não arrays inline.
+- Não trazer `better-auth`, SDK OpenAPI, `next-intl`, MSW real ou backend do Admin.
+- Manter navegação por hash (`#agenda`, `#agendaDia`, `#atualizacoes`) enquanto o teste depender dela.
+- Refatorar exports do Figma aos poucos: primeiro encapsular, depois extrair cards, badges, filtros, empty states e headers.
+- Arquivos exportados do Figma podem permanecer com `@ts-nocheck` até serem transformados em código mantido.
+- Rodar `npm run check` antes de considerar uma etapa concluída.
+
+### Padrão para novas telas internas
+
+- Usar `AppShell` para páginas autenticadas do protótipo.
+- Usar `AppPage` quando a tela já estiver fora do export bruto do Figma.
+- Usar `src/modules/agenda` como referência para organizar novas features mockadas.
+- Preservar o fluxo crítico do teste: calendário → dia da agenda → atualizações/detalhes.
+
 Estas regras orientam toda implementação no Antigravity. Devem ser salvas em `.claude/rules/agenda-fidelity.md` na raiz do projeto para que o Claude Code leia automaticamente no início de cada sessão.
 
 ## Cenário do projeto

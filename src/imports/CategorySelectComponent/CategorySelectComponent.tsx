@@ -1,3 +1,4 @@
+// @ts-nocheck
 import svgPaths from "./svg-o32czyim05";
 
 function Elements() {

@@ -3,40 +3,40 @@
 /* These map to Helvetica Neue on macOS, but need fallback on Windows/Linux */
 
 @font-face {
-  font-family: 'Helvetica Neue:Regular';
-  src: local('Helvetica Neue'), local('HelveticaNeue'), local('Arial');
+  font-family: "Helvetica Neue:Regular";
+  src: local("Helvetica Neue"), local("HelveticaNeue"), local("Arial");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Helvetica Neue:Medium';
-  src: local('Helvetica Neue Medium'), local('HelveticaNeue-Medium'), local('Arial');
+  font-family: "Helvetica Neue:Medium";
+  src: local("Helvetica Neue Medium"), local("HelveticaNeue-Medium"), local("Arial");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter:Medium';
-  src: local('Inter Medium'), local('Inter'), local('Arial');
+  font-family: "Inter:Medium";
+  src: local("Inter Medium"), local("Inter"), local("Arial");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Sora:SemiBold';
-  src: local('Sora SemiBold'), local('Sora'), local('Arial');
+  font-family: "Sora:SemiBold";
+  src: local("Sora SemiBold"), local("Sora"), local("Arial");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Sora:Regular';
-  src: local('Sora'), local('Arial');
+  font-family: "Sora:Regular";
+  src: local("Sora"), local("Arial");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

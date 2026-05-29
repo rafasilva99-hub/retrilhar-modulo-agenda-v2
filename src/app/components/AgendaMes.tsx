@@ -1,36 +1,37 @@
 import { useState } from "react";
 import {
-  startOfMonth,
-  startOfWeek,
   addDays,
   addMonths,
-  subMonths,
-  isSameMonth,
-  isSameDay,
   format,
+  isSameDay,
+  isSameMonth,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
 } from "date-fns";
 import {
-  Home,
-  Calendar,
-  ShoppingCart,
-  Users,
-  Package,
-  UserCheck,
-  UserPlus,
+  ArrowUp,
   BarChart3,
-  Search,
   Bell,
+  Calendar,
+  CalendarHeart,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Map,
-  PlusCircle,
-  ArrowUp,
-  CalendarHeart,
-  Wallet,
-  TrendingUp,
+  Home,
   Leaf,
+  Map,
+  Package,
+  PlusCircle,
+  Search,
+  ShoppingCart,
+  TrendingUp,
+  UserCheck,
+  UserPlus,
+  Users,
+  Wallet,
 } from "lucide-react";
+
 import { mockActivities, mockDashboardStats } from "../../mocks/agenda";
 import type { Activity, ActivityStatus } from "../../types/agenda";
 
@@ -100,11 +101,14 @@ function chipSubtitle(activity: Activity): string {
 
 // ─── Activity chip ────────────────────────────────────────────────────────────
 
-const CHIP_COLORS: Record<ActivityStatus, { bg: string; border: string; dot: string; text: string }> = {
+const CHIP_COLORS: Record<
+  ActivityStatus,
+  { bg: string; border: string; dot: string; text: string }
+> = {
   confirmed: { bg: "#eff6ff", border: "#dbeafe", dot: "#2b7fff", text: "#1447e6" },
-  pending:   { bg: "#fff2d3", border: "#fde68a", dot: "#ff992b", text: "#e0850f" },
-  full:      { bg: "#fef2f2", border: "#fecaca", dot: "#fb2c36", text: "#c10007" },
-  blocked:   { bg: "#fafafa", border: "#f2f2f2", dot: "#d5d7da", text: "#919191" },
+  pending: { bg: "#fff2d3", border: "#fde68a", dot: "#ff992b", text: "#e0850f" },
+  full: { bg: "#fef2f2", border: "#fecaca", dot: "#fb2c36", text: "#c10007" },
+  blocked: { bg: "#fafafa", border: "#f2f2f2", dot: "#d5d7da", text: "#919191" },
 };
 
 function ActivityChip({ activity }: { activity: Activity }) {
@@ -113,7 +117,7 @@ function ActivityChip({ activity }: { activity: Activity }) {
 
   return (
     <div
-      className="flex items-start gap-1 w-full rounded-[4px]"
+      className="flex w-full items-start gap-1 rounded-[4px]"
       style={{
         backgroundColor: c.bg,
         border: `0.556px solid ${c.border}`,
@@ -121,7 +125,7 @@ function ActivityChip({ activity }: { activity: Activity }) {
       }}
     >
       <span
-        className="rounded-full shrink-0"
+        className="shrink-0 rounded-full"
         style={{
           width: 6,
           height: 6,
@@ -131,16 +135,19 @@ function ActivityChip({ activity }: { activity: Activity }) {
         }}
       />
       {twoLine ? (
-        <div className="flex flex-col min-w-0">
-          <span className="text-[12px] leading-[1.3] truncate" style={{ color: c.text }}>
+        <div className="flex min-w-0 flex-col">
+          <span className="truncate text-[12px] leading-[1.3]" style={{ color: c.text }}>
             {chipLabel(activity)}
           </span>
-          <span className="text-[10px] leading-[1.3] truncate" style={{ color: c.text, opacity: 0.8 }}>
+          <span
+            className="truncate text-[10px] leading-[1.3]"
+            style={{ color: c.text, opacity: 0.8 }}
+          >
             {chipSubtitle(activity)}
           </span>
         </div>
       ) : (
-        <span className="text-[12px] leading-[1.3] truncate" style={{ color: c.text }}>
+        <span className="truncate text-[12px] leading-[1.3]" style={{ color: c.text }}>
           {chipLabel(activity)}
         </span>
       )}
@@ -175,8 +182,8 @@ function CalendarCell({
       className={[
         "flex flex-col gap-1 p-2",
         inMonth
-          ? "bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
-          : "bg-[#fafafa] cursor-default",
+          ? "cursor-pointer bg-white transition-colors hover:bg-[#f8fafc]"
+          : "cursor-default bg-[#fafafa]",
         colIndex < 6 ? "border-r border-[#e9eaeb]" : "",
         !isLastRow ? "border-b border-[#e9eaeb]" : "",
       ]
@@ -188,7 +195,7 @@ function CalendarCell({
       <div className="flex items-center">
         {isToday ? (
           <span
-            className="flex items-center justify-center text-white text-[12px] font-medium rounded-full leading-none"
+            className="flex items-center justify-center rounded-full text-[12px] leading-none font-medium text-white"
             style={{ width: 24, height: 24, backgroundColor: "#155dfc" }}
           >
             {date.getDate()}
@@ -203,14 +210,12 @@ function CalendarCell({
         )}
       </div>
       {/* Chips */}
-      <div className="flex flex-col gap-[3px] min-w-0">
+      <div className="flex min-w-0 flex-col gap-[3px]">
         {visible.map((a) => (
           <ActivityChip key={a.id} activity={a} />
         ))}
         {overflow > 0 && (
-          <span className="text-[12px] text-[#717680] px-[5px]">
-            Mais {overflow}...
-          </span>
+          <span className="px-[5px] text-[12px] text-[#717680]">Mais {overflow}...</span>
         )}
       </div>
     </div>
@@ -222,7 +227,7 @@ function CalendarCell({
 function ViewSwitch() {
   return (
     <div
-      className="flex items-center rounded-[10px] gap-[3px]"
+      className="flex items-center gap-[3px] rounded-[10px]"
       style={{ backgroundColor: "#f1f5f9", padding: 4 }}
     >
       {["Mês", "Semana", "Dia"].map((v) => {
@@ -230,9 +235,9 @@ function ViewSwitch() {
         return (
           <button
             key={v}
-            className={`px-3 py-[5px] rounded-[6px] text-[12px] transition-colors ${
+            className={`rounded-[6px] px-3 py-[5px] text-[12px] transition-colors ${
               active
-                ? "bg-white border border-[#e2e8f0] text-[#084fb7] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.06)]"
+                ? "border border-[#e2e8f0] bg-white text-[#084fb7] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.06)]"
                 : "text-[#62748e]"
             }`}
           >
@@ -252,25 +257,25 @@ function CalendarSection({ onDayClick }: { onDayClick?: (day: number) => void })
   const monthLabel = `${MONTH_NAMES_PT[viewDate.getMonth()]} de ${viewDate.getFullYear()}`;
 
   return (
-    <div className="bg-white border border-[#e2e8f0] rounded-[24px] shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08),0px_1px_2px_0px_rgba(10,13,18,0.06)] overflow-hidden">
+    <div className="overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08),0px_1px_2px_0px_rgba(10,13,18,0.06)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-5 flex-wrap gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setViewDate((d) => subMonths(d, 1))}
-            className="size-8 rounded-[8px] border border-[#e2e8f0] flex items-center justify-center text-[#62748e] hover:bg-[#f8fafc] transition-colors"
+            className="flex size-8 items-center justify-center rounded-[8px] border border-[#e2e8f0] text-[#62748e] transition-colors hover:bg-[#f8fafc]"
           >
             <ChevronLeft className="size-4" />
           </button>
           <div
-            className="px-4 py-[6px] rounded-[10px] border border-[#e2e8f0] text-[14px] min-w-[148px] text-center"
+            className="min-w-[148px] rounded-[10px] border border-[#e2e8f0] px-4 py-[6px] text-center text-[14px]"
             style={{ color: "#314158" }}
           >
             {monthLabel}
           </div>
           <button
             onClick={() => setViewDate((d) => addMonths(d, 1))}
-            className="size-8 rounded-[8px] border border-[#e2e8f0] flex items-center justify-center text-[#62748e] hover:bg-[#f8fafc] transition-colors"
+            className="flex size-8 items-center justify-center rounded-[8px] border border-[#e2e8f0] text-[#62748e] transition-colors hover:bg-[#f8fafc]"
           >
             <ChevronRight className="size-4" />
           </button>
@@ -279,11 +284,14 @@ function CalendarSection({ onDayClick }: { onDayClick?: (day: number) => void })
       </div>
 
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 border-t border-[#e9eaeb]" style={{ backgroundColor: "#f8fafc" }}>
+      <div
+        className="grid grid-cols-7 border-t border-[#e9eaeb]"
+        style={{ backgroundColor: "#f8fafc" }}
+      >
         {WEEKDAYS.map((d, i) => (
           <div
             key={d}
-            className={`py-2 px-2 text-[12px] text-[#90a1b9] border-b border-[#e9eaeb] ${
+            className={`border-b border-[#e9eaeb] px-2 py-2 text-[12px] text-[#90a1b9] ${
               i < 6 ? "border-r border-[#e9eaeb]" : ""
             }`}
           >
@@ -332,19 +340,19 @@ function StatCard({
   trendLabel: string;
 }) {
   return (
-    <div className="bg-white border border-[#e2e8f0] rounded-[24px] pt-5 pb-4 px-5 flex flex-col gap-2.5 shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08),0px_1px_2px_0px_rgba(10,13,18,0.06)]">
+    <div className="flex flex-col gap-2.5 rounded-[24px] border border-[#e2e8f0] bg-white px-5 pt-5 pb-4 shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08),0px_1px_2px_0px_rgba(10,13,18,0.06)]">
       <div className="flex items-center gap-2.5">
-        <div className="size-8 rounded-[10px] bg-[rgba(239,246,255,0.4)] border border-[rgba(190,219,255,0.5)] flex items-center justify-center text-[#0b5ed7] shrink-0">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-[10px] border border-[rgba(190,219,255,0.5)] bg-[rgba(239,246,255,0.4)] text-[#0b5ed7]">
           {icon}
         </div>
-        <div className="min-w-0 flex-1 flex flex-col">
-          <p className="text-[14px] text-[#314158] truncate leading-[1.2]">{label}</p>
-          <p className="text-[12px] text-[#62748e] truncate leading-[1.3]">{subtitle}</p>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <p className="truncate text-[14px] leading-[1.2] text-[#314158]">{label}</p>
+          <p className="truncate text-[12px] leading-[1.3] text-[#62748e]">{subtitle}</p>
         </div>
       </div>
-      <p className="text-[24px] text-[#0f172b] leading-none">{value}</p>
-      <div className="flex items-center gap-2 h-6">
-        <span className="inline-flex items-center gap-0.5 bg-[#f0fdf4] border border-[#b9f8cf] text-[#008236] text-[12px] rounded-[8px] px-[7px] py-[4px] leading-none">
+      <p className="text-[24px] leading-none text-[#0f172b]">{value}</p>
+      <div className="flex h-6 items-center gap-2">
+        <span className="inline-flex items-center gap-0.5 rounded-[8px] border border-[#b9f8cf] bg-[#f0fdf4] px-[7px] py-[4px] text-[12px] leading-none text-[#008236]">
           <ArrowUp className="size-3" strokeWidth={2.5} />
           {trend}
         </span>
@@ -357,32 +365,38 @@ function StatCard({
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 const MENU_ITEMS = [
-  { label: "Início",      icon: <Home         className="size-[18px]" strokeWidth={1.6} /> },
-  { label: "Agenda",      icon: <Calendar     className="size-[18px]" strokeWidth={1.6} />, active: true },
-  { label: "Vendas",      icon: <ShoppingCart className="size-[18px]" strokeWidth={1.6} />, chevron: true },
-  { label: "Clientes",    icon: <Users        className="size-[18px]" strokeWidth={1.6} /> },
-  { label: "Produtos",    icon: <Package      className="size-[18px]" strokeWidth={1.6} /> },
-  { label: "Vendedores",  icon: <UserCheck    className="size-[18px]" strokeWidth={1.6} /> },
-  { label: "Afiliados",   icon: <UserPlus     className="size-[18px]" strokeWidth={1.6} /> },
-  { label: "Indicadores", icon: <BarChart3    className="size-[18px]" strokeWidth={1.6} /> },
+  { label: "Início", icon: <Home className="size-[18px]" strokeWidth={1.6} /> },
+  { label: "Agenda", icon: <Calendar className="size-[18px]" strokeWidth={1.6} />, active: true },
+  {
+    label: "Vendas",
+    icon: <ShoppingCart className="size-[18px]" strokeWidth={1.6} />,
+    chevron: true,
+  },
+  { label: "Clientes", icon: <Users className="size-[18px]" strokeWidth={1.6} /> },
+  { label: "Produtos", icon: <Package className="size-[18px]" strokeWidth={1.6} /> },
+  { label: "Vendedores", icon: <UserCheck className="size-[18px]" strokeWidth={1.6} /> },
+  { label: "Afiliados", icon: <UserPlus className="size-[18px]" strokeWidth={1.6} /> },
+  { label: "Indicadores", icon: <BarChart3 className="size-[18px]" strokeWidth={1.6} /> },
 ];
 
 function Sidebar() {
   return (
-    <aside className="hidden lg:flex flex-col w-[200px] shrink-0 bg-white border border-[#e2e8f0] rounded-[20px] p-4 gap-4 shadow-[0px_1px_3px_0px_rgba(10,13,18,0.06)]">
+    <aside className="hidden w-[200px] shrink-0 flex-col gap-4 rounded-[20px] border border-[#e2e8f0] bg-white p-4 shadow-[0px_1px_3px_0px_rgba(10,13,18,0.06)] lg:flex">
       {/* Logo */}
       <div className="flex items-center gap-2 px-2 py-1">
-        <div className="size-8 rounded-lg bg-gradient-to-br from-[#22c55e] via-[#16a34a] to-[#15803d] flex items-center justify-center text-white shadow-sm">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#22c55e] via-[#16a34a] to-[#15803d] text-white shadow-sm">
           <Leaf className="size-4" strokeWidth={2.2} />
         </div>
-        <span className="font-['Sora:SemiBold',sans-serif] text-[#0f172b] text-[18px]">Retrilhar</span>
+        <span className="font-['Sora:SemiBold',sans-serif] text-[18px] text-[#0f172b]">
+          Retrilhar
+        </span>
       </div>
       {/* Nav */}
-      <nav className="flex flex-col gap-0.5 flex-1">
+      <nav className="flex flex-1 flex-col gap-0.5">
         {MENU_ITEMS.map((item) => (
           <div
             key={item.label}
-            className={`flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-[14px] cursor-default select-none ${
+            className={`flex cursor-default items-center gap-2.5 rounded-[8px] px-3 py-2 text-[14px] select-none ${
               item.active ? "bg-[#eff6ff] text-[#084fb7]" : "text-[#475569]"
             }`}
           >
@@ -393,11 +407,11 @@ function Sidebar() {
         ))}
       </nav>
       {/* User */}
-      <div className="flex items-center gap-2.5 px-1 pt-3 border-t border-[#f1f5f9]">
-        <div className="size-10 rounded-full bg-gradient-to-br from-[#a78bfa] via-[#ec4899] to-[#f472b6] shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="text-[13px] text-[#0f172b] truncate">Katiely Pinheiro</p>
-          <p className="text-[11px] text-[#64748b] truncate">Gestor Comercial</p>
+      <div className="flex items-center gap-2.5 border-t border-[#f1f5f9] px-1 pt-3">
+        <div className="size-10 shrink-0 rounded-full bg-gradient-to-br from-[#a78bfa] via-[#ec4899] to-[#f472b6]" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[13px] text-[#0f172b]">Katiely Pinheiro</p>
+          <p className="truncate text-[11px] text-[#64748b]">Gestor Comercial</p>
         </div>
       </div>
     </aside>
@@ -408,16 +422,16 @@ function Sidebar() {
 
 function TopBar() {
   return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="flex-1 flex items-center gap-2 bg-white border border-[#e2e8f0] rounded-[12px] px-3.5 py-2.5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.04)]">
+    <div className="mb-5 flex items-center gap-3">
+      <div className="flex flex-1 items-center gap-2 rounded-[12px] border border-[#e2e8f0] bg-white px-3.5 py-2.5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.04)]">
         <Search className="size-4 text-[#94a3b8]" />
         <input
           placeholder="Buscar..."
-          className="bg-transparent outline-none text-[14px] text-[#334155] flex-1 placeholder:text-[#94a3b8]"
+          className="flex-1 bg-transparent text-[14px] text-[#334155] outline-none placeholder:text-[#94a3b8]"
         />
       </div>
-      <div className="hidden sm:flex items-center gap-2 bg-white border border-[#e2e8f0] rounded-[12px] pl-2 pr-3 py-1.5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.04)]">
-        <div className="size-8 rounded-full bg-gradient-to-br from-[#60a5fa] to-[#1d4ed8] flex items-center justify-center text-white text-[10px]">
+      <div className="hidden items-center gap-2 rounded-[12px] border border-[#e2e8f0] bg-white py-1.5 pr-3 pl-2 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.04)] sm:flex">
+        <div className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#60a5fa] to-[#1d4ed8] text-[10px] text-white">
           E
         </div>
         <div className="leading-tight">
@@ -425,7 +439,7 @@ function TopBar() {
           <p className="text-[11px] text-[#64748b]">Empresa Vinculada</p>
         </div>
       </div>
-      <button className="relative size-10 rounded-[12px] bg-white border border-[#e2e8f0] flex items-center justify-center text-[#475569] hover:text-[#0f172b] transition-colors shadow-[0px_1px_2px_0px_rgba(10,13,18,0.04)]">
+      <button className="relative flex size-10 items-center justify-center rounded-[12px] border border-[#e2e8f0] bg-white text-[#475569] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.04)] transition-colors hover:text-[#0f172b]">
         <Bell className="size-4" />
         <span className="absolute top-2 right-2.5 size-1.5 rounded-full bg-red-500" />
       </button>
@@ -438,16 +452,16 @@ function TopBar() {
 export default function AgendaMes({ onDayClick }: { onDayClick?: (day: number) => void }) {
   const s = mockDashboardStats;
   return (
-    <div className="size-full bg-[#f1f5f9] overflow-auto">
-      <div className="flex gap-4 p-4 min-h-full">
+    <div className="size-full overflow-auto bg-[#f1f5f9]">
+      <div className="flex min-h-full gap-4 p-4">
         <Sidebar />
-        <main className="flex-1 min-w-0 flex flex-col">
+        <main className="flex min-w-0 flex-1 flex-col">
           <TopBar />
 
           {/* Page header */}
-          <div className="flex items-start justify-between gap-3 mb-5 flex-wrap">
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h1 className="font-['Sora:SemiBold',sans-serif] text-[#0f172b] text-[22px] leading-tight">
+              <h1 className="font-['Sora:SemiBold',sans-serif] text-[22px] leading-tight text-[#0f172b]">
                 Agenda
               </h1>
               <p className="text-[13px] text-[#62748e]">
@@ -455,11 +469,11 @@ export default function AgendaMes({ onDayClick }: { onDayClick?: (day: number) =
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-2 bg-white border border-[#e2e8f0] rounded-[10px] px-3.5 py-2 text-[13px] text-[#334155] hover:bg-[#f8fafc] transition-colors shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]">
+              <button className="flex items-center gap-2 rounded-[10px] border border-[#e2e8f0] bg-white px-3.5 py-2 text-[13px] text-[#334155] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)] transition-colors hover:bg-[#f8fafc]">
                 <Map className="size-4" strokeWidth={1.8} />
                 Mapa de Vagas
               </button>
-              <button className="flex items-center gap-2 bg-[#175cd3] text-white rounded-[10px] px-3.5 py-2 text-[13px] border-2 border-[rgba(255,255,255,0.12)] shadow-[inset_0px_0px_0px_1px_rgba(10,13,18,0.18),inset_0px_-2px_0px_0px_rgba(10,13,18,0.05)] hover:bg-[#1a66e8] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+              <button className="flex items-center gap-2 rounded-[10px] border-2 border-[rgba(255,255,255,0.12)] bg-[#175cd3] px-3.5 py-2 text-[13px] text-white shadow-[inset_0px_0px_0px_1px_rgba(10,13,18,0.18),inset_0px_-2px_0px_0px_rgba(10,13,18,0.05)] transition-all duration-200 hover:scale-[1.02] hover:bg-[#1a66e8] active:scale-[0.98]">
                 <PlusCircle className="size-4" strokeWidth={2} />
                 Nova Atividade
               </button>
@@ -467,7 +481,7 @@ export default function AgendaMes({ onDayClick }: { onDayClick?: (day: number) =
           </div>
 
           {/* Stat cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
+          <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               icon={<CalendarHeart className="size-4" strokeWidth={1.8} />}
               label={s.agendamentosHoje.label}

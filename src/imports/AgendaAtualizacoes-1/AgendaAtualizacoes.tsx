@@ -1,3 +1,4 @@
+// @ts-nocheck
 import svgPaths from "./svg-i9p5ikbpf9";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 

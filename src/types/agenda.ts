@@ -9,15 +9,15 @@
  * - blocked    → Bloqueio          (gray)
  * - full       → Lotada            (red)
  */
-export type ActivityStatus = 'confirmed' | 'pending' | 'blocked' | 'full';
+export type ActivityStatus = "confirmed" | "pending" | "blocked" | "full";
 
 /**
  * Lifecycle status of an activity (for the Day Panel cards).
  * Different from the calendar chip status above.
  */
-export type ActivityLifecycleStatus = 'NaoIniciada' | 'EmAndamento' | 'Realizada' | 'Cancelada';
+export type ActivityLifecycleStatus = "NaoIniciada" | "EmAndamento" | "Realizada" | "Cancelada";
 
-export type ActivityType = 'comum' | 'multi-dias';
+export type ActivityType = "comum" | "multi-dias";
 
 export interface Activity {
   id: string;
@@ -68,28 +68,30 @@ export interface Activity {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type ReservationStatus =
-  | 'Draft'
-  | 'AwaitingPayment'
-  | 'Confirmed'
-  | 'CheckedIn'
-  | 'Performed'
-  | 'Cancelled'
-  | 'NoShow'
-  | 'Expired';
+  | "Draft"
+  | "AwaitingPayment"
+  | "Confirmed"
+  | "CheckedIn"
+  | "Performed"
+  | "Cancelled"
+  | "NoShow"
+  | "Expired";
 
-export type PaymentStatus = 'Pending' | 'Paid' | 'Refunded' | 'Failed';
+export type PaymentStatus = "Pending" | "Paid" | "Refunded" | "Failed";
 
 export type InsuranceStatus =
-  | 'NotRequired'
-  | 'Required'      // activity requires it but customer hasn't contracted yet
-  | 'Contracted'    // insurance confirmed and active
-  | 'Declined';     // customer explicitly declined (not applicable when required)
+  | "NotRequired"
+  | "Required" // activity requires it but customer hasn't contracted yet
+  | "Contracted" // insurance confirmed and active
+  | "Declined"; // customer explicitly declined (not applicable when required)
 
-export type TariffType = 'Adulto' | 'Infantil' | 'Cortesia';
+export type ImageTermStatus = "Authorized" | "Refused" | "Pending";
 
-export type CheckInStatus = 'Pending' | 'Done' | 'Absent';
+export type TariffType = "Adulto" | "Infantil" | "Cortesia";
 
-export type ReservationType = 'individual' | 'group';
+export type CheckInStatus = "Pending" | "Done" | "Absent";
+
+export type ReservationType = "individual" | "group";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Participant
@@ -108,6 +110,20 @@ export interface Participant {
   age: number;
   boardingPoint: string;
   notes?: string;
+
+  // ── Badge attributes ──
+  /** Image term authorization status */
+  imageTermStatus?: ImageTermStatus;
+  /** Insurance status for this participant */
+  insuranceStatus?: InsuranceStatus;
+  /** Has additional items requested (extra equipment, services) */
+  hasAdditionalItems?: boolean;
+  /** Has health plan coverage */
+  hasHealthPlan?: boolean;
+  /** Has special needs (accessibility, mobility) */
+  hasSpecialNeeds?: boolean;
+  /** Has dietary restrictions */
+  hasDietaryRestriction?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -133,16 +149,16 @@ export interface Reservation {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type BulkAction =
-  | 'check-in'
-  | 'undo-check-in'
-  | 'confirm'
-  | 'undo-confirm'
-  | 'mark-performed'
-  | 'add-insurance'
-  | 'resend-voucher'
-  | 'reschedule'
-  | 'no-show'
-  | 'cancel';
+  | "check-in"
+  | "undo-check-in"
+  | "confirm"
+  | "undo-confirm"
+  | "mark-performed"
+  | "add-insurance"
+  | "resend-voucher"
+  | "reschedule"
+  | "no-show"
+  | "cancel";
 
 export interface BulkActionResult {
   eligible: Reservation[];
@@ -157,8 +173,8 @@ export type ReservationStateMachine = Record<ReservationStatus, ReservationStatu
 // Guide
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type GuideRole = 'Guia Líder' | 'Guia de Apoio';
-export type GuideStatus = 'available' | 'conflict';
+export type GuideRole = "Guia Líder" | "Guia de Apoio";
+export type GuideStatus = "available" | "conflict";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Dashboard stats (metric cards)

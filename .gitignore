@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.vite/
+.playwright-mcp/
+.eslintcache
+.prettier-cache
+*.local
+.DS_Store

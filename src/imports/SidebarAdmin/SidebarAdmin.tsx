@@ -1,3 +1,4 @@
+// @ts-nocheck
 import svgPaths from "./svg-0dyyuza0wp";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
 

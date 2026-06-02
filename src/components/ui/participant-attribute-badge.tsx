@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { BadgeTooltip } from "./badge-tooltip";
 
 export type AttributeBadgeCategory =
   | "image-term"
@@ -130,6 +131,9 @@ const getShortLabel = (
       if (variant === "no-show") return "Não compareceu";
       if (variant === "cancelled") return "Cancelada";
       if (variant === "rescheduled") return "Reagendada";
+      if (variant === "pending") return "Confirmada";
+      if (variant === "awaiting-payment") return "Agendada";
+      if (variant === "alert") return "Expirada";
       return "";
 
     default:
@@ -266,12 +270,29 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
         color = "#0b5ed7";
         textColor = "text-[#0b5ed7]";
         iconPath = iconPaths["calendar-check"];
+      } else if (variant === "pending") {
+        color = "#0b5ed7";
+        textColor = "text-[#0b5ed7]";
+        iconPath = iconPaths["check"];
+      } else if (variant === "awaiting-payment") {
+        color = "#F79009";
+        textColor = "text-[#F79009]";
+        iconPath = iconPaths["clock"];
+      } else if (variant === "alert") {
+        color = "#717680";
+        textColor = "text-[#717680]";
+        iconPath = iconPaths["clock"];
       }
       break;
   }
 
   return { color, bgColor, textColor, iconPath };
 };
+
+function parseBadgeTooltip(label: string): { title: string; subtitle?: string } {
+  const parts = label.split(" — ");
+  return { title: parts[0] || label, subtitle: parts.length > 1 ? parts[1] : undefined };
+}
 
 export function ParticipantAttributeBadge({
   category,
@@ -287,7 +308,7 @@ export function ParticipantAttributeBadge({
       <div className="group relative">
         <div
           className={cn(
-            "flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px]",
+            "flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap",
             bgColor
           )}
         >
@@ -311,13 +332,7 @@ export function ParticipantAttributeBadge({
             {shortLabel}
           </span>
         </div>
-        {/* Tooltip */}
-        <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-[6px] -translate-x-1/2 rounded-[6px] bg-[#181d27] px-[8px] py-[4px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[normal] text-white not-italic">
-            {tooltipLabel}
-          </p>
-          <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[4px] border-r-[4px] border-l-[4px] border-t-[#181d27] border-r-transparent border-l-transparent" />
-        </div>
+        <BadgeTooltip {...parseBadgeTooltip(tooltipLabel)} />
       </div>
     );
   }
@@ -342,13 +357,7 @@ export function ParticipantAttributeBadge({
           <path d={iconPath} />
         </svg>
       </div>
-      {/* Tooltip */}
-      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-[6px] -translate-x-1/2 rounded-[6px] bg-[#181d27] px-[8px] py-[4px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[normal] text-white not-italic">
-          {tooltipLabel}
-        </p>
-        <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[4px] border-r-[4px] border-l-[4px] border-t-[#181d27] border-r-transparent border-l-transparent" />
-      </div>
+      <BadgeTooltip {...parseBadgeTooltip(tooltipLabel)} />
     </div>
   );
 }

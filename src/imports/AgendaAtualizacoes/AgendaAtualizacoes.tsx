@@ -4,7 +4,7 @@ import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
 import { mockReservations, mockActivities, isEligibleForBulkAction, reservationStateMachine } from "../../mocks/agenda";
-import type { Activity, Reservation, Participant, CheckInStatus, BulkAction, ReservationStatus } from "../../types/agenda";
+import type { Activity, Reservation, Participant, CheckInStatus, BulkAction, ReservationStatus, InsuranceStatus } from "../../types/agenda";
 import { ParticipantCountBadge } from "../../components/ui/participant-count-badge";
 import { ParticipantAttributeBadge } from "../../components/ui/participant-attribute-badge";
 import type { ImageTermStatus } from "../../types/agenda";
@@ -1238,105 +1238,287 @@ function Frame24() {
 
 // ─── Participant Drawer ─────────────────────────────────────────────────────
 
-function DrawerField({ label, value }: { label: string; value: string }) {
+function DrawerSection({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="flex flex-col gap-[4px] relative">
-      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{label}</p>
-      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">{value}</p>
+    <div className="border-b border-slate-100">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-6 py-3 cursor-pointer hover:bg-slate-50/50 transition-colors">
+        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-slate-500 uppercase tracking-wider">{title}</p>
+        <svg className={`size-4 text-slate-400 transition-transform duration-200 ${open ? "" : "-rotate-90"}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </button>
+      {open && <div className="px-6 pb-4">{children}</div>}
     </div>
   );
 }
 
-function ParticipantDrawer({ participant, reservation, onClose }: {
+function DrawerStatusChip({ label, variant }: { label: string; variant: "green" | "amber" | "red" | "blue" | "gray" }) {
+  const styles = {
+    green: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    amber: "bg-amber-50 text-amber-700 border-amber-200",
+    red: "bg-red-50 text-red-700 border-red-200",
+    blue: "bg-blue-50 text-blue-700 border-blue-200",
+    gray: "bg-slate-100 text-slate-600 border-slate-200",
+  };
+  return (
+    <div className={`${styles[variant]} border rounded-full px-2.5 py-0.5 shrink-0`}>
+      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[16px] whitespace-nowrap">{label}</p>
+    </div>
+  );
+}
+
+function getOperationalStatus(r: Reservation, p: Participant): { label: string; variant: "green" | "amber" | "red" | "blue" | "gray" } {
+  if (r.status === "Cancelled") return { label: "Cancelada", variant: "gray" };
+  if (r.status === "Expired") return { label: "Expirada", variant: "gray" };
+  if (r.status === "Performed") return { label: "Realizada", variant: "gray" };
+  if (p.checkInStatus === "Absent") return { label: "Não compareceu", variant: "amber" };
+  if (p.checkInStatus === "Done") return { label: "Check-in realizado", variant: "green" };
+  if (r.status === "Confirmed") return { label: "Aguardando check-in", variant: "blue" };
+  if (r.status === "AwaitingPayment") return { label: "Aguardando pagamento", variant: "amber" };
+  return { label: "Agendada", variant: "blue" };
+}
+
+function getFinancialStatus(r: Reservation): { label: string; variant: "green" | "amber" | "red" | "gray" } {
+  if (r.paymentStatus === "Paid") return { label: "Pago", variant: "green" };
+  if (r.paymentStatus === "Partial") return { label: "Pagamento parcial", variant: "amber" };
+  if (r.paymentStatus === "Refunded") return { label: "Reembolsado", variant: "gray" };
+  if (r.paymentStatus === "Failed") return { label: "Falha no pagamento", variant: "red" };
+  return { label: "Aguardando pagamento", variant: "amber" };
+}
+
+function getInsuranceStatusConfig(status: InsuranceStatus | undefined): { label: string; variant: "green" | "amber" | "red" | "gray" } {
+  if (status === "Contracted") return { label: "Seguro contratado", variant: "green" };
+  if (status === "Required") return { label: "Seguro pendente", variant: "amber" };
+  if (status === "Pending") return { label: "Seguro em análise", variant: "amber" };
+  if (status === "Declined") return { label: "Seguro recusado", variant: "red" };
+  return { label: "Sem seguro", variant: "gray" };
+}
+
+function ParticipantDrawer({ participant, reservation, onClose, activity, isInsured, onCheckIn, onUndoCheckIn, onNoShow }: {
   participant: Participant;
   reservation: Reservation;
   onClose: () => void;
+  activity?: Activity;
+  isInsured?: boolean;
+  onCheckIn?: (p: Participant) => void;
+  onUndoCheckIn?: (p: Participant) => void;
+  onNoShow?: (r: Reservation, p: Participant) => void;
 }) {
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
-  const initials = participant.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  const phone = "(31) 99999-9999";
-  const email = participant.name.split(" ")[0].toLowerCase() + "." + (participant.name.split(" ").pop() || "").toLowerCase() + "@email.com";
-  const hasInsurance = reservation.insuranceStatus === "Contracted";
-  const isCheckedIn = participant.checkInStatus === "Done";
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const p = participant;
+  const r = reservation;
+  const initials = p.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const phone = p.phone || "(31) 99999-9999";
+  const email = p.email || (p.name.split(" ")[0].toLowerCase() + "." + (p.name.split(" ").pop() || "").toLowerCase() + "@email.com");
+  const participantDoc = p.document;
+  const effectiveInsurance = isInsured ? "Contracted" as InsuranceStatus : (p.insuranceStatus || r.insuranceStatus);
+  const hasInsurance = effectiveInsurance === "Contracted";
 
-  // Status config
-  const statusConfig = isCheckedIn
-    ? { label: "Check-in realizado", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" }
-    : { label: "Aguardando check-in", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" };
+  const opStatus = getOperationalStatus(r, p);
+  const finStatus = getFinancialStatus(r);
+  const insStatus = getInsuranceStatusConfig(effectiveInsurance);
+
+  const basePrice = r.basePrice ?? 150;
+  const insPrice = hasInsurance ? (r.insurancePrice ?? 25) : 0;
+  const additionalsTotal = (r.additionalItems || []).reduce((s, i) => s + i.price, 0);
+  const subtotal = basePrice + insPrice + additionalsTotal;
+  const feePercent = r.serviceFeePercent ?? 10;
+  const couponDiscount = r.coupon ? (r.coupon.type === "percentual" ? subtotal * r.coupon.value / 100 : r.coupon.value) : 0;
+  const total = Math.round((subtotal - couponDiscount) * (1 + feePercent / 100));
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard?.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const activityName = activity?.name || "Trilha Pico do Itacolomi";
+  const activityTime = activity ? `${activity.startTime} - ${activity.endTime}` : "08:00 - 11:00";
+
+  // Determine primary + secondary actions based on state
+  const isCheckedIn = p.checkInStatus === "Done";
+  const isCancelled = r.status === "Cancelled";
+  const isNoShow = p.checkInStatus === "Absent";
+  const isPerformed = r.status === "Performed";
+  const isExpired = r.status === "Expired";
+  const isTerminal = isCancelled || isPerformed || isExpired;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end" onKeyDown={(e) => e.key === "Escape" && onClose()}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="bg-white flex flex-col max-h-full relative shadow-[-20px_0px_40px_0px_rgba(0,0,0,0.12)] w-[420px] z-10 animate-in slide-in-from-right duration-200">
-        {/* Header */}
-        <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-1">
+      <div className="bg-white flex flex-col max-h-full relative shadow-[-20px_0px_40px_0px_rgba(0,0,0,0.12)] w-[440px] z-10 animate-in slide-in-from-right duration-200">
+
+        {/* ── 1. Header ── */}
+        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-slate-100">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
               <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[15px] text-slate-900">Detalhes do participante</p>
             </div>
-            <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-500">{reservation.orderId}</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button onClick={() => copyToClipboard(r.orderId, "orderId")} className="flex items-center gap-1 cursor-pointer hover:bg-slate-50 rounded px-1 -mx-1 transition-colors">
+                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{r.orderId}</p>
+                {copiedField === "orderId" ? (
+                  <svg className="size-3 text-emerald-500" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                ) : (
+                  <svg className="size-3 text-slate-400" fill="none" viewBox="0 0 12 12"><rect x="4" y="1" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1"/><rect x="1" y="4" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1"/></svg>
+                )}
+              </button>
+              {r.origin && (
+                <div className="bg-slate-100 rounded px-1.5 py-0.5">
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-slate-500">{r.origin}</p>
+                </div>
+              )}
+            </div>
+            {/* Status badges — multi-axis */}
+            <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
+              <DrawerStatusChip label={opStatus.label} variant={opStatus.variant} />
+              <DrawerStatusChip label={finStatus.label} variant={finStatus.variant} />
+              <DrawerStatusChip label={insStatus.label} variant={insStatus.variant} />
+            </div>
           </div>
-          {/* Status badge */}
-          <div className={`${statusConfig.bg} ${statusConfig.border} border rounded-full px-3 py-1 shrink-0`}>
-            <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${statusConfig.text}`}>{statusConfig.label}</p>
-          </div>
-          <button onClick={onClose} className="ml-3 cursor-pointer flex items-center justify-center rounded-full size-8 hover:bg-slate-100 transition-colors">
+          <button onClick={onClose} className="ml-3 cursor-pointer flex items-center justify-center rounded-full size-8 hover:bg-slate-100 transition-colors shrink-0 mt-0.5">
             <svg className="size-4" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round"/></svg>
           </button>
         </div>
 
-        {/* Content */}
+        {/* ── Content ── */}
         <div className="flex-1 overflow-y-auto">
-          {/* Participant info */}
+
+          {/* ── 2. Identity ── */}
           <div className="px-6 py-5 border-b border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-br from-indigo-100 to-indigo-50 flex items-center justify-center rounded-full size-12 ring-2 ring-white shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="bg-gradient-to-br from-indigo-100 to-indigo-50 flex items-center justify-center rounded-full size-12 ring-2 ring-white shadow-sm shrink-0">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-indigo-600">{initials}</p>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[15px] text-slate-900 truncate">{participant.name}</p>
-                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-500">{participant.tariffType} · {participant.age} anos</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[15px] text-slate-900">{p.name}</p>
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-500">{p.tariffType} · {p.age} anos</p>
+                  {p.notes === "Comprador" && (
+                    <div className="bg-blue-50 border border-blue-200 rounded px-1.5 py-0.5">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] text-blue-600">Responsável pelo pedido</p>
+                    </div>
+                  )}
+                </div>
+                {participantDoc && (
+                  <button onClick={() => copyToClipboard(participantDoc, "doc")} className="flex items-center gap-1.5 mt-2 cursor-pointer hover:bg-slate-50 rounded px-1 -mx-1 transition-colors">
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{participantDoc}</p>
+                    {copiedField === "doc" ? (
+                      <svg className="size-3 text-emerald-500" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    ) : (
+                      <svg className="size-3 text-slate-400" fill="none" viewBox="0 0 12 12"><rect x="4" y="1" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1"/><rect x="1" y="4" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1"/></svg>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
-            {/* Contact row */}
-            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-50">
-              <div className="flex items-center gap-2 flex-1">
-                <svg className="size-4 text-slate-400" fill="none" viewBox="0 0 16 16"><rect x="3" y="1" width="10" height="14" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M7 12h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600">{phone}</p>
+            {/* Contacts with action buttons */}
+            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-slate-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="size-4 text-slate-400" fill="none" viewBox="0 0 16 16"><rect x="3" y="1" width="10" height="14" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M7 12h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600">{phone}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button className="cursor-pointer rounded-md px-2 py-1 text-[11px] font-['Helvetica_Neue:Regular',sans-serif] text-emerald-600 hover:bg-emerald-50 transition-colors">WhatsApp</button>
+                  <button className="cursor-pointer rounded-md px-2 py-1 text-[11px] font-['Helvetica_Neue:Regular',sans-serif] text-slate-500 hover:bg-slate-50 transition-colors">Ligar</button>
+                </div>
               </div>
-              <div className="flex items-center gap-2 flex-1">
-                <svg className="size-4 text-slate-400" fill="none" viewBox="0 0 16 16"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M1 5l7 4 7-4" stroke="currentColor" strokeWidth="1.2"/></svg>
-                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600 truncate">{email}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Time slot */}
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <svg className="size-5 text-slate-400" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.3"/><path d="M10 5v5l3 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
-              <div>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-slate-900">08:00 - 12:30</p>
-                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Horário da atividade</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <svg className="size-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 16 16"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M1 5l7 4 7-4" stroke="currentColor" strokeWidth="1.2"/></svg>
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600 truncate">{email}</p>
+                </div>
+                <button className="cursor-pointer rounded-md px-2 py-1 text-[11px] font-['Helvetica_Neue:Regular',sans-serif] text-slate-500 hover:bg-slate-50 transition-colors shrink-0">Enviar email</button>
               </div>
             </div>
-            <button className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-indigo-600 hover:text-indigo-700">Remarcar</button>
+            {/* Guardian (for minors) */}
+            {p.guardian && (
+              <div className="mt-3 pt-3 border-t border-slate-50 flex items-center gap-3">
+                <div className="size-7 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
+                  <svg className="size-3.5 text-amber-600" fill="none" viewBox="0 0 14 14"><path d="M7 1a3 3 0 110 6 3 3 0 010-6zM2 12a5 5 0 0110 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-slate-700">Responsável: {p.guardian.name}</p>
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">{p.guardian.relationship} · {p.guardian.phone}</p>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Action buttons */}
-          <div className="px-6 py-4 border-b border-slate-100 flex gap-3">
-            <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors">
-              <svg className="size-4" fill="none" viewBox="0 0 16 16"><path d="M4 8l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white">{isCheckedIn ? "Check-in realizado" : "Realizar check-in"}</span>
-            </button>
-            <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 transition-colors">
-              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-rose-600">Não compareceu</span>
-            </button>
-          </div>
-
-          {/* Services section */}
+          {/* ── 3. Temporal context ── */}
           <div className="px-6 py-4 border-b border-slate-100">
-            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-slate-500 uppercase tracking-wider mb-3">Dados da reserva</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <svg className="size-5 text-slate-400" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.3"/><path d="M10 5v5l3 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                <div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-slate-900">{activityTime}</p>
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Horário da atividade</p>
+                </div>
+              </div>
+              {!isTerminal && (
+                <button className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-indigo-600 hover:text-indigo-700 cursor-pointer">Remarcar</button>
+              )}
+            </div>
+            {p.checkInAt && (
+              <div className="flex items-center gap-2 mt-3 ml-8">
+                <svg className="size-3.5 text-emerald-500" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Check-in às {p.checkInAt.slice(11, 16)}{p.checkInBy ? ` por ${p.checkInBy}` : ""}</p>
+              </div>
+            )}
+            {p.boardingPoint && (
+              <div className="flex items-center gap-3 mt-3">
+                <svg className="size-5 text-slate-400" fill="none" viewBox="0 0 20 20"><path d="M10 2a6 6 0 016 6c0 4.5-6 10-6 10S4 12.5 4 8a6 6 0 016-6z" stroke="currentColor" strokeWidth="1.3"/><circle cx="10" cy="8" r="2" stroke="currentColor" strokeWidth="1.3"/></svg>
+                <div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">{p.boardingPoint}</p>
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Ponto de embarque</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── 4. Action buttons (contextual) ── */}
+          {!isTerminal && (
+            <div className="px-6 py-4 border-b border-slate-100 flex gap-3">
+              {isCheckedIn ? (
+                <button onClick={() => onUndoCheckIn?.(p)} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">
+                  <svg className="size-4" fill="none" viewBox="0 0 16 16"><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Desfazer check-in</span>
+                </button>
+              ) : isNoShow ? (
+                <>
+                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Desfazer não compareceu</span>
+                  </button>
+                  <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Remarcar</span>
+                  </button>
+                </>
+              ) : r.status === "AwaitingPayment" ? (
+                <>
+                  <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors cursor-pointer">
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white">Confirmar reserva</span>
+                  </button>
+                  <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Registrar pagamento</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => onCheckIn?.(p)} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors cursor-pointer">
+                    <svg className="size-4" fill="none" viewBox="0 0 16 16"><path d="M4 8l3 3 5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white">Realizar check-in</span>
+                  </button>
+                  <button onClick={() => onNoShow?.(r, p)} className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 transition-colors cursor-pointer">
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-rose-600">Não compareceu</span>
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ── 5. Reservation data ── */}
+          <DrawerSection title="Dados da reserva">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1344,12 +1526,13 @@ function ParticipantDrawer({ participant, reservation, onClose }: {
                     <svg className="size-4 text-slate-500" fill="none" viewBox="0 0 16 16"><path d="M8 2v12M4 6l4-4 4 4M4 10l4 4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </div>
                   <div>
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">Trilha Pico do Itacolomi</p>
-                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">{participant.tariffType}</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">{activityName}</p>
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">{p.tariffType}</p>
                   </div>
                 </div>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">R$ 150</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">R$ {basePrice}</p>
               </div>
+              {/* Insurance */}
               {hasInsurance && (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -1358,70 +1541,292 @@ function ParticipantDrawer({ participant, reservation, onClose }: {
                     </div>
                     <div>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">Seguro aventura</p>
-                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">Cobertura completa</p>
+                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">Cobertura completa{r.insurancePolicyNumber ? ` · ${r.insurancePolicyNumber}` : ""}</p>
                     </div>
                   </div>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">R$ 25</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">R$ {r.insurancePrice ?? 25}</p>
                 </div>
               )}
+              {!hasInsurance && effectiveInsurance === "Required" && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                      <svg className="size-4 text-amber-600" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2"/><path d="M8 6v3M8 11h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    </div>
+                    <div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-amber-700">Seguro pendente</p>
+                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">Necessário contratar antes do check-in</p>
+                    </div>
+                  </div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-500">R$ {r.insurancePrice ?? 25}</p>
+                </div>
+              )}
+              {/* Additional items */}
+              {(r.additionalItems || []).map((item, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center">
+                      <svg className="size-4 text-slate-400" fill="none" viewBox="0 0 16 16"><path d="M4 4h8v8H4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 4v8M4 8h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    </div>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">{item.name}</p>
+                  </div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">R$ {item.price}</p>
+                </div>
+              ))}
             </div>
-          </div>
+          </DrawerSection>
 
-          {/* Health section */}
-          <div className="px-6 py-4 border-b border-slate-100">
-            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-slate-500 uppercase tracking-wider mb-3">Saúde e observações</p>
+          {/* ── 6. Accessibility (only for PcD/special needs) ── */}
+          {p.accessibility && (
+            <DrawerSection title="Acessibilidade">
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="size-2 rounded-full bg-blue-400" />
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Tipo: {p.accessibility.type}</p>
+                </div>
+                {p.accessibility.equipment && p.accessibility.equipment.length > 0 && (
+                  <div className="flex items-start gap-2">
+                    <div className="size-2 rounded-full bg-slate-300 mt-1.5" />
+                    <div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Equipamentos</p>
+                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.accessibility.equipment.join(", ")}</p>
+                    </div>
+                  </div>
+                )}
+                {p.accessibility.adaptations && p.accessibility.adaptations.length > 0 && (
+                  <div className="flex items-start gap-2">
+                    <div className="size-2 rounded-full bg-slate-300 mt-1.5" />
+                    <div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Adaptações</p>
+                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.accessibility.adaptations.join(" · ")}</p>
+                    </div>
+                  </div>
+                )}
+                {p.accessibility.requiresCompanion && (
+                  <div className="flex items-start gap-2">
+                    <div className="size-2 rounded-full bg-amber-400 mt-1.5" />
+                    <div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Acompanhante obrigatório</p>
+                      {p.accessibility.companionName && <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.accessibility.companionName}</p>}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </DrawerSection>
+          )}
+
+          {/* ── 7. Health & observations ── */}
+          <DrawerSection title="Saúde e observações">
             <div className="space-y-2">
-              <div className="flex items-start gap-3 py-2">
-                <div className={`size-2 rounded-full mt-1.5 ${participant.hasHealthIssue ? "bg-amber-400" : "bg-emerald-400"}`} />
-                <div>
+              {/* Health alerts */}
+              <div className="flex items-start gap-3 py-1.5">
+                <div className={`size-2 rounded-full mt-1.5 shrink-0 ${p.hasHealthIssue || (p.healthDetails?.allergies?.length || 0) > 0 || (p.healthDetails?.chronicConditions?.length || 0) > 0 ? "bg-amber-400" : "bg-emerald-400"}`} />
+                <div className="flex-1">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Alertas de saúde</p>
-                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{participant.hasHealthIssue ? participant.notes || "Hipertensão" : "Nenhum alerta registrado"}</p>
+                  {p.healthDetails?.allergies && p.healthDetails.allergies.length > 0 ? (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Alergias: {p.healthDetails.allergies.join(", ")}</p>
+                  ) : null}
+                  {p.healthDetails?.chronicConditions && p.healthDetails.chronicConditions.length > 0 ? (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.healthDetails.chronicConditions.join(", ")}</p>
+                  ) : null}
+                  {p.healthDetails?.medications && p.healthDetails.medications.length > 0 ? (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Medicamentos: {p.healthDetails.medications.join(", ")}</p>
+                  ) : null}
+                  {!p.hasHealthIssue && !(p.healthDetails?.allergies?.length) && !(p.healthDetails?.chronicConditions?.length) && (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.notes && p.notes !== "Comprador" ? p.notes : "Nenhum alerta registrado"}</p>
+                  )}
                 </div>
               </div>
-              <div className="flex items-start gap-3 py-2">
-                <div className="size-2 rounded-full mt-1.5 bg-amber-400" />
+              {/* Dietary */}
+              <div className="flex items-start gap-3 py-1.5">
+                <div className={`size-2 rounded-full mt-1.5 shrink-0 ${p.dietaryRestrictions && p.dietaryRestrictions.length > 0 ? "bg-amber-400" : "bg-slate-300"}`} />
                 <div>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Restrições alimentares</p>
-                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Intolerância a Lactose</p>
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.dietaryRestrictions && p.dietaryRestrictions.length > 0 ? p.dietaryRestrictions.join(", ") : "Nenhuma restrição"}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 py-2">
-                <div className="size-2 rounded-full mt-1.5 bg-slate-300" />
+              {/* Blood type */}
+              {p.healthDetails?.bloodType && (
+                <div className="flex items-start gap-3 py-1.5">
+                  <div className="size-2 rounded-full mt-1.5 bg-red-300 shrink-0" />
+                  <div>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Tipo sanguíneo</p>
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.healthDetails.bloodType}</p>
+                  </div>
+                </div>
+              )}
+              {/* Health plan */}
+              {p.healthDetails?.healthPlanProvider && (
+                <div className="flex items-start gap-3 py-1.5">
+                  <div className="size-2 rounded-full mt-1.5 bg-blue-300 shrink-0" />
+                  <div>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Plano de saúde</p>
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.healthDetails.healthPlanProvider}{p.healthDetails.healthPlanNumber ? ` · ${p.healthDetails.healthPlanNumber}` : ""}</p>
+                  </div>
+                </div>
+              )}
+              {/* Emergency contact */}
+              <div className="flex items-start gap-3 py-1.5">
+                <div className="size-2 rounded-full mt-1.5 bg-slate-300 shrink-0" />
                 <div>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-700">Contato de emergência</p>
-                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">(31) 99999-9999</p>
+                  {p.emergencyContact ? (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">{p.emergencyContact.name} ({p.emergencyContact.relationship}) · {p.emergencyContact.phone}</p>
+                  ) : (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-400">Não informado</p>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
+          </DrawerSection>
 
-          {/* Payment Summary */}
-          <div className="px-6 py-4">
-            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-slate-500 uppercase tracking-wider mb-3">Resumo do pagamento</p>
+          {/* ── 8. Payment ── */}
+          <DrawerSection title="Resumo do pagamento">
             <div className="space-y-2">
               <div className="flex justify-between py-1">
                 <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600">Subtotal</p>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">R$ {hasInsurance ? "175" : "150"}</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">R$ {subtotal}</p>
               </div>
               <div className="flex justify-between py-1">
-                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600">Taxa</p>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">10%</p>
+                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600">Taxa de serviço</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-slate-900">{feePercent}%</p>
               </div>
               <div className="flex justify-between py-1">
                 <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-600">Cupom</p>
-                <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-400">—</p>
+                {r.coupon ? (
+                  <div className="flex items-center gap-1.5">
+                    <div className="bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] text-emerald-700">{r.coupon.code}</p>
+                    </div>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-emerald-600">-R$ {Math.round(couponDiscount)}</p>
+                  </div>
+                ) : (
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-slate-400">—</p>
+                )}
               </div>
               <div className="border-t border-slate-100 pt-3 mt-2 flex justify-between">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-slate-900">Total pago</p>
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-slate-900">R$ {hasInsurance ? "192" : "165"}</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-slate-900">Total</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-slate-900">R$ {total}</p>
               </div>
+              {/* Payment method + status */}
+              {r.paymentMethod && (
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex items-center gap-2">
+                    <svg className="size-4 text-slate-400" fill="none" viewBox="0 0 16 16"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/><path d="M1 6h14" stroke="currentColor" strokeWidth="1.2"/></svg>
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">
+                      {r.paymentMethod}{r.cardLast4 ? ` ···· ${r.cardLast4}` : ""}{r.installments && r.installments > 1 ? ` · ${r.installments}x` : ""}
+                    </p>
+                  </div>
+                  {r.paidAt && (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-400">
+                      {new Date(r.paidAt).toLocaleDateString("pt-BR")}
+                    </p>
+                  )}
+                </div>
+              )}
+              <button className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-indigo-600 hover:text-indigo-700 transition-colors cursor-pointer">
+                <svg className="size-4" fill="none" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px]">Ver comprovante</span>
+              </button>
             </div>
-            <button className="mt-4 w-full flex items-center justify-center gap-2 py-2 text-indigo-600 hover:text-indigo-700 transition-colors">
-              <svg className="size-4" fill="none" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px]">Ver comprovante</span>
+          </DrawerSection>
+
+          {/* ── 9. Documents ── */}
+          <DrawerSection title="Documentos" defaultOpen={false}>
+            <div className="space-y-2">
+              {[
+                { label: "Voucher", available: r.paymentStatus === "Paid" || r.status === "Confirmed" || r.status === "CheckedIn" },
+                { label: "Comprovante de pagamento", available: r.paymentStatus === "Paid" },
+                { label: hasInsurance ? "Apólice de seguro" : null, available: hasInsurance },
+                { label: "Termo de responsabilidade", available: true },
+                { label: "Termo de uso de imagem", available: true },
+              ].filter(d => d.label).map((doc, i) => (
+                <div key={i} className="flex items-center justify-between py-1.5">
+                  <div className="flex items-center gap-2">
+                    <svg className="size-4 text-slate-400" fill="none" viewBox="0 0 16 16"><path d="M4 1h5l4 4v9a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.2"/><path d="M9 1v4h4" stroke="currentColor" strokeWidth="1.2"/></svg>
+                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${doc.available ? "text-slate-700" : "text-slate-400"}`}>{doc.label}</p>
+                  </div>
+                  {doc.available ? (
+                    <div className="flex items-center gap-1">
+                      <button className="cursor-pointer rounded-md px-2 py-1 text-[11px] font-['Helvetica_Neue:Regular',sans-serif] text-indigo-600 hover:bg-indigo-50 transition-colors">Baixar</button>
+                      <button className="cursor-pointer rounded-md px-2 py-1 text-[11px] font-['Helvetica_Neue:Regular',sans-serif] text-slate-500 hover:bg-slate-50 transition-colors">Reenviar</button>
+                    </div>
+                  ) : (
+                    <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-400">Indisponível</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </DrawerSection>
+
+          {/* ── 10. Group link ── */}
+          {r.type === "group" && r.participants.length > 1 && (
+            <DrawerSection title="Vínculo de grupo" defaultOpen={false}>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-slate-500">Pedido {r.orderId} · {r.participants.length} participantes</p>
+                </div>
+                {r.participants.map((gp) => (
+                  <div key={gp.id} className={`flex items-center gap-3 py-1.5 rounded-lg px-2 -mx-2 ${gp.id === p.id ? "bg-indigo-50/50" : ""}`}>
+                    <div className={`size-7 rounded-full flex items-center justify-center text-[11px] font-['Helvetica_Neue:Medium',sans-serif] ${gp.id === p.id ? "bg-indigo-100 text-indigo-600" : "bg-slate-100 text-slate-500"}`}>
+                      {gp.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] truncate ${gp.id === p.id ? "text-indigo-700" : "text-slate-700"}`}>{gp.name}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">{gp.tariffType}</p>
+                        {gp.notes === "Comprador" && <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-blue-500">Pagador</p>}
+                      </div>
+                    </div>
+                    <div className={`size-2 rounded-full ${gp.checkInStatus === "Done" ? "bg-emerald-400" : gp.checkInStatus === "Absent" ? "bg-amber-400" : "bg-slate-300"}`} />
+                  </div>
+                ))}
+              </div>
+            </DrawerSection>
+          )}
+
+          {/* ── 11. History / Audit ── */}
+          {r.history && r.history.length > 0 && (
+            <DrawerSection title="Histórico" defaultOpen={false}>
+              <div className="relative">
+                <div className="absolute left-[5px] top-2 bottom-2 w-px bg-slate-200" />
+                <div className="space-y-3">
+                  {[...r.history].reverse().map((event) => (
+                    <div key={event.id} className="flex gap-3 relative">
+                      <div className="size-[11px] rounded-full bg-white border-2 border-slate-300 shrink-0 mt-0.5 z-10" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-slate-700">{event.action}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-400">
+                            {new Date(event.timestamp).toLocaleDateString("pt-BR")} às {event.timestamp.slice(11, 16)}
+                          </p>
+                          <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-500">· {event.actor}</p>
+                        </div>
+                        {event.detail && (
+                          <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-slate-400 mt-0.5">{event.detail}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </DrawerSection>
+          )}
+
+        </div>
+
+        {/* ── Footer actions (duplicated for long drawers) ── */}
+        {!isTerminal && (
+          <div className="px-6 py-3 border-t border-slate-100 bg-slate-50/50 flex gap-2 shrink-0">
+            <button className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer">
+              <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px]">Entrar em contato</span>
+            </button>
+            <button className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
+              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px]">Cancelar reserva</span>
             </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -1600,10 +2005,16 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
   const imageStatus: ImageTermStatus = participant.imageTermStatus || (participant.hasImageAuth ? "Authorized" : "Pending");
 
   // Determine insurance variant
-  let insuranceVariant: "contracted" | "mandatory-missing" | "optional-missing" | "insurance-pending" = "optional-missing";
+  const effectiveIns = participant.insuranceStatus || insuranceStatus;
+  const isNotRequired = effectiveIns === "NotRequired";
+  const isDeclined = effectiveIns === "Declined";
+  let insuranceVariant: "contracted" | "mandatory-missing" | "optional-missing" | "insurance-pending" | "insurance-rejected" = "optional-missing";
   let insuranceLabel = "Sem seguro (opcional)";
 
-  if (requiresInsurance) {
+  if (isDeclined) {
+    insuranceVariant = "insurance-rejected";
+    insuranceLabel = requiresInsurance ? "Seguro recusado (obrigatório)" : "Seguro recusado";
+  } else if (requiresInsurance) {
     if (insuranceStatus === "Contracted" || participant.insuranceStatus === "Contracted") {
       insuranceVariant = "contracted";
       insuranceLabel = "Seguro contratado (obrigatório)";
@@ -1636,13 +2047,15 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
         />
       )}
 
-      {/* 2. Insurance — always present */}
-      <ParticipantAttributeBadge
-        category="insurance"
-        variant={insuranceVariant}
-        tooltipLabel={insuranceLabel}
-        showLabel
-      />
+      {/* 2. Insurance — hidden when NotRequired */}
+      {!isNotRequired && (
+        <ParticipantAttributeBadge
+          category="insurance"
+          variant={insuranceVariant}
+          tooltipLabel={insuranceLabel}
+          showLabel
+        />
+      )}
 
       {/* 3. Health alert — when applicable */}
       {participant.hasHealthIssue && (
@@ -2090,7 +2503,7 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
     <div className="relative" ref={menuRef} onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => setOpen(!open)}
-        className="bg-white border border-[#e4e4e7] cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[28px] hover:bg-[#f8fafc] transition-colors"
+        className="bg-white border border-[#e4e4e7] cursor-pointer flex items-center justify-center rounded-[8px] shrink-0 size-[32px] hover:bg-[#f8fafc] transition-colors"
       >
         <svg className="size-[14px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="12.5" r="1" fill="#717680"/></svg>
       </button>
@@ -2166,7 +2579,13 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
 
   // Sticky TopBar: track when search+sort+filters scrolls out of view
   const searchBarRef = useRef<HTMLDivElement>(null);
+  const stickyTopBarRef = useRef<HTMLDivElement>(null);
   const [searchBarHidden, setSearchBarHidden] = useState(false);
+  const [stickyTopBarHeight, setStickyTopBarHeight] = useState(0);
+  useEffect(() => {
+    if (!searchBarHidden || !stickyTopBarRef.current) { setStickyTopBarHeight(0); return; }
+    setStickyTopBarHeight(stickyTopBarRef.current.offsetHeight);
+  }, [searchBarHidden]);
   useEffect(() => {
     const el = searchBarRef.current;
     if (!el) return;
@@ -2440,10 +2859,11 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const totalCount = useMemo(() => reservations.reduce((s, r) => s + r.participants.length, 0), [reservations]);
 
   // Filter counts
+  const inactiveStatuses = new Set(["Cancelled", "Expired", "NoShow"]);
   const counts = useMemo(() => {
     let pending = 0, done = 0, cancelled = 0;
     for (const r of reservations) {
-      if (r.status === "Cancelled") { cancelled += r.participants.length; continue; }
+      if (inactiveStatuses.has(r.status)) { cancelled += r.participants.length; continue; }
       for (const p of r.participants) {
         if (p.checkInStatus === "Done") done++;
         else pending++;
@@ -2456,9 +2876,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const filteredReservations = useMemo(() => {
     let result = reservations;
     // Tab filter
-    if (activeFilter === "a-fazer-checkin") result = result.filter((r) => r.status !== "Cancelled" && r.participants.some((p) => p.checkInStatus === "Pending"));
-    else if (activeFilter === "checkin-realizado") result = result.filter((r) => r.status !== "Cancelled" && r.participants.some((p) => p.checkInStatus === "Done"));
-    else if (activeFilter === "canceladas") result = result.filter((r) => r.status === "Cancelled");
+    if (activeFilter === "a-fazer-checkin") result = result.filter((r) => !inactiveStatuses.has(r.status) && r.status !== "Performed" && r.participants.some((p) => p.checkInStatus === "Pending"));
+    else if (activeFilter === "checkin-realizado") result = result.filter((r) => !inactiveStatuses.has(r.status) && r.participants.some((p) => p.checkInStatus === "Done"));
+    else if (activeFilter === "canceladas") result = result.filter((r) => inactiveStatuses.has(r.status));
     // Search filter
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -2481,11 +2901,12 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       {/* ── Sticky TopBar: search + sort + filters (+ bulk actions when selected) ── */}
       {searchBarHidden && (
         <div
-          className="fixed left-0 right-0 top-0 z-[11] bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] animate-[fadeSlideDown_350ms_cubic-bezier(0.22,1,0.36,1)]"
+          ref={stickyTopBarRef}
+          className="sticky top-0 z-[11] bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] animate-[fadeSlideDown_350ms_cubic-bezier(0.22,1,0.36,1)]"
           style={{ animationFillMode: "both" }}
         >
           {/* Search + Sort + Filters row */}
-          <div className="flex gap-[12px] items-center" style={{ padding: "24px 24px 20px 248px" }}>
+          <div className="flex gap-[12px] items-center" style={{ padding: "16px 32px" }}>
             <div className="bg-white flex-1 min-w-0 relative rounded-[10px]">
               <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[10px]" />
               <div className="content-stretch flex gap-[8px] items-center px-[14px] py-[10px] relative size-full">
@@ -2534,98 +2955,6 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               {showFilters && <FiltersDrawer onClose={() => setShowFilters(false)} />}
             </div>
           </div>
-          {/* Bulk actions row — only when selected + scrolled past bulk bar */}
-          {hasSelection && bulkBarHidden && (
-            <div className="animate-[slideDown_250ms_ease-out]" style={{ animationFillMode: "both" }}>
-              <div className="border-t border-[#f5f5f5]" style={{ marginLeft: "248px", marginRight: "24px" }} />
-              <div className="flex items-center gap-[12px] w-full" style={{ padding: "12px 40px 16px 264px" }}>
-                <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "20px" }}>
-                  <div className="flex items-center justify-center rounded-[4px] size-[20px] bg-[#0b5ed7]">
-                    <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </div>
-                </button>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37] whitespace-nowrap">Todos os {selectedIds.size} selecionados</p>
-                <div className="flex items-center gap-[12px] ml-auto">
-                  {(() => {
-                    const isRealizarMode = checkInLabel === "Realizar Check-in's";
-                    const checkInDisabled = isRealizarMode && selectedInsuredCount === 0;
-                    const badgeText = isRealizarMode ? `${selectedInsuredCount} de ${selectedIds.size}` : getBadgeLabel("undo-check-in");
-                    return (
-                      <div className="relative"
-                        onMouseEnter={() => checkInDisabled && setShowBulkCheckInTipStickyBar(true)}
-                        onMouseLeave={() => setShowBulkCheckInTipStickyBar(false)}
-                      >
-                        <button
-                          onClick={() => !checkInDisabled && handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
-                          disabled={checkInDisabled}
-                          className={`flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 transition-colors ${checkInDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-[#f8fafc]"}`}
-                        >
-                          {isRealizarMode ? (
-                            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke={checkInDisabled ? "#727685" : "#0b5ed7"} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          ) : (
-                            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="#535862" strokeWidth="1.3"/><path d="M6 6l4 4M10 6l-4 4" stroke="#535862" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                          )}
-                          <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${checkInDisabled ? "text-[#727685]" : isRealizarMode ? "text-[#0b5ed7]" : "text-[#414651]"}`}>{checkInLabel}</p>
-                          <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
-                            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{badgeText}</p>
-                          </div>
-                        </button>
-                        {showBulkCheckInTipStickyBar && checkInDisabled && (
-                          <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[300px] z-50 pointer-events-none text-center">
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">É necessário contratar o seguro dos participantes antes de realizar essa ação</p>
-                            <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
-                  <button
-                    onClick={() => handleBulkAction(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm", confirmLabel)}
-                    className="cursor-pointer flex gap-[8px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors"
-                  >
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">{confirmLabel}</p>
-                    <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
-                      <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{getBadgeLabel(confirmLabel === "Confirmar reservas" ? "confirm" : "undo-confirm")}</p>
-                    </div>
-                  </button>
-                  <div className="relative">
-                    <button onClick={() => setShowMoreActionsStickyBar(!showMoreActionsStickyBar)} className="cursor-pointer flex gap-[6px] items-center px-[12px] py-[6px] rounded-[8px] shrink-0 hover:bg-[#f8fafc] transition-colors">
-                      <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="3" cy="8" r="1.2" fill="#535862"/><circle cx="8" cy="8" r="1.2" fill="#535862"/><circle cx="13" cy="8" r="1.2" fill="#535862"/></svg>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862] whitespace-nowrap">Mais ações</p>
-                    </button>
-                    {showMoreActionsStickyBar && (
-                      <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[260px] z-20">
-                        {([
-                          { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false },
-                          selectedUninsuredCount >= selectedInsuredCount
-                            ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false }
-                            : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer contratação de seguros", destructive: false },
-                          { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false },
-                          { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false },
-                          { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true },
-                          { action: "cancel" as BulkAction, label: "Cancelar reservas", destructive: true },
-                        ]).map(({ action, label, destructive }) => (
-                          <button
-                            key={action}
-                            onClick={() => handleBulkAction(action, label)}
-                            className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full hover:bg-[#f8fafc] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
-                          >
-                            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{label}</p>
-                            <div className="bg-[#f1f5f9] px-[6px] py-[1px] rounded-[6px]">
-                              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[11px] text-[#717680]">{getBadgeLabel(action)}</p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <button onClick={clearSelection} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[28px] hover:bg-[#f1f5f9] transition-colors">
-                    <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -2778,7 +3107,8 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Filter tabs OR Bulk actions bar */}
-      <div ref={bulkBarRef} className={`mt-[16px] relative w-full rounded-[12px] h-[52px] flex items-center transition-colors ${hasSelection ? "bg-[#181d27] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.15)]" : "bg-white"}`} style={{ padding: "0 16px", margin: "16px 32px 0 32px", width: "calc(100% - 64px)" }}>
+      <div className={`${hasSelection ? "sticky z-[10]" : "relative"}`} style={{ padding: `${hasSelection && stickyTopBarHeight > 0 ? "0px" : "16px"} 32px 0 32px`, ...(hasSelection ? { top: stickyTopBarHeight > 0 ? `${stickyTopBarHeight + 16}px` : "0px" } : {}) }}>
+      <div ref={bulkBarRef} className={`w-full rounded-[12px] h-[52px] flex items-center transition-colors ${hasSelection ? "bg-[#181d27] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.15)]" : "bg-white"}`} style={{ padding: "0 16px" }}>
         {!hasSelection && <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />}
         {hasSelection ? (
           /* ── Bulk actions bar — dark style ── */
@@ -2925,6 +3255,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
           </div>
         )}
       </div>
+      </div>
 
       {/* Reservation list — Figma-faithful layout */}
       <div className="content-stretch flex flex-col items-start mt-[20px] relative w-full" style={{ minHeight: "calc(100vh - 320px)", padding: "0 32px" }}>
@@ -2935,9 +3266,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
           const doneCount = r.participants.filter((p) => p.checkInStatus === "Done").length;
 
           return (
-            <div key={r.id} className={`relative rounded-[12px] shrink-0 w-full mb-[20px] border border-solid shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] transition-all duration-150 hover:shadow-[0px_2px_4px_0px_rgba(10,13,18,0.08)] ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff] border-[#c7d4f4]" : "bg-white border-[#EEF0F4]"}`}>
+            <div key={r.id} className={`relative rounded-[12px] shrink-0 w-full mb-[20px] border border-solid shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] transition-all duration-150 hover:shadow-[0px_2px_4px_0px_rgba(10,13,18,0.08)] overflow-visible ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff] border-[#c7d4f4]" : "bg-white border-[#EEF0F4]"}`}>
               {/* ── Reservation header ── */}
-              <div className={`flex h-[40px] items-center relative w-full rounded-t-[12px] overflow-hidden transition-colors ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff]" : ""}`}>
+              <div className={`flex h-[40px] items-center relative w-full rounded-t-[12px] transition-colors ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff]" : ""}`}>
                 {/* Left bar — blue for groups, green for individual */}
                 <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-tl-[12px] ${isGroup ? "bg-[#0b5ed7]" : "bg-[#079455]"}`} />
                 <div className="flex gap-[8px] items-center size-full" style={{ padding: "0 16px 0 16px" }}>
@@ -2970,7 +3301,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     </button>
                     <div className={`absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[6px] px-[8px] py-[4px] rounded-[6px] text-center transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 ${copiedId === r.orderId ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-white">{copiedId === r.orderId ? "Copiado!" : "Copiar ID"}</p>
-                      <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-[#181d27]" />
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
                     </div>
                   </div>
                   {/* Spacer */}
@@ -3004,11 +3335,14 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     {visibleParticipants.map((p, pIdx) => {
                 const isCancelled = r.status === "Cancelled";
                 const isNoShow = r.status === "NoShow";
+                const isExpired = r.status === "Expired";
+                const isPerformed = r.status === "Performed";
+                const isIndividualAbsent = !isCancelled && !isNoShow && p.checkInStatus === "Absent";
                 const isDone = p.checkInStatus === "Done";
-                const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow;
+                const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
                 const isLastRow = pIdx === visibleParticipants.length - 1;
                 return (
-                  <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isLastRow ? "rounded-b-[12px]" : ""} ${isCancelled ? "opacity-30" : ""} ${isNoShow ? "opacity-50" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                  <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isLastRow ? "rounded-b-[12px]" : ""} ${isCancelled || isExpired ? "opacity-30" : ""} ${isNoShow || isIndividualAbsent ? "opacity-50" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
                     {/* Blue left bar — only when selected */}
                     {selectedIds.has(p.id) && (
                       <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
@@ -3036,9 +3370,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       )}
                     </button>
                     {/* Name cell */}
-                    <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "286px", padding: "8px 16px" }}>
+                    <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
                       <div className="flex flex-col gap-[2px] items-start min-w-0 flex-1 overflow-hidden">
-                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled ? "line-through" : ""}`}>{p.name}</p>
+                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name}</p>
                         <div className="flex gap-[4px] items-center min-w-0 overflow-hidden">
                           {isGroup && r.participants[0].id === p.id && (
                             <>
@@ -3056,6 +3390,34 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     </div>
                     {/* Vertical divider */}
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                    {/* Reservation status badge */}
+                    <div className="flex items-center justify-center shrink-0" style={{ width: "130px", padding: "8px 12px" }}>
+                      <ParticipantAttributeBadge
+                        category="status"
+                        variant={
+                          isCancelled ? "cancelled"
+                          : isExpired ? "alert"
+                          : isNoShow || isIndividualAbsent ? "no-show"
+                          : isPerformed ? "check-in-done"
+                          : isDone ? "check-in-done"
+                          : r.status === "AwaitingPayment" ? "awaiting-payment"
+                          : "pending"
+                        }
+                        tooltipLabel={
+                          isCancelled ? "Reserva cancelada — Motivo registrado no histórico"
+                          : isExpired ? "Reserva expirada — Prazo de pagamento excedido"
+                          : isNoShow ? "Não compareceu — Vaga retida, sem estorno automático"
+                          : isIndividualAbsent ? "Cancelado individualmente — Reembolso parcial processado"
+                          : isPerformed ? "Atividade realizada — Concluída com sucesso"
+                          : isDone ? "Check-in realizado — Participante presente"
+                          : r.status === "AwaitingPayment" ? "Agendada — Aguardando confirmação de pagamento"
+                          : "Confirmada — Aguardando check-in no dia"
+                        }
+                        showLabel
+                      />
+                    </div>
+                    {/* Vertical divider */}
+                    <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                     {/* Badges — atributos do participante */}
                     <div className="flex flex-1 items-center min-w-0" style={{ padding: "10px 12px" }}>
                       <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
@@ -3064,21 +3426,6 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {/* Three-dot menu */}
                       <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
-                      {/* QR Code button */}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); }}
-                        className="group relative flex items-center justify-center size-[32px] rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] hover:bg-[#dbeafe] hover:border-[#93c5fd] active:bg-[#bfdbfe] transition-all duration-150 cursor-pointer"
-                      >
-                        <svg className="size-[16px] text-[#0b5ed7] transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
-                        </svg>
-                        {/* Tooltip */}
-                        <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-[6px] -translate-x-1/2 rounded-[6px] bg-[#181d27] px-[8px] py-[4px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[normal] text-white">Check-in via QR Code</p>
-                          <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[4px] border-r-[4px] border-l-[4px] border-t-[#181d27] border-r-transparent border-l-transparent" />
-                        </div>
-                      </button>
                       <CheckInButton isDone={isDone} disabled={checkInDisabled} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                     </div>
                   </div>
@@ -3087,17 +3434,20 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     {/* Expandable rest of group */}
                     {isGroup && restParticipants.length > 0 && (
                       <div
-                        className="overflow-hidden transition-all duration-300 ease-in-out"
+                        className={`transition-all duration-300 ease-in-out ${expanded ? "overflow-visible" : "overflow-hidden"}`}
                         style={{ maxHeight: expanded ? `${restParticipants.length * 60}px` : "0px", opacity: expanded ? 1 : 0 }}
                       >
                         {restParticipants.map((p, pIdx) => {
                           const isCancelled = r.status === "Cancelled";
                           const isNoShow = r.status === "NoShow";
+                          const isExpired = r.status === "Expired";
+                          const isPerformed = r.status === "Performed";
+                          const isIndividualAbsent = !isCancelled && !isNoShow && p.checkInStatus === "Absent";
                           const isDone = p.checkInStatus === "Done";
-                          const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow;
+                          const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
                           const isLastRow = pIdx === restParticipants.length - 1;
                           return (
-                            <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isCancelled ? "opacity-30" : ""} ${isNoShow ? "opacity-50" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                            <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isCancelled || isExpired ? "opacity-30" : ""} ${isNoShow || isIndividualAbsent ? "opacity-50" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
                               {selectedIds.has(p.id) && (
                                 <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
                               )}
@@ -3110,13 +3460,40 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                                   <div className="bg-white border border-[#d5d7da] border-solid rounded-[6px] shrink-0 size-[22px]" />
                                 )}
                               </button>
-                              <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "286px", padding: "8px 16px" }}>
+                              <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
                                 <div className="flex flex-col gap-[2px] items-start min-w-0 flex-1 overflow-hidden">
-                                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled ? "line-through" : ""}`}>{p.name}</p>
+                                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name}</p>
                                   <div className="flex gap-[4px] items-center">
                                     <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{p.tariffType} · {p.age} anos</p>
                                   </div>
                                 </div>
+                              </div>
+                              <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                              {/* Reservation status badge */}
+                              <div className="flex items-center justify-center shrink-0" style={{ width: "130px", padding: "8px 12px" }}>
+                                <ParticipantAttributeBadge
+                                  category="status"
+                                  variant={
+                                    isCancelled ? "cancelled"
+                                    : isExpired ? "cancelled"
+                                    : isNoShow || isIndividualAbsent ? "no-show"
+                                    : isPerformed ? "check-in-done"
+                                    : isDone ? "check-in-done"
+                                    : r.status === "AwaitingPayment" ? "awaiting-payment"
+                                    : "pending"
+                                  }
+                                  tooltipLabel={
+                                    isCancelled ? "Status — Reserva cancelada"
+                                    : isExpired ? "Status — Reserva expirada"
+                                    : isNoShow ? "Status — Não compareceu"
+                                    : isIndividualAbsent ? "Status — Cancelado individualmente"
+                                    : isPerformed ? "Status — Atividade realizada"
+                                    : isDone ? "Status — Check-in realizado"
+                                    : r.status === "AwaitingPayment" ? "Status — Aguardando pagamento"
+                                    : "Status — Confirmada, aguardando check-in"
+                                  }
+                                  showLabel
+                                />
                               </div>
                               <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                               <div className="flex flex-1 items-center min-w-0" style={{ padding: "8px 12px" }}>
@@ -3124,21 +3501,6 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                               </div>
                               <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
                                 <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
-                                {/* QR Code button */}
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); }}
-                                  className="group relative flex items-center justify-center size-[32px] rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] hover:bg-[#dbeafe] hover:border-[#93c5fd] active:bg-[#bfdbfe] transition-all duration-150 cursor-pointer"
-                                >
-                                  <svg className="size-[16px] text-[#0b5ed7] transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
-                                  </svg>
-                                  {/* Tooltip */}
-                                  <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-[6px] -translate-x-1/2 rounded-[6px] bg-[#181d27] px-[8px] py-[4px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[normal] text-white">Check-in via QR Code</p>
-                                    <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[4px] border-r-[4px] border-l-[4px] border-t-[#181d27] border-r-transparent border-l-transparent" />
-                                  </div>
-                                </button>
                                 <CheckInButton isDone={isDone} disabled={checkInDisabled} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                               </div>
                             </div>
@@ -3168,7 +3530,18 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       {/* Participant data drawer */}
-      {drawerData && <ParticipantDrawer participant={drawerData.p} reservation={drawerData.r} onClose={() => setDrawerData(null)} />}
+      {drawerData && (
+        <ParticipantDrawer
+          participant={drawerData.p}
+          reservation={drawerData.r}
+          onClose={() => setDrawerData(null)}
+          activity={activity}
+          isInsured={isParticipantInsured(drawerData.p.id)}
+          onCheckIn={(pp) => { setDrawerData(null); setCheckInModal([pp]); }}
+          onUndoCheckIn={(pp) => { dispatch({ type: "UNDO_CHECK_IN", participantId: pp.id }); showToast(`Check-in de ${pp.name.split(" ")[0]} desfeito.`); setDrawerData(null); }}
+          onNoShow={(rr, pp) => { setDrawerData(null); setNoShowModal({ r: rr, p: pp }); }}
+        />
+      )}
       {/* Payment drawer */}
       {paymentDrawerRes && <PaymentDrawer reservation={paymentDrawerRes} onClose={() => setPaymentDrawerRes(null)} />}
       {/* Cancel confirmation modal */}

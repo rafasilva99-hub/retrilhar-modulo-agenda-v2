@@ -88,11 +88,70 @@ export type InsuranceStatus =
 
 export type ImageTermStatus = "Authorized" | "Refused" | "Pending";
 
-export type TariffType = "Adulto" | "Infantil" | "Cortesia";
+export type TariffType = "Adulto" | "Infantil" | "Cortesia" | "Idoso" | "PcD";
 
 export type CheckInStatus = "Pending" | "Done" | "Absent";
 
 export type ReservationType = "individual" | "group";
+
+export type ReservationOrigin = "Site" | "B2B" | "Manual" | "Importada" | "API parceiro";
+
+export type PaymentMethod = "PIX" | "Cartão" | "Dinheiro" | "Transferência" | "Boleto";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Participant — drawer detail types
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface EmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
+}
+
+export interface Guardian {
+  name: string;
+  relationship: string;
+  phone: string;
+}
+
+export interface HealthDetails {
+  allergies?: string[];
+  medications?: string[];
+  chronicConditions?: string[];
+  bloodType?: string;
+  healthPlanProvider?: string;
+  healthPlanNumber?: string;
+}
+
+export interface AccessibilityInfo {
+  type: string;
+  equipment?: string[];
+  requiresCompanion: boolean;
+  companionName?: string;
+  adaptations?: string[];
+  communicationPreference?: string;
+}
+
+export interface ReservationHistoryEvent {
+  id: string;
+  /** ISO datetime */
+  timestamp: string;
+  action: string;
+  actor: string;
+  detail?: string;
+}
+
+export interface AdditionalItem {
+  name: string;
+  price: number;
+}
+
+export interface CouponInfo {
+  code: string;
+  type: "percentual" | "fixo";
+  value: number;
+  appliedBy: string;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Participant
@@ -125,6 +184,20 @@ export interface Participant {
   hasSpecialNeeds?: boolean;
   /** Has dietary restrictions */
   hasDietaryRestriction?: boolean;
+
+  // ── Drawer detail fields ──
+  phone?: string;
+  email?: string;
+  /** CPF, RG or passport */
+  document?: string;
+  emergencyContact?: EmergencyContact;
+  guardian?: Guardian;
+  healthDetails?: HealthDetails;
+  dietaryRestrictions?: string[];
+  accessibility?: AccessibilityInfo;
+  /** ISO datetime of check-in */
+  checkInAt?: string;
+  checkInBy?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -143,6 +216,25 @@ export interface Reservation {
   insuranceStatus: InsuranceStatus;
   /** ISO datetime string */
   createdAt: string;
+
+  // ── Drawer detail fields ──
+  origin?: ReservationOrigin;
+  /** Base price per participant */
+  basePrice?: number;
+  insurancePrice?: number;
+  serviceFeePercent?: number;
+  additionalItems?: AdditionalItem[];
+  coupon?: CouponInfo;
+  paymentMethod?: PaymentMethod;
+  /** ISO datetime of payment */
+  paidAt?: string;
+  /** Card last 4 digits */
+  cardLast4?: string;
+  /** Number of installments */
+  installments?: number;
+  /** Insurance policy number */
+  insurancePolicyNumber?: string;
+  history?: ReservationHistoryEvent[];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

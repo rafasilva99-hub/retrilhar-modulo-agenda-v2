@@ -2544,6 +2544,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
   const [reservations, dispatch] = useReducer(reservationsReducer, mockReservations);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(mockReservations.filter((r) => r.type === "group").map((r) => r.id)));
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -3016,10 +3017,22 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">Portaria · Parque do Itacolomi</p>
                 </div>
                 <div className="w-[1px] h-[28px] bg-white/20" />
-                <div className="flex flex-col">
-                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Guia</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">Pedro Lima</p>
-                </div>
+                <button onClick={() => setShowTeamModal(true)} className="flex flex-col items-start cursor-pointer hover:opacity-80 transition-opacity">
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Equipe responsável</p>
+                  <div className="flex items-center gap-[6px]">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{activity.assignedGuides.length} atribuído(s)</p>
+                    <div className="group/info relative">
+                      <svg className="size-[16px] text-white/40 hover:text-white/70 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 16v-4M12 8h.01" />
+                      </svg>
+                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/info:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{activity.assignedGuides.length} seguro(s) contratado(s)</p>
+                        <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                      </div>
+                    </div>
+                  </div>
+                </button>
               </div>
 
               {/* Weather widget - contextual based on activity timing */}
@@ -3034,18 +3047,24 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
 
                 return (
                   <div className="flex items-center gap-[10px] bg-gradient-to-r from-amber-400/15 to-orange-400/10 backdrop-blur-sm border border-amber-300/20 rounded-[12px] px-[14px] py-[10px]">
-                    <svg className="size-[28px]" viewBox="0 0 32 32" fill="none">
-                      <circle cx="16" cy="16" r="6" fill="#fbbf24" />
-                      <g stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" opacity="0.8">
-                        <path d="M16 5v3" /><path d="M16 24v3" />
-                        <path d="M5 16h3" /><path d="M24 16h3" />
-                        <path d="M8.2 8.2l2 2" /><path d="M21.8 21.8l2 2" />
-                        <path d="M8.2 23.8l2-2" /><path d="M21.8 10.2l2-2" />
-                      </g>
-                    </svg>
+                    <div className="group relative">
+                      <svg className="size-[28px] cursor-default" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="6" fill="#fbbf24" />
+                        <g stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" opacity="0.8">
+                          <path d="M16 5v3" /><path d="M16 24v3" />
+                          <path d="M5 16h3" /><path d="M24 16h3" />
+                          <path d="M8.2 8.2l2 2" /><path d="M21.8 21.8l2 2" />
+                          <path d="M8.2 23.8l2-2" /><path d="M21.8 10.2l2-2" />
+                        </g>
+                      </svg>
+                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{weatherCondition}</p>
+                        <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                      </div>
+                    </div>
                     <div className="flex flex-col">
-                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-amber-200/70 uppercase tracking-[0.5px]">{weatherLabel}</p>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{temp}°C · {weatherCondition}</p>
+                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-amber-200/70 uppercase tracking-[0.5px]">Previsão</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{temp}°C</p>
                     </div>
                   </div>
                 );
@@ -3533,6 +3552,91 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       )}
       {/* Payment drawer */}
       {paymentDrawerRes && <PaymentDrawer reservation={paymentDrawerRes} onClose={() => setPaymentDrawerRes(null)} />}
+      {/* Team modal */}
+      {showTeamModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onKeyDown={(e) => e.key === "Escape" && setShowTeamModal(false)}>
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowTeamModal(false)} />
+          <div className="bg-white max-w-[480px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            {/* Header */}
+            <div className="flex items-center justify-between p-[24px] pb-[16px]">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Equipe responsável</p>
+              <button onClick={() => setShowTeamModal(false)} className="cursor-pointer flex items-center justify-center rounded-full size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+            {/* Search + dropdown */}
+            <div className="px-[24px] pb-[8px]">
+              <div className="bg-white relative rounded-[10px] border border-[#e9eaeb]">
+                <div className="flex gap-[8px] items-center px-[14px] py-[10px]">
+                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#a4a7ae" strokeWidth="1.5"/><path d="M14 14l3 3" stroke="#a4a7ae" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  <input type="text" placeholder="Buscar por nome..." className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[14px] text-[#414651] placeholder:text-[#a4a7ae] bg-transparent" />
+                  <svg className="shrink-0 size-[16px] text-[#a4a7ae] cursor-pointer hover:text-[#717680] transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            {/* Team list */}
+            <div className="px-[24px] pb-[24px] pt-[8px]">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#a4a7ae] uppercase tracking-[0.5px] mb-[12px]">Equipe atribuída</p>
+              <div className="flex flex-col gap-[8px]">
+                {activity.assignedGuides.map((guide, i) => {
+                  const hasInsurance = i === 0;
+                  const hasConflict = i === 1;
+                  return (
+                    <div key={i} className="rounded-[10px] border border-[#f5f5f5] bg-[#fafafa] overflow-hidden">
+                      <div className="flex items-center gap-[16px] bg-white border border-[#f5f5f5] rounded-[10px] px-[16px] py-[14px]">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-[6px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#314158]">{guide}</p>
+                            {hasInsurance ? (
+                              <div className="flex items-center gap-[4px] bg-[#ecfdf3] border-[0.5px] border-[#a6f4c5] rounded-[4px] px-[6px] py-[2px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#079455] whitespace-nowrap">Seguro contratado</p>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-[4px] bg-[#fff7eb] border-[0.5px] border-[#fef0c7] rounded-[4px] px-[6px] py-[2px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#dc6803] whitespace-nowrap">Sem seguro</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-[8px] shrink-0">
+                          {!hasInsurance && (
+                            <button className="cursor-pointer flex items-center gap-[6px] px-[12px] py-[6px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors">
+                              <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#414651" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"/></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] whitespace-nowrap">Contratar seguro</p>
+                            </button>
+                          )}
+                          <button className="cursor-pointer flex items-center justify-center rounded-full size-[28px] hover:bg-[#fef3f2] transition-colors">
+                            <svg className="size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="#d92d20" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                      {hasConflict && (
+                        <div className="flex items-center gap-[6px] px-[12px] py-[12px] bg-[#fafafa]">
+                          <div className="flex items-center gap-[6px] bg-[#fff7eb] border-[0.5px] border-[#fef0c7] rounded-[4px] px-[6px] py-[2px]">
+                            <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 24 24" strokeWidth="1.2" stroke="#dc6803" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+                            </svg>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#536278]">Já escalado em <strong className="text-[#1b71fd]">"Rapel Cachoeira Alta"</strong>, das 09:00 às 12:00.</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Footer — insurance info */}
+            <div className="border-t border-[#f5f5f5] px-[24px] py-[16px] flex items-center justify-between">
+              <div className="flex items-center gap-[6px]">
+                <svg className="size-[16px] text-emerald-500" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"/></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{activity.assignedGuides.length} seguro(s) contratado(s)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Cancel confirmation modal */}
       {/* Check-in confirmation modal */}
       {checkInModal && (() => {

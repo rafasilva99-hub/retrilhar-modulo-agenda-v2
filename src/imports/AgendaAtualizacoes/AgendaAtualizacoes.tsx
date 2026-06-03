@@ -2117,7 +2117,7 @@ function ParticipantTariffCell({ tariffType }: { tariffType: string }) {
     <div className="flex items-center shrink-0 min-w-0" style={{ width: "240px", padding: "8px 12px" }}>
       <div className="flex flex-col gap-[1px] min-w-0 w-full">
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] truncate w-full">{tariffType}</p>
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-[#a1a1aa] whitespace-nowrap">Tipo de fatura</p>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-[#a1a1aa] whitespace-nowrap">Tipo de tarifa</p>
       </div>
     </div>
   );
@@ -3323,22 +3323,22 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                 {/* Left bar removed per design update */}
                 <div className="flex gap-[8px] items-center size-full" style={{ padding: "0 16px 0 16px" }}>
                   {/* Type chip — icon + count */}
-                  <div className={`flex items-center gap-[4px] rounded-[6px] shrink-0 px-[6px] py-[3px] border ${isGroup ? "bg-[#fef6ee] border-[#f9dbaf]" : "bg-[#f4f3ff] border-[#d9d6fe]"}`}>
+                  <div className="flex items-center gap-[4px] rounded-[6px] shrink-0 px-[6px] py-[3px] border bg-[#f8fafc] border-[#e2e8f0]">
                     <svg className="size-[12px]" fill="none" viewBox="0 0 24 24">
                       {isGroup ? (
                         <>
-                          <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="#E04F16" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          <circle cx="9" cy="7" r="4" stroke="#E04F16" strokeWidth="1.5"/>
-                          <path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#E04F16" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="9" cy="7" r="4" stroke="#64748b" strokeWidth="1.5"/>
+                          <path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                         </>
                       ) : (
                         <>
-                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#6941C6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          <circle cx="12" cy="7" r="4" stroke="#6941C6" strokeWidth="1.5"/>
+                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#64748b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="12" cy="7" r="4" stroke="#64748b" strokeWidth="1.5"/>
                         </>
                       )}
                     </svg>
-                    <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none ${isGroup ? "text-[#E04F16]" : "text-[#6941C6]"}`}>{r.participants.length}</span>
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#475569]">{r.participants.length}</span>
                   </div>
                   {/* Title */}
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] whitespace-nowrap">{isGroup ? "Reserva em grupo" : "Reserva individual"}</p>

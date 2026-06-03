@@ -2997,7 +2997,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
             {/* Enhanced metadata row */}
             <div className="flex items-center gap-[16px] flex-wrap">
               {/* Info card - Date | Time | Location | Guide */}
-              <div className="flex items-center gap-[14px] bg-white/10 backdrop-blur-sm border border-white/15 rounded-[12px] px-[14px] py-[10px]">
+              <div className="relative z-[1] flex items-center gap-[14px] bg-white/10 backdrop-blur-sm border border-white/15 rounded-[12px] px-[14px] py-[10px]">
                 <div className="flex flex-col">
                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Hoje</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{(() => {

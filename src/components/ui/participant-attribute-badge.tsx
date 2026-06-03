@@ -70,6 +70,10 @@ const iconPaths = {
   "user-check":
     "M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2 M9 7a4 4 0 100 8 4 4 0 000-8z M16 11l2 2 4-4",
   "credit-card": "M3 5h18a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V7a2 2 0 012-2z M1 10h22",
+  "dollar-02": [
+    "M18.4167 8.14815C18.4167 5.85719 15.5438 4 12 4C8.45617 4 5.58333 5.85719 5.58333 8.14815C5.58333 10.4391 7.33333 11.7037 12 11.7037C16.6667 11.7037 19 12.8889 19 15.8519C19 18.8148 15.866 20 12 20C8.13401 20 5 18.1428 5 15.8519",
+    "M12 2V22",
+  ],
   "calendar-x":
     "M3 6a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6z M16 2v4 M8 2v4 M3 10h18 M10 14l4 4 M14 14l-4 4",
   "calendar-check":
@@ -77,6 +81,13 @@ const iconPaths = {
   "refresh-cw":
     "M23 4v6h-6 M1 20v-6h6 M3.51 9a9 9 0 0114.85-3.36L23 10 M1 14l4.64 4.36A9 9 0 0020.49 15",
   walking: "M12 4a2 2 0 100-4 2 2 0 000 4z M14 10l4 4v6 M10 10l-4 4v6 M12 10v6 M8 10h8",
+  stethoscope: [
+    "M13.0014 2C14.1053 2 15.0003 2.93126 15.0003 4.08003C15.0003 5.02915 15.0362 5.87375 14.2692 6.57196C11.7587 8.85732 10.5034 10 9.00027 10C7.49714 10 6.24187 8.85732 3.73133 6.57196C2.96426 5.87369 3.00027 5.029 3.00027 4.07981C3.00027 2.93116 3.8951 2 4.99893 2",
+    "M9 14V17.4998C9 19.9852 11.0149 22.0001 13.5003 22.0001C15.9858 22.0001 18.0007 19.9852 18.0007 17.4998V16",
+    "M14 7L12.6978 10.2556C12.3516 11.121 12.1785 11.5537 11.8887 11.9092C11.5988 12.2648 11.2098 12.5215 10.4319 13.0349L8.9696 14L7.53283 13.0323C6.77221 12.5201 6.39189 12.2639 6.10821 11.9126C5.82452 11.5613 5.65423 11.1356 5.31365 10.2841L4 7",
+    "M21 13C21 14.6569 19.6569 16 18 16C16.3431 16 15 14.6569 15 13C15 11.3431 16.3431 10 18 10C19.6569 10 21 11.3431 21 13Z",
+    "M18.008 13L17.999 13",
+  ],
 };
 
 // Short support text for each category + variant combination
@@ -148,6 +159,8 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
   const bgColor = "bg-white";
   let textColor = "text-[#717680]";
   let iconPath = "";
+  let iconPaths_multi: string[] | null = null;
+  let customViewBox: string | null = null;
 
   switch (category) {
     case "image-term":
@@ -167,10 +180,9 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
       break;
 
     case "health-alert":
-      color = "#DC2626";
-      textColor = "text-[#DC2626]";
-      iconPath =
-        "M12 9v4 M12 17h.01 M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z";
+      color = "#6941C6";
+      textColor = "text-[#6941C6]";
+      iconPaths_multi = iconPaths["stethoscope"];
       break;
 
     case "insurance":
@@ -243,15 +255,15 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
       if (variant === "paid") {
         color = "#079455";
         textColor = "text-[#079455]";
-        iconPath = iconPaths["credit-card"];
+        iconPaths_multi = iconPaths["dollar-02"];
       } else if (variant === "awaiting-payment") {
         color = "#F79009";
         textColor = "text-[#F79009]";
-        iconPath = iconPaths["credit-card"];
+        iconPaths_multi = iconPaths["dollar-02"];
       } else if (variant === "partial-payment") {
         color = "#F79009";
         textColor = "text-[#F79009]";
-        iconPath = iconPaths["credit-card"];
+        iconPaths_multi = iconPaths["dollar-02"];
       } else if (variant === "refunded") {
         color = "#717680";
         textColor = "text-[#717680]";
@@ -292,7 +304,7 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
       break;
   }
 
-  return { color, bgColor, textColor, iconPath };
+  return { color, bgColor, textColor, iconPath, iconPaths_multi, customViewBox };
 };
 
 function parseBadgeTooltip(label: string): { title: string; subtitle?: string } {
@@ -306,8 +318,13 @@ export function ParticipantAttributeBadge({
   tooltipLabel,
   showLabel = false,
 }: ParticipantAttributeBadgeProps) {
-  const { color, bgColor, textColor, iconPath } = getIconConfig(category, variant);
+  const { color, bgColor, textColor, iconPath, iconPaths_multi, customViewBox } = getIconConfig(
+    category,
+    variant
+  );
   const shortLabel = getShortLabel(category, variant);
+  const vb = customViewBox || "0 0 24 24";
+  const sw = customViewBox ? "1.2" : "1.5";
 
   if (showLabel) {
     return (
@@ -321,13 +338,17 @@ export function ParticipantAttributeBadge({
           <svg
             className="size-[14px] shrink-0"
             fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
+            viewBox={vb}
+            strokeWidth={sw}
             stroke={color}
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d={iconPath} />
+            {iconPaths_multi ? (
+              iconPaths_multi.map((d, idx) => <path key={idx} d={d} />)
+            ) : (
+              <path d={iconPath} />
+            )}
           </svg>
           <span
             className={cn(
@@ -354,13 +375,17 @@ export function ParticipantAttributeBadge({
         <svg
           className="size-[14px]"
           fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
+          viewBox={vb}
+          strokeWidth={sw}
           stroke={color}
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d={iconPath} />
+          {iconPaths_multi ? (
+            iconPaths_multi.map((d, idx) => <path key={idx} d={d} />)
+          ) : (
+            <path d={iconPath} />
+          )}
         </svg>
       </div>
       <BadgeTooltip {...parseBadgeTooltip(tooltipLabel)} />

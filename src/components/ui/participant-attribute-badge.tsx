@@ -34,7 +34,8 @@ export type AttributeBadgeVariant =
   | "check-in-done" // Check-in OK
   | "no-show" // Não compareceu
   | "cancelled" // Cancelada
-  | "rescheduled"; // Reagendada
+  | "rescheduled" // Reagendada
+  | "paid"; // Pago
 
 interface ParticipantAttributeBadgeProps {
   category: AttributeBadgeCategory;
@@ -121,6 +122,7 @@ const getShortLabel = (
       return "Mobilidade";
 
     case "payment":
+      if (variant === "paid") return "Pago";
       if (variant === "awaiting-payment") return "Aguardando pagamento";
       if (variant === "partial-payment") return "Pagamento parcial";
       if (variant === "refunded") return "Reembolsado";
@@ -238,7 +240,11 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
       break;
 
     case "payment":
-      if (variant === "awaiting-payment") {
+      if (variant === "paid") {
+        color = "#079455";
+        textColor = "text-[#079455]";
+        iconPath = iconPaths["credit-card"];
+      } else if (variant === "awaiting-payment") {
         color = "#F79009";
         textColor = "text-[#F79009]";
         iconPath = iconPaths["credit-card"];

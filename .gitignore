@@ -7,3 +7,4 @@ coverage/
 .prettier-cache
 *.local
 .DS_Store
+.vercel

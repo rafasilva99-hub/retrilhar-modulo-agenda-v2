@@ -11,7 +11,7 @@ type AgendaUpdatesInitialTab = "atualizacoes" | "participantes" | "visao-geral";
 
 function getPageFromHash(): AppPage {
   const value = window.location.hash.replace("#", "") as AppPage;
-  return prototypePages.includes(value) ? value : "intro";
+  return prototypePages.includes(value) ? value : "agenda";
 }
 
 export function useAgendaPrototypeNavigation() {

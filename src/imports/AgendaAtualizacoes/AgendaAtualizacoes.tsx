@@ -2037,17 +2037,27 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
 
   return (
     <div className="flex gap-[6px] items-center flex-wrap" style={{ padding: "10px 12px" }}>
-      {/* 1. Image term — only when refused */}
-      {imageStatus === "Refused" && (
-        <ParticipantAttributeBadge
-          category="image-term"
-          variant="refused"
-          tooltipLabel="Termo de Uso de Imagem — Recusado"
-          showLabel
-        />
-      )}
+      {/* 1. Pagamento — sempre presente */}
+      <ParticipantAttributeBadge
+        category="payment"
+        variant={
+          paymentStatus === "Paid" ? "paid"
+          : paymentStatus === "Partial" ? "partial-payment"
+          : paymentStatus === "Refunded" ? "refunded"
+          : paymentStatus === "Failed" ? "alert"
+          : "awaiting-payment"
+        }
+        tooltipLabel={
+          paymentStatus === "Paid" ? "Pago — Pagamento confirmado"
+          : paymentStatus === "Partial" ? "Pagamento parcial — Saldo em aberto"
+          : paymentStatus === "Refunded" ? "Reembolsado — Valor devolvido"
+          : paymentStatus === "Failed" ? "Falha no pagamento — Cartão recusado"
+          : "Aguardando pagamento — Pendente de confirmação"
+        }
+        showLabel
+      />
 
-      {/* 2. Insurance — hidden when NotRequired */}
+      {/* 2. Seguro — oculto quando NotRequired */}
       {!isNotRequired && (
         <ParticipantAttributeBadge
           category="insurance"
@@ -2057,55 +2067,34 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
         />
       )}
 
-      {/* 3. Health alert — when applicable */}
-      {participant.hasHealthIssue && (
-        <ParticipantAttributeBadge
-          category="health-alert"
-          variant="alert"
-          tooltipLabel="Alerta de Saúde — Condição informada pelo participante"
-          showLabel
-        />
-      )}
+      {/* 3. Uso de imagem — sempre presente */}
+      <ParticipantAttributeBadge
+        category="image-term"
+        variant={imageStatus === "Authorized" ? "authorized" : imageStatus === "Refused" ? "refused" : "pending"}
+        tooltipLabel={
+          imageStatus === "Authorized" ? "Uso de Imagem — Autorizado"
+          : imageStatus === "Refused" ? "Uso de Imagem — Recusado"
+          : "Uso de Imagem — Pendente de autorização"
+        }
+        showLabel
+      />
 
-      {/* 4. Health plan — when applicable */}
-      {participant.hasHealthPlan && (
-        <ParticipantAttributeBadge
-          category="health-plan"
-          variant="present"
-          tooltipLabel="Plano de Saúde — Cobertura ativa"
-          showLabel
-        />
-      )}
-
-      {/* 5. Special needs — when applicable */}
-      {participant.hasSpecialNeeds && (
-        <ParticipantAttributeBadge
-          category="special-needs"
-          variant="present"
-          tooltipLabel="Necessidades Especiais — Acessibilidade ou mobilidade"
-          showLabel
-        />
-      )}
-
-      {/* 6. Dietary restriction — when applicable */}
-      {participant.hasDietaryRestriction && (
-        <ParticipantAttributeBadge
-          category="dietary-restriction"
-          variant="present"
-          tooltipLabel="Restrição Alimentar — Informada pelo participante"
-          showLabel
-        />
-      )}
-
-      {/* 7. Additional items — when applicable */}
-      {(participant.hasAdditionalItems || isBuyer) && (
-        <ParticipantAttributeBadge
-          category="additional-items"
-          variant="present"
-          tooltipLabel="Itens Adicionais — Equipamentos ou serviços extras"
-          showLabel
-        />
-      )}
+      {/* 4. Alerta de saúde — agrupa saúde, PcD, dieta, plano, necessidades especiais */}
+      {(() => {
+        const alerts: string[] = [];
+        if (participant.hasHealthIssue) alerts.push("Condição de saúde informada");
+        if (participant.hasSpecialNeeds) alerts.push("PcD / Necessidades especiais");
+        if (participant.hasDietaryRestriction) alerts.push("Restrição alimentar");
+        if (alerts.length === 0) return null;
+        return (
+          <ParticipantAttributeBadge
+            category="health-alert"
+            variant="alert"
+            tooltipLabel={`Alerta de Saúde — ${alerts.join(" · ")}`}
+            showLabel
+          />
+        );
+      })()}
     </div>
   );
 }

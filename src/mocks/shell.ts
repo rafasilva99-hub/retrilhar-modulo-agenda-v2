@@ -9,7 +9,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 
-export type AppPage = "intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes";
+export type AppPage = "intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes" | "novaAtividade";
 
 export interface ShellNavItem {
   title: string;

@@ -3180,7 +3180,7 @@ function Elements25() {
   );
 }
 
-function Frame24() {
+function Frame24({ onNewActivity }: { onNewActivity?: () => void }) {
   return (
     <div className="content-stretch flex gap-[16px] items-center relative shrink-0">
       <div className="bg-white content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[6px] shrink-0" data-name="button">
@@ -3203,7 +3203,7 @@ function Frame24() {
         </div>
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#414651] text-[16px] whitespace-nowrap">Mapa de Vagas</p>
       </div>
-      <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[8px] shrink-0" style={{ backgroundImage: "linear-gradient(rgb(11, 94, 215) 0%, rgb(8, 79, 183) 100%), linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 100%)" }} data-name="button">
+      <div onClick={onNewActivity} className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[8px] shrink-0 cursor-pointer" style={{ backgroundImage: "linear-gradient(rgb(11, 94, 215) 0%, rgb(8, 79, 183) 100%), linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 100%)" }} data-name="button">
         <div className="overflow-clip relative shrink-0 size-[20px]" data-name="plus-sign-circle">
           <Elements25 />
         </div>
@@ -3213,16 +3213,16 @@ function Frame24() {
   );
 }
 
-function Frame25({ onDayClick }: { onDayClick?: (day: number) => void }) {
+function Frame25({ onDayClick, onNewActivity }: { onDayClick?: (day: number) => void; onNewActivity?: () => void }) {
   return (
     <div className="absolute content-stretch flex gap-[24px] items-end left-[var(--shell-offset,248px)] right-[24px] top-[112px]">
       <DashboardContent />
-      <Frame24 />
+      <Frame24 onNewActivity={onNewActivity} />
     </div>
   );
 }
 
-export default function AgendaMes({ onDayClick, onViewDetails, initialView = "mes", onViewModeChange }: { onDayClick?: (day: number) => void; onViewDetails?: (activityId?: string) => void; initialView?: ViewMode; onViewModeChange?: (v: ViewMode) => void }) {
+export default function AgendaMes({ onDayClick, onViewDetails, initialView = "mes", onViewModeChange, onNewActivity }: { onDayClick?: (day: number) => void; onViewDetails?: (activityId?: string) => void; initialView?: ViewMode; onViewModeChange?: (v: ViewMode) => void; onNewActivity?: () => void }) {
   const [view, setView] = useState<ViewMode>(initialView);
   const [refDate, setRefDate] = useState<Date>(CAL_TODAY);
 
@@ -3265,7 +3265,7 @@ export default function AgendaMes({ onDayClick, onViewDetails, initialView = "me
           <Frame22 />
         </div>
       </div>
-      <Frame25 onDayClick={onDayClick} />
+      <Frame25 onDayClick={onDayClick} onNewActivity={onNewActivity} />
     </div>
   );
 }

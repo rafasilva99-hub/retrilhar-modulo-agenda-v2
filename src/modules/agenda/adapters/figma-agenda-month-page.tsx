@@ -5,6 +5,7 @@ import type { AgendaViewMode } from "../types";
 interface AgendaMonthPageProps {
   initialView: AgendaViewMode;
   onDayClick: (day: number) => void;
+  onNewActivity?: () => void;
   onViewDetails: (activityId?: string) => void;
   onViewModeChange: (view: AgendaViewMode) => void;
 }
@@ -12,12 +13,14 @@ interface AgendaMonthPageProps {
 export function AgendaMonthPage({
   initialView,
   onDayClick,
+  onNewActivity,
   onViewDetails,
   onViewModeChange,
 }: AgendaMonthPageProps) {
   return (
     <AgendaMes
       onDayClick={onDayClick}
+      onNewActivity={onNewActivity}
       onViewDetails={onViewDetails}
       initialView={initialView}
       onViewModeChange={onViewModeChange}

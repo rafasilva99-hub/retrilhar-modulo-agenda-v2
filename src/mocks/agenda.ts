@@ -831,12 +831,12 @@ export const mockReservations: Reservation[] = [
   // ══════════════════════════════════════════════════════════════════════════
   // CONFIRMED — insurance Contracted (8)
   // Names sourced from Figma AGENDA - PARTICIPANTES (15229:62356):
-  //   João Silva (#8821, Adulto, Comprador)
-  //   Luciana Miranda (Cortesia)
-  //   Manuela Louise Malu Bernardes (Infantil)
-  //   Eduardo Lucca Victor Santos (Infantil)
-  //   Vera Gabriela da Mota (#8821, Adulto, Comprador)
-  //   Samuel Isaac Roberto Araújo (#8821, Adulto, Comprador)
+  //   João Silva (#8821, Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso, Comprador)
+  //   Luciana Miranda (Cortesia Operacional / Convidado)
+  //   Manuela Louise Malu Bernardes (Criança até 12 anos acompanhada)
+  //   Eduardo Lucca Victor Santos (Criança até 12 anos acompanhada)
+  //   Vera Gabriela da Mota (#8821, Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso, Comprador)
+  //   Samuel Isaac Roberto Araújo (#8821, Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso, Comprador)
   // ══════════════════════════════════════════════════════════════════════════
 
   {
@@ -868,7 +868,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-001",
         name: "Rafael Augusto Mendes de Albuquerque Figueiredo",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -891,7 +891,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-002",
         name: "Luciana Miranda",
-        tariffType: "Cortesia",
+        tariffType: "Cortesia Operacional / Convidado",
         checkInStatus: "Pending",
         hasHealthIssue: true,
         hasImageAuth: true,
@@ -914,7 +914,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-003",
         name: "Manuela Louise Malu Bernardes",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -935,7 +935,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-004",
         name: "Eduardo Lucca Victor Santos",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: false,
@@ -976,7 +976,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-005",
         name: "Vera Gabriela da Mota",
-        tariffType: "Adulto",
+        tariffType: "Excursão Escolar Educativa (turma)",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1026,7 +1026,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-006",
         name: "Samuel Isaac Roberto Araújo",
-        tariffType: "Adulto",
+        tariffType: "Excursão Escolar Educativa (turma)",
         checkInStatus: "Absent",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1066,7 +1066,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-004-a",
         name: "Rodrigo Oliveira Costa",
-        tariffType: "Adulto",
+        tariffType: "Excursão Escolar Educativa (turma)",
         checkInStatus: "Absent",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1082,7 +1082,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-004-b",
         name: "Laura Beatriz Costa",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Absent",
         hasHealthIssue: true,
         hasImageAuth: true,
@@ -1099,7 +1099,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-004-c",
         name: "Miguel Costa",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Absent",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1139,7 +1139,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-008",
         name: "Fernanda Alves Pereira",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1168,7 +1168,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-009",
         name: "Marcelo Souza Barbosa",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1179,7 +1179,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-010",
         name: "Renata Aparecida Barbosa",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1203,7 +1203,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-011",
         name: "Juliana Carvalho Nunes",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1227,7 +1227,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-012",
         name: "Thiago Rocha Martins",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1238,7 +1238,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-013",
         name: "Amanda Rocha Martins",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1249,7 +1249,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-014",
         name: "Gustavo Rocha Martins",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: false,
@@ -1261,7 +1261,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-015",
         name: "Pedro Martins Jr.",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1289,7 +1289,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-016",
         name: "Camila Ribeiro Gomes",
-        tariffType: "Idoso",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: true,
         hasImageAuth: true,
@@ -1321,7 +1321,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-017",
         name: "Leonardo Dias Cardoso",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1332,7 +1332,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-018",
         name: "Mariana Dias Cardoso",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1356,7 +1356,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-019",
         name: "Patrícia Nascimento Vieira",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1380,7 +1380,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-020",
         name: "Rafael Cunha Monteiro",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1393,7 +1393,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-021",
         name: "Fernanda Cunha Monteiro",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1404,7 +1404,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-022",
         name: "João Victor Monteiro",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1428,7 +1428,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-023",
         name: "Larissa Teixeira Melo",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1452,7 +1452,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-024",
         name: "Diego Pinto Santos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1463,7 +1463,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-025",
         name: "Carla Pinto Santos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: true,
         hasImageAuth: true,
@@ -1475,7 +1475,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-026",
         name: "Eduarda Pinto Santos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1486,7 +1486,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-027",
         name: "Vitor Santos Jr.",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1497,7 +1497,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-028",
         name: "Alice Santos",
-        tariffType: "PcD",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1527,7 +1527,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-029",
         name: "Mariana Correia Freitas",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1551,7 +1551,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-030",
         name: "Felipe Araújo Lima",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1562,7 +1562,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-031",
         name: "Giovanna Araújo Lima",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1586,7 +1586,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-032",
         name: "Isabela Moreira Costa",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1617,7 +1617,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-033",
         name: "Bruno Coelho Andrade",
-        tariffType: "Cortesia",
+        tariffType: "Cortesia Operacional / Convidado",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1631,7 +1631,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-034",
         name: "Luciana Coelho Andrade",
-        tariffType: "Cortesia",
+        tariffType: "Cortesia Operacional / Convidado",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1642,7 +1642,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-035",
         name: "Mateus Coelho Andrade",
-        tariffType: "Cortesia",
+        tariffType: "Cortesia Operacional / Convidado",
         checkInStatus: "Pending",
         hasHealthIssue: true,
         hasImageAuth: true,
@@ -1654,7 +1654,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-036",
         name: "Clara Andrade",
-        tariffType: "Cortesia",
+        tariffType: "Cortesia Operacional / Convidado",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1665,7 +1665,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-037",
         name: "Sophia Andrade",
-        tariffType: "Cortesia",
+        tariffType: "Cortesia Operacional / Convidado",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: false,
@@ -1677,7 +1677,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-038",
         name: "Henrique Andrade Filho",
-        tariffType: "Cortesia",
+        tariffType: "Cortesia Operacional / Convidado",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1705,7 +1705,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-039",
         name: "Vanessa Lopes Ferreira",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1729,7 +1729,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-040",
         name: "Eduardo Macedo Ramos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1740,7 +1740,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-041",
         name: "Cristina Macedo Ramos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1764,7 +1764,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-042",
         name: "Sandra Borges Nascimento",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1788,7 +1788,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-043",
         name: "André Figueiredo Santos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1799,7 +1799,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-044",
         name: "Marília Figueiredo Santos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1810,7 +1810,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-045",
         name: "Lucas Figueiredo Jr.",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1834,7 +1834,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-046",
         name: "Priscila Moura Carvalho",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1862,7 +1862,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-047",
         name: "Gabriel Henrique Silva",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1886,7 +1886,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-048",
         name: "Tatiane Medeiros Rocha",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1897,7 +1897,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-049",
         name: "Paulo Medeiros Rocha",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1924,7 +1924,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-050",
         name: "Renato Campos Almeida",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1948,7 +1948,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-051",
         name: "Cláudia Silveira Guimarães",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1959,7 +1959,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-052",
         name: "Roberto Guimarães",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -1970,7 +1970,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-053",
         name: "Lúcia Maria Guimarães",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: true,
         hasImageAuth: true,
@@ -1995,7 +1995,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-054",
         name: "Henrique Batista Costa",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2023,7 +2023,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-055",
         name: "Débora Vasconcelos Reis",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Absent",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2051,7 +2051,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-056",
         name: "Júlio César Azevedo",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Absent",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2079,7 +2079,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-057",
         name: "Helena Martins Duarte",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2097,7 +2097,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-058",
         name: "Ricardo Duarte Filho",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2149,7 +2149,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-059",
         name: "Roberto Nascimento Prado",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Done",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2190,7 +2190,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-060",
         name: "Marcia Lúcia Fernandes",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2227,7 +2227,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-061",
         name: "Anderson Vieira Lopes",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2265,7 +2265,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-062",
         name: "Cássio Borges Tavares",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2282,7 +2282,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-063",
         name: "Marina Borges Tavares",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2294,7 +2294,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-064",
         name: "Theo Borges Tavares",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2331,7 +2331,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-065",
         name: "Sônia Regina Matos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2377,7 +2377,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-066",
         name: "Diogo Ferreira Campos",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2420,7 +2420,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-067",
         name: "Patricia Duarte Mendes",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2437,7 +2437,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-068",
         name: "Carlos Duarte Mendes",
-        tariffType: "Adulto",
+        tariffType: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
         checkInStatus: "Pending",
         hasHealthIssue: false,
         hasImageAuth: true,
@@ -2449,7 +2449,7 @@ export const mockReservations: Reservation[] = [
       {
         id: "part-069",
         name: "Guilherme Duarte Mendes",
-        tariffType: "Infantil",
+        tariffType: "Criança até 12 anos acompanhada",
         checkInStatus: "Absent",
         hasHealthIssue: false,
         hasImageAuth: true,

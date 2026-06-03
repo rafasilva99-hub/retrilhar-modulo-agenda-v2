@@ -3,12 +3,17 @@ import { shellNavItems, shellOrganization, shellProfile } from "../mocks/shell";
 import {
   AgendaDayPage,
   AgendaMonthPage,
+  AgendaNovaAtividade,
   AgendaUpdatesPage,
   useAgendaPrototypeNavigation,
 } from "../modules/agenda";
 
 export default function App() {
   const agenda = useAgendaPrototypeNavigation();
+
+  if (agenda.currentPage === "novaAtividade") {
+    return <AgendaNovaAtividade onBack={agenda.handleBackToAgenda} />;
+  }
 
   if (agenda.currentPage === "atualizacoes") {
     return (
@@ -49,6 +54,7 @@ export default function App() {
     >
       <AgendaMonthPage
         onDayClick={agenda.handleDayClick}
+        onNewActivity={agenda.handleNewActivity}
         onViewDetails={agenda.handleViewDetails}
         initialView={agenda.calendarView}
         onViewModeChange={agenda.setCalendarView}

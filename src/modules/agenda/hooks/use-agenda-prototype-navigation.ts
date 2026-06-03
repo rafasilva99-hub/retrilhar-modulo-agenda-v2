@@ -5,7 +5,7 @@ import type { AppPage } from "@/mocks/shell";
 import { getDefaultActivityId } from "../services/agenda-mock-service";
 import type { AgendaViewMode } from "../types";
 
-const prototypePages: AppPage[] = ["intro", "contexto", "agenda", "agendaDia", "atualizacoes"];
+const prototypePages: AppPage[] = ["intro", "contexto", "agenda", "agendaDia", "atualizacoes", "novaAtividade"];
 
 type AgendaUpdatesInitialTab = "atualizacoes" | "participantes" | "visao-geral";
 
@@ -85,6 +85,10 @@ export function useAgendaPrototypeNavigation() {
     navigateTo("agenda");
   }, [navigateTo]);
 
+  const handleNewActivity = useCallback(() => {
+    navigateTo("novaAtividade");
+  }, [navigateTo]);
+
   return {
     atualizacoesInitialTab,
     calendarView,
@@ -93,6 +97,7 @@ export function useAgendaPrototypeNavigation() {
     handleBackToAgenda,
     handleDayClick,
     handleGoToCheckIn,
+    handleNewActivity,
     handleViewDetails,
     navigateTo,
     selectedActivityId,

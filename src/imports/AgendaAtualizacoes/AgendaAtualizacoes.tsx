@@ -15,6 +15,19 @@ type ResAction =
   | { type: "CHECK_IN"; participantId: string }
   | { type: "UNDO_CHECK_IN"; participantId: string };
 
+const TARIFF_VARIANTS = [
+  "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
+  "Criança até 12 anos acompanhada",
+  "Cortesia Operacional / Convidado",
+  "Excursão Escolar Educativa (turma)",
+] as const;
+
+function getParticipantReservationId(participantId: string) {
+  const numericSeed = participantId.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  const id = 1000 + ((numericSeed * 73) % 9000);
+  return `#${id}`;
+}
+
 function formatActivityDate(date: string) {
   const [year, month, day] = date.split("-");
   if (!year || !month || !day) return date;
@@ -2099,15 +2112,27 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
   );
 }
 
+function ParticipantTariffCell({ tariffType }: { tariffType: string }) {
+  return (
+    <div className="flex items-center shrink-0 min-w-0" style={{ width: "240px", padding: "8px 12px" }}>
+      <div className="flex flex-col gap-[1px] min-w-0 w-full">
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] truncate w-full">{tariffType}</p>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-[#a1a1aa] whitespace-nowrap">Tipo de fatura</p>
+      </div>
+    </div>
+  );
+}
+
 // ─── Payment Drawer ─────────────────────────────────────────────────────────
 
 function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onClose: () => void }) {
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
   const isGroup = reservation.type === "group";
   const pCount = reservation.participants.length;
-  const adults = reservation.participants.filter((p) => p.tariffType === "Adulto").length;
-  const children = reservation.participants.filter((p) => p.tariffType === "Infantil").length;
-  const courtesy = reservation.participants.filter((p) => p.tariffType === "Cortesia").length;
+  const adults = reservation.participants.filter((p) => p.tariffType === TARIFF_VARIANTS[0]).length;
+  const children = reservation.participants.filter((p) => p.tariffType === TARIFF_VARIANTS[1]).length;
+  const courtesy = reservation.participants.filter((p) => p.tariffType === TARIFF_VARIANTS[2]).length;
+  const schoolTrip = reservation.participants.filter((p) => p.tariffType === TARIFF_VARIANTS[3]).length;
   const isPaid = reservation.paymentStatus === "Paid";
 
   return (
@@ -2142,22 +2167,29 @@ function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onC
               <div className="flex gap-[8px] items-center">
                 <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="6" r="3.5" stroke="#535862" strokeWidth="1.2"/><path d="M3 17c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 <div className="flex flex-col">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Adulto(s)</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Adulto meia</p>
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{adults}</p>
                 </div>
               </div>
               <div className="flex gap-[8px] items-center">
                 <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" stroke="#535862" strokeWidth="1.2"/><path d="M6 8c0 0 1.5 2 3 2s3-2 3-2" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 <div className="flex flex-col">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Criança(s)</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Criança</p>
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{children}</p>
                 </div>
               </div>
               <div className="flex gap-[8px] items-center">
                 <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><rect x="2" y="4" width="14" height="10" rx="3" stroke="#535862" strokeWidth="1.2"/><path d="M6 9h6" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/></svg>
                 <div className="flex flex-col">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Cortesia(s)</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Cortesia</p>
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{courtesy}</p>
+                </div>
+              </div>
+              <div className="flex gap-[8px] items-center">
+                <svg className="shrink-0 size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M3 5.5h12M4 5.5V14h10V5.5M6.5 5.5V4a1.5 1.5 0 011.5-1.5h2A1.5 1.5 0 0111.5 4v1.5" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <div className="flex flex-col">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">Excursão</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">{schoolTrip}</p>
                 </div>
               </div>
             </div>
@@ -2333,7 +2365,7 @@ function FiltersDrawer({ onClose }: { onClose: () => void }) {
             <div className="flex flex-col gap-[10px]">
               <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#181d27]">Por tipos de tarifa</p>
               <div className="flex flex-wrap gap-[8px]">
-                {["Adulto", "Infantil", "Cortesia"].map((o) => (
+                {TARIFF_VARIANTS.map((o) => (
                   <FilterChip key={o} label={o} active={tarifa.has(o)} onClick={() => toggleSet(tarifa, o, setTarifa)} />
                 ))}
               </div>
@@ -2973,15 +3005,21 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
           </svg>
         </div>
 
-        <div className="flex items-center justify-between relative z-[1]" style={{ padding: "24px 32px 32px" }}>
-          <div className="flex flex-col gap-[12px]">
-            {/* Breadcrumb */}
+        <div className="flex flex-col gap-[12px] relative z-[1]" style={{ padding: "24px 32px 32px" }}>
+            {/* Row 1: Breadcrumb + Listas e Manifestos */}
+            <div className="flex items-center justify-between">
             <div className="flex items-center gap-[8px]">
               <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white/60 hover:text-white transition-colors cursor-pointer">Agenda</button>
               <svg className="size-[12px] text-white/40" fill="none" viewBox="0 0 12 12"><path d="M4.5 2.5l4 4.5-4 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white/60">29 de maio</span>
               <svg className="size-[12px] text-white/40" fill="none" viewBox="0 0 12 12"><path d="M4.5 2.5l4 4.5-4 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white">Detalhes da atividade</span>
+            </div>
+            <button className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 relative rounded-[8px] shrink-0 transition-all duration-200">
+              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Listas e Manifestos</p>
+              </div>
+            </button>
             </div>
             {/* Title + capacity badge */}
             <div className="flex items-center gap-[12px]">
@@ -2994,7 +3032,8 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               </div>
             </div>
 
-            {/* Enhanced metadata row */}
+            {/* Enhanced metadata row + Concluir atividade */}
+            <div className="flex items-center justify-between gap-[16px]">
             <div className="flex items-center gap-[16px] flex-wrap">
               {/* Info card - Date | Time | Location | Guide */}
               <div className="relative z-[1] flex items-center gap-[14px] bg-white/10 backdrop-blur-sm border border-white/15 rounded-[12px] px-[14px] py-[10px]">
@@ -3080,21 +3119,25 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex gap-[12px] items-center shrink-0">
-            <button className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 relative rounded-[8px] shrink-0 transition-all duration-200">
-              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Listas e Manifestos</p>
-              </div>
-            </button>
-            <button className="bg-white hover:bg-white/95 relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
-              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Concluir atividade</p>
-              </div>
-            </button>
-          </div>
+            <div className="flex gap-[16px] items-end shrink-0 self-end">
+              <button className="bg-white hover:bg-white/95 relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
+                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                  <svg className="size-[16px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="8" height="8" rx="1" />
+                    <rect x="14" y="2" width="8" height="8" rx="1" />
+                    <rect x="2" y="14" width="8" height="8" rx="1" />
+                    <path d="M14 14h3v3h-3zM20 14v3h-3M14 20h3M20 20h0" />
+                  </svg>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
+                </div>
+              </button>
+              <button className="bg-white hover:bg-white/95 relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
+                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Concluir atividade</p>
+                </div>
+              </button>
+            </div>
+            </div>
         </div>
       </div>
 
@@ -3277,24 +3320,25 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
             <div key={r.id} className={`relative rounded-[12px] shrink-0 w-full mb-[20px] border border-solid shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] transition-all duration-150 hover:shadow-[0px_2px_4px_0px_rgba(10,13,18,0.08)] overflow-visible ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff] border-[#c7d4f4]" : "bg-white border-[#EEF0F4]"}`}>
               {/* ── Reservation header ── */}
               <div className={`flex h-[40px] items-center relative w-full rounded-t-[12px] transition-colors ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff]" : ""}`}>
-                {/* Left bar — blue for groups, green for individual */}
-                <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-tl-[12px] ${isGroup ? "bg-[#0b5ed7]" : "bg-[#079455]"}`} />
+                {/* Left bar removed per design update */}
                 <div className="flex gap-[8px] items-center size-full" style={{ padding: "0 16px 0 16px" }}>
-                  {/* Type icon + count */}
-                  <div className="flex items-center gap-[6px]">
-                    <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24">
+                  {/* Type chip — icon + count */}
+                  <div className={`flex items-center gap-[4px] rounded-[6px] shrink-0 px-[6px] py-[3px] border ${isGroup ? "bg-[#fef6ee] border-[#f9dbaf]" : "bg-[#f4f3ff] border-[#d9d6fe]"}`}>
+                    <svg className="size-[12px]" fill="none" viewBox="0 0 24 24">
                       {isGroup ? (
-                        <><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></>
+                        <>
+                          <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="#E04F16" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="9" cy="7" r="4" stroke="#E04F16" strokeWidth="1.5"/>
+                          <path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#E04F16" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </>
                       ) : (
-                        <><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#a1a1aa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="7" r="4" stroke="#a1a1aa" strokeWidth="1.5"/></>
+                        <>
+                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#6941C6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="12" cy="7" r="4" stroke="#6941C6" strokeWidth="1.5"/>
+                        </>
                       )}
                     </svg>
-                    {isGroup && (
-                      <>
-                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">{r.participants.length}</span>
-                        <span className="text-[#d5d7da]">·</span>
-                      </>
-                    )}
+                    <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none ${isGroup ? "text-[#E04F16]" : "text-[#6941C6]"}`}>{r.participants.length}</span>
                   </div>
                   {/* Title */}
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] whitespace-nowrap">{isGroup ? "Reserva em grupo" : "Reserva individual"}</p>
@@ -3350,7 +3394,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                 const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
                 const isLastRow = pIdx === visibleParticipants.length - 1;
                 return (
-                  <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isLastRow ? "rounded-b-[12px]" : ""} ${isCancelled || isExpired ? "opacity-30" : ""} ${isNoShow || isIndividualAbsent ? "opacity-50" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                  <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isLastRow ? "rounded-b-[12px]" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
                     {/* Blue left bar — only when selected */}
                     {selectedIds.has(p.id) && (
                       <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
@@ -3389,13 +3433,14 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                               <span className="text-[#a1a1aa] shrink-0">·</span>
                             </>
                           )}
-                          {p.tariffType === "Infantil" && (
-                            <span className="size-[5px] rounded-full bg-violet-400 shrink-0" />
-                          )}
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{p.tariffType} · {p.age} anos</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)} · {p.age} anos</p>
                         </div>
                       </div>
                     </div>
+                    {/* Vertical divider */}
+                    <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                    {/* Tariff type */}
+                    <ParticipantTariffCell tariffType={p.tariffType} />
                     {/* Vertical divider */}
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                     {/* Reservation status badge */}
@@ -3455,7 +3500,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                           const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
                           const isLastRow = pIdx === restParticipants.length - 1;
                           return (
-                            <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isCancelled || isExpired ? "opacity-30" : ""} ${isNoShow || isIndividualAbsent ? "opacity-50" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                            <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
                               {selectedIds.has(p.id) && (
                                 <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
                               )}
@@ -3472,10 +3517,12 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                                 <div className="flex flex-col gap-[2px] items-start min-w-0 flex-1 overflow-hidden">
                                   <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name}</p>
                                   <div className="flex gap-[4px] items-center">
-                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{p.tariffType} · {p.age} anos</p>
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)} · {p.age} anos</p>
                                   </div>
                                 </div>
                               </div>
+                              <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                              <ParticipantTariffCell tariffType={p.tariffType} />
                               <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                               {/* Reservation status badge */}
                               <div className="flex items-center justify-center shrink-0" style={{ width: "130px", padding: "8px 12px" }}>
@@ -3523,13 +3570,17 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               {isGroup && r.participants.length > 1 && (
                 <button
                   onClick={() => toggleGroup(r.id)}
-                  className="flex items-center justify-center gap-[6px] px-[16px] py-[8px] w-full cursor-pointer hover:bg-[#f8fafc] transition-colors rounded-b-[12px] border-t border-[#f5f5f5]"
+                  className={`group/expand flex items-center justify-center gap-[6px] px-[16px] py-[10px] w-full cursor-pointer transition-all duration-200 rounded-b-[12px] border-t ${
+                    expanded
+                      ? "border-[#e9eaeb] bg-[#f5f5f5] hover:bg-[#ebebeb]"
+                      : "border-[#f0f1f3] bg-[#fafbfc] hover:bg-[#f0f1f3]"
+                  }`}
                 >
-                  <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#0b5ed7]">
+                  <svg className={`size-[14px] transition-colors duration-200 ${expanded ? "text-[#414651]" : "text-[#a1a1aa] group-hover/expand:text-[#414651]"}`} fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <p className={`font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] transition-colors duration-200 ${expanded ? "text-[#414651]" : "text-[#a1a1aa] group-hover/expand:text-[#414651]"}`}>
                     {expanded ? `Recolher (${r.participants.length})` : `+${r.participants.length - 1} participante${r.participants.length - 1 > 1 ? "s" : ""}`}
                   </p>
-                  <svg className={`size-[12px] text-[#0b5ed7] transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg className={`size-[12px] transition-all duration-200 ${expanded ? "rotate-180 text-[#414651]" : "text-[#a1a1aa] group-hover/expand:text-[#414651]"}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               )}
             </div>
@@ -3862,7 +3913,7 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
       {/* ── Body: sidebar + content ── */}
       <div className="flex flex-1 min-h-0">
         {/* Sidebar */}
-        <nav className={`flex flex-col shrink-0 border-r border-[#e9eaeb] bg-white py-[16px] overflow-y-auto gap-[4px] transition-all duration-300 ease-in-out ${sidebarCollapsed ? "w-[56px] px-[8px]" : "w-[220px] px-[12px]"}`}>
+        <nav className={`flex flex-col shrink-0 border-r border-[#e9eaeb] bg-white py-[16px] gap-[4px] transition-all duration-300 ease-in-out ${sidebarCollapsed ? "w-[56px] px-[8px] overflow-visible" : "w-[220px] px-[12px] overflow-y-auto"}`}>
           {/* Header with toggle */}
           <div className={`flex items-center mb-[4px] ${sidebarCollapsed ? "justify-center" : "justify-between px-[10px]"}`}>
             {!sidebarCollapsed && (
@@ -3870,12 +3921,17 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
             )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="flex items-center justify-center size-[28px] rounded-[6px] text-[#717680] hover:text-[#252b37] hover:bg-[#f0f1f3] transition-colors cursor-pointer"
-              title={sidebarCollapsed ? "Expandir menu" : "Recolher menu"}
+              className="group/toggle relative flex items-center justify-center size-[28px] rounded-[6px] text-[#717680] hover:text-[#252b37] hover:bg-[#f0f1f3] transition-colors cursor-pointer"
             >
               <svg className={`size-[16px] transition-transform duration-300 ${sidebarCollapsed ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
                 <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
+              {sidebarCollapsed && (
+                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/toggle:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">Expandir menu</p>
+                  <div className="absolute top-1/2 right-full size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
+                </div>
+              )}
             </button>
           </div>
           {([
@@ -3886,8 +3942,7 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              title={sidebarCollapsed ? item.label : undefined}
-              className={`flex items-center gap-[8px] py-[8px] rounded-[8px] text-left transition-colors cursor-pointer ${
+              className={`group/nav relative flex items-center gap-[8px] py-[8px] rounded-[8px] text-left transition-colors cursor-pointer ${
                 sidebarCollapsed ? "justify-center px-[8px]" : "px-[10px]"
               } ${
                 activeTab === item.id
@@ -3898,6 +3953,12 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
               <div className="shrink-0">{item.icon}</div>
               {!sidebarCollapsed && (
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap overflow-hidden">{item.label}</p>
+              )}
+              {sidebarCollapsed && (
+                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/nav:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{item.label}</p>
+                  <div className="absolute top-1/2 right-full size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
+                </div>
               )}
             </button>
           ))}

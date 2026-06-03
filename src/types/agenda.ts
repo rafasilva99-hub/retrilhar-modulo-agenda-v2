@@ -88,7 +88,12 @@ export type InsuranceStatus =
 
 export type ImageTermStatus = "Authorized" | "Refused" | "Pending";
 
-export type TariffType = "Adulto" | "Infantil" | "Cortesia" | "Idoso" | "PcD";
+export type TariffType =
+  | "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso"
+  | "Criança até 12 anos acompanhada"
+  | "Cortesia Operacional / Convidado"
+  | "Excursão Escolar Educativa (turma)"
+  | (string & {});
 
 export type CheckInStatus = "Pending" | "Done" | "Absent";
 

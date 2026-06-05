@@ -1,0 +1,16 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts src/components/custom/admin-primitives.test.tsx -t Admin alignment audits|Admin compatible primitives
+
+(node:89261) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  2 passed (2)
+      Tests  5 passed (5)
+   Start at  09:14:45
+   Duration  1.57s (transform 79ms, setup 82ms, import 1.09s, tests 77ms, environment 548ms)
+
+exit=0

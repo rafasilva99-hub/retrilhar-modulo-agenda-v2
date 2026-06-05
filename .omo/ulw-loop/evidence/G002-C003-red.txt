@@ -1,0 +1,148 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/app/App.test.tsx -t normalizes to agenda when the hash changes to an unknown route
+
+(node:94722) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+ ❯ src/app/App.test.tsx (3 tests | 1 failed | 2 skipped) 1121ms
+     × normalizes to agenda when the hash changes to an unknown route 1120ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/App.test.tsx > App hash routing > normalizes to agenda when the hash changes to an unknown route
+AssertionError: expected '#doesNotExist' to be '#agenda' // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"bg-muted/30 text-foreground h-screen overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"prototype-shell-surface h-full overflow-y-auto overflow-x-hidden"[39m
+          [33mstyle[39m=[32m"--shell-offset: 260px;"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"bg-[#f8fafc] relative w-full min-h-[calc(100vh+24px)]"[39m
+            [33mdata-name[39m=[32m"AGENDA - MÊS"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"absolute content-stretch flex gap-[16px] items-start left-[var(--shell-offset,248px)] right-[24px] top-[192px]"[39m
+              [33mdata-name[39m=[32m"Container"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"bg-white drop-shadow-[0px_1px_1.5px_rgba(10,13,18,0.08),0px_1px_1px_rgba(10,13,18,0.06)] flex-[1_0_0] min-w-px relative rounded-[24px]"[39m
+                [33mdata-name[39m=[32m"Container"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[24px]"[39m
+                [36m/>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"content-stretch flex flex-col gap-[10px] items-start pb-[16px] pt-[20px] px-[20px] relative size-full"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"content-stretch flex flex-[1_0_0] gap-[10px] items-center relative w-full"[39m
+                    [33mdata-name[39m=[32m"Container"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"bg-[rgba(239,246,255,0.4)] relative rounded-[10px] shrink-0 size-[32px]"[39m
+                      [33mdata-name[39m=[32m"Container"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"absolute border border-[rgba(190,219,255,0.5)] border-solid inset-0 pointer-events-none rounded-[10px]"[39m
+                      [36m/>[39m
+                      [36m<div[39m
+                        [33mclass[39m=[32m"bg-clip-padding border-0 border-[transparent] border-solid relative size-full"[39m
+                      [36m>[39m
+                        [36m<div[39m
+                          [33mclass[39m=[32m"-translate-x-1/2 -translate-y-1/2 absolute left-1/2 size-[16px] top-[calc(50%-0.25px)]"[39m
+                          [33mdata-name[39m=[32m"calendar-love-01"[39m
+                        [36m>[39m
+                          [36m<div[39m
+                            [33mclass[39m=[32m"absolute inset-[8.33%_12.5%]"[39m
+                            [33mdata-name[39m=[32m"elements"[39m
+                          [36m>[39m
+                            [36m<div[39m
+                              [33mclass[39m=[32m"absolute inset-[-3.76%_-4.17%_-3.75%_-4.17%]"[39m
+                            [36m>[39m
+                              [36m<svg[39m
+                                [33mclass[39m=[32m"block size-full"[39m
+                                [33mfill[39m=[32m"none"[39m
+                                [33mpreserveAspectRatio[39m=[32m"none"[39m
+                                [33mviewBox[39m=[32m"0 0 13 14.3333"[39m
+                              [36m>[39m
+                                [36m<g[39m
+                                  [33mid[39m=[32m"elements"[39m
+                                [36m>[39m
+                                  [36m<path[39m
+                                    [33md[39m=[32m"M9.16667 0.5V3.16667M3.83333 0.5V3.16667"[39m
+                                    [33mid[39m=[32m"Vector"[39m
+                                    [33mstroke[39m=[32m"var(--stroke-0, #0B5ED7)"[39m
+                                    [33mstroke-linecap[39m=[32m"round"[39m
+                                    [33mstroke-linejoin[39m=[32m"round"[39m
+                                  [36m/>[39m
+                                  [36m<path[39m
+                                    [33md[39m=[32m"M6.5 13.8333H5.83333C3.31918 13.8333 2.0621 13.8333 1.28105 13.0523C0.5 12.2712 0.5 11.0142 0.5 8.5V7.16667C0.5 4.65251 0.5 3.39543 1.28105 2.61438C2.0621 1.83333 3.31918 1.83333 5.83333 1.83333H7.16667C9.68082 1.83333 10.9379 1.83333 11.719 2.61438C12.5 3.39543 12.5 4.65251 12.5 7.16667V7.5"[39m
+                                    [33mid[39m=[32m"Vector 9260"[39m
+                                    [33mstroke[39m=[32m"var(--stroke-0, #0B5ED7)"[39m
+                                    [33mstroke-linecap[39m=[32m"round"[39m
+                                    [33mstroke-linejoin[39m=[32m"round"[39m
+                                  [36m/>[39m
+                                  [36m<path[39m
+                                    [33md[39m=[32m"M0.5 5.83333H12.5"[39m
+                                    [33mid[39m=[32m"Vector 4046"[39m
+                                    [33mstroke[39m=[32m"var(--stroke-0, #0B5ED7)"[39m
+                                    [33mstroke-linecap[39m=[32m"round"[39m
+                                    [33mstroke-linejoin[39m=[32m"round"[39m
+                                  [36m/>[39m
+                                  [36m<path[39m
+                                    [33md[39m=[32m"M9.83333 13.8333C9.83333 13.8333 12.5 12.598 12.5 10.5926C12.5 9.80508 11.9386 9.16667 11.1667 9.16667C10.5351 9.16667 10.114 9.44118 9.83333 9.9902C9.55263 9.44118 9.13158 9.16667 8.5 9.16667C7.72807 9.16667 7.16667 9.80508 7.16667 10.5926C7.16667 12.598 9.83333 13.8333 9.83333 13.8333Z"[39m
+                                    [33mid[39m=[32m"Vector_2"[39m
+                                    [33mstroke[39m=[32m"var(--stroke-0, #0B5ED7)"[39m
+                                    [33mstroke-linecap[39m=[32m"round"[39m
+                                    [33mstroke-linejoin[39m=[32m"round"[39m
+                                  [36m/>[39m
+                                [36m</g>[39m
+                              [36m</svg>[39m
+                            [36m</div>[39m
+                          [36m</div>[39m
+                        [36m</div>[39m
+                      [36m</div>[39m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"flex-[1_0_0] min-w-px relative"[39m
+                      [33mdata-name[39m=[32m"Container"[39m
+                    [36m>[39m
+                      [36m<div[39m
+                        [33mclass[39m=...
+
+Expected: "#agenda"
+Received: "#doesNotExist"
+
+ ❯ src/app/App.test.tsx:49:36
+     47|
+     48|     await waitFor(() => {
+     49|       expect(window.location.hash).toBe("#agenda");
+       |                                    ^
+     50|       expect(document.body.textContent).toContain("Agenda");
+     51|     });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+   Start at  09:31:54
+   Duration  3.30s (transform 464ms, setup 50ms, import 1.63s, tests 1.12s, environment 403ms)
+
+exit=1

@@ -1,0 +1,16 @@
+{
+  "desktop_1366x768": [
+    { "route": "#agenda", "expectedHash": "#agenda", "actualHash": "#agenda", "textLength": 1103, "scrollWidth": 1366, "clientWidth": 1366, "failedResources": 0 },
+    { "route": "#agendaDia", "expectedHash": "#agendaDia", "actualHash": "#agendaDia", "textLength": 1577, "scrollWidth": 1366, "clientWidth": 1366, "failedResources": 0 },
+    { "route": "#atualizacoes", "expectedHash": "#atualizacoes", "actualHash": "#atualizacoes", "textLength": 1088, "scrollWidth": 1366, "clientWidth": 1366, "failedResources": 0 },
+    { "route": "#novaAtividade", "expectedHash": "#novaAtividade", "actualHash": "#novaAtividade", "textLength": 935, "scrollWidth": 1366, "clientWidth": 1366, "failedResources": 0 },
+    { "route": "#doesNotExist", "expectedHash": "#agenda", "actualHash": "#agenda", "textLength": 1103, "scrollWidth": 1366, "clientWidth": 1366, "failedResources": 0 }
+  ],
+  "mobile_375x812": [
+    { "route": "#agenda", "expectedHash": "#agenda", "actualHash": "#agenda", "textLength": 1062, "scrollWidth": 375, "clientWidth": 375, "failedResources": 0 },
+    { "route": "#agendaDia", "expectedHash": "#agendaDia", "actualHash": "#agendaDia", "textLength": 1536, "scrollWidth": 375, "clientWidth": 375, "failedResources": 0 },
+    { "route": "#atualizacoes", "expectedHash": "#atualizacoes", "actualHash": "#atualizacoes", "textLength": 1088, "scrollWidth": 375, "clientWidth": 375, "failedResources": 0 },
+    { "route": "#novaAtividade", "expectedHash": "#novaAtividade", "actualHash": "#novaAtividade", "textLength": 603, "scrollWidth": 375, "clientWidth": 375, "failedResources": 0 },
+    { "route": "#doesNotExist", "expectedHash": "#agenda", "actualHash": "#agenda", "textLength": 1062, "scrollWidth": 375, "clientWidth": 375, "failedResources": 0 }
+  ]
+}

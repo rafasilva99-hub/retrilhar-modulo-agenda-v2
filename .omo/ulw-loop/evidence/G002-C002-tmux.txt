@@ -1,0 +1,24 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t agenda app orchest
+ration lives in the agenda module
+
+(node:93987) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Us
+e `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 3 skipped (4)
+   Start at  09:29:23
+   Duration  370ms (transform 17ms, setup 32ms, import 8ms, tests 2ms, environme
+nt 237ms)
+
+
+TMUX_G002_C002_DONE
+
+
+
+

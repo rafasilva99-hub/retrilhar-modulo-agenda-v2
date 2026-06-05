@@ -1,0 +1,17 @@
+- generic [ref=e2258]:
+  - generic [ref=e2259]:
+    - button [ref=e2260] [cursor=pointer]:
+      - img [ref=e2261]
+    - generic [ref=e2264]:
+      - heading "Nova Atividade" [level=1] [ref=e2265]
+      - paragraph [ref=e2266]: Preencha os dados para criar uma nova atividade na sua agenda.
+  - generic [ref=e2267]:
+    - generic [ref=e2268]:
+      - generic [ref=e2269]
+      - generic [ref=e2274]
+      - generic [ref=e2279]
+    - generic [ref=e2284]:
+      - generic
+  - generic [ref=e2314]:
+    - button "Cancelar" [ref=e2315] [cursor=pointer]
+    - button "Ir para o próximo passo" [ref=e2316] [cursor=pointer]

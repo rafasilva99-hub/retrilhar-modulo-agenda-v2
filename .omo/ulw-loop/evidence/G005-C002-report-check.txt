@@ -1,0 +1,13 @@
+5:The agenda prototype is more Admin-compatible, but it is not migrated into Retrilhar Admin. The writable project remains a Vite/React mock-only prototype using hash routes.
+7:## Admin-compatible
+12:- Agenda view-model helpers live in `src/modules/agenda/services/agenda-mock-service.ts`, keeping mock-only data out of page orchestration.
+16:## legacy/Figma-contained
+24:## Ready to port
+27:- Admin-compatible `components.json` decisions, excluding any Vite-only values that do not apply to Next.
+30:- Documentation in `docs/audits/**` that explains what is aligned, quarantined, and intentionally prototype-only.
+32:## Must not migrate
+38:- Evidence files under `.omo/**`.
+41:## Migration approach for Retrilhar Admin
+49:## Remaining risks
+51:- The month/day/update pages still render mostly through legacy/Figma-contained exports.
+56:## Evidence

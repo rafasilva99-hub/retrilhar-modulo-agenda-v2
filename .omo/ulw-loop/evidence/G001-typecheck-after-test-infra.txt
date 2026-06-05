@@ -1,0 +1,5 @@
+=== npm run typecheck after test infra ===
+
+> @figma/my-make-file@0.0.1 typecheck
+> tsc --noEmit
+

@@ -1,0 +1,10 @@
+
+> @figma/my-make-file@0.0.1 dev
+> vite --host 127.0.0.1 --port 5174
+
+(node:89846) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+  VITE v6.3.5  ready in 125 ms
+
+  ➜  Local:   http://127.0.0.1:5174/

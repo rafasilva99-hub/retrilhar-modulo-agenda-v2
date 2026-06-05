@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 
-import type { AppPage } from "@/mocks/shell";
+import type { AppPage } from "@/components/layout/types";
 
 import { getDefaultActivityId } from "../services/agenda-mock-service";
 import type { AgendaViewMode } from "../types";
 
-const prototypePages: AppPage[] = ["intro", "contexto", "agenda", "agendaDia", "atualizacoes", "novaAtividade"];
+const prototypePages: AppPage[] = [
+  "intro",
+  "contexto",
+  "agenda",
+  "agendaDia",
+  "atualizacoes",
+  "novaAtividade",
+];
 
 type AgendaUpdatesInitialTab = "atualizacoes" | "participantes" | "visao-geral";
 
@@ -35,18 +42,25 @@ export function useAgendaPrototypeNavigation() {
   }, []);
 
   useEffect(() => {
+    const syncPageFromLocation = () => {
+      const page = getPageFromHash();
+      setCurrentPageRaw(page);
+      window.history.replaceState({ page }, "", `#${page}`);
+    };
+
     const onPopState = (event: PopStateEvent) => {
       if (event.state?.page) setCurrentPageRaw(event.state.page);
-      else setCurrentPageRaw(getPageFromHash());
+      else syncPageFromLocation();
     };
 
     window.addEventListener("popstate", onPopState);
+    window.addEventListener("hashchange", syncPageFromLocation);
+    syncPageFromLocation();
 
-    const initialPage = getPageFromHash();
-    setCurrentPageRaw(initialPage);
-    window.history.replaceState({ page: initialPage }, "", `#${initialPage}`);
-
-    return () => window.removeEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      window.removeEventListener("hashchange", syncPageFromLocation);
+    };
   }, []);
 
   const handleDayClick = useCallback(

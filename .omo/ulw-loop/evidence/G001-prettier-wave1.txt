@@ -1,0 +1,9 @@
+Checking formatting...
+[warn] docs/audits/admin-config-theme-parity.md
+[warn] docs/audits/shadcn-ui-quarantine.md
+[warn] src/components/custom/admin-primitives.test.tsx
+[warn] src/components/custom/data-list.tsx
+[warn] src/components/custom/cards/stats.tsx
+[warn] src/components/skeleton/table.tsx
+[warn] Code style issues found in 6 files. Run Prettier with --write to fix.
+exit=1

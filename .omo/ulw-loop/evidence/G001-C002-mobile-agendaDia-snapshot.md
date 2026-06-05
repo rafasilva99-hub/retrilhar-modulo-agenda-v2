@@ -1,0 +1,34 @@
+- generic [ref=e1211]:
+  - generic [ref=e1688]:
+    - generic [ref=e1689]:
+      - generic [ref=e1690]
+      - generic [ref=e1705]
+    - generic [ref=e1714]:
+      - generic [ref=e1715]
+      - generic [ref=e1805]
+      - generic [ref=e1894]
+      - generic [ref=e1971]
+    - generic [ref=e2056]:
+      - paragraph [ref=e2057]: Início
+      - img [ref=e2061]
+      - button "Agenda" [ref=e2063] [cursor=pointer]
+      - img [ref=e2067]
+      - paragraph [ref=e2069]: Atividades do Dia
+  - complementary [ref=e1623]:
+    - img "Retrilhar" [ref=e1625]
+    - navigation [ref=e1626]:
+      - button "Início" [ref=e1627]
+      - button "Agenda 4" [ref=e1632]
+      - button "Vendas" [ref=e1640]
+      - button "Clientes" [ref=e1649]
+      - button "Produtos" [ref=e1658]
+      - button "Relatórios" [ref=e1665]
+      - button "Configurações" [ref=e1670]
+    - button "Encolher menu" [ref=e1676]:
+      - img
+      - generic [ref=e1677]: Encolher menu
+  - banner [ref=e1678]:
+    - generic [ref=e1679]:
+      - button "E" [ref=e1680]
+      - button "Notificações" [ref=e1683]
+      - button "Perfil" [ref=e1685]

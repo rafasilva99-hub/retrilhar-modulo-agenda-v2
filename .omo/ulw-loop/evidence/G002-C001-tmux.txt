@@ -1,0 +1,24 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t layout contracts s
+tay decoupled from mock data
+
+(node:93951) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Us
+e `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 3 skipped (4)
+   Start at  09:29:21
+   Duration  595ms (transform 23ms, setup 51ms, import 10ms, tests 2ms, environm
+ent 436ms)
+
+
+TMUX_G002_C001_DONE
+
+
+
+

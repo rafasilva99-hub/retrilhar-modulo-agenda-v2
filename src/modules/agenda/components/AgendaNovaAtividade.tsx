@@ -2,6 +2,14 @@ import { useState } from "react";
 import { ArrowLeft02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
+import {
+  NewActivityCapacitySection,
+  NewActivityFormActions,
+  NewActivityIdentificationSection,
+  NewActivityScheduleSection,
+  NewActivityVisibilitySection,
+} from "./new-activity/new-activity-sections";
+
 interface AgendaNovaAtividadeProps {
   onBack: () => void;
 }
@@ -27,14 +35,12 @@ const STEPS = [
   {
     number: 2,
     title: "Datas e horários da atividade",
-    description:
-      "Defina quando a atividade acontece e se ela se repete em outros dias.",
+    description: "Defina quando a atividade acontece e se ela se repete em outros dias.",
   },
   {
     number: 3,
     title: "Atribuição dos guias para a atividade",
-    description:
-      "Escale os colaboradores responsáveis por conduzir a atividade.",
+    description: "Escale os colaboradores responsáveis por conduzir a atividade.",
   },
 ];
 
@@ -49,16 +55,23 @@ function StepIndicator({
 }) {
   return (
     <div className="flex flex-col gap-[4px]">
-      {/* Title row: circle + title */}
-      <div className="flex gap-[12px] items-center">
+      <div className="flex items-center gap-[12px]">
         {isCompleted ? (
-          <div className="size-[24px] shrink-0 rounded-full bg-[#079455] flex items-center justify-center">
-            <svg className="size-[14px] text-white" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+          <div className="flex size-[24px] shrink-0 items-center justify-center rounded-full bg-[#079455]">
+            <svg
+              className="size-[14px] text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2.5"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M20 6L9 17l-5-5" />
             </svg>
           </div>
         ) : (
-          <div className="size-[24px] shrink-0 rounded-full bg-[#FAFAFA] border border-[#E9EAEB]" />
+          <div className="size-[24px] shrink-0 rounded-full border border-[#E9EAEB] bg-[#FAFAFA]" />
         )}
         <p
           className={`font-['Helvetica_Neue:Medium',sans-serif] text-[16px] leading-[20px] ${
@@ -68,8 +81,7 @@ function StepIndicator({
           {step.title}
         </p>
       </div>
-      {/* Description — aligned with text (offset by circle + gap) */}
-      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[17px] ml-[36px] text-[#414651]">
+      <p className="ml-[36px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[17px] text-[#414651]">
         {step.description}
       </p>
     </div>
@@ -78,7 +90,7 @@ function StepIndicator({
 
 function StepperSidebar({ currentStep }: { currentStep: number }) {
   return (
-    <div className="bg-white border-r border-[#f5f5f5] w-[460px] shrink-0 py-[48px] px-[32px] flex flex-col gap-[32px]">
+    <div className="hidden w-[460px] shrink-0 flex-col gap-[32px] border-r border-[#f5f5f5] bg-white px-[32px] py-[48px] lg:flex">
       {STEPS.map((step) => (
         <StepIndicator
           key={step.number}
@@ -88,22 +100,6 @@ function StepperSidebar({ currentStep }: { currentStep: number }) {
         />
       ))}
     </div>
-  );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] leading-[normal] text-[#414651] uppercase tracking-[0.5px]">
-      {children}
-    </p>
-  );
-}
-
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <label className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[20px] text-[#414651]">
-      {children}
-    </label>
   );
 }
 
@@ -121,13 +117,13 @@ function TextInput({
   return (
     <div className="relative">
       {icon && (
-        <div className="absolute left-[14px] top-1/2 -translate-y-1/2 flex items-center justify-center text-[#a1a1aa]">
+        <div className="absolute top-1/2 left-[14px] flex -translate-y-1/2 items-center justify-center text-[#a1a1aa]">
           {icon}
         </div>
       )}
       <input
         type="text"
-        className={`w-full border border-[#d5d7da] rounded-[8px] ${icon ? "pl-[42px] pr-[14px]" : "px-[14px]"} py-[10px] text-[14px] font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] text-[#0f172b] placeholder:text-[#a1a1aa] focus:outline-none focus:ring-2 focus:ring-[#0b5ed7]/20 focus:border-[#0b5ed7] transition-colors`}
+        className={`w-full rounded-[8px] border border-[#d5d7da] ${icon ? "pr-[14px] pl-[42px]" : "px-[14px]"} py-[10px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[20px] text-[#0f172b] transition-colors placeholder:text-[#a1a1aa] focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/20 focus:outline-none`}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -148,7 +144,7 @@ function SelectInput({
   return (
     <div className="relative">
       <select
-        className={`w-full appearance-none border border-[#d5d7da] rounded-[8px] px-[14px] py-[10px] text-[14px] font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] focus:outline-none focus:ring-2 focus:ring-[#0b5ed7]/20 focus:border-[#0b5ed7] transition-colors bg-white pr-[40px] ${value ? "text-[#0f172b]" : "text-[#a1a1aa]"}`}
+        className={`w-full appearance-none rounded-[8px] border border-[#d5d7da] bg-white px-[14px] py-[10px] pr-[40px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[20px] transition-colors focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/20 focus:outline-none ${value ? "text-[#0f172b]" : "text-[#a1a1aa]"}`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
@@ -156,9 +152,15 @@ function SelectInput({
           {placeholder}
         </option>
       </select>
-      <div className="absolute right-[14px] top-1/2 -translate-y-1/2 pointer-events-none">
+      <div className="pointer-events-none absolute top-1/2 right-[14px] -translate-y-1/2">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M4 6L8 10L12 6" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M4 6L8 10L12 6"
+            stroke="#9ca3af"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </div>
     </div>
@@ -179,7 +181,7 @@ function NumberInput({
   return (
     <input
       type="number"
-      className="w-full border border-[#d5d7da] rounded-[8px] px-[14px] py-[10px] text-[14px] font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] text-[#0f172b] placeholder:text-[#a1a1aa] focus:outline-none focus:ring-2 focus:ring-[#0b5ed7]/20 focus:border-[#0b5ed7] transition-colors"
+      className="w-full rounded-[8px] border border-[#d5d7da] px-[14px] py-[10px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[20px] text-[#0f172b] transition-colors placeholder:text-[#a1a1aa] focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/20 focus:outline-none"
       value={value}
       onChange={(e) => {
         const val = parseInt(e.target.value, 10);
@@ -218,14 +220,12 @@ function CapacitySlider({
 
   return (
     <div className="flex flex-col gap-[16px]">
-      {/* Slider track */}
       <div className="relative h-[8px] w-full">
-        <div className="absolute inset-0 bg-[#e5e7eb] rounded-full" />
+        <div className="absolute inset-0 rounded-full bg-[#e5e7eb]" />
         <div
-          className="absolute top-0 bottom-0 bg-[#0b5ed7] rounded-full"
+          className="absolute top-0 bottom-0 rounded-full bg-[#0b5ed7]"
           style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }}
         />
-        {/* Min thumb */}
         <input
           type="range"
           min={0}
@@ -235,9 +235,8 @@ function CapacitySlider({
             const val = parseInt(e.target.value, 10);
             if (val <= max) onMinChange(val);
           }}
-          className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[20px] [&::-webkit-slider-thumb]:h-[20px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0b5ed7] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
+          className="pointer-events-none absolute inset-0 w-full appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-[20px] [&::-webkit-slider-thumb]:w-[20px] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0b5ed7] [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
         />
-        {/* Max thumb */}
         <input
           type="range"
           min={0}
@@ -247,10 +246,9 @@ function CapacitySlider({
             const val = parseInt(e.target.value, 10);
             if (val >= min) onMaxChange(val);
           }}
-          className="absolute inset-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[20px] [&::-webkit-slider-thumb]:h-[20px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0b5ed7] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
+          className="pointer-events-none absolute inset-0 w-full appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-[20px] [&::-webkit-slider-thumb]:w-[20px] [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#0b5ed7] [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
         />
       </div>
-      {/* Min / Max labels */}
       <div className="flex justify-between">
         <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#9ca3af]">
           0
@@ -271,10 +269,10 @@ function VisibilityToggle({
   onChange: (v: "publica" | "interna") => void;
 }) {
   return (
-    <div className="flex bg-[#f3f4f6] rounded-[8px] p-[4px] gap-[4px]">
+    <div className="flex gap-[4px] rounded-[8px] bg-[#f3f4f6] p-[4px]">
       <button
         type="button"
-        className={`flex-1 py-[8px] px-[16px] rounded-[6px] font-['Helvetica_Neue:Medium',sans-serif] text-[14px] leading-[20px] transition-all ${
+        className={`flex-1 rounded-[6px] px-[16px] py-[8px] font-['Helvetica_Neue:Medium',sans-serif] text-[14px] leading-[20px] transition-all ${
           value === "publica"
             ? "bg-[#0b5ed7] text-white shadow-sm"
             : "text-[#6b7280] hover:text-[#414651]"
@@ -285,7 +283,7 @@ function VisibilityToggle({
       </button>
       <button
         type="button"
-        className={`flex-1 py-[8px] px-[16px] rounded-[6px] font-['Helvetica_Neue:Medium',sans-serif] text-[14px] leading-[20px] transition-all ${
+        className={`flex-1 rounded-[6px] px-[16px] py-[8px] font-['Helvetica_Neue:Medium',sans-serif] text-[14px] leading-[20px] transition-all ${
           value === "interna"
             ? "bg-[#0b5ed7] text-white shadow-sm"
             : "text-[#6b7280] hover:text-[#414651]"
@@ -305,23 +303,41 @@ function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: (v: b
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-[24px] w-[44px] shrink-0 cursor-pointer rounded-full transition-colors duration-200 ${checked ? "bg-[#0b5ed7]" : "bg-[#e5e7eb]"}`}
     >
-      <span className={`pointer-events-none inline-block size-[20px] rounded-full bg-white shadow-sm transform transition-transform duration-200 mt-[2px] ${checked ? "translate-x-[22px] ml-[2px]" : "translate-x-[2px]"}`} />
+      <span
+        className={`pointer-events-none mt-[2px] inline-block size-[20px] transform rounded-full bg-white shadow-sm transition-transform duration-200 ${checked ? "ml-[2px] translate-x-[22px]" : "translate-x-[2px]"}`}
+      />
     </button>
   );
 }
 
-function DateInput({ placeholder, value, onChange }: { placeholder: string; value: string; onChange: (v: string) => void }) {
+function DateInput({
+  placeholder,
+  value,
+  onChange,
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
   return (
     <div className="relative">
       <input
         type="text"
-        className="w-full border border-[#d5d7da] rounded-[8px] px-[14px] py-[10px] text-[14px] font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] text-[#0f172b] placeholder:text-[#a1a1aa] focus:outline-none focus:ring-2 focus:ring-[#0b5ed7]/20 focus:border-[#0b5ed7] transition-colors pr-[40px]"
+        className="w-full rounded-[8px] border border-[#d5d7da] px-[14px] py-[10px] pr-[40px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[20px] text-[#0f172b] transition-colors placeholder:text-[#a1a1aa] focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/20 focus:outline-none"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-      <div className="absolute right-[14px] top-1/2 -translate-y-1/2 pointer-events-none">
-        <svg className="size-[16px] text-[#9ca3af]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+      <div className="pointer-events-none absolute top-1/2 right-[14px] -translate-y-1/2">
+        <svg
+          className="size-[16px] text-[#9ca3af]"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <rect x="3" y="4" width="18" height="18" rx="2" />
           <path d="M16 2v4M8 2v4M3 10h18" />
         </svg>
@@ -330,18 +346,34 @@ function DateInput({ placeholder, value, onChange }: { placeholder: string; valu
   );
 }
 
-function TimeInput({ placeholder, value, onChange }: { placeholder: string; value: string; onChange: (v: string) => void }) {
+function TimeInput({
+  placeholder,
+  value,
+  onChange,
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
   return (
     <div className="relative">
       <input
         type="text"
-        className="w-full border border-[#d5d7da] rounded-[8px] px-[14px] py-[10px] text-[14px] font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] text-[#0f172b] placeholder:text-[#a1a1aa] focus:outline-none focus:ring-2 focus:ring-[#0b5ed7]/20 focus:border-[#0b5ed7] transition-colors pr-[40px]"
+        className="w-full rounded-[8px] border border-[#d5d7da] px-[14px] py-[10px] pr-[40px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] leading-[20px] text-[#0f172b] transition-colors placeholder:text-[#a1a1aa] focus:border-[#0b5ed7] focus:ring-2 focus:ring-[#0b5ed7]/20 focus:outline-none"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-      <div className="absolute right-[14px] top-1/2 -translate-y-1/2 pointer-events-none">
-        <svg className="size-[16px] text-[#9ca3af]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+      <div className="pointer-events-none absolute top-1/2 right-[14px] -translate-y-1/2">
+        <svg
+          className="size-[16px] text-[#9ca3af]"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="12" cy="12" r="10" />
           <path d="M12 6v6l4 2" />
         </svg>
@@ -369,26 +401,22 @@ export function AgendaNovaAtividade({ onBack }: AgendaNovaAtividadeProps) {
     grupoClientes: "",
   });
 
-  const updateField = <K extends keyof FormState>(
-    field: K,
-    value: FormState[K]
-  ) => {
+  const updateField = <K extends keyof FormState>(field: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#f8fafe]">
-      {/* Top header bar */}
-      <div className="bg-white border-b border-[#e5e7eb] flex items-center gap-[16px] px-[24px] py-[16px] shrink-0 z-10">
+    <div className="flex h-screen min-w-0 flex-col overflow-x-hidden bg-[#f8fafe]">
+      <div className="z-10 flex min-w-0 shrink-0 items-center gap-[16px] border-b border-[#e5e7eb] bg-white px-[16px] py-[16px] sm:px-[24px]">
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center justify-center size-[36px] rounded-[8px] hover:bg-[#f3f4f6] transition-colors cursor-pointer"
+          className="flex size-[36px] cursor-pointer items-center justify-center rounded-[8px] transition-colors hover:bg-[#f3f4f6]"
         >
           <HugeiconsIcon icon={ArrowLeft02Icon} size={20} color="#414651" />
         </button>
-        <div className="w-[1px] h-[24px] bg-[#e5e7eb]" />
-        <div className="flex flex-col gap-[2px]">
+        <div className="h-[24px] w-[1px] bg-[#e5e7eb]" />
+        <div className="flex min-w-0 flex-col gap-[2px]">
           <h1 className="font-['Helvetica_Neue:Medium',sans-serif] text-[20px] leading-[28px] text-[#0f172b]">
             Nova Atividade
           </h1>
@@ -398,154 +426,128 @@ export function AgendaNovaAtividade({ onBack }: AgendaNovaAtividadeProps) {
         </div>
       </div>
 
-      {/* Body: sidebar + content */}
-      <div className="flex flex-1 min-h-0">
-        {/* Left stepper sidebar — flush left, no gap with header/footer */}
+      <div className="flex min-h-0 min-w-0 flex-1">
         <StepperSidebar currentStep={currentStep} />
 
-        {/* Right content area */}
-        <div className="flex-1 overflow-y-auto px-[32px] py-[24px]">
-        <div className="flex flex-col gap-[24px] max-w-[916px]">
-          {currentStep === 1 && (
-            <>
-              {/* Card 1: Identificacao */}
-              <div className="bg-white rounded-[12px] p-[24px] flex flex-col gap-[20px] relative">
-                <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
-                <SectionTitle>Insira as informações de identificação da atividade</SectionTitle>
-                <div className="flex flex-col gap-[6px]">
-                  <FieldLabel>Título da atividade</FieldLabel>
-                  <TextInput placeholder="Insira o título do evento" value={form.titulo} onChange={(v) => updateField("titulo", v)} />
-                </div>
-                <div className="flex gap-[16px]">
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Local da atividade</FieldLabel>
-                    <SelectInput placeholder="Selecione o local" value={form.local} onChange={(v) => updateField("local", v)} />
-                  </div>
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Produto / Atividade a ser vinculada (opcional)</FieldLabel>
-                    <SelectInput placeholder="Selecione um produto" value={form.produto} onChange={(v) => updateField("produto", v)} />
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-[#9ca3af]">Ao selecionar um item, sua capacidade (mín. / máx.) é atribuída na atividade.</p>
-                  </div>
-                </div>
-              </div>
+        <div className="min-w-0 flex-1 overflow-y-auto px-[16px] py-[24px] sm:px-[24px] lg:px-[32px]">
+          <div className="flex max-w-[916px] min-w-0 flex-col gap-[24px]">
+            {currentStep === 1 && (
+              <>
+                <NewActivityIdentificationSection
+                  titleField={
+                    <TextInput
+                      placeholder="Insira o título do evento"
+                      value={form.titulo}
+                      onChange={(v) => updateField("titulo", v)}
+                    />
+                  }
+                  localField={
+                    <SelectInput
+                      placeholder="Selecione o local"
+                      value={form.local}
+                      onChange={(v) => updateField("local", v)}
+                    />
+                  }
+                  productField={
+                    <SelectInput
+                      placeholder="Selecione um produto"
+                      value={form.produto}
+                      onChange={(v) => updateField("produto", v)}
+                    />
+                  }
+                />
+                <NewActivityCapacitySection
+                  slider={
+                    <CapacitySlider
+                      min={form.capacidadeMin}
+                      max={form.capacidadeMax}
+                      onMinChange={(v) => updateField("capacidadeMin", v)}
+                      onMaxChange={(v) => updateField("capacidadeMax", v)}
+                    />
+                  }
+                  minField={
+                    <NumberInput
+                      value={form.capacidadeMin}
+                      onChange={(v) => updateField("capacidadeMin", v)}
+                    />
+                  }
+                  maxField={
+                    <NumberInput
+                      value={form.capacidadeMax}
+                      onChange={(v) => updateField("capacidadeMax", v)}
+                    />
+                  }
+                />
+                <NewActivityVisibilitySection
+                  visibilityField={
+                    <VisibilityToggle
+                      value={form.visibilidade}
+                      onChange={(v) => updateField("visibilidade", v)}
+                    />
+                  }
+                  groupLinkField={
+                    <TextInput
+                      placeholder="Insira o link do WhatsApp"
+                      value={form.linkGrupo}
+                      onChange={(v) => updateField("linkGrupo", v)}
+                      icon={<WhatsAppIcon />}
+                    />
+                  }
+                  clientGroupField={
+                    <SelectInput
+                      placeholder="Selecione um ou mais grupos"
+                      value={form.grupoClientes}
+                      onChange={(v) => updateField("grupoClientes", v)}
+                    />
+                  }
+                />
+              </>
+            )}
 
-              {/* Card 2: Capacidade */}
-              <div className="bg-white rounded-[12px] p-[24px] flex flex-col gap-[20px] relative">
-                <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
-                <SectionTitle>Capacidade da atividade</SectionTitle>
-                <CapacitySlider min={form.capacidadeMin} max={form.capacidadeMax} onMinChange={(v) => updateField("capacidadeMin", v)} onMaxChange={(v) => updateField("capacidadeMax", v)} />
-                <div className="flex gap-[16px]">
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Capacidade mínima</FieldLabel>
-                    <NumberInput value={form.capacidadeMin} onChange={(v) => updateField("capacidadeMin", v)} />
-                  </div>
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Capacidade máxima</FieldLabel>
-                    <NumberInput value={form.capacidadeMax} onChange={(v) => updateField("capacidadeMax", v)} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3: Visibilidade */}
-              <div className="bg-white rounded-[12px] p-[24px] flex flex-col gap-[20px] relative">
-                <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
-                <SectionTitle>Insira as informações de visibilidade da atividade</SectionTitle>
-                <div className="flex flex-col gap-[6px]">
-                  <FieldLabel>Visibilidade da atividade</FieldLabel>
-                  <VisibilityToggle value={form.visibilidade} onChange={(v) => updateField("visibilidade", v)} />
-                </div>
-                <div className="flex flex-col gap-[6px]">
-                  <FieldLabel>Link de Grupo</FieldLabel>
-                  <TextInput placeholder="Insira o link do WhatsApp" value={form.linkGrupo} onChange={(v) => updateField("linkGrupo", v)} icon={<WhatsAppIcon />} />
-                </div>
-                <div className="flex flex-col gap-[6px]">
-                  <FieldLabel>Grupo de clientes (opcional)</FieldLabel>
-                  <SelectInput placeholder="Selecione um ou mais grupos" value={form.grupoClientes} onChange={(v) => updateField("grupoClientes", v)} />
-                </div>
-              </div>
-            </>
-          )}
-
-          {currentStep === 2 && (
-            <>
-              {/* Card: Data e hora */}
-              <div className="bg-white rounded-[12px] p-[24px] flex flex-col gap-[20px] relative">
-                <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
-                <SectionTitle>Insira as informações de data e hora da atividade</SectionTitle>
-                <div className="flex gap-[16px]">
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Data de início</FieldLabel>
-                    <DateInput placeholder="dd/mm/aaaa" value={dataInicio} onChange={setDataInicio} />
-                  </div>
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Horário de início</FieldLabel>
-                    <TimeInput placeholder="00:00" value={horarioInicio} onChange={setHorarioInicio} />
-                  </div>
-                </div>
-                <div className="flex gap-[16px]">
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Data de término</FieldLabel>
-                    <DateInput placeholder="dd/mm/aaaa" value={dataTermino} onChange={setDataTermino} />
-                  </div>
-                  <div className="flex flex-col gap-[6px] flex-1">
-                    <FieldLabel>Horário de término</FieldLabel>
-                    <TimeInput placeholder="00:00" value={horarioTermino} onChange={setHorarioTermino} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Card: Múltiplos horários */}
-              <div className="bg-white rounded-[12px] p-[24px] flex items-center justify-between relative">
-                <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
-                <div className="flex flex-col gap-[4px]">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] leading-[normal] text-[#414651] uppercase tracking-[0.5px]">Múltiplos horários no mesmo dia</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] leading-[18px] text-[#717680]">Crie várias saídas do mesmo evento no dia sem precisar duplicar a atividade.</p>
-                </div>
-                <ToggleSwitch checked={multiplosHorarios} onChange={setMultiplosHorarios} />
-              </div>
-
-              {/* Card: Atividade se repete */}
-              <div className="bg-white rounded-[12px] p-[24px] flex items-center justify-between relative">
-                <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />
-                <div className="flex flex-col gap-[4px]">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] leading-[normal] text-[#414651] uppercase tracking-[0.5px]">Essa atividade se repete?</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] leading-[18px] text-[#717680]">Configure uma programação recorrente para não precisar recriar a atividade toda vez.</p>
-                </div>
-                <ToggleSwitch checked={atividadeRepete} onChange={setAtividadeRepete} />
-              </div>
-            </>
-          )}
-        </div>
+            {currentStep === 2 && (
+              <NewActivityScheduleSection
+                startDateField={
+                  <DateInput placeholder="dd/mm/aaaa" value={dataInicio} onChange={setDataInicio} />
+                }
+                startTimeField={
+                  <TimeInput
+                    placeholder="00:00"
+                    value={horarioInicio}
+                    onChange={setHorarioInicio}
+                  />
+                }
+                endDateField={
+                  <DateInput
+                    placeholder="dd/mm/aaaa"
+                    value={dataTermino}
+                    onChange={setDataTermino}
+                  />
+                }
+                endTimeField={
+                  <TimeInput
+                    placeholder="00:00"
+                    value={horarioTermino}
+                    onChange={setHorarioTermino}
+                  />
+                }
+                multipleTimesToggle={
+                  <ToggleSwitch checked={multiplosHorarios} onChange={setMultiplosHorarios} />
+                }
+                repeatToggle={
+                  <ToggleSwitch checked={atividadeRepete} onChange={setAtividadeRepete} />
+                }
+              />
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Bottom footer bar */}
-      <div className="bg-white border-t border-[#e5e7eb] flex items-center justify-end gap-[16px] px-[24px] py-[16px] shrink-0">
-        {currentStep === 1 ? (
-          <button
-            type="button"
-            onClick={onBack}
-            className="flex items-center justify-center px-[20px] py-[10px] rounded-[8px] border border-[#FEE4E2] font-['Helvetica_Neue:Medium',sans-serif] text-[16px] leading-[20px] text-[#F04438] hover:bg-[#FEF3F2] transition-colors cursor-pointer bg-white"
-          >
-            Cancelar
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setCurrentStep((s) => Math.max(1, s - 1))}
-            className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] leading-[20px] text-[#0b5ed7] hover:text-[#0a4fb8] transition-colors cursor-pointer px-[20px] py-[10px]"
-          >
-            Voltar ao passo anterior
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={() => setCurrentStep((s) => Math.min(3, s + 1))}
-          className="flex items-center justify-center px-[20px] py-[10px] rounded-[8px] bg-[#0b5ed7] font-['Helvetica_Neue:Medium',sans-serif] text-[16px] leading-[20px] text-white hover:bg-[#0a4fb8] transition-colors cursor-pointer"
-        >
-          Ir para o próximo passo
-        </button>
-      </div>
+      <NewActivityFormActions
+        currentStep={currentStep}
+        onCancel={onBack}
+        onBack={() => setCurrentStep((s) => Math.max(1, s - 1))}
+        onNext={() => setCurrentStep((s) => Math.min(3, s + 1))}
+      />
     </div>
   );
 }

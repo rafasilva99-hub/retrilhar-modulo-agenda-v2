@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+
 import { BadgeTooltip } from "./badge-tooltip";
 
 export type AttributeBadgeCategory =
@@ -160,7 +161,7 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
   let textColor = "text-[#717680]";
   let iconPath = "";
   let iconPaths_multi: string[] | null = null;
-  let customViewBox: string | null = null;
+  const customViewBox: string | null = null;
 
   switch (category) {
     case "image-term":

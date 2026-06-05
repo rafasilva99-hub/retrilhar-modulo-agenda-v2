@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "createdAt": "2026-06-05T12:08:12.414Z",
+  "updatedAt": "2026-06-05T13:13:01.213Z",
+  "briefPath": ".omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/brief.md",
+  "goalsPath": ".omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json",
+  "ledgerPath": ".omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/ledger.jsonl",
+  "codexGoalMode": "aggregate",
+  "goals": [
+    {
+      "id": "G001-execute-the-remaining-frontend-matur",
+      "title": "Execute the remaining frontend maturation plan at .omo/plans/frontend...",
+      "objective": "Execute the remaining frontend maturation plan at .omo/plans/frontend-maturation-remaining.md for /Users/luana/Desktop/retrilhar-modulo-agenda-v2. The writable project is a Vite/React mock-only prototype. The read-only reference project is /Users/luana/Documents/Code Projects/UXNaut - Clientes/Retrilhar Projs/Retrilhar Admin; never mutate, dirty, format, install, or run mutating commands there. Use Admin only to observe/copy frontend patterns such as components.json, shadcn theme config, Shell/layout primitives, custom primitives, and skeleton primitives. Do not add backend/API/auth/Next/OpenAPI/fetch/real integrations. Keep hash routes #agenda, #agendaDia, #atualizacoes, #novaAtividade, and unknown fallback working. Start with Wave 1 from the plan: fresh baseline/Admin guard, Admin config/theme audit, UI inventory/quarantine, and Admin-compatible custom/skeleton primitives. Continue into later waves only after each criterion has RED->GREEN tests and real tmux/browser evidence with cleanup receipts. Treat the existing dirty worktree from the completed first slice as baseline and do not revert it.",
+      "status": "complete",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "tmux channel: create/run a characterization test before docs exist, then audit Admin config/theme parity using read-only Admin commands. Exact commands: npm run test -- --run src/test/admin-alignment-audits.test.ts -t 'Admin alignment audits > documents theme config parity with Vite-safe divergences'; git -C '/Users/luana/Documents/Code Projects/UXNaut - Clientes/Retrilhar Projs/Retrilhar Admin' status --short; rg -n 'radix-luma|hugeicons|inverted-translucent|subtle|rsc: false|Vite-safe' docs/audits/admin-config-theme-parity.md components.json. Binary PASS: the test fails RED because the audit is missing/incomplete, then passes GREEN after the audit, and Admin status evidence is captured without mutation.",
+          "userModel": "happy",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G001-C001-red.txt, .omo/ulw-loop/evidence/G001-C001-green.txt, .omo/ulw-loop/evidence/G001-C001-tmux.txt with cleanup receipt: tmux session ulw-qa-g001-c001 killed/absent, no Vite listener spawned, Admin read-only status captured.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G001-C001-red.txt; GREEN .omo/ulw-loop/evidence/G001-C001-green.txt; tmux .omo/ulw-loop/evidence/G001-C001-tmux.txt; cleanup .omo/ulw-loop/evidence/G001-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:21:45.811Z"
+        },
+        {
+          "id": "C002",
+          "scenario": "tmux plus browser channel: create/run tests before primitives/inventory exist, then verify shadcn UI quarantine and Admin-compatible custom/skeleton primitives. Exact test command: npm run test -- --run src/test/admin-alignment-audits.test.ts src/components/custom/admin-primitives.test.tsx -t 'Admin alignment audits|Admin compatible primitives'. Exact browser action: start Vite on 127.0.0.1:5174 (or printed fallback), open /#agenda at 1366x768, assert document.body.innerText length > 200 and hash == '#agenda'. Binary PASS: tests fail RED for missing docs/primitives, pass GREEN after implementation, browser renders nonblank agenda route.",
+          "userModel": "edge",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G001-C002-red.txt, .omo/ulw-loop/evidence/G001-C002-green.txt, .omo/ulw-loop/evidence/G001-C002-browser.md plus screenshot/json if available, cleanup receipt: Vite PID killed, browser context closed, no listener on QA port.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G001-C002-red.txt; GREEN .omo/ulw-loop/evidence/G001-C002-green.txt; browser .omo/ulw-loop/evidence/G001-C002-browser.md; route JSON .omo/ulw-loop/evidence/G001-browser-agenda-desktop.json and G001-browser-agenda-mobile.json; cleanup .omo/ulw-loop/evidence/G001-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:21:45.872Z"
+        },
+        {
+          "id": "C003",
+          "scenario": "tmux plus browser channel: run route/mock-only regression after Wave 1. Exact commands: npm run test -- --run src/app/App.test.tsx src/test/prototype-guardrails.test.ts src/test/admin-alignment-audits.test.ts; npm run lint; npm run typecheck; npm run build; rg -n 'better-auth|next-intl|@hey-api|fetch\\(|next/link|next/image|OpenAPI|X-Organization-ID' src --glob '!src/imports/**' --glob '!src/test/**'. Exact browser action: open /#agendaDia, /#atualizacoes, /#novaAtividade, and /#doesNotExist on the running Vite server and assert nonblank text plus expected hash/fallback. Binary PASS: all commands exit 0, forbidden import audit has no production matches, all routes render.",
+          "userModel": "regression",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G001-C003-red.txt if regression test was introduced/updated before implementation or .omo/ulw-loop/evidence/G001-C003-characterization-green-before.txt for unchanged characterization; .omo/ulw-loop/evidence/G001-C003-green.txt; .omo/ulw-loop/evidence/G001-C003-browser.md; cleanup receipt: Vite killed, no port listener, no tmux session.",
+          "capturedEvidence": "Characterization before .omo/ulw-loop/evidence/G001-C003-characterization-green-before.txt; GREEN .omo/ulw-loop/evidence/G001-C003-green.txt; tmux .omo/ulw-loop/evidence/G001-C003-tmux.txt; browser .omo/ulw-loop/evidence/G001-C003-browser.md; final CLI .omo/ulw-loop/evidence/G001-final-cli.txt; cleanup .omo/ulw-loop/evidence/G001-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:21:53.273Z"
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-06-05T12:08:12.414Z",
+      "updatedAt": "2026-06-05T12:26:29.968Z",
+      "startedAt": "2026-06-05T12:09:09.073Z",
+      "completedAt": "2026-06-05T12:26:29.968Z",
+      "evidence": "Wave 1 complete: C001-C003 pass with RED/GREEN, tmux/browser QA, final CLI gate, cleaner no-op, cleanup receipts. Evidence under .omo/ulw-loop/evidence/G001-*"
+    },
+    {
+      "id": "G002",
+      "title": "Execute frontend maturation wave 2",
+      "objective": "Execute Wave 2 from .omo/plans/frontend-maturation-remaining.md in /Users/luana/Desktop/retrilhar-modulo-agenda-v2: split layout types from mock data, normalize/document shell route policy, and move agenda orchestration out of src/app/App.tsx into src/modules/agenda. Preserve Vite/React, mock-only data, hash routes #agenda #agendaDia #atualizacoes #novaAtividade, unknown fallback, and no backend/API/auth/Next/OpenAPI/fetch. Never mutate the Retrilhar Admin reference project.",
+      "status": "complete",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "tmux channel: write and run a RED test proving layout types are owned by src/components/layout/types.ts, not re-exported from mocks, then split mock data from layout contracts. Exact test: npm run test -- --run src/test/admin-alignment-audits.test.ts -t 'layout contracts stay decoupled from mock data'. Binary PASS: RED fails while layout/types imports or reexports mocks; GREEN passes after types are local and mocks import them.",
+          "userModel": "happy",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G002-C001-red.txt; .omo/ulw-loop/evidence/G002-C001-green.txt; .omo/ulw-loop/evidence/G002-C001-tmux.txt; cleanup receipt no tmux/session/port leftovers.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G002-C001-red.txt; GREEN .omo/ulw-loop/evidence/G002-C001-green.txt; tmux .omo/ulw-loop/evidence/G002-C001-tmux.txt; cleanup .omo/ulw-loop/evidence/G002-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:33:19.413Z"
+        },
+        {
+          "id": "C002",
+          "scenario": "tmux channel: write and run a RED test proving src/app/App.tsx delegates agenda rendering to src/modules/agenda and shell policy is documented, then move orchestration into the module. Exact test: npm run test -- --run src/test/admin-alignment-audits.test.ts -t 'agenda app orchestration lives in the agenda module'. Binary PASS: RED fails while App imports page components/useAgendaPrototypeNavigation directly or docs/audits/shell-route-policy.md is missing; GREEN passes after App uses a module-level router and policy doc exists.",
+          "userModel": "edge",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G002-C002-red.txt; .omo/ulw-loop/evidence/G002-C002-green.txt; .omo/ulw-loop/evidence/G002-C002-tmux.txt; cleanup receipt.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G002-C002-red.txt; GREEN .omo/ulw-loop/evidence/G002-C002-green.txt; tmux .omo/ulw-loop/evidence/G002-C002-tmux.txt; cleanup .omo/ulw-loop/evidence/G002-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:33:19.472Z"
+        },
+        {
+          "id": "C003",
+          "scenario": "browser plus tmux channel: run existing route tests and browser QA for #agenda #agendaDia #atualizacoes #novaAtividade #doesNotExist after Wave 2. Exact commands: npm run test -- --run src/app/App.test.tsx src/test/prototype-guardrails.test.ts src/test/admin-alignment-audits.test.ts; npm run lint; npm run typecheck; npm run build. Browser: start Vite on 127.0.0.1:5174, navigate to each hash, assert nonblank text and fallback #doesNotExist normalizes to #agenda. Binary PASS: all CLI checks exit 0 and browser JSON has expected hashes/text lengths.",
+          "userModel": "regression",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G002-C003-green.txt; .omo/ulw-loop/evidence/G002-C003-browser.md; route JSON files; cleanup receipt with Vite killed and no 5174/5175 listener.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G002-C003-red.txt; GREEN .omo/ulw-loop/evidence/G002-C003-hashchange-green.txt and .omo/ulw-loop/evidence/G002-C003-green.txt; browser .omo/ulw-loop/evidence/G002-C003-browser.md; cleanup .omo/ulw-loop/evidence/G002-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:33:19.531Z"
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-06-05T12:26:22.469Z",
+      "updatedAt": "2026-06-05T12:34:00.594Z",
+      "evidence": "Wave 2 complete: layout contracts decoupled from mocks, App delegates to AgendaPrototypeApp, shell-route policy documented, hashchange fallback fixed and browser verified. Evidence under .omo/ulw-loop/evidence/G002-*",
+      "startedAt": "2026-06-05T12:26:50.919Z",
+      "completedAt": "2026-06-05T12:34:00.594Z"
+    },
+    {
+      "id": "G003",
+      "title": "Execute frontend maturation wave 3",
+      "objective": "Execute Wave 3 from .omo/plans/frontend-maturation-remaining.md in /Users/luana/Desktop/retrilhar-modulo-agenda-v2: expand agenda mock service/view-model boundary, contain Figma exports behind module adapters/documentation, and split large agenda mock data by domain enough to make later component extraction safer. Preserve Vite/React, mock-only data, hash routes, and no backend/API/auth/Next/OpenAPI/fetch. Never mutate Retrilhar Admin.",
+      "status": "complete",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "tmux channel: write/run RED tests for agenda service view-model helpers before implementation, then expand src/modules/agenda/services/agenda-mock-service.ts into typed synchronous mock-only view models for month dashboard, day activity list, selected activity detail, reservations/participants, guide/team summaries, and holidays. Exact test: npm run test -- --run src/modules/agenda/services/agenda-mock-service.test.ts. Binary PASS: RED fails for missing view-model boundary, GREEN passes after implementation, including sorting, unknown IDs, default fallback, and empty result behavior.",
+          "userModel": "happy",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G003-C001-red.txt; .omo/ulw-loop/evidence/G003-C001-green.txt; .omo/ulw-loop/evidence/G003-C001-tmux.txt; cleanup receipt showing no Vite listener was spawned.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G003-C001-red.txt; GREEN .omo/ulw-loop/evidence/G003-C001-green.txt; tmux .omo/ulw-loop/evidence/G003-C001-tmux.txt; cleanup .omo/ulw-loop/evidence/G003-C001-cleanup.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:44:28.322Z"
+        },
+        {
+          "id": "C002",
+          "scenario": "tmux channel: write/run RED audit tests proving legacy Figma exports are only imported by src/modules/agenda/adapters/** and that docs/audits/figma-export-containment.md lists each legacy screen, owning adapter, and replacement path. Exact tests: npm run test -- --run src/test/admin-alignment-audits.test.ts -t 'Figma export containment'. Boundary command: rg -n 'src/imports|@/imports|\\.\\./\\.\\./imports|\\.\\./imports' src --glob '!src/modules/agenda/adapters/**'. Binary PASS: RED fails while containment docs/comments are incomplete; GREEN passes after each adapter has a legacy-containment comment and the audit documents any temporary exceptions.",
+          "userModel": "edge",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G003-C002-red.txt; .omo/ulw-loop/evidence/G003-C002-green.txt; .omo/ulw-loop/evidence/G003-C002-boundary.txt; cleanup receipt with no dev server left running.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G003-C002-red.txt; GREEN .omo/ulw-loop/evidence/G003-C002-green.txt; boundary scan .omo/ulw-loop/evidence/G003-C002-boundary.txt; cleanup .omo/ulw-loop/evidence/G003-C002-cleanup.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:44:28.388Z"
+        },
+        {
+          "id": "C003",
+          "scenario": "tmux plus browser channel: write/run RED tests proving agenda mock data is split into domain files while public imports from @/mocks/agenda preserve counts, default IDs, and reservation/status helpers; then run full route regression. Exact CLI: npm run test -- --run src/modules/agenda/services/agenda-mock-service.test.ts src/app/App.test.tsx src/test/prototype-guardrails.test.ts src/test/admin-alignment-audits.test.ts; npm run lint; npm run typecheck; npm run build; npm exec prettier -- --check src/modules/agenda/services/agenda-mock-service.ts src/modules/agenda/services/agenda-mock-service.test.ts src/mocks/agenda.ts src/mocks/agenda/activities.ts src/mocks/agenda/reservations.ts src/mocks/agenda/guides.ts src/mocks/agenda/holidays.ts src/mocks/agenda/status.ts src/test/admin-alignment-audits.test.ts docs/audits/figma-export-containment.md. Browser: start Vite on 127.0.0.1:5174, navigate to #agenda #agendaDia #atualizacoes #novaAtividade #doesNotExist, assert nonblank text and unknown fallback #agenda. Binary PASS: all CLI checks pass, forbidden import audit has no production matches outside allowed legacy imports, browser JSON has expected hashes/text lengths, and cleanup kills QA server.",
+          "userModel": "regression",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G003-C003-red.txt; .omo/ulw-loop/evidence/G003-C003-green.txt; .omo/ulw-loop/evidence/G003-C003-browser.md plus route JSON files; .omo/ulw-loop/evidence/G003-cleanup-receipt.txt.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G003-C003-red.txt; GREEN .omo/ulw-loop/evidence/G003-C003-green.txt; browser .omo/ulw-loop/evidence/G003-C003-browser.md and .omo/ulw-loop/evidence/G003-browser-routes.json; cleanup .omo/ulw-loop/evidence/G003-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:44:28.449Z"
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-06-05T12:33:43.706Z",
+      "updatedAt": "2026-06-05T12:45:23.663Z",
+      "evidence": "G003 active OMO goal complete against .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json and ledger.jsonl: service/view-model boundary expanded, Figma export containment documented behind adapters, agenda mock data split behind public barrel, RED/GREEN tests, tmux, CLI and browser QA passed. Evidence under .omo/ulw-loop/evidence/G003-*",
+      "startedAt": "2026-06-05T12:36:18.206Z",
+      "completedAt": "2026-06-05T12:45:23.663Z"
+    },
+    {
+      "id": "G004-execute-frontend-maturation-wave-4",
+      "title": "Execute frontend maturation wave 4",
+      "objective": "Execute Wave 4 from .omo/plans/frontend-maturation-remaining.md in /Users/luana/Desktop/retrilhar-modulo-agenda-v2: extract maintained agenda status/reservation indicators, new-activity form sections, month/day primitives, and updates participant sections incrementally from legacy Figma surfaces. Preserve visual/user-test fidelity, Vite/React, mock-only data, hash routes, and no backend/API/auth/Next/OpenAPI/fetch. Keep direct src/imports usage contained behind adapters or documented temporary exceptions. Never mutate Retrilhar Admin.",
+      "status": "complete",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "tmux plus browser channel: write/run RED tests for maintained agenda status/reservation indicators and new activity form section split, then implement focused maintained components under src/modules/agenda/components/**. Exact tests: npm run test -- --run src/modules/agenda/components -t 'agenda status indicators|new activity form sections'. Browser: open /#novaAtividade, type 'Trilha Teste' in the title field, toggle/click first-step controls, assert hash remains #novaAtividade and text remains nonblank. Binary PASS: RED fails before components/sections exist, GREEN passes after status mappings cover success/warning/destructive/neutral and new-activity section files are under 250 pure LOC.",
+          "userModel": "happy",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G004-C001-red.txt; .omo/ulw-loop/evidence/G004-C001-green.txt; .omo/ulw-loop/evidence/G004-C001-browser.md; .omo/ulw-loop/evidence/G004-C001-loc.txt; cleanup receipt.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G004-C001-red.txt; GREEN .omo/ulw-loop/evidence/G004-C001-green.txt; browser .omo/ulw-loop/evidence/G004-C001-browser.md; LOC .omo/ulw-loop/evidence/G004-C001-loc.txt; cleanup .omo/ulw-loop/evidence/G004-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:54:41.861Z"
+        },
+        {
+          "id": "C002",
+          "scenario": "tmux plus browser channel: write/run RED tests for extracted month/day/update primitives under src/modules/agenda/components/**, then add focused primitive components for calendar summary, day activity shell, and updates participant row without wholesale rewriting legacy exports. Exact tests: npm run test -- --run src/modules/agenda/components -t 'agenda month day primitives|agenda updates participant primitives'. Browser: open /#agenda and /#agendaDia at 1366x768 and 375x812 plus /#atualizacoes at 1366x768, assert nonblank text and no unexpected hash changes. Binary PASS: RED fails before primitives exist, GREEN passes after prop/state tests cover empty/holiday/participant status states and browser QA passes.",
+          "userModel": "edge",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G004-C002-red.txt; .omo/ulw-loop/evidence/G004-C002-green.txt; .omo/ulw-loop/evidence/G004-C002-browser.md; route JSON files; cleanup receipt.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G004-C002-red.txt; GREEN .omo/ulw-loop/evidence/G004-C002-green.txt; browser .omo/ulw-loop/evidence/G004-C002-browser.md and .omo/ulw-loop/evidence/G004-browser-routes.json; cleanup .omo/ulw-loop/evidence/G004-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:54:41.922Z"
+        },
+        {
+          "id": "C003",
+          "scenario": "regression tmux plus browser channel: run full touched-suite verification after Wave 4. Exact CLI: npm run test -- --run src/modules/agenda/components src/modules/agenda/services/agenda-mock-service.test.ts src/app/App.test.tsx src/test/prototype-guardrails.test.ts src/test/admin-alignment-audits.test.ts; npm run lint; npm run typecheck; npm run build; npm exec prettier -- --check src/modules/agenda/components src/modules/agenda/index.ts src/test/admin-alignment-audits.test.ts. Browser: start Vite on 127.0.0.1:5174, navigate #agenda #agendaDia #atualizacoes #novaAtividade #doesNotExist, assert nonblank text and fallback #agenda. Binary PASS: all CLI checks pass, browser route JSON has expected hashes/text lengths, no backend/API/auth/fetch imports are introduced, and QA server is killed.",
+          "userModel": "regression",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G004-C003-green.txt; .omo/ulw-loop/evidence/G004-C003-browser.md; .omo/ulw-loop/evidence/G004-cleanup-receipt.txt.",
+          "capturedEvidence": "GREEN .omo/ulw-loop/evidence/G004-C003-green.txt; browser .omo/ulw-loop/evidence/G004-C003-browser.md and .omo/ulw-loop/evidence/G004-browser-routes.json; cleanup .omo/ulw-loop/evidence/G004-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T12:54:41.980Z"
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-06-05T12:45:06.296Z",
+      "updatedAt": "2026-06-05T12:54:58.461Z",
+      "startedAt": "2026-06-05T12:45:32.415Z",
+      "completedAt": "2026-06-05T12:54:58.461Z",
+      "evidence": "G004 active OMO goal complete against .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json and ledger.jsonl: maintained status/reservation indicators, new activity sections, month/day/update primitives extracted with RED/GREEN tests, CLI gates and browser QA passed. Evidence under .omo/ulw-loop/evidence/G004-*"
+    },
+    {
+      "id": "G005-execute-frontend-maturation-wave-5-a",
+      "title": "Execute frontend maturation wave 5 and final verification",
+      "objective": "Execute Wave 5 from .omo/plans/frontend-maturation-remaining.md in /Users/luana/Desktop/retrilhar-modulo-agenda-v2: perform dependency quarantine/package audit, produce final migration readiness report, run final QA and review, and close the frontend maturation loop. Preserve Vite/React mock-only prototype constraints, hash routes, no backend/API/auth/Next/OpenAPI/fetch, and never mutate Retrilhar Admin.",
+      "status": "complete",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "happy path for: Execute Wave 5 from .omo/plans/frontend-maturation-remaining.md in /Users/lua...",
+          "userModel": "happy",
+          "expectedEvidence": "Replace via revise_criterion with observable happy-path proof for goal 5.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G005-C001-red.txt; dependency audit before .omo/ulw-loop/evidence/G005-C001-audit-before.txt; GREEN .omo/ulw-loop/evidence/G005-C001-green.txt; package state .omo/ulw-loop/evidence/G005-C001-package-state.txt; verification .omo/ulw-loop/evidence/G005-C001-verification.txt | cleanup: tmux sessions ulw-qa-g005-c001 killed; no Vite listener spawned for C001",
+          "status": "pass",
+          "capturedAt": "2026-06-05T13:00:30.618Z"
+        },
+        {
+          "id": "C002",
+          "scenario": "tmux channel: create/run a RED audit test for docs/audits/admin-alignment-readiness.md, then write a migration readiness report that states what is Admin-compatible, what is legacy/Figma-contained, what is prototype-only/mock-only, what can be migrated to Retrilhar Admin later, what must not be migrated, evidence links, and remaining risks. Binary PASS: RED fails before the report, GREEN passes after required sections/terms are present, and the report does not claim Admin migration or backend implementation.",
+          "userModel": "edge",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G005-C002-red.txt; .omo/ulw-loop/evidence/G005-C002-green.txt; .omo/ulw-loop/evidence/G005-C002-report-check.txt",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G005-C002-red.txt; GREEN .omo/ulw-loop/evidence/G005-C002-green.txt; report check .omo/ulw-loop/evidence/G005-C002-report-check.txt; docs/audits/admin-alignment-readiness.md | cleanup: tmux session ulw-qa-g005-c002 killed; no Vite listener spawned for C002",
+          "status": "pass",
+          "capturedAt": "2026-06-05T13:00:30.677Z"
+        },
+        {
+          "id": "C003",
+          "scenario": "regression tmux/browser/reviewer channel: run final verification after Wave 5: Admin read-only status before/after, forbidden backend/import scan, targeted Prettier check, npm run lint, npm run test, npm run typecheck, npm run build, browser QA at desktop and mobile for #agenda #agendaDia #atualizacoes #novaAtividade #doesNotExist with fallback, ai-slop-cleaner/review gate, cleanup receipt. Binary PASS: all commands pass, browser JSON has expected hashes/text lengths, Admin remains read-only, no backend/API/auth/Next/OpenAPI/fetch production imports are introduced, reviewer approves or blockers are fixed before checkpoint.",
+          "userModel": "regression",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G005-C003-admin-before.txt; .omo/ulw-loop/evidence/G005-C003-green.txt; .omo/ulw-loop/evidence/G005-C003-browser.md and .omo/ulw-loop/evidence/G005-browser-routes.json; .omo/ulw-loop/evidence/G005-C003-review.md; .omo/ulw-loop/evidence/G005-cleanup-receipt.txt; .omo/ulw-loop/evidence/G005-codex-goal-snapshot.json; final checkpoint output",
+          "capturedEvidence": "Admin before .omo/ulw-loop/evidence/G005-C003-admin-before.txt; final CLI .omo/ulw-loop/evidence/G005-C003-green.txt; browser .omo/ulw-loop/evidence/G005-C003-browser.md and .omo/ulw-loop/evidence/G005-browser-routes.json; ai-slop cleaner .omo/ulw-loop/evidence/G005-ai-slop-cleaner.md; final review APPROVE/CLEAR .omo/ulw-loop/evidence/G005-C003-review.md; Admin readonly .omo/ulw-loop/evidence/G005-final-admin-readonly.md; cleanup .omo/ulw-loop/evidence/G005-cleanup-receipt.txt | cleanup: Vite server stopped, Playwright tab closed/none open, no 5174/5175 listener, no tmux sessions",
+          "status": "pass",
+          "capturedAt": "2026-06-05T13:12:20.344Z"
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-06-05T12:54:58.193Z",
+      "updatedAt": "2026-06-05T13:13:01.213Z",
+      "startedAt": "2026-06-05T12:56:33.197Z",
+      "completedAt": "2026-06-05T13:13:01.213Z",
+      "evidence": "G005 complete: dependency quarantine removed unused MUI/Emotion, readiness report added, final CLI/browser/Admin-readonly/cleaner/review gate passed. Evidence: G005-C001-*, G005-C002-*, G005-C003-*, G005-quality-gate.json."
+    }
+  ],
+  "codexObjective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/ledger.jsonl as the audit trail.",
+  "aggregateCompletion": {
+    "status": "complete",
+    "completedAt": "2026-06-05T13:13:01.213Z",
+    "evidence": "G005 complete: dependency quarantine removed unused MUI/Emotion, readiness report added, final CLI/browser/Admin-readonly/cleaner/review gate passed. Evidence: G005-C001-*, G005-C002-*, G005-C003-*, G005-quality-gate.json.",
+    "codexGoal": {
+      "goal": {
+        "threadId": "019e95ef-3ed8-7611-a2d5-491b4d16fa0e",
+        "objective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json, including all remaining frontend maturation waves through final verification, under the original brief constraints; use .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/ledger.jsonl as the audit trail.",
+        "status": "complete",
+        "tokensUsed": 697937,
+        "timeUsedSeconds": 2350,
+        "createdAt": 1780662810,
+        "updatedAt": 1780665160
+      },
+      "remainingTokens": null,
+      "completionBudgetReport": null
+    }
+  }
+}

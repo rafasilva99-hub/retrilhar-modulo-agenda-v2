@@ -1,0 +1,12 @@
+{
+  "url": "http://127.0.0.1:5175/#agenda",
+  "title": "Módulo de Agenda V2",
+  "hash": "#agenda",
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "textLength": 1062,
+  "textSample": "Agendamentos Hoje\n\nReservas confirmadas\n\n23\n\n+4 hoje\n\nvs. período anterior\n\nAgendamentos Última Hora\n\nReservas recentes\n\n5\n\n+2\n\nvs. período anterior\n\nReceita Estimada Hoje\n\nTotal de vendas\n\nR$ 4.250\n\n+8.4%\n\nvs. período anterior\n\nOcupação Mé",
+  "pass": true
+}

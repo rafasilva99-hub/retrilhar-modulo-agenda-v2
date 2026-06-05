@@ -1,0 +1,15 @@
+
+> @figma/my-make-file@0.0.1 lint
+> eslint . --max-warnings=0 --report-unused-disable-directives
+
+
+/Users/luana/Desktop/retrilhar-modulo-agenda-v2/src/modules/agenda/components/AgendaPrototypeApp.tsx
+  1:1  error  Run autofix to sort these imports!  simple-import-sort/imports
+
+/Users/luana/Desktop/retrilhar-modulo-agenda-v2/src/modules/agenda/index.ts
+  1:1  error  Run autofix to sort these exports!  simple-import-sort/exports
+
+✖ 2 problems (2 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+
+exit=1

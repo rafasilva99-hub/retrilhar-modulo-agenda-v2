@@ -1,0 +1,48 @@
+## C002 RED: Figma containment audit
+Fri Jun  5 09:38:28 -03 2026
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t Figma export containment
+
+(node:96994) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+ ❯ src/test/admin-alignment-audits.test.ts (6 tests | 1 failed | 5 skipped) 4ms
+     × documents Figma export containment behind agenda adapters 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/admin-alignment-audits.test.ts > Admin alignment audits > documents Figma export containment behind agenda adapters
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/test/admin-alignment-audits.test.ts:104:46
+    102|
+    103|   it("documents Figma export containment behind agenda adapters", () =…
+    104|     expect(existsSync(figmaContainmentPath)).toBe(true);
+       |                                              ^
+    105|
+    106|     const auditText = readProjectFile(figmaContainmentPath);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+   Start at  09:38:29
+   Duration  594ms (transform 21ms, setup 51ms, import 12ms, tests 4ms, environment 422ms)
+
+## Boundary scan
+src/app/components/ContextoMissao.tsx:3:import svgPaths from "../../imports/svg-o3cnx04bbw";
+src/app/components/IntroTeste.tsx:3:import svgPaths from "@/imports/svg-q5jqh9fwaq";
+src/test/admin-alignment-audits.test.ts:113:    expect(auditText).toContain("src/imports/AgendaMes/AgendaMes-13-9535.tsx");
+src/test/admin-alignment-audits.test.ts:114:    expect(auditText).toContain("src/imports/AgendaAtividadesDoDia/AgendaAtividadesDoDia.tsx");
+src/test/admin-alignment-audits.test.ts:115:    expect(auditText).toContain("src/imports/AgendaAtualizacoes/AgendaAtualizacoes.tsx");
+src/test/prototype-guardrails.test.ts:28:    if (projectRelativePath.startsWith("src/imports")) continue;

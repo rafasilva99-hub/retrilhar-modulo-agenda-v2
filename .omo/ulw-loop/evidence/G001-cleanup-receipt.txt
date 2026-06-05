@@ -1,0 +1,7 @@
+cleanup: tmux sessions ulw-qa-g001-c001 and ulw-qa-g001-c003 killed/absent; Playwright tab/context closed; Vite sessions 5125 and 27897 stopped with Ctrl-C; no listeners on 5174/5175 shown below.
+
+Admin drift note: Admin was read-only from this task; status changed externally during run and is recorded in browser/tmux evidence.
+?? .agents/
+?? .claude/
+?? .env.local.bak
+?? skills-lock.json

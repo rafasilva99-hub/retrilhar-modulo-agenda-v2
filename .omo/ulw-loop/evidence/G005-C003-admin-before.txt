@@ -1,0 +1,6 @@
+Admin status before final QA:
+?? .agents/
+?? .claude/
+?? .env.local.bak
+?? skills-lock.json
+Admin command policy: only git status/rg/sed/cat-style read-only inspections were used; no install/format/write command run in Admin by this plan.

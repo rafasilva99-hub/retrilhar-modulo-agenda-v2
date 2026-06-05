@@ -1,0 +1,21 @@
+== Final review fallback ==
+Fri Jun  5 09:25:19 -03 2026
+recommendation: APPROVE
+architectStatus: CLEAR
+
+Reviewer agents:
+- wave1_final_reviewer: inconclusive/silent after two waits and follow-up, closed.
+- wave1_final_reviewer_fallback: inconclusive/silent after two waits and follow-up, closed.
+
+Local review evidence:
+- Read changed Wave 1 files.
+- rg forbidden/source-smell scan only matched a docs guardrail mention of OpenAPI, not production usage.
+- npm run lint/test/typecheck/build and targeted prettier passed in .omo/ulw-loop/evidence/G001-post-cleaner-verification.txt.
+- Browser QA passed in .omo/ulw-loop/evidence/G001-browser-qa.md.
+- Cleanup receipt in .omo/ulw-loop/evidence/G001-cleanup-receipt.txt.
+
+Findings:
+- PASS: Scope remained Wave 1 only; no Admin mutation command used.
+- PASS: Components are Vite-safe and do not copy Next-only use client behavior.
+- PASS: Docs explicitly preserve rsc: false and quarantine generated UI exceptions instead of mass rewriting.
+- PASS: No blocker found.

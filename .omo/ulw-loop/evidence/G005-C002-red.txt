@@ -1,0 +1,67 @@
+npm run test -- --run src/test/admin-alignment-audits.test.ts -t 'dependency qua
+rantine decisions|final Admin alignment readiness'
+luana@MacBook-Pro-de-Luana-2 retrilhar-modulo-agenda-v2 % npm run test -- --run
+src/test/admin-alignment-audits.test.ts -t 'dependency quarantine decisions|fina
+l Admin alignment readiness'
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t dependency quarant
+ine decisions|final Admin alignment readiness
+
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+ ❯ src/test/admin-alignment-audits.test.ts (8 tests | 2 failed | 6 skipped) 7ms
+     × documents dependency quarantine decisions against package state 5ms
+     × documents final Admin alignment readiness without claiming migration 1ms
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/admin-alignment-audits.test.ts > Admin alignment audits > docume
+nts dependency quarantine decisions against package state
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/test/admin-alignment-audits.test.ts:142:50
+    140|
+    141|   it("documents dependency quarantine decisions against package state"…
+    142|     expect(existsSync(dependencyQuarantinePath)).toBe(true);
+       |                                                  ^
+    143|
+    144|     const auditText = readProjectFile(dependencyQuarantinePath);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/test/admin-alignment-audits.test.ts > Admin alignment audits > docume
+nts final Admin alignment readiness without claiming migration
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/test/admin-alignment-audits.test.ts:166:39
+    164|
+    165|   it("documents final Admin alignment readiness without claiming migra…
+    166|     expect(existsSync(readinessPath)).toBe(true);
+       |                                       ^
+    167|
+    168|     const reportText = readProjectFile(readinessPath);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 6 skipped (8)
+   Start at  09:58:10
+   Duration  792ms (transform 33ms, setup 65ms, import 18ms, tests 7ms, environm
+ent 593ms)
+
+luana@MacBook-Pro-de-Luana-2 retrilhar-modulo-agenda-v2 %

@@ -1,0 +1,5 @@
+=== npm run typecheck after cwd fix ===
+
+> @figma/my-make-file@0.0.1 typecheck
+> tsc --noEmit
+

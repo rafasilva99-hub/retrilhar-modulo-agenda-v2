@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "createdAt": "2026-06-05T04:46:37.903Z",
+  "updatedAt": "2026-06-05T05:05:06.472Z",
+  "briefPath": ".omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/brief.md",
+  "goalsPath": ".omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json",
+  "ledgerPath": ".omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/ledger.jsonl",
+  "codexGoalMode": "aggregate",
+  "goals": [
+    {
+      "id": "G001-execute-the-first-implementation-sli",
+      "title": "Execute the first implementation slice of .omo/plans/prototype-admin-...",
+      "objective": "Execute the first implementation slice of .omo/plans/prototype-admin-alignment.md for the Vite agenda prototype. Writable repo: /Users/luana/Desktop/retrilhar-modulo-agenda-v2. Read-only reference only, never mutate: /Users/luana/Documents/Code Projects/UXNaut - Clientes/Retrilhar Projs/Retrilhar Admin. Scope this loop to tasks 1-5 from the plan: protect Admin baseline, fix existing prototype lint baseline only, add Vitest/React Testing Library/jsdom test infrastructure, add characterization tests for current hash route behavior, and persist prototype guardrail rules. The prototype must remain Vite/React, mock-only, hash-routed, backend-free, no Next/auth/OpenAPI SDK/real API/fetch. Success criteria must include RED->GREEN test proof and real-surface browser or tmux evidence for #agenda, #agendaDia, #atualizacoes, #novaAtividade, unknown hash fallback, Admin read-only status, and mock-only/no forbidden imports checks.",
+      "status": "complete",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "tmux channel: run lint and guardrail tests in the prototype, capture Admin git status before/after as read-only evidence. Binary PASS: lint exits 0, guardrail test id 'prototype guardrails > keeps Admin read-only rules and forbids backend/runtime imports' passes, and evidence shows this task did not execute mutating commands inside Retrilhar Admin. If Admin status changes externally in the shared worktree, capture the drift and treat byte comparison as inconclusive rather than failure.",
+          "userModel": "happy",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G001-C001-red.txt for pre-change failing lint/test, .omo/ulw-loop/evidence/G001-C001-green.txt for passing lint/test output and final Admin status, .omo/ulw-loop/evidence/G001-admin-readonly.md for read-only/drift note and cleanup receipt.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G001-C001-red.txt; GREEN .omo/ulw-loop/evidence/G001-C001-green.txt; Admin read-only note .omo/ulw-loop/evidence/G001-admin-readonly.md | cleanup: no tmux session, no Vite listener, no Admin mutation; see .omo/ulw-loop/evidence/G001-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T05:00:49.019Z"
+        },
+        {
+          "id": "C002",
+          "scenario": "browser channel: start Vite on 127.0.0.1 with a free port, use Playwright MCP to open http://127.0.0.1:<port>/#agenda, /#agendaDia, /#atualizacoes, /#novaAtividade at 1366x768 and 375x812, and capture browser evaluation JSON plus snapshots/screenshots where the screenshot tool succeeds. Binary PASS: each route has the expected hash and nonblank rendered text, mobile evaluations show viewport 375x812, and test id 'App hash routing > renders each supported hash route directly' passes.",
+          "userModel": "edge",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G001-C002-red.txt for pre-change failing route characterization test before test infra implementation, .omo/ulw-loop/evidence/G001-C002-green.txt for passing test output, .omo/ulw-loop/evidence/G001-C002-browser.md plus route JSON/snapshot artifacts and cleanup receipt.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G001-C002-red.txt; GREEN .omo/ulw-loop/evidence/G001-C002-green.txt; browser QA .omo/ulw-loop/evidence/G001-C002-browser.md plus route JSON/snapshots | cleanup: closed Playwright tab, killed Vite session 12195, no 5175 listener, no tmux, killed screenshot find process; see .omo/ulw-loop/evidence/G001-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T05:00:49.085Z"
+        },
+        {
+          "id": "C003",
+          "scenario": "tmux channel: run 'tmux new-session -d -s ulw-qa-c003 bash', send keys 'cd /Users/luana/Desktop/retrilhar-modulo-agenda-v2 && npm run test -- --run src/app/App.test.tsx src/test/prototype-guardrails.test.ts && npm run typecheck && npm run build', capture pane to .omo/ulw-loop/evidence/G001-C003-tmux.txt. Binary PASS: unknown hash fallback test id 'App hash routing > falls back to agenda for unknown hash' passes, mock-only guardrail test passes, typecheck/build pass, and rg audit finds no forbidden Next/auth/OpenAPI/fetch imports in maintained code.",
+          "userModel": "regression",
+          "expectedEvidence": ".omo/ulw-loop/evidence/G001-C003-red.txt for pre-change failing fallback/mock-only tests before implementation, .omo/ulw-loop/evidence/G001-C003-green.txt for passing verification output, .omo/ulw-loop/evidence/G001-C003-tmux.txt for real tmux transcript with cleanup receipt.",
+          "capturedEvidence": "RED .omo/ulw-loop/evidence/G001-C003-red.txt; GREEN .omo/ulw-loop/evidence/G001-C003-green.txt; forbidden import audit empty in C003 GREEN output | cleanup: no tmux session, no Vite listener, no lingering QA process; see .omo/ulw-loop/evidence/G001-cleanup-receipt.txt",
+          "status": "pass",
+          "capturedAt": "2026-06-05T05:00:56.295Z"
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-06-05T04:46:37.903Z",
+      "updatedAt": "2026-06-05T05:05:06.472Z",
+      "startedAt": "2026-06-05T04:47:43.691Z",
+      "completedAt": "2026-06-05T05:05:06.472Z",
+      "evidence": "C001-C003 pass with RED/GREEN, browser QA, cleanup, and post-cleaner verification. Evidence under .omo/ulw-loop/evidence/."
+    }
+  ],
+  "codexObjective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/ledger.jsonl as the audit trail.",
+  "aggregateCompletion": {
+    "status": "complete",
+    "completedAt": "2026-06-05T05:05:06.472Z",
+    "evidence": "C001-C003 pass with RED/GREEN, browser QA, cleanup, and post-cleaner verification. Evidence under .omo/ulw-loop/evidence/.",
+    "codexGoal": {
+      "status": "complete",
+      "tokensUsed": 184603,
+      "timeUsedSeconds": 1079,
+      "objective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/ledger.jsonl as the audit trail."
+    }
+  }
+}

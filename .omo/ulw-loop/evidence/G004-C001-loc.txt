@@ -1,0 +1,9 @@
+## G004 C001 LOC check
+Fri Jun  5 09:54:41 -03 2026
+64 src/modules/agenda/components/new-activity/new-activity-sections.test.tsx
+207 src/modules/agenda/components/new-activity/new-activity-sections.tsx
+41 src/modules/agenda/components/status/agenda-status-config.ts
+36 src/modules/agenda/components/status/agenda-status-indicators.test.tsx
+50 src/modules/agenda/components/status/agenda-status-indicators.tsx
+43 src/modules/agenda/components/primitives/agenda-route-primitives.test.tsx
+78 src/modules/agenda/components/primitives/agenda-route-primitives.tsx

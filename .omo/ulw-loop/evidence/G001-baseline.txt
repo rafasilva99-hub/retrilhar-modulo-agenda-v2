@@ -1,0 +1,45 @@
+== ULW bootstrap notepad ==
+Fri Jun  5 09:09:44 -03 2026
+
+== Skills used ==
+omo:ulw-loop - state/evidence workflow
+omo:refactor - granular refactor discipline
+omo:programming/typescript - TS/TSX code edits and TDD
+omo:lsp - diagnostics after edits
+omo:review-work - final quality gate
+frontend-design/frontend-ui-ux - visual QA reference only; no aesthetic redesign in Wave 1
+
+== Prototype status ==
+ M package-lock.json
+ M package.json
+ M src/components/ui/participant-attribute-badge.tsx
+ M src/modules/agenda/index.ts
+ M vite.config.ts
+?? .claude/
+?? .omo/
+?? docs/
+?? src/app/App.test.tsx
+?? src/test/
+
+== Admin status read-only ==
+?? .agents/
+?? .claude/
+?? .env.local.bak
+?? skills-lock.json
+
+== Ports 5174/5175 ==
+
+== Package scripts ==
+{
+  "build": "vite build",
+  "check": "npm run format:check && npm run lint && npm run typecheck && npm run build",
+  "check:fix": "npm run format && npm run lint:fix && npm run typecheck && npm run build",
+  "dev": "vite",
+  "format": "prettier . --write --cache",
+  "format:check": "prettier . --check --cache",
+  "lint": "eslint . --max-warnings=0 --report-unused-disable-directives",
+  "lint:fix": "eslint . --fix --max-warnings=0 --report-unused-disable-directives",
+  "test": "vitest run",
+  "test:watch": "vitest",
+  "typecheck": "tsc --noEmit"
+}

@@ -1,0 +1,41 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t documents theme co
+nfig parity
+
+(node:90996) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Us
+e `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 1 skipped (2)
+   Start at  09:20:53
+   Duration  664ms (transform 24ms, setup 61ms, import 10ms, tests 2ms, environm
+ent 482ms)
+
+ M modules/affiliate/components/affiliate-list.tsx
+?? .agents/
+?? .claude/
+?? .env.local.bak
+?? skills-lock.json
+components.json
+3:  "style": "radix-luma",
+20:  "iconLibrary": "hugeicons",
+22:  "menuColor": "inverted-translucent",
+23:  "menuAccent": "subtle",
+
+docs/audits/admin-config-theme-parity.md
+15:- `components.json` uses `style: "radix-luma"`.
+16:- `components.json` uses `iconLibrary: "hugeicons"`.
+17:- `components.json` uses `menuColor: "inverted-translucent"`.
+18:- `components.json` uses `menuAccent: "subtle"`.
+23:## Vite-safe divergence
+25:- Prototype keeps `rsc: false`; Admin uses RSC because it is a Next.js app.
+33:- Any future theme change must remain Vite-safe and must not copy `rsc: true`
+.
+
+TMUX_C001_DONE
+

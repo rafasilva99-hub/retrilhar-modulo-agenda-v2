@@ -1,0 +1,38 @@
+--- package/dependency scan ---
+package.json:56:    "lucide-react": "0.487.0",
+package.json:58:    "next-themes": "0.4.6",
+package-lock.json:47:        "lucide-react": "0.487.0",
+package-lock.json:49:        "next-themes": "0.4.6",
+package-lock.json:8165:        "@emotion/is-prop-valid": "*",
+package-lock.json:8170:        "@emotion/is-prop-valid": {
+package-lock.json:9424:    "node_modules/lucide-react": {
+package-lock.json:9426:      "resolved": "https://registry.npmjs.org/lucide-react/-/lucide-react-0.487.0.tgz",
+package-lock.json:9657:        "@emotion/is-prop-valid": "*",
+package-lock.json:9662:        "@emotion/is-prop-valid": {
+package-lock.json:9786:    "node_modules/next-themes": {
+package-lock.json:9788:      "resolved": "https://registry.npmjs.org/next-themes/-/next-themes-0.4.6.tgz",
+src/components/ui/carousel.tsx:5:import { ArrowLeft, ArrowRight } from "lucide-react";
+src/test/admin-alignment-audits.test.ts:71:    expect(auditText).toContain("lucide-react");
+src/test/admin-alignment-audits.test.ts:72:    expect(auditText).toContain("next-themes");
+src/test/admin-alignment-audits.test.ts:73:    expect(auditText).toContain("@mui/material");
+src/test/admin-alignment-audits.test.ts:150:    expect(auditText).toContain("@mui/material");
+src/test/admin-alignment-audits.test.ts:151:    expect(auditText).toContain("@mui/icons-material");
+src/test/admin-alignment-audits.test.ts:152:    expect(auditText).toContain("@emotion/react");
+src/test/admin-alignment-audits.test.ts:153:    expect(auditText).toContain("@emotion/styled");
+src/test/admin-alignment-audits.test.ts:154:    expect(auditText).toContain("lucide-react");
+src/test/admin-alignment-audits.test.ts:155:    expect(auditText).toContain("next-themes");
+src/test/admin-alignment-audits.test.ts:159:    expect(dependencies["@mui/material"]).toBeUndefined();
+src/test/admin-alignment-audits.test.ts:160:    expect(dependencies["@mui/icons-material"]).toBeUndefined();
+src/test/admin-alignment-audits.test.ts:161:    expect(dependencies["@emotion/react"]).toBeUndefined();
+src/test/admin-alignment-audits.test.ts:162:    expect(dependencies["@emotion/styled"]).toBeUndefined();
+src/components/ui/navigation-menu.tsx:4:import { ChevronDownIcon } from "lucide-react";
+src/components/ui/context-menu.tsx:5:import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
+src/components/ui/sonner.tsx:11:import { useTheme } from "next-themes";
+src/components/ui/resizable.tsx:4:import { GripVerticalIcon } from "lucide-react";
+src/components/ui/menubar.tsx:5:import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
+src/components/ui/pagination.tsx:2:import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
+--- package.json dependencies ---
+{
+  "lucide": "0.487.0",
+  "nextThemes": "0.4.6"
+}

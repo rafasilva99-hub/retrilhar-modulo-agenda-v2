@@ -1,0 +1,24 @@
+## C002 GREEN: Figma containment audit
+Fri Jun  5 09:41:13 -03 2026
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t Figma export containment
+
+(node:98016) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 5 skipped (6)
+   Start at  09:41:13
+   Duration  560ms (transform 18ms, setup 48ms, import 9ms, tests 3ms, environment 395ms)
+
+## Boundary scan
+src/app/components/ContextoMissao.tsx:3:import svgPaths from "../../imports/svg-o3cnx04bbw";
+src/app/components/IntroTeste.tsx:3:import svgPaths from "@/imports/svg-q5jqh9fwaq";
+src/test/prototype-guardrails.test.ts:28:    if (projectRelativePath.startsWith("src/imports")) continue;
+src/test/admin-alignment-audits.test.ts:113:    expect(auditText).toContain("src/imports/AgendaMes/AgendaMes-13-9535.tsx");
+src/test/admin-alignment-audits.test.ts:114:    expect(auditText).toContain("src/imports/AgendaAtividadesDoDia/AgendaAtividadesDoDia.tsx");
+src/test/admin-alignment-audits.test.ts:115:    expect(auditText).toContain("src/imports/AgendaAtualizacoes/AgendaAtualizacoes.tsx");

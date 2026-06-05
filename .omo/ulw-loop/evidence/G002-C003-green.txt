@@ -1,0 +1,58 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/app/App.test.tsx src/test/prototype-guardrails.test.ts src/test/admin-alignment-audits.test.ts
+
+(node:94851) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  3 passed (3)
+      Tests  8 passed (8)
+   Start at  09:32:18
+   Duration  2.45s (transform 538ms, setup 185ms, import 1.75s, tests 176ms, environment 1.21s)
+
+
+== lint ==
+
+> @figma/my-make-file@0.0.1 lint
+> eslint . --max-warnings=0 --report-unused-disable-directives
+
+
+== typecheck ==
+
+> @figma/my-make-file@0.0.1 typecheck
+> tsc --noEmit
+
+
+== build ==
+
+> @figma/my-make-file@0.0.1 build
+> vite build
+
+vite v6.3.5 building for production...
+(node:94955) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+transforming...
+✓ 1099 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                      0.58 kB │ gzip:   0.35 kB
+dist/assets/retrilhar-icon-CMpFxAZ0.png                             38.44 kB
+dist/assets/retrilhar-logo-CfErCPau.png                             49.89 kB
+dist/assets/4a664b1820bfb04f20dc4f636db105ede4311f14-00jjr4nE.png  104.99 kB
+dist/assets/index-DP6rbg4w.css                                     200.57 kB │ gzip:  31.61 kB
+dist/assets/index-Bkx7vaNA.js                                      956.20 kB │ gzip: 239.42 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.39s
+
+== prettier targeted ==
+Checking formatting...
+All matched files use Prettier code style!
+
+exit=0

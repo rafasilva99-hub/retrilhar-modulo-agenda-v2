@@ -1,0 +1,83 @@
+=== npm run format:check ===
+
+> @figma/my-make-file@0.0.1 format:check
+> prettier . --check --cache
+
+Checking formatting...
+[warn] .omo/plans/prototype-admin-alignment.md
+[warn] .omo/ulw-loop/evidence/G001-C002-browser.md
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-agenda.json
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-agendaDia.json
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-atualizacoes.json
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-novaAtividade.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agenda-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agenda.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agendaDia-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agendaDia.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-atualizacoes-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-atualizacoes.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-novaAtividade-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-novaAtividade.json
+[warn] docs/superpowers/plans/2026-06-05-prototype-admin-alignment-detailed.md
+[warn] docs/superpowers/plans/2026-06-05-prototype-admin-alignment.md
+[warn] src/components/layout/app-layout.tsx
+[warn] src/components/ui/badge-tooltip.tsx
+[warn] src/mocks/agenda.ts
+[warn] src/mocks/shell.ts
+[warn] src/modules/agenda/components/AgendaNovaAtividade.tsx
+[warn] src/modules/agenda/hooks/use-agenda-prototype-navigation.ts
+[warn] Code style issues found in 22 files. Run Prettier with --write to fix.
+
+=== npm run lint ===
+
+> @figma/my-make-file@0.0.1 lint
+> eslint . --max-warnings=0 --report-unused-disable-directives
+
+
+=== npm run test ===
+
+> @figma/my-make-file@0.0.1 test
+> vitest run
+
+(node:65949) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  2 passed (2)
+      Tests  3 passed (3)
+   Start at  02:01:17
+   Duration  2.90s (transform 479ms, setup 116ms, import 2.13s, tests 155ms, environment 927ms)
+
+
+=== npm run typecheck ===
+
+> @figma/my-make-file@0.0.1 typecheck
+> tsc --noEmit
+
+
+=== npm run build ===
+
+> @figma/my-make-file@0.0.1 build
+> vite build
+
+vite v6.3.5 building for production...
+(node:65999) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+transforming...
+✓ 1098 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                      0.58 kB │ gzip:   0.35 kB
+dist/assets/retrilhar-icon-CMpFxAZ0.png                             38.44 kB
+dist/assets/retrilhar-logo-CfErCPau.png                             49.89 kB
+dist/assets/4a664b1820bfb04f20dc4f636db105ede4311f14-00jjr4nE.png  104.99 kB
+dist/assets/index-CAvXCfiJ.css                                     199.21 kB │ gzip:  31.38 kB
+dist/assets/index-e2mJzDJt.js                                      956.07 kB │ gzip: 239.28 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.54s

@@ -1,7 +1,8 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import { defineConfig, type Plugin } from "vite";
+import type { Plugin } from "vite";
+import { defineConfig } from "vitest/config";
 
 function figmaAssetResolver(): Plugin {
   return {
@@ -32,4 +33,9 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ["**/*.svg", "**/*.csv"],
+  test: {
+    environment: "jsdom",
+    globals: false,
+    setupFiles: ["./src/test/setup.ts"],
+  },
 });

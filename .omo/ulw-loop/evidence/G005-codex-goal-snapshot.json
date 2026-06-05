@@ -1,0 +1,13 @@
+{
+  "goal": {
+    "threadId": "019e95ef-3ed8-7611-a2d5-491b4d16fa0e",
+    "objective": "Complete the durable ulw-loop plan in .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/goals.json, including all remaining frontend maturation waves through final verification, under the original brief constraints; use .omo/ulw-loop/019e95ef-3ed8-7611-a2d5-491b4d16fa0e/ledger.jsonl as the audit trail.",
+    "status": "complete",
+    "tokensUsed": 697937,
+    "timeUsedSeconds": 2350,
+    "createdAt": 1780662810,
+    "updatedAt": 1780665160
+  },
+  "remainingTokens": null,
+  "completionBudgetReport": null
+}

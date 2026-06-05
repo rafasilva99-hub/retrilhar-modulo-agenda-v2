@@ -1,0 +1,3 @@
+tmux cleanup: ulw-qa-g002-c001/c002 killed or absent
+browser cleanup: Playwright tab closed; Vite session 95326 stopped with Ctrl-C; no 5174/5175 listeners after QA.
+browser cleanup: Playwright tab closed; Vite sessions 95326 and 74518 stopped with Ctrl-C; no 5174/5175 listeners after QA.

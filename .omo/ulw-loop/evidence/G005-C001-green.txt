@@ -1,0 +1,24 @@
+npm run test -- --run src/test/admin-alignment-audits.test.ts -t 'dependency qua
+rantine decisions'
+luana@MacBook-Pro-de-Luana-2 retrilhar-modulo-agenda-v2 % npm run test -- --run
+src/test/admin-alignment-audits.test.ts -t 'dependency quarantine decisions'
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t dependency quarant
+ine decisions
+
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 7 skipped (8)
+   Start at  09:59:19
+   Duration  534ms (transform 22ms, setup 46ms, import 13ms, tests 2ms, environm
+ent 389ms)
+
+luana@MacBook-Pro-de-Luana-2 retrilhar-modulo-agenda-v2 %
+
+
+
+

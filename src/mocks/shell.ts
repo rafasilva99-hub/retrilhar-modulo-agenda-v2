@@ -7,33 +7,8 @@ import {
   Settings01Icon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
-import type { IconSvgElement } from "@hugeicons/react";
 
-export type AppPage = "intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes" | "novaAtividade";
-
-export interface ShellNavItem {
-  title: string;
-  page?: AppPage;
-  icon: IconSvgElement;
-  enabled?: boolean;
-  badge?: number;
-  items?: ShellNavItem[];
-}
-
-export interface ShellProfile {
-  name: string;
-  email: string;
-  role: string;
-  superAdmin?: boolean;
-  image?: string;
-}
-
-export interface ShellOrganization {
-  id: string;
-  name: string;
-  code: string;
-  img?: string;
-}
+import type { ShellNavItem, ShellOrganization, ShellProfile } from "@/components/layout/types";
 
 export const shellProfile: ShellProfile = {
   name: "Elias Santos",

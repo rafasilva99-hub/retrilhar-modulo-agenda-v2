@@ -1,0 +1,12 @@
+
+> @figma/my-make-file@0.0.1 lint
+> eslint . --max-warnings=0 --report-unused-disable-directives
+
+
+/Users/luana/Desktop/retrilhar-modulo-agenda-v2/src/components/custom/admin-primitives.test.tsx
+  1:1  error  Run autofix to sort these imports!  simple-import-sort/imports
+
+✖ 1 problem (1 error, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+
+exit=1

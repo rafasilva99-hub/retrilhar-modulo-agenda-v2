@@ -1,0 +1,8 @@
+=== npm run test fallback before infra ===
+npm error Missing script: "test"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /Users/luana/.npm/_logs/2026-06-05T04_48_42_503Z-debug-0.log
+
+=== forbidden import audit before ===

@@ -1,0 +1,7 @@
+Admin status after final QA:
+?? .agents/
+?? .claude/
+?? .env.local.bak
+?? skills-lock.json
+Port listeners after cleanup:
+tmux sessions after cleanup:

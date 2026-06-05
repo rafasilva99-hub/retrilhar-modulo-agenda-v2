@@ -1,0 +1,83 @@
+## G004 C002 RED
+Fri Jun  5 09:47:16 -03 2026
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/modules/agenda/components -t agenda month day primitives|agenda updates participant primitives
+
+(node:250) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+ ❯ src/modules/agenda/components/new-activity/new-activity-sections.test.tsx (0 test)
+ ❯ src/modules/agenda/components/status/agenda-status-indicators.test.tsx (0 test)
+ ❯ src/modules/agenda/components/primitives/agenda-route-primitives.test.tsx (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/modules/agenda/components/status/agenda-status-indicators.test.tsx [ src/modules/agenda/components/status/agenda-status-indicators.test.tsx ]
+Error: Failed to resolve import "./agenda-status-indicators" from "src/modules/agenda/components/status/agenda-status-indicators.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/luana/Desktop/retrilhar-modulo-agenda-v2/src/modules/agenda/components/status/agenda-status-indicators.test.tsx:10:7
+  8  |    getReservationStatusIndicator,
+  9  |    ReservationTypeIndicator
+  10 |  } from "./agenda-status-indicators";
+     |          ^
+  11 |  describe("agenda status indicators", () => {
+  12 |    it("maps success, warning, destructive, and neutral status tones", () => {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42499:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42496:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40475:23
+ ❯ node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40594:37
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40521:7
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42294:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35735:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/modules/agenda/components/new-activity/new-activity-sections.test.tsx [ src/modules/agenda/components/new-activity/new-activity-sections.test.tsx ]
+Error: Failed to resolve import "./new-activity-sections" from "src/modules/agenda/components/new-activity/new-activity-sections.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/luana/Desktop/retrilhar-modulo-agenda-v2/src/modules/agenda/components/new-activity/new-activity-sections.test.tsx:10:7
+  8  |    NewActivityScheduleSection,
+  9  |    NewActivityVisibilitySection
+  10 |  } from "./new-activity-sections";
+     |          ^
+  11 |  describe("new activity form sections", () => {
+  12 |    it("renders the first-step identification, capacity, and visibility sections", () => {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42499:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42496:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40475:23
+ ❯ node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40594:37
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40521:7
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42294:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35735:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/modules/agenda/components/primitives/agenda-route-primitives.test.tsx [ src/modules/agenda/components/primitives/agenda-route-primitives.test.tsx ]
+Error: Failed to resolve import "./agenda-route-primitives" from "src/modules/agenda/components/primitives/agenda-route-primitives.test.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/luana/Desktop/retrilhar-modulo-agenda-v2/src/modules/agenda/components/primitives/agenda-route-primitives.test.tsx:4:77
+  2  |  import { render, screen } from "@testing-library/react";
+  3  |  import { describe, expect, it } from "vitest";
+  4  |  import { CalendarSummaryCard, DayActivityShell, UpdatesParticipantRow } from "./agenda-route-primitives";
+     |                                                                                ^
+  5  |  describe("agenda month day primitives", () => {
+  6  |    it("renders calendar summaries with empty and holiday states", () => {
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42499:41
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42496:16
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40475:23
+ ❯ node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40594:37
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:40521:7
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:42294:18
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:35735:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed (3)
+      Tests  no tests
+   Start at  09:47:17
+   Duration  809ms (transform 21ms, setup 108ms, import 0ms, tests 0ms, environment 1.54s)
+

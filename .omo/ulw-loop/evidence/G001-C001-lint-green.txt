@@ -1,0 +1,5 @@
+=== npm run lint after lint baseline fix ===
+
+> @figma/my-make-file@0.0.1 lint
+> eslint . --max-warnings=0 --report-unused-disable-directives
+

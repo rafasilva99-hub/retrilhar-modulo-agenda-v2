@@ -1,0 +1,34 @@
+{
+  "aiSlopCleaner": {
+    "status": "passed",
+    "evidence": ".omo/ulw-loop/evidence/G001-ai-slop-cleaner.md"
+  },
+  "verification": {
+    "status": "passed",
+    "commands": [
+      "npm run lint",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build",
+      "npx prettier --check <wave1 files>"
+    ],
+    "evidence": ".omo/ulw-loop/evidence/G001-post-cleaner-verification.txt and .omo/ulw-loop/evidence/G001-browser-qa.md",
+    "lsp": "typescript LSP unavailable; mcp__lsp.status recorded missing server, tsc --noEmit passed"
+  },
+  "codeReview": {
+    "recommendation": "APPROVE",
+    "architectStatus": "CLEAR",
+    "evidence": ".omo/ulw-loop/evidence/G001-quality-review.json; external reviewer agents were inconclusive/silent, local fallback review found no blockers"
+  },
+  "criteriaCoverage": {
+    "totalCriteria": 3,
+    "passCount": 3,
+    "adversarialClassesCovered": [
+      "missing_artifacts_red_green",
+      "admin_read_only_drift",
+      "forbidden_backend_imports",
+      "hash_route_fallback",
+      "cleanup_leftovers"
+    ]
+  }
+}

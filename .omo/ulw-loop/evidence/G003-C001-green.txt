@@ -1,0 +1,17 @@
+## C001 GREEN: service view-model boundary
+Fri Jun  5 09:40:31 -03 2026
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/modules/agenda/services/agenda-mock-service.test.ts
+
+(node:97727) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  09:40:31
+   Duration  719ms (transform 60ms, setup 51ms, import 124ms, tests 9ms, environment 435ms)
+

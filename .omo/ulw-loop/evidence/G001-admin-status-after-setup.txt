@@ -1,0 +1,4 @@
+?? .agents/
+?? .claude/
+?? .env.local.bak
+?? skills-lock.json

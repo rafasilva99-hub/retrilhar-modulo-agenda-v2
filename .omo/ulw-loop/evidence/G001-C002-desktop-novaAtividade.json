@@ -1,0 +1,8 @@
+{
+  "url": "http://127.0.0.1:5175/#novaAtividade",
+  "title": "Módulo de Agenda V2",
+  "hash": "#novaAtividade",
+  "textLength": 935,
+  "textSample": "Nova Atividade\n\nPreencha os dados para criar uma nova atividade na sua agenda.\n\nDados da atividade e visibilidade\n\nInforme o título, local, produto vinculado, capacidade e quem pode visualizar a atividade.\n\nDatas e horários da atividade\n\nDe",
+  "hasNova": true
+}

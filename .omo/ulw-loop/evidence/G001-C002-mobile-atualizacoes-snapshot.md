@@ -1,0 +1,13 @@
+- generic [ref=e2070]:
+  - banner [ref=e2071]:
+    - generic [ref=e2072]:
+      - generic [ref=e2073]
+      - button "Fechar" [ref=e2077] [cursor=pointer]
+  - generic [ref=e2081]:
+    - navigation [ref=e2082]:
+      - button "Expandir menu" [ref=e2084] [cursor=pointer]
+      - button "Participantes" [ref=e2087] [cursor=pointer]
+      - button "Atualizações" [ref=e2093] [cursor=pointer]
+      - button "Visão geral" [ref=e2097] [cursor=pointer]
+    - main [ref=e2102]:
+      - generic

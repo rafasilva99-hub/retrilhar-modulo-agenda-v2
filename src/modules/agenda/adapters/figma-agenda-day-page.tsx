@@ -1,5 +1,6 @@
 import AgendaAtividadesDoDia from "@/imports/AgendaAtividadesDoDia/AgendaAtividadesDoDia";
 
+// Legacy Figma export containment: keep direct imports from src/imports behind agenda adapters.
 interface AgendaDayPageProps {
   day: number;
   onBackToAgenda: () => void;

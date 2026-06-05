@@ -1,0 +1,54 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/test/admin-alignment-audits.test.ts -t layout contracts stay decoupled from mock data
+
+(node:93450) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+ RUN  v4.1.8 /Users/luana/Desktop/retrilhar-modulo-agenda-v2
+
+ ❯ src/test/admin-alignment-audits.test.ts (4 tests | 1 failed | 3 skipped) 5ms
+     × layout contracts stay decoupled from mock data 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/admin-alignment-audits.test.ts > Admin alignment audits > layout contracts stay decoupled from mock data
+AssertionError: expected 'export type {\n  AppPage,\n  ShellPro…' not to contain '@/mocks/shell'
+
+- Expected
++ Received
+
+- @/mocks/shell
++ export type {
++   AppPage,
++   ShellProfile as AppProfile,
++   ShellNavItem as MenuItem,
++   ShellOrganization as Organization,
++ } from "@/mocks/shell";
++
++ export interface NotificationItem {
++   id: string;
++   title: string;
++   description: string;
++   timestamp: string;
++   unread?: boolean;
++ }
++
+
+ ❯ src/test/admin-alignment-audits.test.ts:67:33
+     65|     const shellMocksText = readProjectFile(shellMocksPath);
+     66|
+     67|     expect(layoutTypesText).not.toContain("@/mocks/shell");
+       |                                 ^
+     68|     expect(layoutTypesText).not.toContain("export type {");
+     69|     expect(layoutTypesText).toContain("export type AppPage");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 skipped (4)
+   Start at  09:27:49
+   Duration  622ms (transform 19ms, setup 53ms, import 9ms, tests 5ms, environment 455ms)
+
+exit=1

@@ -319,22 +319,6 @@ function Avatar() {
   );
 }
 
-function Container2() {
-  return <div className="absolute bg-[#e2e8f0] h-[40px] left-[16px] top-[46px] w-px" data-name="Container" />;
-}
-
-function Frame9() {
-  return (
-    <div className="h-full relative shrink-0">
-      <div className="flex flex-col items-center size-full">
-        <div className="content-stretch flex flex-col gap-[4px] items-center pt-[6px] relative size-full">
-          <Avatar />
-          <Container2 />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function Frame10() {
   return (
@@ -379,59 +363,6 @@ function Frame4() {
   );
 }
 
-function Container1() {
-  return (
-    <div className="content-stretch flex gap-[12px] h-[68px] items-start relative shrink-0 w-full" data-name="Container">
-      <Frame9 />
-      <Frame4 />
-    </div>
-  );
-}
-
-function Avatar1() {
-  return (
-    <div className="relative shrink-0 size-[32px]" data-name="avatar">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
-        <g id="Ellipse 1">
-          <circle cx="16" cy="16" fill="var(--fill-0, #F4F3FF)" r="15.5" />
-          <circle cx="16" cy="16" r="15.5" stroke="url(#paint0_linear_11_2752)" />
-          <circle cx="16" cy="16" r="15.5" stroke="var(--stroke-1, #F5F5F5)" />
-          <circle cx="16" cy="16" r="15.5" stroke="url(#paint1_linear_11_2752)" />
-          <circle cx="16" cy="16" r="15.5" stroke="var(--stroke-3, #EBE9FE)" />
-        </g>
-        <defs>
-          <linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_11_2752" x1="16" x2="16" y1="0" y2="32">
-            <stop stopColor="white" stopOpacity="0.12" />
-            <stop offset="1" stopColor="white" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient gradientUnits="userSpaceOnUse" id="paint1_linear_11_2752" x1="16" x2="16" y1="0" y2="32">
-            <stop stopColor="white" stopOpacity="0.12" />
-            <stop offset="1" stopColor="white" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">🩺️</p>
-    </div>
-  );
-}
-
-function Container4() {
-  return <div className="absolute bg-[#e2e8f0] h-[57px] left-[16px] top-[46px] w-px" data-name="Container" />;
-}
-
-function Frame11() {
-  return (
-    <div className="relative self-stretch shrink-0">
-      <div className="flex flex-col items-center size-full">
-        <div className="content-stretch flex flex-col gap-[4px] items-center pt-[6px] relative size-full">
-          <Avatar1 />
-          <Container4 />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Frame12() {
   return (
     <div className="content-stretch flex gap-[6px] items-center relative shrink-0 w-full whitespace-nowrap">
@@ -456,43 +387,6 @@ function Frame5() {
             <span className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] text-[#252b37] text-[12px]">Pedro Almeida</span>
             <span className="leading-[normal] text-[12px]">{` informou uso contínuo de medicamento controlado (anticoagulante). Avaliar riscos para atividade de rapel.`}</span>
           </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Container3() {
-  return (
-    <div className="content-stretch flex gap-[12px] items-start relative shrink-0 w-full" data-name="Container">
-      <Frame11 />
-      <Frame5 />
-    </div>
-  );
-}
-
-function Avatar2() {
-  return (
-    <div className="relative shrink-0 size-[32px]" data-name="avatar">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
-        <circle cx="16" cy="16" fill="var(--fill-0, #FFFAEB)" id="Ellipse 1" r="15.5" stroke="var(--stroke-0, #FEF0C7)" />
-      </svg>
-      <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">🧗</p>
-    </div>
-  );
-}
-
-function Container6() {
-  return <div className="absolute bg-[#e2e8f0] h-[57px] left-[16px] top-[46px] w-px" data-name="Container" />;
-}
-
-function Frame13() {
-  return (
-    <div className="h-full relative shrink-0">
-      <div className="flex flex-col items-center size-full">
-        <div className="content-stretch flex flex-col gap-[4px] items-center pt-[6px] relative size-full">
-          <Avatar2 />
-          <Container6 />
         </div>
       </div>
     </div>
@@ -529,43 +423,6 @@ function Frame6() {
   );
 }
 
-function Container5() {
-  return (
-    <div className="content-stretch flex gap-[12px] h-[85px] items-start relative shrink-0 w-full" data-name="Container">
-      <Frame13 />
-      <Frame6 />
-    </div>
-  );
-}
-
-function Avatar3() {
-  return (
-    <div className="relative shrink-0 size-[32px]" data-name="avatar">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
-        <circle cx="16" cy="16" fill="var(--fill-0, #FFFAEB)" id="Ellipse 1" r="15.5" stroke="var(--stroke-0, #FEF0C7)" />
-      </svg>
-      <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">🚐</p>
-    </div>
-  );
-}
-
-function Container8() {
-  return <div className="absolute bg-[#e2e8f0] h-[56px] left-[16px] top-[46px] w-px" data-name="Container" />;
-}
-
-function Frame15() {
-  return (
-    <div className="h-full relative shrink-0">
-      <div className="flex flex-col items-center size-full">
-        <div className="content-stretch flex flex-col gap-[4px] items-center pt-[6px] relative size-full">
-          <Avatar3 />
-          <Container8 />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Frame16() {
   return (
     <div className="content-stretch flex gap-[6px] items-center relative shrink-0 w-full whitespace-nowrap">
@@ -586,38 +443,6 @@ function Frame7() {
         <div className="content-stretch flex flex-col gap-[4px] items-start justify-center not-italic px-[16px] py-[12px] relative size-full">
           <Frame16 />
           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] relative shrink-0 text-[#535862] text-[12px] w-full">O transporte para o Parque Estadual ainda não foi confirmado. É necessário ao menos 1 van para 8 participantes + equipe.</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Container7() {
-  return (
-    <div className="content-stretch flex gap-[12px] h-[84px] items-start relative shrink-0 w-full" data-name="Container">
-      <Frame15 />
-      <Frame7 />
-    </div>
-  );
-}
-
-function Avatar4() {
-  return (
-    <div className="relative shrink-0 size-[32px]" data-name="avatar">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
-        <circle cx="16" cy="16" fill="var(--fill-0, #EFF8FF)" id="Ellipse 1" r="15.5" stroke="var(--stroke-0, #D1E9FF)" />
-      </svg>
-      <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">💳</p>
-    </div>
-  );
-}
-
-function Frame17() {
-  return (
-    <div className="h-full relative shrink-0">
-      <div className="flex flex-col items-center size-full">
-        <div className="content-stretch flex flex-col gap-[4px] items-center pt-[6px] relative size-full">
-          <Avatar4 />
         </div>
       </div>
     </div>
@@ -654,23 +479,96 @@ function Frame8() {
   );
 }
 
-function Container9() {
-  return (
-    <div className="content-stretch flex gap-[12px] h-[85px] items-start relative shrink-0 w-full" data-name="Container">
-      <Frame17 />
-      <Frame8 />
-    </div>
-  );
-}
-
 function Frame21() {
+  const records = [
+    {
+      avatar: <Avatar />,
+      card: <Frame4 />,
+      hasStroke: true,
+    },
+    {
+      avatar: (
+        <div className="relative shrink-0 size-[32px]" data-name="avatar">
+          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
+            <g id="Ellipse 1">
+              <circle cx="16" cy="16" fill="var(--fill-0, #F4F3FF)" r="15.5" />
+              <circle cx="16" cy="16" r="15.5" stroke="url(#paint0_linear_11_2752)" />
+              <circle cx="16" cy="16" r="15.5" stroke="var(--stroke-1, #F5F5F5)" />
+              <circle cx="16" cy="16" r="15.5" stroke="url(#paint1_linear_11_2752)" />
+              <circle cx="16" cy="16" r="15.5" stroke="var(--stroke-3, #EBE9FE)" />
+            </g>
+            <defs>
+              <linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_11_2752" x1="16" x2="16" y1="0" y2="32">
+                <stop stopColor="white" stopOpacity="0.12" />
+                <stop offset="1" stopColor="white" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient gradientUnits="userSpaceOnUse" id="paint1_linear_11_2752" x1="16" x2="16" y1="0" y2="32">
+                <stop stopColor="white" stopOpacity="0.12" />
+                <stop offset="1" stopColor="white" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">🩺️</p>
+        </div>
+      ),
+      card: <Frame5 />,
+      hasStroke: true,
+    },
+    {
+      avatar: (
+        <div className="relative shrink-0 size-[32px]" data-name="avatar">
+          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" fill="var(--fill-0, #FFFAEB)" id="Ellipse 1" r="15.5" stroke="var(--stroke-0, #FEF0C7)" />
+          </svg>
+          <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">🧗</p>
+        </div>
+      ),
+      card: <Frame6 />,
+      hasStroke: true,
+    },
+    {
+      avatar: (
+        <div className="relative shrink-0 size-[32px]" data-name="avatar">
+          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" fill="var(--fill-0, #FFFAEB)" id="Ellipse 1" r="15.5" stroke="var(--stroke-0, #FEF0C7)" />
+          </svg>
+          <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">🚐</p>
+        </div>
+      ),
+      card: <Frame7 />,
+      hasStroke: true,
+    },
+    {
+      avatar: (
+        <div className="relative shrink-0 size-[32px]" data-name="avatar">
+          <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" fill="var(--fill-0, #EFF8FF)" id="Ellipse 1" r="15.5" stroke="var(--stroke-0, #D1E9FF)" />
+          </svg>
+          <p className="-translate-x-1/2 absolute font-['Inter:Medium',sans-serif] font-medium leading-[19.2px] left-1/2 not-italic overflow-hidden text-[#252b37] text-[12.8px] text-center text-ellipsis top-[calc(50%-9.6px)] w-[22.4px] whitespace-nowrap">💳</p>
+        </div>
+      ),
+      card: <Frame8 />,
+      hasStroke: false,
+    },
+  ];
+
   return (
-    <div className="content-stretch flex flex-col gap-[20px] items-start relative shrink-0 w-full">
-      <Container1 />
-      <Container3 />
-      <Container5 />
-      <Container7 />
-      <Container9 />
+    <div className="flex gap-[12px] w-full">
+      {/* Timeline column: avatars + strokes */}
+      <div className="flex flex-col items-center pt-[6px] shrink-0 w-[32px]">
+        {records.map((record, i) => (
+          <React.Fragment key={i}>
+            {record.avatar}
+            {record.hasStroke && <div className="bg-[#e2e8f0] w-px flex-1 my-[8px]" />}
+          </React.Fragment>
+        ))}
+      </div>
+      {/* Cards column */}
+      <div className="flex flex-col gap-[24px] flex-1 min-w-0">
+        {records.map((record, i) => (
+          <React.Fragment key={i}>{record.card}</React.Fragment>
+        ))}
+      </div>
     </div>
   );
 }
@@ -690,16 +588,17 @@ function Frame23() {
 
   if (isActive) {
     return (
-      <div className="absolute content-stretch flex flex-col gap-[20px] h-[843px] items-start left-[248px] top-[157px] w-[743px]">
-        <div className="bg-white flex-[1_0_0] min-h-[52px] relative rounded-[12px] w-full" data-name="Text field area">
+      <div className="content-stretch flex flex-col gap-[20px] items-start w-full">
+        <div className="bg-white min-h-[120px] relative rounded-[12px] w-full" data-name="Text field area">
           <div aria-hidden="true" className="absolute border border-[#e4e4e7] border-solid inset-0 pointer-events-none rounded-[12px]" />
-          <div className="content-stretch flex gap-[12px] items-start min-h-[inherit] px-[16px] py-[12px] relative size-full">
+          <div className="content-stretch flex gap-[12px] items-start px-[16px] py-[12px] relative size-full">
             <textarea
               autoFocus
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Digite sua mensagem"
-              className="flex flex-[1_0_0] font-['Helvetica_Neue:Regular',sans-serif] min-w-px not-italic text-[#414651] text-[14px] bg-transparent outline-none resize-none leading-normal placeholder:text-[#71717a]"
+              rows={4}
+              className="flex-1 min-w-0 font-['Helvetica_Neue:Regular',sans-serif] not-italic text-[#414651] text-[14px] bg-transparent outline-none resize-vertical leading-normal placeholder:text-[#71717a]"
             />
             <div className="content-stretch flex gap-[2px] items-center relative shrink-0" data-name="Toggle Group/Default">
               <button className="content-stretch flex h-[24px] items-center justify-center px-[7.2px] py-[4.8px] relative rounded-[3.6px] shrink-0 hover:bg-[#f4f4f5] transition-colors" data-name="Toggle/Default">
@@ -739,17 +638,9 @@ function Frame23() {
                 </div>
               </button>
             </div>
-            <div className="absolute bottom-0 right-0 size-[10px]">
-              <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 10 10">
-                <g id="Frame 7">
-                  <path clipRule="evenodd" d="M10 7C10 8.65685 8.65685 10 7 10V7H10Z" fill="var(--fill-0, #71717A)" fillRule="evenodd" id="Icon" />
-                  <path clipRule="evenodd" d="M7 10H0L7 3V10Z" fill="var(--fill-0, #71717A)" fillRule="evenodd" id="Icon_2" />
-                </g>
-              </svg>
-            </div>
           </div>
         </div>
-        <div className="content-stretch flex gap-[16px] h-[40px] items-center justify-center relative shrink-0 w-full">
+        <div className="content-stretch flex gap-[16px] items-center justify-center relative shrink-0 w-full">
           <button className="bg-white content-stretch cursor-pointer drop-shadow-[0px_1px_1px_rgba(10,13,18,0.05)] flex gap-[4px] h-[24px] items-center px-[8px] py-[5px] relative rounded-[6px] shrink-0" data-name="Category select component">
             <div aria-hidden="true" className="absolute border border-[#d5d7da] border-solid inset-0 pointer-events-none rounded-[6px]" />
             <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[12px] text-left whitespace-nowrap">
@@ -784,9 +675,10 @@ function Frame23() {
   }
 
   return (
-    <div className="absolute content-stretch flex flex-col gap-[20px] h-[843px] items-start left-[248px] top-[157px] w-[743px]">
+    <div className="content-stretch flex flex-col gap-[20px] items-start w-full">
       <div
-        className="bg-white h-[96px] min-h-[52px] relative rounded-[12px] shrink-0 w-full"
+        onClick={() => setIsActive(true)}
+        className="bg-white h-[96px] min-h-[52px] relative rounded-[12px] shrink-0 w-full cursor-text"
         data-name="Text field area"
       >
         <div aria-hidden="true" className="absolute border border-[#e4e4e7] border-solid inset-0 pointer-events-none rounded-[12px]" />
@@ -1034,14 +926,10 @@ function App2() {
   );
 }
 
-function Frame29() {
+function DashedSeparator() {
   return (
-    <div className="h-[4px] relative shrink-0 w-[242.889px]">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 242.889 4">
-        <g id="Frame 2121453153">
-          <line id="Line 38" stroke="var(--stroke-0, #F5F5F5)" strokeDasharray="4 4" x1="242.889" y1="2.5" y2="2.5" />
-        </g>
-      </svg>
+    <div className="flex-1 min-w-[20px] h-[4px] relative">
+      <div className="absolute inset-0 border-b border-dashed border-[#f5f5f5]" />
     </div>
   );
 }
@@ -1063,7 +951,7 @@ function Frame26() {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[8px] items-end min-w-px relative">
       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#252b37] text-[14px] whitespace-nowrap">Avisos</p>
-      <Frame29 />
+      <DashedSeparator />
       <Badge1 />
     </div>
   );
@@ -1086,17 +974,6 @@ function App3() {
   );
 }
 
-function Frame30() {
-  return (
-    <div className="flex-[1_0_0] h-[4px] min-w-px relative">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 182.889 4">
-        <g id="Frame 2121453153">
-          <line id="Line 38" stroke="var(--stroke-0, #F5F5F5)" strokeDasharray="4 4" x1="182.889" y1="2.5" y2="2.5" />
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 function Badge2() {
   return (
@@ -1115,7 +992,7 @@ function Frame28() {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[8px] items-end min-w-px relative">
       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#252b37] text-[14px] whitespace-nowrap">Alerta de Saúde</p>
-      <Frame30 />
+      <DashedSeparator />
       <Badge2 />
     </div>
   );
@@ -1138,17 +1015,6 @@ function App4() {
   );
 }
 
-function Frame33() {
-  return (
-    <div className="flex-[1_0_0] h-[4px] min-w-px relative">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 146.889 4">
-        <g id="Frame 2121453153">
-          <line id="Line 38" stroke="var(--stroke-0, #F5F5F5)" strokeDasharray="4 4" x1="146.889" y1="2.5" y2="2.5" />
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 function Badge3() {
   return (
@@ -1167,7 +1033,7 @@ function Frame32() {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[8px] items-end min-w-px relative">
       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#252b37] text-[14px] whitespace-nowrap">Avisos de Pagamento</p>
-      <Frame33 />
+      <DashedSeparator />
       <Badge3 />
     </div>
   );
@@ -1190,17 +1056,6 @@ function App5() {
   );
 }
 
-function Frame36() {
-  return (
-    <div className="flex-[1_0_0] h-[4px] min-w-px relative">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 151.889 4">
-        <g id="Frame 2121453153">
-          <line id="Line 38" stroke="var(--stroke-0, #F5F5F5)" strokeDasharray="4 4" x1="151.889" y1="2.5" y2="2.5" />
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 function Badge4() {
   return (
@@ -1219,7 +1074,7 @@ function Frame35() {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[8px] items-end min-w-px relative">
       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#252b37] text-[14px] whitespace-nowrap">Avisos de Transporte</p>
-      <Frame36 />
+      <DashedSeparator />
       <Badge4 />
     </div>
   );
@@ -1236,7 +1091,7 @@ function Frame34() {
 
 function Frame24() {
   return (
-    <div className="absolute bg-white content-stretch flex flex-col gap-[12px] items-start left-[1015px] px-[24px] py-[20px] rounded-[12px] top-[157px] w-[401px]">
+    <div className="relative bg-white content-stretch flex flex-col gap-[12px] items-start px-[24px] py-[20px] rounded-[12px] w-[400px] h-fit">
       <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[12px]" />
       <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#62748e] text-[12px] w-full">SUMÁRIO</p>
       <Frame25 />
@@ -3967,9 +3822,24 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
           {activeTab === "atualizacoes" && (
-            <div className="relative">
-              <Frame23 />
-              <Frame24 />
+            <div className="flex flex-col">
+              <div className="flex items-center gap-[8px] px-[24px] pt-[20px] pb-[4px]">
+                <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] hover:text-[#252b37] cursor-pointer transition-colors">Início</button>
+                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">···</span>
+                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] hover:text-[#252b37] cursor-pointer transition-colors">Atividades do Dia</button>
+                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{activity.name}</p>
+              </div>
+              <div className="flex gap-[24px] p-[24px] pt-[16px]">
+              <div className="flex-1 min-w-0">
+                <Frame23 />
+              </div>
+              <div className="shrink-0">
+                <Frame24 />
+              </div>
+            </div>
             </div>
           )}
           {activeTab === "visao-geral" && (

@@ -1973,13 +1973,9 @@ export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActiviti
           <p className="leading-[normal]">Início</p>
         </div>
         <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
+          <svg className="block size-full" fill="none" viewBox="0 0 24 24">
+            <path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="var(--stroke-0, #71717A)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
         <div className="overflow-clip relative shrink-0 size-[16px]" data-name="ellipsis">
           <div className="absolute inset-[45.83%]" data-name="Vector">
@@ -2005,25 +2001,17 @@ export default function AgendaVisaoGeral({ onAtualizacoesClick, onBackToActiviti
           </div>
         </div>
         <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
+          <svg className="block size-full" fill="none" viewBox="0 0 24 24">
+            <path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="var(--stroke-0, #71717A)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
         <button onClick={onBackToActivities} className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[14px] whitespace-nowrap cursor-pointer hover:text-[#0b5ed7] transition-colors">
           <p className="leading-[normal]">Atividades do Dia</p>
         </button>
         <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-          <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4" data-name="Vector">
-            <div className="absolute inset-[-6.25%_-12.5%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-                <path d="M0.5 8.5L4.5 4.5L0.5 0.5" id="Vector" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
+          <svg className="block size-full" fill="none" viewBox="0 0 24 24">
+            <path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="var(--stroke-0, #71717A)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
         <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#09090b] text-[14px] whitespace-nowrap">
           <p className="leading-[normal]">{actName}</p>

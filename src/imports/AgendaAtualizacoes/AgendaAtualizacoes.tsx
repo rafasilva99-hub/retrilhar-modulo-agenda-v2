@@ -279,14 +279,15 @@ function TopBar() {
   );
 }
 
-function Frame() {
+function ResizeGrip({ onMouseDown }: { onMouseDown?: React.MouseEventHandler }) {
   return (
-    <div className="absolute bottom-0 right-0 size-[10px]">
-      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 10 10">
-        <g id="Frame 7">
-          <path clipRule="evenodd" d={svgPaths.p2f32ec80} fill="var(--fill-0, #71717A)" fillRule="evenodd" id="Icon" />
-          <path clipRule="evenodd" d={svgPaths.p2f386d80} fill="var(--fill-0, #71717A)" fillRule="evenodd" id="Icon_2" />
-        </g>
+    <div
+      onMouseDown={onMouseDown}
+      className={`absolute bottom-[2px] right-[2px] size-[12px] ${onMouseDown ? "cursor-ns-resize" : "pointer-events-none"}`}
+    >
+      <svg className="block size-full" fill="none" viewBox="0 0 10 10">
+        <path d="M9 1L1 9" stroke="#71717A" strokeWidth="1" strokeLinecap="round" />
+        <path d="M9 5L5 9" stroke="#71717A" strokeWidth="1" strokeLinecap="round" />
       </svg>
     </div>
   );
@@ -582,14 +583,89 @@ function Frame22() {
   );
 }
 
+type UserRecord = {
+  id: string;
+  text: string;
+  category: string;
+  categoryLabel: string;
+  timestamp: string;
+};
+
+const CATEGORY_OPTIONS = [
+  { id: "observacao", label: "Observação", color: "#0b5ed7" },
+  { id: "avisos", label: "Avisos", color: "#fba12c" },
+  { id: "saude", label: "Saúde", color: "#8d2cfb" },
+  { id: "pagamento", label: "Pagamento", color: "#53b1fd" },
+  { id: "equipamento", label: "Equipamento", color: "#d444f1" },
+  { id: "transporte", label: "Transporte", color: "#6172f3" },
+] as const;
+
 function Frame23() {
   const [isActive, setIsActive] = useState(false);
   const [text, setText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("observacao");
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [userRecords, setUserRecords] = useState<UserRecord[]>([]);
+  const [inputHeight, setInputHeight] = useState(96);
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!categoryOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
+        setCategoryOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [categoryOpen]);
+
+  const currentCategory = CATEGORY_OPTIONS.find((c) => c.id === selectedCategory) || CATEGORY_OPTIONS[0];
+
+  function handleSave() {
+    if (!text.trim() || isSaving) return;
+    setIsSaving(true);
+    setTimeout(() => {
+      setUserRecords((prev) => [
+        {
+          id: `rec-${Date.now()}`,
+          text: text.trim(),
+          category: selectedCategory,
+          categoryLabel: currentCategory.label,
+          timestamp: "Agora mesmo",
+        },
+        ...prev,
+      ]);
+      setIsSaving(false);
+      setIsActive(false);
+      setText("");
+      setSelectedCategory("observacao");
+    }, 1500);
+  }
+
+  function handleResizeMouseDown(e: React.MouseEvent) {
+    e.preventDefault();
+    const startY = e.clientY;
+    const startHeight = inputHeight;
+    function onMouseMove(ev: MouseEvent) {
+      const newHeight = Math.max(96, startHeight + (ev.clientY - startY));
+      setInputHeight(newHeight);
+    }
+    function onMouseUp() {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    }
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  }
 
   if (isActive) {
     return (
       <div className="content-stretch flex flex-col gap-[20px] items-start w-full">
-        <div className="bg-white min-h-[120px] relative rounded-[12px] w-full" data-name="Text field area">
+        <div className="flex flex-col gap-[12px] w-full">
+        <div ref={containerRef} style={{ height: inputHeight }} className="bg-white relative rounded-[12px] w-full" data-name="Text field area">
           <div aria-hidden="true" className="absolute border border-[#e4e4e7] border-solid inset-0 pointer-events-none rounded-[12px]" />
           <div className="content-stretch flex gap-[12px] items-start px-[16px] py-[12px] relative size-full">
             <textarea
@@ -597,8 +673,7 @@ function Frame23() {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Digite sua mensagem"
-              rows={4}
-              className="flex-1 min-w-0 font-['Helvetica_Neue:Regular',sans-serif] not-italic text-[#414651] text-[14px] bg-transparent outline-none resize-vertical leading-normal placeholder:text-[#71717a]"
+              className="flex-1 min-w-0 h-full font-['Helvetica_Neue:Regular',sans-serif] not-italic text-[#414651] text-[14px] bg-transparent outline-none resize-none leading-normal placeholder:text-[#71717a]"
             />
             <div className="content-stretch flex gap-[2px] items-center relative shrink-0" data-name="Toggle Group/Default">
               <button className="content-stretch flex h-[24px] items-center justify-center px-[7.2px] py-[4.8px] relative rounded-[3.6px] shrink-0 hover:bg-[#f4f4f5] transition-colors" data-name="Toggle/Default">
@@ -639,36 +714,122 @@ function Frame23() {
               </button>
             </div>
           </div>
+          <ResizeGrip onMouseDown={handleResizeMouseDown} />
         </div>
         <div className="content-stretch flex gap-[16px] items-center justify-center relative shrink-0 w-full">
-          <button className="bg-white content-stretch cursor-pointer drop-shadow-[0px_1px_1px_rgba(10,13,18,0.05)] flex gap-[4px] h-[24px] items-center px-[8px] py-[5px] relative rounded-[6px] shrink-0" data-name="Category select component">
-            <div aria-hidden="true" className="absolute border border-[#d5d7da] border-solid inset-0 pointer-events-none rounded-[6px]" />
-            <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[12px] text-left whitespace-nowrap">
-              <p className="leading-[normal]">Categoria:</p>
-            </div>
-            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#414651] text-[12px] text-center whitespace-nowrap">Observação</p>
-            <div className="overflow-clip relative shrink-0 size-[12px]" data-name="arrow-down-01-round">
-              <div className="absolute bottom-[37.5%] left-1/4 right-1/4 top-[37.5%]" data-name="elements">
-                <div className="absolute inset-[-25%_-12.5%]">
-                  <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 7.5001 4.50005">
-                    <g id="elements">
-                      <path d="M6.75 0.75L3.75 3.75L0.75 0.75" id="Vector" stroke="var(--stroke-0, #414651)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-                    </g>
-                  </svg>
-                </div>
+          {/* Category dropdown */}
+          <div ref={categoryRef} className="relative">
+            <button
+              onClick={() => setCategoryOpen(!categoryOpen)}
+              className="bg-white content-stretch cursor-pointer drop-shadow-[0px_1px_1px_rgba(10,13,18,0.05)] flex gap-[4px] h-[24px] items-center px-[8px] py-[5px] relative rounded-[6px] shrink-0"
+              data-name="Category select component"
+            >
+              <div aria-hidden="true" className="absolute border border-[#d5d7da] border-solid inset-0 pointer-events-none rounded-[6px]" />
+              <div className="flex flex-col font-['Helvetica_Neue:Regular',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#71717a] text-[12px] text-left whitespace-nowrap">
+                <p className="leading-[normal]">Categoria:</p>
               </div>
-            </div>
-          </button>
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#414651] text-[12px] text-center whitespace-nowrap">{currentCategory.label}</p>
+              <svg className={`shrink-0 size-[12px] transition-transform ${categoryOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
+                <path d="M18 9C18 9 13.5811 15 12 15C10.4189 15 6 9 6 9" stroke="#414651" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+              </svg>
+            </button>
+            {categoryOpen && (
+              <div className="absolute top-[calc(100%+4px)] left-0 w-[159px] bg-white border border-[#d5d7da] rounded-[8px] z-50 overflow-hidden">
+                {CATEGORY_OPTIONS.map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => { setSelectedCategory(option.id); setCategoryOpen(false); }}
+                    className="w-full flex items-center gap-[6px] px-[10px] py-[8px] h-[32px] cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                  >
+                    <div className="shrink-0 size-[8px] rounded-full" style={{ backgroundColor: option.color }} />
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37] flex-1 text-left">{option.label}</p>
+                    {selectedCategory === option.id && (
+                      <svg className="shrink-0 size-[14px] text-[#414651]" fill="none" viewBox="0 0 16 16"><path d="M3.5 8.5L6.5 11.5L12.5 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="content-stretch flex flex-[1_0_0] gap-[12px] items-center justify-end min-w-px relative">
-            <button onClick={() => { setIsActive(false); setText(""); }} className="bg-white content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[6px] shrink-0 hover:bg-[#f8fafc] transition-colors" data-name="button">
+            <button
+              onClick={() => { if (!isSaving) { setIsActive(false); setText(""); setCategoryOpen(false); } }}
+              disabled={isSaving}
+              className={`bg-white content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[6px] shrink-0 transition-colors ${isSaving ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-[#f8fafc]"}`}
+              data-name="button"
+            >
               <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[6px]" />
               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#414651] text-[16px] whitespace-nowrap">Cancelar</p>
             </button>
-            <button className="bg-[#f0f5ff] content-stretch cursor-pointer flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[6px] shrink-0 hover:bg-[#dbe4ff] transition-colors" data-name="button">
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#0b5ed7] text-[16px] whitespace-nowrap">Salvar registro</p>
+            <button
+              onClick={handleSave}
+              disabled={!text.trim() || isSaving}
+              className={`bg-[#edf0ff] content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative rounded-[6px] shrink-0 transition-colors ${
+                !text.trim() || isSaving ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-[#dbe4ff]"
+              }`}
+              data-name="button"
+            >
+              {isSaving && (
+                <svg className="animate-spin shrink-0 size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 20 20">
+                  <circle className="opacity-25" cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" />
+                  <path className="opacity-75" fill="currentColor" d="M10 2a8 8 0 018 8h-2a6 6 0 00-6-6V2z" />
+                </svg>
+              )}
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#0b5ed7] text-[16px] whitespace-nowrap">
+                {isSaving ? "Carregando" : "Salvar registro"}
+              </p>
             </button>
           </div>
         </div>
+        </div>
+        {/* User-created records */}
+        {userRecords.length > 0 && (
+          <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
+            {userRecords.map((record) => {
+              const cat = CATEGORY_OPTIONS.find((c) => c.id === record.category);
+              return (
+                <div key={record.id} className="flex gap-[12px] items-start w-full">
+                  {/* Avatar */}
+                  <div className="relative shrink-0 size-[32px] mt-[2px]">
+                    <svg className="absolute block inset-0 size-full" fill="none" viewBox="0 0 32 32">
+                      <circle cx="16" cy="16" fill="#F2F4F7" r="15.5" stroke="#E4E7EC" />
+                    </svg>
+                    <p className="-translate-x-1/2 absolute font-['Helvetica_Neue:Medium',sans-serif] font-medium left-1/2 text-[#414651] text-[11px] text-center top-1/2 -translate-y-1/2">CT</p>
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-[8px]">
+                    {/* Header row */}
+                    <div className="flex items-center gap-[6px] w-full">
+                      <div className="flex items-center gap-[6px] flex-1 min-w-0">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] shrink-0">
+                          <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">Cristiano Teles</span>
+                          {` registrou uma ${record.categoryLabel.toLowerCase()} na atividade`}
+                        </p>
+                        <p className="font-['Inter:Regular',sans-serif] text-[12px] text-[#717680] shrink-0">•</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] shrink-0 whitespace-nowrap">{record.timestamp}</p>
+                      </div>
+                      <div className="flex items-center gap-[4px] shrink-0">
+                        <button className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] underline cursor-pointer hover:text-[#252b37] transition-colors">Editar</button>
+                        <p className="font-['Inter:Regular',sans-serif] text-[12px] text-[#717680]">•</p>
+                        <button className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] underline cursor-pointer hover:text-[#252b37] transition-colors">Excluir</button>
+                      </div>
+                    </div>
+                    {/* Quote card */}
+                    <div className="relative bg-white rounded-[10px] w-full">
+                      <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[10px]" />
+                      <div className="flex">
+                        <div className="w-[3px] shrink-0 rounded-l-[10px]" style={{ backgroundColor: cat?.color || "#0b5ed7" }} />
+                        <div className="px-[16px] py-[12px] flex-1">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862] leading-[20px]">{record.text}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
         <Frame22 />
       </div>
     );
@@ -685,8 +846,52 @@ function Frame23() {
         <div className="absolute top-0 left-0 right-0 flex items-start px-[16px] py-[12px]">
           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#71717a] text-[14px] text-left">Digite sua mensagem</p>
         </div>
-        <Frame />
+        <ResizeGrip />
       </div>
+      {/* User-created records */}
+      {userRecords.length > 0 && (
+        <div className="content-stretch flex flex-col gap-[16px] items-start relative shrink-0 w-full">
+          {userRecords.map((record) => {
+            const cat = CATEGORY_OPTIONS.find((c) => c.id === record.category);
+            return (
+              <div key={record.id} className="flex gap-[12px] items-start w-full">
+                <div className="relative shrink-0 size-[32px] mt-[2px]">
+                  <svg className="absolute block inset-0 size-full" fill="none" viewBox="0 0 32 32">
+                    <circle cx="16" cy="16" fill="#F2F4F7" r="15.5" stroke="#E4E7EC" />
+                  </svg>
+                  <p className="-translate-x-1/2 absolute font-['Helvetica_Neue:Medium',sans-serif] font-medium left-1/2 text-[#414651] text-[11px] text-center top-1/2 -translate-y-1/2">CT</p>
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col gap-[8px]">
+                  <div className="flex items-center gap-[6px] w-full">
+                    <div className="flex items-center gap-[6px] flex-1 min-w-0">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] shrink-0">
+                        <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">Cristiano Teles</span>
+                        {` registrou uma ${record.categoryLabel.toLowerCase()} na atividade`}
+                      </p>
+                      <p className="font-['Inter:Regular',sans-serif] text-[12px] text-[#717680] shrink-0">•</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] shrink-0 whitespace-nowrap">{record.timestamp}</p>
+                    </div>
+                    <div className="flex items-center gap-[4px] shrink-0">
+                      <button className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] underline cursor-pointer hover:text-[#252b37] transition-colors">Editar</button>
+                      <p className="font-['Inter:Regular',sans-serif] text-[12px] text-[#717680]">•</p>
+                      <button className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] underline cursor-pointer hover:text-[#252b37] transition-colors">Excluir</button>
+                    </div>
+                  </div>
+                  <div className="relative bg-white rounded-[10px] w-full">
+                    <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[10px]" />
+                    <div className="flex">
+                      <div className="w-[3px] shrink-0 rounded-l-[10px]" style={{ backgroundColor: cat?.color || "#0b5ed7" }} />
+                      <div className="px-[16px] py-[12px] flex-1">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862] leading-[20px]">{record.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       <Frame22 />
     </div>
   );
@@ -2441,6 +2646,13 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [showMoreActionsStickyBar, setShowMoreActionsStickyBar] = useState(false);
   const [showBulkCheckInTip, setShowBulkCheckInTip] = useState(false);
   const [showBulkCheckInTipStickyBar, setShowBulkCheckInTipStickyBar] = useState(false);
+  const [showQrScanner, setShowQrScanner] = useState(false);
+  const [qrScenario, setQrScenario] = useState(0);
+  const QR_SCENARIOS = ["camera-blocked", "scanning"] as const;
+
+  useEffect(() => {
+    if (!showQrScanner) setSearchBarHidden(false);
+  }, [showQrScanner]);
 
   // Sticky bulk bar: track when original bar scrolls out of view
   const bulkBarRef = useRef<HTMLDivElement>(null);
@@ -2773,6 +2985,118 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
     { key: "canceladas", label: "Reservas canceladas", count: counts.cancelled },
   ];
 
+  if (showQrScanner) {
+    return (
+      <div className="fixed inset-0 z-[100] flex flex-col" style={{ backgroundColor: "#212121" }}>
+        {/* Header bar */}
+        <header className="relative z-10 shrink-0 flex items-center h-[64px] px-[32px]" style={{ backgroundColor: "rgba(62, 62, 66, 0.6)" }}>
+          <button
+            onClick={() => setShowQrScanner(false)}
+            className="flex items-center gap-[10px] px-[12px] py-[8px] rounded-[8px] cursor-pointer hover:bg-white/10 transition-colors"
+          >
+            <svg className="size-[16px] text-white" fill="none" viewBox="0 0 24 24">
+              <path d="M15 6C15 6 9 10.4188 9 12C9 13.5811 15 18 15 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[15px] text-white leading-[normal]">Voltar aos participantes</p>
+          </button>
+          {/* Temp: scenario navigation */}
+          <div className="ml-auto flex items-center gap-[8px]">
+            <button
+              onClick={() => setQrScenario((prev) => Math.max(0, prev - 1))}
+              className="flex items-center justify-center size-[36px] rounded-[8px] cursor-pointer hover:bg-white/10 transition-colors"
+            >
+              <svg className="size-[20px] text-white" fill="none" viewBox="0 0 24 24">
+                <path d="M15 6C15 6 9 10.4188 9 12C9 13.5811 15 18 15 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white/60 leading-[normal] whitespace-nowrap">{qrScenario + 1}/{QR_SCENARIOS.length}</p>
+            <button
+              onClick={() => setQrScenario((prev) => Math.min(QR_SCENARIOS.length - 1, prev + 1))}
+              className="flex items-center justify-center size-[36px] rounded-[8px] cursor-pointer hover:bg-white/10 transition-colors"
+            >
+              <svg className="size-[20px] text-white" fill="none" viewBox="0 0 24 24">
+                <path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        {/* Scenario: camera-blocked */}
+        {QR_SCENARIOS[qrScenario] === "camera-blocked" && (
+          <div className="flex-1 flex items-center justify-center mt-[122px]">
+            <div className="flex flex-col items-center gap-[24px] max-w-[442px]">
+              <div className="flex flex-col items-center gap-[16px]">
+                <div className="relative flex items-center justify-center">
+                  {[420, 360, 300, 240, 180, 120].map((size) => (
+                    <div
+                      key={size}
+                      className="absolute rounded-full border border-white/[0.06]"
+                      style={{ width: size, height: size }}
+                    />
+                  ))}
+                  <div className="relative size-[48px] bg-white rounded-[10px] flex items-center justify-center border border-[#d6d8da] shadow-[0_1px_2px_rgba(10,13,18,0.05)]">
+                    <svg className="size-[24px] text-[#414651]" fill="none" viewBox="0 0 48 48">
+                      <path d="M19.4317 19.4297C17.3574 20.8751 16 23.278 16 25.998C16 30.4162 19.5817 33.998 24 33.998C26.72 33.998 29.1229 32.6406 30.5683 30.5662" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M38 19V19.02" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M4 4L44 44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M12.9919 12.9919C12.7629 13 12.4834 13 12.1074 13C10.1472 13 9.16715 13 8.36578 13.2268C6.3611 13.7943 4.79431 15.3611 4.22684 17.3658C4 18.1671 4 19.1472 4 21.1074V29C4 34.6569 4 37.4853 5.75736 39.2426C7.51472 41 10.3431 41 16 41H32C36 41 38.5858 41 40.3787 40.3787M43.7561 35.7561C44 34.0997 44 31.929 44 29V21.1074C44 19.1472 44 18.1671 43.7732 17.3658C43.2057 15.3611 41.6389 13.7943 39.6342 13.2268C38.8329 13 37.8528 13 35.8926 13C35.1607 13 34.7947 13 34.4538 12.9406C33.6091 12.7933 32.8341 12.3785 32.243 11.7574C32.0045 11.5067 31.406 10.609 31 10C30.2073 8.81088 29.8109 8.21633 29.269 7.80733C28.9381 7.55758 28.5704 7.36078 28.179 7.224C27.5382 7 26.8236 7 25.3944 7H22.6056C21.1764 7 20.4618 7 19.821 7.224C19.4296 7.36078 19.0619 7.55758 18.731 7.80733C18.2889 8.14101 17.9437 8.5982 17.401 9.40101" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-white text-center leading-[normal]">Câmera bloqueada</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#FAFAFA] text-center leading-[19px]">Para usar o scanner, permita o acesso à câmera nas configurações do navegador.</p>
+                </div>
+              </div>
+              <button className="bg-white border border-[#e2e8f0] rounded-[6px] px-[16px] h-[48px] flex items-center justify-center cursor-pointer hover:bg-[#f8fafc] transition-colors">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#414651] leading-[normal] whitespace-nowrap">Permitir acesso a câmera novamente</p>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Scenario: scanning */}
+        {QR_SCENARIOS[qrScenario] === "scanning" && (
+          <div className="flex-1 relative overflow-hidden">
+            {/* Simulated camera background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
+            {/* Dark overlay with cutout */}
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
+            {/* Transparent scan area cutout */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[420px] rounded-[8px]">
+              {/* Clear cutout background */}
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-none mix-blend-difference rounded-[8px]" style={{ backdropFilter: "none" }} />
+              {/* Corner brackets + scan line from Figma */}
+              <svg className="absolute inset-[-8px]" style={{ width: "calc(100% + 16px)", height: "calc(100% + 16px)" }} viewBox="0 0 1080 1080" fill="none">
+                <path d="M0 33.75C0 24.7989 3.55579 16.2145 9.88515 9.88515C16.2145 3.55579 24.7989 0 33.75 0L236.25 0C245.201 0 253.786 3.55579 260.115 9.88515C266.444 16.2145 270 24.7989 270 33.75C270 42.7011 266.444 51.2855 260.115 57.6149C253.786 63.9442 245.201 67.5 236.25 67.5H109.5C86.304 67.5 67.5 86.304 67.5 109.5V236.25C67.5 245.201 63.9442 253.786 57.6149 260.115C51.2855 266.444 42.7011 270 33.75 270C24.7989 270 16.2145 266.444 9.88515 260.115C3.55579 253.786 0 245.201 0 236.25V33.75ZM810 33.75C810 24.7989 813.556 16.2145 819.885 9.88515C826.215 3.55579 834.799 0 843.75 0L1046.25 0C1055.2 0 1063.79 3.55579 1070.11 9.88515C1076.44 16.2145 1080 24.7989 1080 33.75V236.25C1080 245.201 1076.44 253.786 1070.11 260.115C1063.79 266.444 1055.2 270 1046.25 270C1037.3 270 1028.71 266.444 1022.39 260.115C1016.06 253.786 1012.5 245.201 1012.5 236.25V109.5C1012.5 86.304 993.696 67.5 970.5 67.5H843.75C834.799 67.5 826.215 63.9442 819.885 57.6149C813.556 51.2855 810 42.7011 810 33.75ZM33.75 810C42.7011 810 51.2855 813.556 57.6149 819.885C63.9442 826.214 67.5 834.799 67.5 843.75V970.5C67.5 993.696 86.304 1012.5 109.5 1012.5H236.25C245.201 1012.5 253.786 1016.06 260.115 1022.39C266.444 1028.71 270 1037.3 270 1046.25C270 1055.2 266.444 1063.79 260.115 1070.11C253.786 1076.44 245.201 1080 236.25 1080H33.75C24.7989 1080 16.2145 1076.44 9.88515 1070.11C3.55579 1063.79 0 1055.2 0 1046.25V843.75C0 834.799 3.55579 826.214 9.88515 819.885C16.2145 813.556 24.7989 810 33.75 810ZM1046.25 810C1055.2 810 1063.79 813.556 1070.11 819.885C1076.44 826.214 1080 834.799 1080 843.75V1046.25C1080 1055.2 1076.44 1063.79 1070.11 1070.11C1063.79 1076.44 1055.2 1080 1046.25 1080H843.75C834.799 1080 826.215 1076.44 819.885 1070.11C813.556 1063.79 810 1055.2 810 1046.25C810 1037.3 813.556 1028.71 819.885 1022.39C826.215 1016.06 834.799 1012.5 843.75 1012.5H970.5C993.696 1012.5 1012.5 993.696 1012.5 970.5V843.75C1012.5 834.799 1016.06 826.214 1022.39 819.885C1028.71 813.556 1037.3 810 1046.25 810Z" fill="#FAC515" />
+              </svg>
+              {/* Scan line - animated */}
+              <div className="absolute left-[12px] right-[12px] h-[8px] rounded-full bg-[#FAC515] animate-[scanLine_2.5s_ease-in-out_infinite]" style={{ top: "50%" }} />
+            </div>
+
+            {/* Instruction panel - right of scan area */}
+            <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-[24px]" style={{ left: "calc(50% + 240px)" }}>
+              {/* QR icon card with side tab */}
+              <div className="flex items-center -mr-[1px]">
+                <svg className="shrink-0" width="13" height="54" viewBox="0 0 24 108" fill="none">
+                  <path d="M23.3633 0L2.28922 44.7418C-0.823597 51.3506 -0.756981 59.0173 2.47021 65.571L23.3633 108V0Z" fill="white" />
+                </svg>
+                <div className="size-[96px] bg-white rounded-[8px] flex items-center justify-center -ml-[1px] p-[10px]">
+                  <svg className="size-[76px]" viewBox="0 0 153 153" fill="none">
+                    <path d="M0 4.78122C0 3.51316 0.503734 2.29704 1.40039 1.40039C2.29704 0.503734 3.51316 0 4.78122 0L33.4685 0C34.7366 0 35.9527 0.503734 36.8493 1.40039C37.746 2.29704 38.2497 3.51316 38.2497 4.78122C38.2497 6.04927 37.746 7.26539 36.8493 8.16205C35.9527 9.0587 34.7366 9.56243 33.4685 9.56243H16.6787C12.7485 9.56243 9.56243 12.7485 9.56243 16.6787V33.4685C9.56243 34.7366 9.0587 35.9527 8.16205 36.8493C7.26539 37.746 6.04927 38.2497 4.78122 38.2497C3.51316 38.2497 2.29704 37.746 1.40039 36.8493C0.503734 35.9527 0 34.7366 0 33.4685V4.78122ZM114.749 4.78122C114.749 3.51316 115.253 2.29704 116.15 1.40039C117.046 0.503734 118.262 0 119.53 0L148.218 0C149.486 0 150.702 0.503734 151.599 1.40039C152.495 2.29704 152.999 3.51316 152.999 4.78122V33.4685C152.999 34.7366 152.495 35.9527 151.599 36.8493C150.702 37.746 149.486 38.2497 148.218 38.2497C146.95 38.2497 145.734 37.746 144.837 36.8493C143.94 35.9527 143.436 34.7366 143.436 33.4685V16.6787C143.436 12.7485 140.25 9.56243 136.32 9.56243H119.53C118.262 9.56243 117.046 9.0587 116.15 8.16205C115.253 7.26539 114.749 6.04927 114.749 4.78122ZM4.78122 114.749C6.04927 114.749 7.26539 115.253 8.16205 116.15C9.0587 117.046 9.56243 118.262 9.56243 119.53V136.32C9.56243 140.25 12.7485 143.436 16.6787 143.436H33.4685C34.7366 143.436 35.9527 143.94 36.8493 144.837C37.746 145.734 38.2497 146.95 38.2497 148.218C38.2497 149.486 37.746 150.702 36.8493 151.599C35.9527 152.495 34.7366 152.999 33.4685 152.999H4.78122C3.51316 152.999 2.29704 152.495 1.40039 151.599C0.503734 150.702 0 149.486 0 148.218V119.53C0 118.262 0.503734 117.046 1.40039 116.15C2.29704 115.253 3.51316 114.749 4.78122 114.749ZM148.218 114.749C149.486 114.749 150.702 115.253 151.599 116.15C152.495 117.046 152.999 118.262 152.999 119.53V148.218C152.999 149.486 152.495 150.702 151.599 151.599C150.702 152.495 149.486 152.999 148.218 152.999H119.53C118.262 152.999 117.046 152.495 116.15 151.599C115.253 150.702 114.749 149.486 114.749 148.218C114.749 146.95 115.253 145.734 116.15 144.837C117.046 143.94 118.262 143.436 119.53 143.436H136.32C140.25 143.436 143.436 140.25 143.436 136.32V119.53C143.436 118.262 143.94 117.046 144.837 116.15C145.734 115.253 146.95 114.749 148.218 114.749Z" fill="#252B37" />
+                    <path d="M19.5703 19.5663V58.9793H58.9832V19.5663H19.5703ZM67.7417 19.5663V28.3248H76.5001V19.5663H67.7417ZM76.5001 28.3248V37.0832H67.7417V54.6001H76.5001V45.8417H85.2585V28.3248H76.5001ZM76.5001 54.6001V67.7377H37.0871V76.4962H28.3287V85.2546H45.8456V76.4962H54.604V85.2546H76.5001V76.4962H85.2585V85.2546H98.3962V76.4962H107.155V67.7377H85.2585V54.6001H76.5001ZM107.155 76.4962V85.2546H133.43V76.4962H124.671V67.7377H115.913V76.4962H107.155ZM28.3287 76.4962V67.7377H19.5703V76.4962H28.3287ZM94.017 19.5663V58.9793H133.43V19.5663H94.017ZM28.3287 28.3248H50.2248V50.2209H28.3287V28.3248ZM102.775 28.3248H124.671V50.2209H102.775V28.3248ZM32.7079 32.704V45.8417H45.8456V32.704H32.7079ZM107.155 32.704V45.8417H120.292V32.704H107.155ZM67.7417 89.6338V98.3923H76.5001V89.6338H67.7417ZM76.5001 98.3923V107.151H67.7417V124.668H76.5001V115.909H94.017V107.151H102.775V98.3923H111.534V107.151H102.775V115.909H94.017V133.426H102.775V124.668H111.534V115.909H115.913V124.668H111.534V133.426H120.292V124.668H124.671V115.909H133.43V98.3923H124.671V89.6338H94.017V98.3923H76.5001ZM124.671 124.668V133.426H133.43V124.668H124.671ZM76.5001 124.668V133.426H85.2585V124.668H76.5001ZM19.5703 94.013V133.426H58.9832V94.013H19.5703ZM28.3287 102.771H50.2248V124.668H28.3287V102.771ZM32.7079 107.151V120.288H45.8456V107.151H32.7079Z" fill="#252B37" />
+                  </svg>
+                </div>
+              </div>
+              {/* Text */}
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[30px] text-white leading-[36px] w-[246px]">Escaneie o QR code para realizar o check-in.</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full" style={{ paddingBottom: "40px" }}>
       {/* ── Sticky TopBar: search + sort + filters (+ bulk actions when selected) ── */}
@@ -2975,7 +3299,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               )}
             </div>
             <div className="flex gap-[16px] items-end shrink-0 self-end">
-              <button className="bg-white hover:bg-white/95 relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
+              <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-white/95 relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] cursor-pointer">
                 <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
                   <svg className="size-[16px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="2" width="8" height="8" rx="1" />
@@ -3825,11 +4149,11 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
             <div className="flex flex-col">
               <div className="flex items-center gap-[8px] px-[24px] pt-[20px] pb-[4px]">
                 <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] hover:text-[#252b37] cursor-pointer transition-colors">Início</button>
-                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">···</span>
-                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] hover:text-[#252b37] cursor-pointer transition-colors">Atividades do Dia</button>
-                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{activity.name}</p>
               </div>
               <div className="flex gap-[24px] p-[24px] pt-[16px]">

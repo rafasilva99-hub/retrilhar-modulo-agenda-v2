@@ -2622,13 +2622,9 @@ const DIA_HOLIDAYS = allHolidays;
 function DiaChevron() {
   return (
     <div className="overflow-clip relative shrink-0 size-[16px]" data-name="chevron-right">
-      <div className="absolute bottom-1/4 left-[37.5%] right-[37.5%] top-1/4">
-        <div className="absolute inset-[-6.25%_-12.5%]">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 5 9">
-            <path d="M0.5 8.5L4.5 4.5L0.5 0.5" stroke="var(--stroke-0, #71717A)" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-      </div>
+      <svg className="block size-full" fill="none" viewBox="0 0 24 24">
+        <path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="var(--stroke-0, #71717A)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     </div>
   );
 }

@@ -152,15 +152,9 @@ function SelectInput({
           {placeholder}
         </option>
       </select>
-      <div className="pointer-events-none absolute top-1/2 right-[14px] -translate-y-1/2">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path
-            d="M4 6L8 10L12 6"
-            stroke="#9ca3af"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+      <div className="absolute right-[14px] top-1/2 -translate-y-1/2 pointer-events-none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M18 9C18 9 13.5811 15 12 15C10.4189 15 6 9 6 9" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
     </div>

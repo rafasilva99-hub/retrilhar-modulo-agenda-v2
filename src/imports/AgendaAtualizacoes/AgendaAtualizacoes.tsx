@@ -2177,7 +2177,43 @@ function ParticipantTariffCell({ tariffType }: { tariffType: string }) {
     <div className="flex items-center shrink-0 min-w-0" style={{ width: "240px", padding: "8px 12px" }}>
       <div className="flex flex-col gap-[1px] min-w-0 w-full">
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] truncate w-full">{tariffType}</p>
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-[#a1a1aa] whitespace-nowrap">Tipo de tarifa</p>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">Tipo de tarifa</p>
+      </div>
+    </div>
+  );
+}
+
+function getParticipantReservationStatusText(
+  reservation: Reservation,
+  participant: Participant,
+): { title: string; subtitle: string } {
+  const isCancelled = reservation.status === "Cancelled";
+  const isNoShow = reservation.status === "NoShow";
+  const isExpired = reservation.status === "Expired";
+  const isPerformed = reservation.status === "Performed";
+  const isIndividualAbsent = !isCancelled && !isNoShow && participant.checkInStatus === "Absent";
+  const isDone = participant.checkInStatus === "Done";
+
+  if (isCancelled) return { title: "Reserva cancelada", subtitle: "Status da reserva" };
+  if (isExpired) return { title: "Reserva expirada", subtitle: "Status da reserva" };
+  if (isNoShow) return { title: "Não compareceu", subtitle: "Status da reserva" };
+  if (isIndividualAbsent) return { title: "Cancelado individualmente", subtitle: "Status da reserva" };
+  if (isPerformed) return { title: "Atividade realizada", subtitle: "Status da reserva" };
+  if (isDone) return { title: "Check-in realizado", subtitle: "Status da reserva" };
+  if (reservation.status === "AwaitingPayment") return { title: "Aguardando pagamento", subtitle: "Status da reserva" };
+  if (reservation.status === "Draft") return { title: "Pré-reservada", subtitle: "Status da reserva" };
+
+  return { title: "Reserva confirmada", subtitle: "Status da reserva" };
+}
+
+function ParticipantReservationStatusCell({ reservation, participant }: { reservation: Reservation; participant: Participant }) {
+  const status = getParticipantReservationStatusText(reservation, participant);
+
+  return (
+    <div className="flex items-center shrink-0 min-w-0" style={{ width: "180px", padding: "8px 12px" }}>
+      <div className="flex flex-col gap-[1px] min-w-0 w-full">
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] truncate w-full">{status.title}</p>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{status.subtitle}</p>
       </div>
     </div>
   );
@@ -2497,31 +2533,32 @@ function getMenuSlots(r: Reservation, insuranceStatus: string): MenuSlot[] {
   const sm = reservationStateMachine;
   const canTo = (target: ReservationStatus) => (sm[s] || []).includes(target);
   const inactive = s === "Cancelled" || s === "NoShow" || s === "Expired";
-  const iconConfirm = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 8l1.8 1.8L10.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  const iconDouble = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 8l4 4L14 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 8l4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  const iconPayment = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
-  const iconCal = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M2 6h12" stroke="currentColor" strokeWidth="1.2"/><path d="M5.5 1v2M10.5 1v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
-  const iconShield = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 2.5-2 4.5-5 5.5-3-1-5-3-5-5.5V4l5-2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  const iconSend = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M14 2L7 9M14 2l-4 12-3-5-5-3 12-4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  const iconDownload = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
-  const iconPerson = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
-  const iconContact = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M13.5 2.5l-11 5 4 1.5 1.5 4 5-11z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  const iconCalX = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M6 6l4 4M10 6l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
-  const iconPersonX = <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><path d="M12 3l-2 2M10 3l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>;
+  const iconConfirm = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M24 40C24 40 26 40 28 44C28 44 34.3529 34 40 32" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M40 26.0096V21.3212C40 19.6855 40 18.8677 39.6955 18.1323C39.391 17.3969 38.813 16.8185 37.6569 15.6619L28.1838 6.18472C27.186 5.18651 26.6871 4.68741 26.069 4.39166C25.9405 4.33015 25.8087 4.27556 25.6744 4.22812C25.0283 4 24.3228 4 22.9117 4C16.4216 4 13.1766 4 10.9787 5.77292C10.5346 6.13108 10.1302 6.53573 9.77215 6.97995C8 9.17886 8 12.4253 8 18.9182V28.0104C8 35.5562 8 39.3291 10.3431 41.6732C12.2293 43.5602 15.0409 43.9282 20 44M26 5.00043V6.00087C26 11.6602 26 14.4898 27.7574 16.248C29.5147 18.0061 32.3431 18.0061 38 18.0061H39" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconUndoConfirm = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M40 28.0104V21.3212C40 19.6855 40 18.8677 39.6955 18.1323C39.391 17.3969 38.813 16.8185 37.6569 15.6619L28.1838 6.18472C27.186 5.18651 26.6871 4.68741 26.069 4.39166C25.9405 4.33015 25.8087 4.27556 25.6744 4.22812C25.0283 4 24.3228 4 22.9117 4C16.4216 4 13.1766 4 10.9787 5.77292C10.5346 6.13108 10.1302 6.53573 9.77215 6.97995C8 9.17886 8 12.4253 8 18.9182V28.0104C8 35.5562 8 39.3291 10.3431 41.6732C12.2293 43.5602 15.0409 43.9282 20 44M26 5.00043V6.00087C26 11.6602 26 14.4898 27.7574 16.248C29.5147 18.0061 32.3431 18.0061 38 18.0061H39" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 32L24 36C24.4852 32.6077 27.4735 30 31 30C33.3787 30 35.4803 31.1865 36.7453 33M40 42L38 38C37.5148 41.3923 34.5264 44 31 44C28.6212 44 26.5196 42.8135 25.2547 41" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconPerformed = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M6 26.6667C6 26.6667 9 28 13 34C13 34 13.5697 33.0384 14.6427 31.5053M34 12C29.4169 14.2915 24.6238 19.1036 20.7758 23.6446" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 26.6667C16 26.6667 19 28 23 34C23 34 34 17 44 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconUndoPerformed = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M36 12L12.0016 35.9983M35.9984 36L12 12.0017" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconPayment = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M4.03516 28C8.4343 28 12.0005 31.5662 12.0005 35.9654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.0005 8.03125C12.0005 12.4304 8.4343 15.9966 4.03516 15.9966" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M36 8.03125C36 12.3919 39.5381 15.9341 43.8847 15.9958" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M44 22V20C44 14.3431 44 11.5147 42.2426 9.75736C40.4853 8 37.6569 8 32 8H16C10.3431 8 7.51472 8 5.75736 9.75736C4 11.5147 4 14.3431 4 20V24C4 29.6569 4 32.4853 5.75736 34.2426C7.51472 36 10.3431 36 16 36H22" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M30 22C30 25.3137 27.3137 28 24 28C20.6863 28 18 25.3137 18 22C18 18.6863 20.6863 16 24 16C27.3137 16 30 18.6863 30 22Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M28 36C28 36 30 36 32 40C32 40 38.3529 30 44 28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconUndoPayment = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M4.03516 28C8.4343 28 12.0005 31.5662 12.0005 35.9654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.0005 8.03125C12.0005 12.4304 8.4343 15.9966 4.03516 15.9966" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M36 8.03125C36 12.3919 39.5381 15.9341 43.8847 15.9958" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M44 25V20C44 14.3431 44 11.5147 42.2426 9.75736C40.4853 8 37.6569 8 32 8H16C10.3431 8 7.51472 8 5.75736 9.75736C4 11.5147 4 14.3431 4 20V24C4 29.6569 4 32.4853 5.75736 34.2426C7.51472 36 10.3431 36 16 36H30" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M30 22C30 25.3137 27.3137 28 24 28C20.6863 28 18 25.3137 18 22C18 18.6863 20.6863 16 24 16C27.3137 16 30 18.6863 30 22Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M44 31L39.5 35.5M39.5 35.5L35 40M39.5 35.5L35 31M39.5 35.5L44 40" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconCal = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M32 4V12M16 4V12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M42 30V24C42 16.4575 42 12.6863 39.6569 10.3431C37.3137 8 33.5425 8 26 8H22C14.4575 8 10.6863 8 8.34315 10.3431C6 12.6863 6 16.4575 6 24V28C6 35.5425 6 39.3137 8.34315 41.6569C10.6863 44 14.4575 44 22 44H24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 20H42" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M37 44C38.0114 43.0169 42 40.4005 42 39C42 37.5995 38.0114 34.9831 37 34M41 39H28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconUndoCal = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M32 4V12M16 4V12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M42 32V24C42 16.4575 42 12.6863 39.6569 10.3431C37.3137 8 33.5425 8 26 8H22C14.4575 8 10.6863 8 8.34315 10.3431C6 12.6863 6 16.4575 6 24V28C6 35.5425 6 39.3137 8.34315 41.6569C10.6863 44 14.4575 44 22 44H24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 20H42" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M42 39H29M33 44C31.9886 43.0169 28 40.4005 28 39C28 37.5995 31.9886 34.9831 33 34" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconShield = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4-2.5 7.5-7 9-4.5-1.5-7-5-7-9V6l7-3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+  const iconPerson = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M5 21c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  const iconCalX = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.5"/><path d="M3 9h18" stroke="currentColor" strokeWidth="1.5"/><path d="M9 14l6 6M15 14l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  const iconPersonX = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M5 21c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M18 5l-3 3M15 5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>;
 
   // Slot 1 — Confirmar ↔ Desfazer confirmação
   const slot1 = s === "Confirmed" || s === "CheckedIn" || s === "Performed"
-    ? { id: "undo-confirm", label: "Desfazer confirmação de reserva", icon: iconConfirm, enabled: s === "Confirmed" && canTo("AwaitingPayment"), tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de desfazer a confirmação" : s === "Performed" ? "A atividade já foi realizada" : null }
+    ? { id: "undo-confirm", label: "Desfazer confirmação de reserva", icon: iconUndoConfirm, enabled: s === "Confirmed" && canTo("AwaitingPayment"), tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de desfazer a confirmação" : s === "Performed" ? "A atividade já foi realizada" : null }
     : { id: "confirm", label: "Confirmar reserva", icon: iconConfirm, enabled: canTo("Confirmed"), tooltip: s === "Draft" ? "Carrinho ainda não finalizado" : inactive ? `Reserva ${s === "Cancelled" ? "cancelada" : s === "NoShow" ? "marcada como não compareceu" : "expirada"} não pode ser confirmada` : null };
 
   // Slot 2 — Definir realizado ↔ Desfazer
   const slot2 = s === "Performed"
-    ? { id: "undo-performed", label: "Desfazer definição de realização", icon: iconDouble, enabled: canTo("Confirmed"), tooltip: null }
-    : { id: "mark-performed", label: "Definir como realizado", icon: iconDouble, enabled: s === "CheckedIn" && canTo("Performed") && (insuranceStatus === "Contracted" || insuranceStatus === "NotRequired"), tooltip: s === "CheckedIn" && insuranceStatus !== "Contracted" && insuranceStatus !== "NotRequired" ? "É necessário contratar o seguro do participante antes de realizar essa ação" : s !== "CheckedIn" ? "É necessário realizar o check-in antes de definir como realizado" : null };
+    ? { id: "undo-performed", label: "Desfazer definição de realização", icon: iconUndoPerformed, enabled: canTo("Confirmed"), tooltip: null }
+    : { id: "mark-performed", label: "Definir como realizado", icon: iconPerformed, enabled: s === "CheckedIn" && canTo("Performed") && (insuranceStatus === "Contracted" || insuranceStatus === "NotRequired"), tooltip: s === "CheckedIn" && insuranceStatus !== "Contracted" && insuranceStatus !== "NotRequired" ? "É necessário contratar o seguro do participante antes de realizar essa ação" : s !== "CheckedIn" ? "É necessário realizar o check-in antes de definir como realizado" : null };
 
   // Slot 3 — Registrar pagamento ↔ Desfazer
   const slot3 = (s === "Confirmed" || s === "CheckedIn" || s === "Performed")
-    ? { id: "undo-payment", label: "Desfazer registro de pagamento", icon: iconPayment, enabled: canTo("AwaitingPayment"), tooltip: null }
+    ? { id: "undo-payment", label: "Desfazer registro de pagamento", icon: iconUndoPayment, enabled: canTo("AwaitingPayment"), tooltip: null }
     : { id: "register-payment", label: "Registrar pagamento", icon: iconPayment, enabled: s === "AwaitingPayment" && canTo("Confirmed"), tooltip: s === "Draft" ? "Finalize o carrinho antes de registrar pagamento" : inactive ? "Reserva inativa não permite registro de pagamento" : null };
 
   // Slot 4 — Remarcar ↔ Desfazer remarcação
@@ -2532,29 +2569,20 @@ function getMenuSlots(r: Reservation, insuranceStatus: string): MenuSlot[] {
     ? { id: "undo-insurance", label: "Desfazer contratação de seguro", icon: iconShield, separator: true, enabled: !inactive && s !== "Draft" && s !== "Performed", tooltip: inactive || s === "Draft" || s === "Performed" ? "Reserva inativa não permite operação de seguro" : null }
     : { id: "add-insurance", label: "Contratar seguro", icon: iconShield, separator: true, enabled: !inactive && s !== "Draft" && s !== "Performed", tooltip: inactive || s === "Draft" || s === "Performed" ? "Reserva inativa não permite operação de seguro" : null };
 
-  // Slot 6 — Reenviar voucher
-  const slot6: MenuSlot = { id: "resend-voucher", label: "Reenviar voucher", icon: iconSend, enabled: s === "Confirmed" || s === "CheckedIn" || s === "Performed", tooltip: s === "AwaitingPayment" ? "Confirme a reserva antes de enviar o voucher" : "Não há voucher disponível para envio" };
+  // Slot 6 — Dados do participante (always enabled)
+  const slot6: MenuSlot = { id: "participant-data", label: "Dados do participante", icon: iconPerson, enabled: true, tooltip: null };
 
-  // Slot 7 — Baixar comprovante
-  const slot7: MenuSlot = { id: "download", label: "Baixar comprovante", icon: iconDownload, enabled: s === "Confirmed" || s === "CheckedIn" || s === "Performed" || s === "Cancelled", tooltip: "Comprovante disponível apenas após confirmação da reserva" };
-
-  // Slot 8 — Dados do participante (always enabled)
-  const slot8: MenuSlot = { id: "participant-data", label: "Dados do participante", icon: iconPerson, enabled: true, tooltip: null };
-
-  // Slot 9 — Entrar em contato (always enabled)
-  const slot9: MenuSlot = { id: "contact", label: "Entrar em contato", icon: iconContact, separator: true, enabled: true, tooltip: null, hasExtIcon: true };
-
-  // Slot 10 — Não compareceu ↔ Desfazer
-  const slot10 = s === "NoShow"
+  // Slot 7 — Não compareceu ↔ Desfazer
+  const slot7 = s === "NoShow"
     ? { id: "undo-noshow", label: "Desfazer não comparecimento", icon: iconCalX, separator: true, destructive: true, enabled: true, tooltip: null }
     : { id: "no-show", label: "Não compareceu", icon: iconCalX, separator: true, destructive: true, enabled: s === "Confirmed", tooltip: s === "CheckedIn" || s === "Performed" ? "Participante já realizou check-in" : s !== "Confirmed" ? "Não aplicável ao estado atual" : null };
 
-  // Slot 11 — Cancelar ↔ Desfazer cancelamento
-  const slot11 = s === "Cancelled"
+  // Slot 8 — Cancelar ↔ Desfazer cancelamento
+  const slot8 = s === "Cancelled"
     ? { id: "undo-cancel", label: "Desfazer cancelamento de reserva", icon: iconPersonX, destructive: true, enabled: true, tooltip: null }
     : { id: "cancel", label: "Cancelar reserva", icon: iconPersonX, destructive: true, enabled: s === "AwaitingPayment" || s === "Confirmed" || s === "CheckedIn", tooltip: s === "Performed" ? "Atividade já realizada não pode ser cancelada" : s === "NoShow" ? "Reserva marcada como não compareceu" : (s === "Expired" || s === "Draft") ? "Reserva inativa" : null };
 
-  return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8, slot9, slot10, slot11];
+  return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8];
 }
 
 function ParticipantMenu({ reservation, participant, onAction, participantInsured }: {
@@ -2590,10 +2618,10 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
       </button>
       {open && (
         <>
-          <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[12px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[300px] z-40 py-[4px]">
+          <div className="absolute bg-white border border-[#f5f5f5] border-solid mt-[4px] right-0 rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-max min-w-[265px] z-40 p-[6px] flex flex-col gap-[4px]">
             {slots.map((slot) => (
               <div key={slot.id}>
-                {slot.separator && <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />}
+                {slot.separator && <div className="bg-[#f5f5f5] h-px w-full" />}
                 <div className="relative"
                   onMouseEnter={() => { if (!slot.enabled && slot.tooltip) setHoveredDisabled(slot.id); }}
                   onMouseLeave={() => setHoveredDisabled(null)}
@@ -2603,7 +2631,7 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
                       if (!slot.enabled) return;
                       onAction(slot.id, reservation, participant);
                     }}
-                    className={`flex gap-[10px] items-center px-[14px] py-[10px] transition-colors w-full ${
+                    className={`flex gap-[12px] items-center h-[40px] px-[12px] rounded-[6px] transition-colors w-full ${
                       !slot.enabled ? "opacity-40 cursor-not-allowed" : slot.destructive ? "cursor-pointer hover:bg-[#fef3f2]" : "cursor-pointer hover:bg-[#f8fafc]"
                     } ${slot.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
                     aria-disabled={!slot.enabled || undefined}
@@ -2611,7 +2639,7 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
                     {slot.icon}
                     <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap ${slot.destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{slot.label}</p>
                     {slot.hasExtIcon && (
-                      <svg className="ml-auto size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M4 10L10 4M10 4H5M10 4v5" stroke="#717680" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <svg className="ml-auto size-[16px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H9M17 7v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     )}
                   </button>
                   {/* Tooltip for disabled items */}
@@ -2648,11 +2676,39 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [showBulkCheckInTipStickyBar, setShowBulkCheckInTipStickyBar] = useState(false);
   const [showQrScanner, setShowQrScanner] = useState(false);
   const [qrScenario, setQrScenario] = useState(0);
-  const QR_SCENARIOS = ["camera-blocked", "scanning"] as const;
+  const [isQrDrawerClosing, setIsQrDrawerClosing] = useState(false);
+  const [isConfirmingCheckIn, setIsConfirmingCheckIn] = useState(false);
+  const [isQrInstructionEntering, setIsQrInstructionEntering] = useState(false);
+  const qrDrawerCloseTimeoutRef = useRef<number | null>(null);
+  const qrInstructionEnterTimeoutRef = useRef<number | null>(null);
+  const QR_SCENARIOS = ["camera-blocked", "scanning", "valid-reservation", "checkin-success", "reservation-cancelled", "qr-not-recognized"] as const;
 
   useEffect(() => {
     if (!showQrScanner) setSearchBarHidden(false);
   }, [showQrScanner]);
+
+  useEffect(() => {
+    return () => {
+      if (qrDrawerCloseTimeoutRef.current) window.clearTimeout(qrDrawerCloseTimeoutRef.current);
+      if (qrInstructionEnterTimeoutRef.current) window.clearTimeout(qrInstructionEnterTimeoutRef.current);
+    };
+  }, []);
+
+  function handleQrDrawerCancel() {
+    if (isQrDrawerClosing) return;
+    setIsQrDrawerClosing(true);
+    if (qrDrawerCloseTimeoutRef.current) window.clearTimeout(qrDrawerCloseTimeoutRef.current);
+    qrDrawerCloseTimeoutRef.current = window.setTimeout(() => {
+      setQrScenario(1);
+      setIsQrDrawerClosing(false);
+      setIsQrInstructionEntering(true);
+      qrDrawerCloseTimeoutRef.current = null;
+      qrInstructionEnterTimeoutRef.current = window.setTimeout(() => {
+        setIsQrInstructionEntering(false);
+        qrInstructionEnterTimeoutRef.current = null;
+      }, 30);
+    }, 520);
+  }
 
   // Sticky bulk bar: track when original bar scrolls out of view
   const bulkBarRef = useRef<HTMLDivElement>(null);
@@ -3075,7 +3131,14 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
             </div>
 
             {/* Instruction panel - right of scan area */}
-            <div className="absolute top-1/2 -translate-y-1/2 flex items-center gap-[24px]" style={{ left: "calc(50% + 240px)" }}>
+            <div
+              className="absolute top-1/2 flex items-center gap-[24px] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+              style={{
+                left: "calc(50% + 240px)",
+                opacity: isQrInstructionEntering ? 0 : 1,
+                transform: isQrInstructionEntering ? "translateY(calc(-50% + 12px))" : "translateY(-50%)",
+              }}
+            >
               {/* QR icon card with side tab */}
               <div className="flex items-center -mr-[1px]">
                 <svg className="shrink-0" width="13" height="54" viewBox="0 0 24 108" fill="none">
@@ -3092,6 +3155,366 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[30px] text-white leading-[36px] w-[246px]">Escaneie o QR code para realizar o check-in.</p>
             </div>
           </div>
+        )}
+
+        {/* Scenario: valid-reservation */}
+        {QR_SCENARIOS[qrScenario] === "valid-reservation" && (
+          <>
+            {/* Scanner background (same as scanning) */}
+            <div className="flex-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
+              <div
+                className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 size-[420px] rounded-[8px] transition-[left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{ left: isQrDrawerClosing ? "50%" : "calc(50% - 240px)" }}
+              >
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-none mix-blend-difference rounded-[8px]" style={{ backdropFilter: "none" }} />
+                <svg className="absolute inset-[-8px]" style={{ width: "calc(100% + 16px)", height: "calc(100% + 16px)" }} viewBox="0 0 1080 1080" fill="none">
+                  <path d="M0 33.75C0 24.7989 3.55579 16.2145 9.88515 9.88515C16.2145 3.55579 24.7989 0 33.75 0L236.25 0C245.201 0 253.786 3.55579 260.115 9.88515C266.444 16.2145 270 24.7989 270 33.75C270 42.7011 266.444 51.2855 260.115 57.6149C253.786 63.9442 245.201 67.5 236.25 67.5H109.5C86.304 67.5 67.5 86.304 67.5 109.5V236.25C67.5 245.201 63.9442 253.786 57.6149 260.115C51.2855 266.444 42.7011 270 33.75 270C24.7989 270 16.2145 266.444 9.88515 260.115C3.55579 253.786 0 245.201 0 236.25V33.75ZM810 33.75C810 24.7989 813.556 16.2145 819.885 9.88515C826.215 3.55579 834.799 0 843.75 0L1046.25 0C1055.2 0 1063.79 3.55579 1070.11 9.88515C1076.44 16.2145 1080 24.7989 1080 33.75V236.25C1080 245.201 1076.44 253.786 1070.11 260.115C1063.79 266.444 1055.2 270 1046.25 270C1037.3 270 1028.71 266.444 1022.39 260.115C1016.06 253.786 1012.5 245.201 1012.5 236.25V109.5C1012.5 86.304 993.696 67.5 970.5 67.5H843.75C834.799 67.5 826.215 63.9442 819.885 57.6149C813.556 51.2855 810 42.7011 810 33.75ZM33.75 810C42.7011 810 51.2855 813.556 57.6149 819.885C63.9442 826.214 67.5 834.799 67.5 843.75V970.5C67.5 993.696 86.304 1012.5 109.5 1012.5H236.25C245.201 1012.5 253.786 1016.06 260.115 1022.39C266.444 1028.71 270 1037.3 270 1046.25C270 1055.2 266.444 1063.79 260.115 1070.11C253.786 1076.44 245.201 1080 236.25 1080H33.75C24.7989 1080 16.2145 1076.44 9.88515 1070.11C3.55579 1063.79 0 1055.2 0 1046.25V843.75C0 834.799 3.55579 826.214 9.88515 819.885C16.2145 813.556 24.7989 810 33.75 810ZM1046.25 810C1055.2 810 1063.79 813.556 1070.11 819.885C1076.44 826.214 1080 834.799 1080 843.75V1046.25C1080 1055.2 1076.44 1063.79 1070.11 1070.11C1063.79 1076.44 1055.2 1080 1046.25 1080H843.75C834.799 1080 826.215 1076.44 819.885 1070.11C813.556 1063.79 810 1055.2 810 1046.25C810 1037.3 813.556 1028.71 819.885 1022.39C826.215 1016.06 834.799 1012.5 843.75 1012.5H970.5C993.696 1012.5 1012.5 993.696 1012.5 970.5V843.75C1012.5 834.799 1016.06 826.214 1022.39 819.885C1028.71 813.556 1037.3 810 1046.25 810Z" fill="#FAC515" />
+                </svg>
+                <div className="absolute left-[12px] right-[12px] h-[8px] rounded-full bg-[#FAC515] animate-[scanLine_2.5s_ease-in-out_infinite]" style={{ top: "50%" }} />
+              </div>
+            </div>
+
+            {/* Right panel - reservation details */}
+            <div className={`absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isQrDrawerClosing ? "translate-x-full" : "translate-x-0"}`}>
+              {/* Scrollable content */}
+              <div className="flex-1 overflow-y-auto px-[20px] pt-[24px] pb-[32px] flex flex-col gap-[24px]">
+                {/* Title - hidden */}
+
+                {/* Participant card */}
+                <div className="border border-[#f5f5f5] rounded-[16px] p-[16px] flex flex-col gap-[16px]">
+                  {/* Participant header */}
+                  <div className="flex items-center gap-[12px]">
+                    <div className="relative size-[40px] shrink-0">
+                      <svg className="absolute inset-0 size-full" fill="none" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19.5" fill="#EDF0FF" stroke="#D5DAFF"/></svg>
+                      <p className="absolute inset-0 flex items-center justify-center font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0b5ed7]">JS</p>
+                    </div>
+                    <div>
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] leading-[normal]">João Silva</p>
+                      <div className="flex items-center gap-[8px] mt-[2px]">
+                        <div className="flex items-center gap-[6px]">
+                          <svg className="size-[16px] text-[#717680] rotate-180 scale-x-[-1]" fill="none" viewBox="0 0 17.3334 17.3334">
+                            <path d="M11.1667 0.750024C12.3288 0.750024 12.9098 0.750024 13.3894 0.86515C14.9129 1.23092 16.1025 2.42046 16.4682 3.944C16.5834 4.42353 16.5834 5.00459 16.5834 6.16669M6.16669 0.750024C5.00459 0.750024 4.42353 0.750024 3.944 0.86515C2.42047 1.23092 1.23092 2.42046 0.86515 3.944C0.750025 4.42353 0.750025 5.00459 0.750025 6.16669M6.16669 16.5834C5.00459 16.5834 4.42353 16.5834 3.944 16.4682C2.42047 16.1025 1.23092 14.9129 0.86515 13.3894C0.750025 12.9098 0.750025 12.3288 0.750025 11.1667M11.1667 16.5834C12.3288 16.5834 12.9098 16.5834 13.3894 16.4682C14.9129 16.1025 16.1025 14.9129 16.4682 13.3894C16.5834 12.9098 16.5834 12.3288 16.5834 11.1667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M11.1667 10.7501C11.1667 12.1308 10.0474 13.2501 8.66669 13.2501C7.28598 13.2501 6.16669 12.1308 6.16669 10.7501C6.16669 9.3694 7.28598 8.25011 8.66669 8.25011C10.0474 8.25011 11.1667 9.3694 11.1667 10.7501Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M12.8334 4.08344C12.8334 6.38463 10.9679 8.25011 8.66669 8.25011C6.3655 8.25011 4.50002 6.38463 4.50002 4.08344" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">ID: #8823</p>
+                        </div>
+                        <div className="flex items-center gap-[6px]">
+                          <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 48 48">
+                            <path d="M39.4171 15.3008C39.7314 14.9865 40.2729 14.9544 40.5915 15.3019C42.4569 17.3365 43.4892 18.843 43.8292 20.5115C44.0248 21.4713 44.0526 22.4485 43.9114 23.3988C43.5297 25.9673 41.4488 28.0482 37.2869 32.2102L32.2102 37.2869C28.0482 41.4488 25.9673 43.5297 23.3988 43.9114C22.4485 44.0526 21.4713 44.0248 20.5115 43.8292C18.8432 43.4893 17.3368 42.4571 15.3025 40.5921C14.9547 40.2732 14.9868 39.731 15.3015 39.4163C17.0539 37.664 16.9706 34.7396 15.1155 32.8845C13.2604 31.0294 10.336 30.9461 8.58367 32.6985C8.26902 33.0132 7.72682 33.0453 7.40791 32.6975C5.54291 30.6632 4.51072 29.1568 4.17077 27.4885C3.97518 26.5287 3.94736 25.5515 4.08857 24.6012C4.47025 22.0327 6.55121 19.9518 10.7131 15.7898L15.7898 10.7131C19.9518 6.55121 22.0327 4.47025 24.6012 4.08857C25.5515 3.94736 26.5287 3.97518 27.4885 4.17078C29.157 4.51076 30.6635 5.54315 32.6981 7.40853C33.0456 7.72709 33.0135 8.26864 32.6993 8.58293C30.9469 10.3353 31.0301 13.2597 32.8852 15.1148C34.7403 16.9699 37.6647 17.0531 39.4171 15.3008Z" stroke="currentColor" strokeWidth="4" strokeLinejoin="round"/>
+                            <path d="M38 30L18 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Tarifa: Infantil</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-[#f5f5f5] -mt-[4px]" />
+
+                  {/* Info grid */}
+                  <div className="grid grid-cols-2 gap-[12px]">
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M21.669 3.33203C23.5089 3.33203 25.0004 4.88413 25.0004 6.79875C25.0004 8.38062 25.0603 9.78828 23.782 10.952C19.5978 14.7609 17.5057 16.6654 15.0004 16.6654C12.4952 16.6654 10.4031 14.7609 6.21888 10.952C4.94044 9.78819 5.00044 8.38037 5.00044 6.79839C5.00044 4.88397 6.49183 3.33203 8.33155 3.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 23.332V29.165C15 33.3074 18.3581 36.6655 22.5006 36.6655C26.643 36.6655 30.0011 33.3074 30.0011 29.165V26.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M23.3346 11.668L21.1643 17.0939C20.5873 18.5363 20.2988 19.2575 19.8157 19.85C19.3326 20.4426 18.6844 20.8705 17.3878 21.7262L14.9506 23.3346L12.556 21.7219C11.2883 20.8681 10.6544 20.4412 10.1816 19.8557C9.70884 19.2702 9.42502 18.5606 8.85738 17.1415L6.66797 11.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 21.668C35 24.4294 32.7614 26.668 30 26.668C27.2386 26.668 25 24.4294 25 21.668C25 18.9065 27.2386 16.668 30 16.668C32.7614 16.668 35 18.9065 35 21.668Z" stroke="currentColor" strokeWidth="3"/><path d="M30.012 21.668L29.9971 21.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Alertas de Saúde</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Sim - alergias</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M3.33203 28.3359H36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M20 11.6667C20 11.6667 22.5 9.94397 22.5 7.81892C22.5 4.06036 17.5 4.06036 17.5 7.81892C17.5 9.94397 20 11.6667 20 11.6667Z" stroke="currentColor" strokeWidth="3" strokeLinejoin="round"/><path d="M5 28.3359L6.03545 32.4777C6.40642 33.9616 7.7397 35.0026 9.26925 35.0026H30.7307C32.2603 35.0026 33.5936 33.9616 33.9646 32.4777L35 28.3359" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M34.1654 24.168C33.3348 17.1294 27.3089 11.668 19.9987 11.668C12.6885 11.668 6.6626 17.1294 5.83203 24.168" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
+                      </div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Restrições alimentares</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Sim - alergias</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M31.6667 14.9987V13.029C31.6667 10.2069 31.6667 8.7959 31.2463 7.66894C30.5706 5.85719 29.1415 4.42811 27.3298 3.75237C26.2028 3.33203 24.7918 3.33203 21.9697 3.33203C17.0311 3.33203 14.5618 3.33203 12.5896 4.06762C9.41904 5.25017 6.91814 7.75107 5.73559 10.9216C5 12.8938 5 15.3631 5 20.3017L5 24.5442C5 29.6598 5 32.2176 6.32972 33.9939C6.71071 34.5028 7.16254 34.9546 7.67148 35.3356C9.44779 36.6654 12.0056 36.6654 17.1212 36.6654H18.3333C20.2829 36.6654 24.1667 36.6654 24.1667 36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.332 23.8889H19.7326C20.8352 23.8889 21.3864 23.8889 21.8295 24.1793C22.2725 24.4697 22.519 24.9927 23.0121 26.0386L25.6654 31.6667L29.332 20L31.9853 25.6281C32.4783 26.674 32.7249 27.197 33.1679 27.4874C33.6109 27.7778 34.1622 27.7778 35.2648 27.7778H36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 19.9987C5 16.9304 7.48731 14.4431 10.5556 14.4431L12.4074 14.4431C13.2685 14.4431 13.699 14.4431 14.0523 14.3485C15.0109 14.0916 15.7596 13.3429 16.0165 12.3843C16.1111 12.0311 16.1111 11.6005 16.1111 10.7394V8.88759C16.1111 5.81934 18.5984 3.33203 21.6667 3.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Necessidades especiais</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Não</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M20 7.5V10M20 10V12.5M20 10H22.5M20 10H17.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M14.3083 4.30834C13.332 5.28465 13.332 6.856 13.332 9.9987C13.332 13.1414 13.332 14.7127 14.3083 15.6891C15.2847 16.6654 16.856 16.6654 19.9987 16.6654C23.1414 16.6654 24.7127 16.6654 25.6891 15.6891C26.6654 14.7127 26.6654 13.1414 26.6654 9.9987C26.6654 6.856 26.6654 5.28465 25.6891 4.30834C24.7127 3.33203 23.1414 3.33203 19.9987 3.33203C16.856 3.33203 15.2847 3.33203 14.3083 4.30834Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 36.6654V19.9499C6.66797 14.4341 6.66797 11.6762 8.37651 9.96263C9.46239 8.87358 10.9689 8.47668 13.3346 8.33203M33.3346 36.6654V19.9499C33.3346 14.4341 33.3346 11.6762 31.6261 9.96263C30.5402 8.87358 29.0337 8.47668 26.668 8.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 36.668H35" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.832 36.6654V32.4987C15.832 30.941 15.832 30.1622 16.167 29.582C16.3864 29.202 16.702 28.8864 17.082 28.667C17.6622 28.332 18.441 28.332 19.9987 28.332C21.5564 28.332 22.3352 28.332 22.9154 28.667C23.2954 28.8864 23.611 29.202 23.8304 29.582C24.1654 30.1622 24.1654 30.941 24.1654 32.4987V36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M13.347 21.668H13.332M19.9987 21.668H19.9838M26.6673 21.668H26.6523" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Possui plano de saúde</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Sim</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Observations */}
+                  <div className="flex items-start gap-[10px]">
+                    <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
+                      <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M24.9987 12.5013C24.9987 7.89893 21.2677 4.16797 16.6654 4.16797C12.063 4.16797 8.33203 7.89893 8.33203 12.5013C8.33203 17.1037 12.063 20.8346 16.6654 20.8346C21.2677 20.8346 24.9987 17.1037 24.9987 12.5013Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M34.9987 35.8346L32.4987 33.3346M33.332 29.168C33.332 26.4065 31.0935 24.168 28.332 24.168C25.5706 24.168 23.332 26.4065 23.332 29.168C23.332 31.9294 25.5706 34.168 28.332 34.168C31.0935 34.168 33.332 31.9294 33.332 29.168Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 32.5026C5 26.0593 10.2233 20.8359 16.6667 20.8359C18.456 20.8359 20.1512 21.2388 21.6667 21.9587" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </div>
+                    <div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Observações adicionais</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">ATENÇÃO: esse participante é alérgico a amendoim e frutos do mar.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Activity card */}
+                <div className="border border-[#f5f5f5] rounded-[16px] p-[16px] flex flex-col gap-[12px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#717680] uppercase tracking-[0.5px]">DADOS DA ATIVIDADE</p>
+
+                  {/* Activity name + location */}
+                  <div className="flex items-start gap-[10px]">
+                    <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 48 48"><path d="M37.437 21.4303C37.0516 21.7957 36.5364 22 36.0002 22C35.464 22 34.9488 21.7957 34.5633 21.4303C31.0335 18.0634 26.3031 14.3022 28.61 8.8417C29.8573 5.88924 32.8514 4 36.0002 4C39.149 4 42.1431 5.88924 43.3904 8.8417C45.6944 14.2953 40.9756 18.075 37.437 21.4303Z" stroke="currentColor" strokeWidth="3"/><path d="M36 12H36.018" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><circle cx="10" cy="38" r="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 14H19C15.134 14 12 16.6863 12 20C12 23.3137 15.134 26 19 26H25C28.866 26 32 28.6863 32 32C32 35.3137 28.866 38 25 38H22" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                    <div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#181d27] leading-[normal]">Trilha Pico do Itacolomi</p>
+                      <div className="flex items-center mt-[2px]">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Parque Municipal, Sabará - Belo Horizonte</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-[#f5f5f5]" />
+
+                  {/* Info rows */}
+                  <div className="grid grid-cols-2 gap-[12px]">
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M13.332 28.332L26.6654 28.332" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.332 21.668H19.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M21.668 4.16536V4.9987C21.668 9.71274 21.668 12.0698 23.1324 13.5342C24.5969 14.9987 26.9539 14.9987 31.668 14.9987L32.5013 14.9987M33.3346 17.7601V23.332C33.3346 29.6174 33.3346 32.7601 31.382 34.7127C29.4294 36.6654 26.2867 36.6654 20.0013 36.6654C13.7159 36.6654 10.5732 36.6654 8.62059 34.7127C6.66797 32.7601 6.66797 29.6174 6.66797 23.332L6.66797 15.7584C6.66797 10.3501 6.66797 7.64588 8.14476 5.81425C8.4431 5.44422 8.78016 5.10716 9.15019 4.80882C10.9818 3.33203 13.686 3.33203 19.0944 3.33203C20.2703 3.33203 20.8582 3.33203 21.3966 3.52205C21.5086 3.56156 21.6184 3.60704 21.7255 3.65827C22.2406 3.90462 22.6563 4.32036 23.4878 5.15184L31.382 13.0461C32.3454 14.0095 32.8272 14.4912 33.0809 15.1038C33.3346 15.7164 33.3346 16.3976 33.3346 17.7601Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">ID do pedido</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">#RE-9920</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M36.6654 19.9987C36.6654 29.2034 29.2034 36.6654 19.9987 36.6654C10.794 36.6654 3.33203 29.2034 3.33203 19.9987C3.33203 10.794 10.794 3.33203 19.9987 3.33203C29.2034 3.33203 36.6654 10.794 36.6654 19.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4"/></svg></div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Status de pagamento</p>
+                        <div className="flex items-center gap-[6px]">
+                          <div className="size-[8px] rounded-full bg-[#17b26a]" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Pagamento confirmado</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M26.6654 3.33203V9.9987M13.332 3.33203L13.332 9.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 20.0013C35 13.7159 35 10.5732 33.0474 8.62059C31.0948 6.66797 27.9521 6.66797 21.6667 6.66797L18.3333 6.66797C12.0479 6.66797 8.90524 6.66797 6.95262 8.62059C5 10.5732 5 13.7159 5 20.0013L5 23.3346C5 29.62 5 32.7627 6.95262 34.7153C8.90524 36.668 12.0479 36.668 18.3333 36.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 16.668L35 16.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M30.4465 31.1672L28.3346 29.9987V27.11M35.0013 29.9987C35.0013 33.6806 32.0165 36.6654 28.3346 36.6654C24.6527 36.6654 21.668 33.6806 21.668 29.9987C21.668 26.3168 24.6527 23.332 28.3346 23.332C32.0165 23.332 35.0013 26.3168 35.0013 29.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Data / hora da atividade</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">18/02/2026, 08:00 AM (GMT+5:30)</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M19.9987 36.6654C29.2034 36.6654 36.6654 29.2034 36.6654 19.9987C36.6654 10.794 29.2034 3.33203 19.9987 3.33203C10.794 3.33203 3.33203 10.794 3.33203 19.9987C3.33203 29.2034 10.794 36.6654 19.9987 36.6654Z" stroke="currentColor" strokeWidth="3"/><path d="M20.0117 17.5127C18.631 17.5127 17.5117 18.6319 17.5117 20.0127C17.5117 21.3934 18.631 22.5127 20.0117 22.5127C21.3924 22.5127 22.5117 21.3934 22.5117 20.0127C22.5117 18.6319 21.3924 17.5127 20.0117 17.5127ZM20.0117 17.5127V11.6641M25.0232 25.0321L21.7755 21.7844" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Duração da atividade</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">08:00 AM - 11:00 AM (2h)</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer actions */}
+              <div className="shrink-0 flex items-center justify-between px-[24px] py-[24px] border-t border-[#eaecf0] bg-[#fafbfc]">
+                <button onClick={handleQrDrawerCancel} disabled={isQrDrawerClosing} className={`flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors mr-[12px] ${isQrDrawerClosing ? "cursor-default" : "cursor-pointer"}`}>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Cancelar</p>
+                </button>
+                <button
+                  onClick={() => {
+                    if (isConfirmingCheckIn) return;
+                    setIsConfirmingCheckIn(true);
+                    setTimeout(() => {
+                      setIsConfirmingCheckIn(false);
+                      setQrScenario(3);
+                    }, 2000);
+                  }}
+                  disabled={isConfirmingCheckIn || isQrDrawerClosing}
+                  className={`flex-1 h-[48px] flex items-center justify-center gap-[8px] rounded-[8px] bg-[#0b5ed7] transition-colors ${isConfirmingCheckIn || isQrDrawerClosing ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-[#0a4fb3]"}`}
+                >
+                  {isConfirmingCheckIn && (
+                    <svg className="animate-spin shrink-0 size-[20px] text-white" fill="none" viewBox="0 0 20 20">
+                      <circle className="opacity-25" cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" />
+                      <path className="opacity-75" fill="currentColor" d="M10 2a8 8 0 018 8h-2a6 6 0 00-6-6V2z" />
+                    </svg>
+                  )}
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">
+                    {isConfirmingCheckIn ? "Carregando" : "Confirmar check-in"}
+                  </p>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Scenario: checkin-success */}
+        {QR_SCENARIOS[qrScenario] === "checkin-success" && (
+          <>
+            {/* Scanner background */}
+            <div className="flex-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
+            </div>
+
+            {/* Right panel - success */}
+            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
+              {/* Content */}
+              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+                {/* Success icon with halo */}
+                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                  <div className="absolute inset-0 rounded-full bg-[#ecfdf3] border border-[#abf0c1]" />
+                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="relative size-[62px] rounded-full bg-[#079455] flex items-center justify-center">
+                    <svg className="size-[34px]" fill="none" viewBox="0 0 20 20">
+                      <circle cx="10" cy="10" r="8.5" stroke="white" strokeWidth="1.875" />
+                      <path d="M7 10.5l2 2 4-4" stroke="white" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Text */}
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">Check-in realizado com sucesso</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">O check-in de João Silva foi feito hoje, as 07:42.</p>
+
+                {/* Participant card */}
+                <div className="bg-[#fafafa] border border-[#f5f5f5] rounded-[16px] p-[16px] mt-[24px] w-full max-w-[480px]">
+                  <div className="flex items-center gap-[12px]">
+                    <div className="relative size-[40px] shrink-0">
+                      <svg className="absolute inset-0 size-full" fill="none" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19.5" fill="#EDF0FF" stroke="#D5DAFF"/></svg>
+                      <p className="absolute inset-0 flex items-center justify-center font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0b5ed7]">JS</p>
+                    </div>
+                    <div>
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] leading-[normal]">João Silva</p>
+                      <div className="flex items-center gap-[8px] mt-[2px]">
+                        <div className="flex items-center gap-[6px]">
+                          <svg className="size-[16px] text-[#717680] rotate-180 scale-x-[-1]" fill="none" viewBox="0 0 17.3334 17.3334">
+                            <path d="M11.1667 0.750024C12.3288 0.750024 12.9098 0.750024 13.3894 0.86515C14.9129 1.23092 16.1025 2.42046 16.4682 3.944C16.5834 4.42353 16.5834 5.00459 16.5834 6.16669M6.16669 0.750024C5.00459 0.750024 4.42353 0.750024 3.944 0.86515C2.42047 1.23092 1.23092 2.42046 0.86515 3.944C0.750025 4.42353 0.750025 5.00459 0.750025 6.16669M6.16669 16.5834C5.00459 16.5834 4.42353 16.5834 3.944 16.4682C2.42047 16.1025 1.23092 14.9129 0.86515 13.3894C0.750025 12.9098 0.750025 12.3288 0.750025 11.1667M11.1667 16.5834C12.3288 16.5834 12.9098 16.5834 13.3894 16.4682C14.9129 16.1025 16.1025 14.9129 16.4682 13.3894C16.5834 12.9098 16.5834 12.3288 16.5834 11.1667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M11.1667 10.7501C11.1667 12.1308 10.0474 13.2501 8.66669 13.2501C7.28598 13.2501 6.16669 12.1308 6.16669 10.7501C6.16669 9.3694 7.28598 8.25011 8.66669 8.25011C10.0474 8.25011 11.1667 9.3694 11.1667 10.7501Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M12.8334 4.08344C12.8334 6.38463 10.9679 8.25011 8.66669 8.25011C6.3655 8.25011 4.50002 6.38463 4.50002 4.08344" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">ID: #8823</p>
+                        </div>
+                        <div className="flex items-center gap-[6px]">
+                          <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 48 48">
+                            <path d="M39.4171 15.3008C39.7314 14.9865 40.2729 14.9544 40.5915 15.3019C42.4569 17.3365 43.4892 18.843 43.8292 20.5115C44.0248 21.4713 44.0526 22.4485 43.9114 23.3988C43.5297 25.9673 41.4488 28.0482 37.2869 32.2102L32.2102 37.2869C28.0482 41.4488 25.9673 43.5297 23.3988 43.9114C22.4485 44.0526 21.4713 44.0248 20.5115 43.8292C18.8432 43.4893 17.3368 42.4571 15.3025 40.5921C14.9547 40.2732 14.9868 39.731 15.3015 39.4163C17.0539 37.664 16.9706 34.7396 15.1155 32.8845C13.2604 31.0294 10.336 30.9461 8.58367 32.6985C8.26902 33.0132 7.72682 33.0453 7.40791 32.6975C5.54291 30.6632 4.51072 29.1568 4.17077 27.4885C3.97518 26.5287 3.94736 25.5515 4.08857 24.6012C4.47025 22.0327 6.55121 19.9518 10.7131 15.7898L15.7898 10.7131C19.9518 6.55121 22.0327 4.47025 24.6012 4.08857C25.5515 3.94736 26.5287 3.97518 27.4885 4.17078C29.157 4.51076 30.6635 5.54315 32.6981 7.40853C33.0456 7.72709 33.0135 8.26864 32.6993 8.58293C30.9469 10.3353 31.0301 13.2597 32.8852 15.1148C34.7403 16.9699 37.6647 17.0531 39.4171 15.3008Z" stroke="currentColor" strokeWidth="4" strokeLinejoin="round"/>
+                            <path d="M38 30L18 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Tarifa: Infantil</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer actions */}
+              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+                <button
+                  onClick={() => setShowQrScanner(false)}
+                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                >
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                </button>
+                <button
+                  onClick={() => setQrScenario(1)}
+                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                >
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Realizar novo check-in</p>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Scenario: reservation-cancelled */}
+        {QR_SCENARIOS[qrScenario] === "reservation-cancelled" && (
+          <>
+            <div className="flex-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
+            </div>
+
+            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
+              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+                {/* Error icon with halo */}
+                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                  <div className="absolute inset-0 rounded-full bg-[#fef3f2] border border-[#fecdca]" />
+                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="relative size-[62px] rounded-full bg-[#d92d20] flex items-center justify-center">
+                    <svg className="size-[34px]" fill="none" viewBox="0 0 20 20">
+                      <path d="M6 6l8 8M14 6l-8 8" stroke="white" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">Reserva cancelada</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">Esta reserva foi cancelada em 22/02. o Check-in não pode ser efetuado.</p>
+              </div>
+
+              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+                <button
+                  onClick={() => setShowQrScanner(false)}
+                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                >
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                </button>
+                <button
+                  onClick={() => setQrScenario(1)}
+                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                >
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Realizar novo check-in</p>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Scenario: qr-not-recognized */}
+        {QR_SCENARIOS[qrScenario] === "qr-not-recognized" && (
+          <>
+            <div className="flex-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
+            </div>
+
+            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
+              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+                {/* Gray icon with halo */}
+                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                  <div className="absolute inset-0 rounded-full bg-[#f9fafb] border border-[#eaecf0]" />
+                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="relative size-[62px] rounded-full bg-[#535862] flex items-center justify-center">
+                    <svg className="size-[34px]" fill="none" viewBox="0 0 48 48">
+                      <path d="M16 8H18C18.5304 8 19.0391 8.21071 19.4142 8.58579C19.7893 8.96086 20 9.46957 20 10V12M19.406 19.422C19.0317 19.7922 18.5265 19.9999 18 20H10C9.46957 20 8.96086 19.7893 8.58579 19.4142C8.21071 19.0391 8 18.5304 8 18V10C8 9.45 8.22 8.952 8.58 8.59M14 34V34.02M14 14V14.02M34 14V14.02M40 28V28.02M28 28V34M28 40H34M6 6L42 42M28 10C28 9.46957 28.2107 8.96086 28.5858 8.58579C28.9609 8.21071 29.4696 8 30 8H38C38.5304 8 39.0391 8.21071 39.4142 8.58579C39.7893 8.96086 40 9.46957 40 10V18C40 18.5304 39.7893 19.0391 39.4142 19.4142C39.0391 19.7893 38.5304 20 38 20H30C29.4696 20 28.9609 19.7893 28.5858 19.4142C28.2107 19.0391 28 18.5304 28 18V10ZM8 30C8 29.4696 8.21071 28.9609 8.58579 28.5858C8.96086 28.2107 9.46957 28 10 28H18C18.5304 28 19.0391 28.2107 19.4142 28.5858C19.7893 28.9609 20 29.4696 20 30V38C20 38.5304 19.7893 39.0391 19.4142 39.4142C19.0391 39.7893 18.5304 40 18 40H10C9.46957 40 8.96086 39.7893 8.58579 39.4142C8.21071 39.0391 8 38.5304 8 38V30Z" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">QR code não reconhecido</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">Este código não pertence a Retrilhar ou está corrompido.</p>
+              </div>
+
+              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+                <button
+                  onClick={() => setShowQrScanner(false)}
+                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                >
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                </button>
+                <button
+                  onClick={() => setQrScenario(1)}
+                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                >
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Tentar novamente</p>
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     );
@@ -3602,9 +4025,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     </button>
                     {/* Name cell */}
                     <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
-                      <div className="flex flex-col gap-[2px] items-start min-w-0 flex-1 overflow-hidden">
+                      <div className="flex flex-col gap-0 items-start min-w-0 flex-1 overflow-hidden">
                         <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name}</p>
-                        <div className="flex gap-[4px] items-center min-w-0 overflow-hidden">
+                        <div className={`flex gap-[4px] items-center min-w-0 overflow-hidden ${isGroup && r.participants[0].id === p.id ? "mt-[-2px]" : ""}`}>
                           {isGroup && r.participants[0].id === p.id && (
                             <>
                               <span className="size-[5px] rounded-full bg-[#0b5ed7] shrink-0" />
@@ -3622,32 +4045,8 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     <ParticipantTariffCell tariffType={p.tariffType} />
                     {/* Vertical divider */}
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                    {/* Reservation status badge */}
-                    <div className="flex items-center justify-center shrink-0" style={{ width: "130px", padding: "8px 12px" }}>
-                      <ParticipantAttributeBadge
-                        category="status"
-                        variant={
-                          isCancelled ? "cancelled"
-                          : isExpired ? "alert"
-                          : isNoShow || isIndividualAbsent ? "no-show"
-                          : isPerformed ? "check-in-done"
-                          : isDone ? "check-in-done"
-                          : r.status === "AwaitingPayment" ? "awaiting-payment"
-                          : "pending"
-                        }
-                        tooltipLabel={
-                          isCancelled ? "Reserva cancelada — Motivo registrado no histórico"
-                          : isExpired ? "Reserva expirada — Prazo de pagamento excedido"
-                          : isNoShow ? "Não compareceu — Vaga retida, sem estorno automático"
-                          : isIndividualAbsent ? "Cancelado individualmente — Reembolso parcial processado"
-                          : isPerformed ? "Atividade realizada — Concluída com sucesso"
-                          : isDone ? "Check-in realizado — Participante presente"
-                          : r.status === "AwaitingPayment" ? "Agendada — Aguardando confirmação de pagamento"
-                          : "Confirmada — Aguardando check-in no dia"
-                        }
-                        showLabel
-                      />
-                    </div>
+                    {/* Reservation status */}
+                    <ParticipantReservationStatusCell reservation={r} participant={p} />
                     {/* Vertical divider */}
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                     {/* Badges — atributos do participante */}
@@ -3693,7 +4092,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                                 )}
                               </button>
                               <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
-                                <div className="flex flex-col gap-[2px] items-start min-w-0 flex-1 overflow-hidden">
+                                <div className="flex flex-col gap-0 items-start min-w-0 flex-1 overflow-hidden">
                                   <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name}</p>
                                   <div className="flex gap-[4px] items-center">
                                     <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)} · {p.age} anos</p>
@@ -3703,32 +4102,8 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                               <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                               <ParticipantTariffCell tariffType={p.tariffType} />
                               <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                              {/* Reservation status badge */}
-                              <div className="flex items-center justify-center shrink-0" style={{ width: "130px", padding: "8px 12px" }}>
-                                <ParticipantAttributeBadge
-                                  category="status"
-                                  variant={
-                                    isCancelled ? "cancelled"
-                                    : isExpired ? "cancelled"
-                                    : isNoShow || isIndividualAbsent ? "no-show"
-                                    : isPerformed ? "check-in-done"
-                                    : isDone ? "check-in-done"
-                                    : r.status === "AwaitingPayment" ? "awaiting-payment"
-                                    : "pending"
-                                  }
-                                  tooltipLabel={
-                                    isCancelled ? "Status — Reserva cancelada"
-                                    : isExpired ? "Status — Reserva expirada"
-                                    : isNoShow ? "Status — Não compareceu"
-                                    : isIndividualAbsent ? "Status — Cancelado individualmente"
-                                    : isPerformed ? "Status — Atividade realizada"
-                                    : isDone ? "Status — Check-in realizado"
-                                    : r.status === "AwaitingPayment" ? "Status — Aguardando pagamento"
-                                    : "Status — Confirmada, aguardando check-in"
-                                  }
-                                  showLabel
-                                />
-                              </div>
+                              {/* Reservation status */}
+                              <ParticipantReservationStatusCell reservation={r} participant={p} />
                               <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                               <div className="flex flex-1 items-center min-w-0" style={{ padding: "8px 12px" }}>
                                 <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} />

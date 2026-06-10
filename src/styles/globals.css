@@ -10,13 +10,36 @@
 }
 
 @keyframes scanLine {
-  0%, 100% {
-    top: 10%;
-    opacity: 0.6;
+  0% {
+    top: 0%;
+    opacity: 0;
   }
-  50% {
-    top: 85%;
+  5% {
     opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes scanGlow {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
   }
 }
 

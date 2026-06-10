@@ -2681,7 +2681,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [isQrInstructionEntering, setIsQrInstructionEntering] = useState(false);
   const qrDrawerCloseTimeoutRef = useRef<number | null>(null);
   const qrInstructionEnterTimeoutRef = useRef<number | null>(null);
-  const QR_SCENARIOS = ["camera-blocked", "scanning", "valid-reservation", "checkin-success", "reservation-cancelled", "qr-not-recognized"] as const;
+  const QR_SCENARIOS = ["camera-blocked", "scanning", "valid-reservation", "checkin-success", "reservation-cancelled", "qr-not-recognized", "wrong-date"] as const;
 
   useEffect(() => {
     if (!showQrScanner) setSearchBarHidden(false);
@@ -3122,12 +3122,17 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[420px] rounded-[8px]">
               {/* Clear cutout background */}
               <div className="absolute inset-0 bg-black/50 backdrop-blur-none mix-blend-difference rounded-[8px]" style={{ backdropFilter: "none" }} />
-              {/* Corner brackets + scan line from Figma */}
+              {/* Corner brackets from Figma */}
               <svg className="absolute inset-[-8px]" style={{ width: "calc(100% + 16px)", height: "calc(100% + 16px)" }} viewBox="0 0 1080 1080" fill="none">
                 <path d="M0 33.75C0 24.7989 3.55579 16.2145 9.88515 9.88515C16.2145 3.55579 24.7989 0 33.75 0L236.25 0C245.201 0 253.786 3.55579 260.115 9.88515C266.444 16.2145 270 24.7989 270 33.75C270 42.7011 266.444 51.2855 260.115 57.6149C253.786 63.9442 245.201 67.5 236.25 67.5H109.5C86.304 67.5 67.5 86.304 67.5 109.5V236.25C67.5 245.201 63.9442 253.786 57.6149 260.115C51.2855 266.444 42.7011 270 33.75 270C24.7989 270 16.2145 266.444 9.88515 260.115C3.55579 253.786 0 245.201 0 236.25V33.75ZM810 33.75C810 24.7989 813.556 16.2145 819.885 9.88515C826.215 3.55579 834.799 0 843.75 0L1046.25 0C1055.2 0 1063.79 3.55579 1070.11 9.88515C1076.44 16.2145 1080 24.7989 1080 33.75V236.25C1080 245.201 1076.44 253.786 1070.11 260.115C1063.79 266.444 1055.2 270 1046.25 270C1037.3 270 1028.71 266.444 1022.39 260.115C1016.06 253.786 1012.5 245.201 1012.5 236.25V109.5C1012.5 86.304 993.696 67.5 970.5 67.5H843.75C834.799 67.5 826.215 63.9442 819.885 57.6149C813.556 51.2855 810 42.7011 810 33.75ZM33.75 810C42.7011 810 51.2855 813.556 57.6149 819.885C63.9442 826.214 67.5 834.799 67.5 843.75V970.5C67.5 993.696 86.304 1012.5 109.5 1012.5H236.25C245.201 1012.5 253.786 1016.06 260.115 1022.39C266.444 1028.71 270 1037.3 270 1046.25C270 1055.2 266.444 1063.79 260.115 1070.11C253.786 1076.44 245.201 1080 236.25 1080H33.75C24.7989 1080 16.2145 1076.44 9.88515 1070.11C3.55579 1063.79 0 1055.2 0 1046.25V843.75C0 834.799 3.55579 826.214 9.88515 819.885C16.2145 813.556 24.7989 810 33.75 810ZM1046.25 810C1055.2 810 1063.79 813.556 1070.11 819.885C1076.44 826.214 1080 834.799 1080 843.75V1046.25C1080 1055.2 1076.44 1063.79 1070.11 1070.11C1063.79 1076.44 1055.2 1080 1046.25 1080H843.75C834.799 1080 826.215 1076.44 819.885 1070.11C813.556 1063.79 810 1055.2 810 1046.25C810 1037.3 813.556 1028.71 819.885 1022.39C826.215 1016.06 834.799 1012.5 843.75 1012.5H970.5C993.696 1012.5 1012.5 993.696 1012.5 970.5V843.75C1012.5 834.799 1016.06 826.214 1022.39 819.885C1028.71 813.556 1037.3 810 1046.25 810Z" fill="#FAC515" />
               </svg>
-              {/* Scan line - animated */}
-              <div className="absolute left-[12px] right-[12px] h-[8px] rounded-full bg-[#FAC515] animate-[scanLine_2.5s_ease-in-out_infinite]" style={{ top: "50%" }} />
+              {/* Scan area with overflow clip for gradient/line */}
+              <div className="absolute inset-0 overflow-hidden rounded-[8px]">
+                {/* Scan sweep - gradient band trailing behind the line */}
+                <div className="absolute left-0 right-0 h-[160px] animate-[scanGlow_2.8s_linear_infinite] pointer-events-none" style={{ top: "50%", transform: "translateY(-100%)", background: "linear-gradient(to bottom, transparent 0%, rgba(250,197,21,0.08) 30%, rgba(250,197,21,0.2) 60%, rgba(250,197,21,0.35) 85%, rgba(250,197,21,0.5) 100%)" }} />
+                {/* Scan line */}
+                <div className="absolute left-0 right-0 h-[2px] bg-[#FAC515] animate-[scanLine_2.8s_linear_infinite] shadow-[0_0_16px_4px_rgba(250,197,21,0.5),0_0_4px_1px_rgba(250,197,21,0.8)]" style={{ top: "50%" }} />
+              </div>
             </div>
 
             {/* Instruction panel - right of scan area */}
@@ -3172,7 +3177,10 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                 <svg className="absolute inset-[-8px]" style={{ width: "calc(100% + 16px)", height: "calc(100% + 16px)" }} viewBox="0 0 1080 1080" fill="none">
                   <path d="M0 33.75C0 24.7989 3.55579 16.2145 9.88515 9.88515C16.2145 3.55579 24.7989 0 33.75 0L236.25 0C245.201 0 253.786 3.55579 260.115 9.88515C266.444 16.2145 270 24.7989 270 33.75C270 42.7011 266.444 51.2855 260.115 57.6149C253.786 63.9442 245.201 67.5 236.25 67.5H109.5C86.304 67.5 67.5 86.304 67.5 109.5V236.25C67.5 245.201 63.9442 253.786 57.6149 260.115C51.2855 266.444 42.7011 270 33.75 270C24.7989 270 16.2145 266.444 9.88515 260.115C3.55579 253.786 0 245.201 0 236.25V33.75ZM810 33.75C810 24.7989 813.556 16.2145 819.885 9.88515C826.215 3.55579 834.799 0 843.75 0L1046.25 0C1055.2 0 1063.79 3.55579 1070.11 9.88515C1076.44 16.2145 1080 24.7989 1080 33.75V236.25C1080 245.201 1076.44 253.786 1070.11 260.115C1063.79 266.444 1055.2 270 1046.25 270C1037.3 270 1028.71 266.444 1022.39 260.115C1016.06 253.786 1012.5 245.201 1012.5 236.25V109.5C1012.5 86.304 993.696 67.5 970.5 67.5H843.75C834.799 67.5 826.215 63.9442 819.885 57.6149C813.556 51.2855 810 42.7011 810 33.75ZM33.75 810C42.7011 810 51.2855 813.556 57.6149 819.885C63.9442 826.214 67.5 834.799 67.5 843.75V970.5C67.5 993.696 86.304 1012.5 109.5 1012.5H236.25C245.201 1012.5 253.786 1016.06 260.115 1022.39C266.444 1028.71 270 1037.3 270 1046.25C270 1055.2 266.444 1063.79 260.115 1070.11C253.786 1076.44 245.201 1080 236.25 1080H33.75C24.7989 1080 16.2145 1076.44 9.88515 1070.11C3.55579 1063.79 0 1055.2 0 1046.25V843.75C0 834.799 3.55579 826.214 9.88515 819.885C16.2145 813.556 24.7989 810 33.75 810ZM1046.25 810C1055.2 810 1063.79 813.556 1070.11 819.885C1076.44 826.214 1080 834.799 1080 843.75V1046.25C1080 1055.2 1076.44 1063.79 1070.11 1070.11C1063.79 1076.44 1055.2 1080 1046.25 1080H843.75C834.799 1080 826.215 1076.44 819.885 1070.11C813.556 1063.79 810 1055.2 810 1046.25C810 1037.3 813.556 1028.71 819.885 1022.39C826.215 1016.06 834.799 1012.5 843.75 1012.5H970.5C993.696 1012.5 1012.5 993.696 1012.5 970.5V843.75C1012.5 834.799 1016.06 826.214 1022.39 819.885C1028.71 813.556 1037.3 810 1046.25 810Z" fill="#FAC515" />
                 </svg>
-                <div className="absolute left-[12px] right-[12px] h-[8px] rounded-full bg-[#FAC515] animate-[scanLine_2.5s_ease-in-out_infinite]" style={{ top: "50%" }} />
+                <div className="absolute inset-0 overflow-hidden rounded-[8px]">
+                  <div className="absolute left-0 right-0 h-[160px] animate-[scanGlow_2.8s_linear_infinite] pointer-events-none" style={{ top: "50%", transform: "translateY(-100%)", background: "linear-gradient(to bottom, transparent 0%, rgba(250,197,21,0.08) 30%, rgba(250,197,21,0.2) 60%, rgba(250,197,21,0.35) 85%, rgba(250,197,21,0.5) 100%)" }} />
+                  <div className="absolute left-0 right-0 h-[2px] bg-[#FAC515] animate-[scanLine_2.8s_linear_infinite] shadow-[0_0_16px_4px_rgba(250,197,21,0.5),0_0_4px_1px_rgba(250,197,21,0.8)]" style={{ top: "50%" }} />
+                </div>
               </div>
             </div>
 
@@ -3215,12 +3223,12 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                   <div className="h-px bg-[#f5f5f5] -mt-[4px]" />
 
                   {/* Info grid */}
-                  <div className="grid grid-cols-2 gap-[12px]">
+                  <div className="grid grid-cols-2 gap-[16px]">
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
                         <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M21.669 3.33203C23.5089 3.33203 25.0004 4.88413 25.0004 6.79875C25.0004 8.38062 25.0603 9.78828 23.782 10.952C19.5978 14.7609 17.5057 16.6654 15.0004 16.6654C12.4952 16.6654 10.4031 14.7609 6.21888 10.952C4.94044 9.78819 5.00044 8.38037 5.00044 6.79839C5.00044 4.88397 6.49183 3.33203 8.33155 3.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 23.332V29.165C15 33.3074 18.3581 36.6655 22.5006 36.6655C26.643 36.6655 30.0011 33.3074 30.0011 29.165V26.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M23.3346 11.668L21.1643 17.0939C20.5873 18.5363 20.2988 19.2575 19.8157 19.85C19.3326 20.4426 18.6844 20.8705 17.3878 21.7262L14.9506 23.3346L12.556 21.7219C11.2883 20.8681 10.6544 20.4412 10.1816 19.8557C9.70884 19.2702 9.42502 18.5606 8.85738 17.1415L6.66797 11.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 21.668C35 24.4294 32.7614 26.668 30 26.668C27.2386 26.668 25 24.4294 25 21.668C25 18.9065 27.2386 16.668 30 16.668C32.7614 16.668 35 18.9065 35 21.668Z" stroke="currentColor" strokeWidth="3"/><path d="M30.012 21.668L29.9971 21.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Alertas de Saúde</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Sim - alergias</p>
                       </div>
@@ -3229,7 +3237,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
                         <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M3.33203 28.3359H36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M20 11.6667C20 11.6667 22.5 9.94397 22.5 7.81892C22.5 4.06036 17.5 4.06036 17.5 7.81892C17.5 9.94397 20 11.6667 20 11.6667Z" stroke="currentColor" strokeWidth="3" strokeLinejoin="round"/><path d="M5 28.3359L6.03545 32.4777C6.40642 33.9616 7.7397 35.0026 9.26925 35.0026H30.7307C32.2603 35.0026 33.5936 33.9616 33.9646 32.4777L35 28.3359" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M34.1654 24.168C33.3348 17.1294 27.3089 11.668 19.9987 11.668C12.6885 11.668 6.6626 17.1294 5.83203 24.168" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
                       </div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Restrições alimentares</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Sim - alergias</p>
                       </div>
@@ -3238,7 +3246,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
                         <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M31.6667 14.9987V13.029C31.6667 10.2069 31.6667 8.7959 31.2463 7.66894C30.5706 5.85719 29.1415 4.42811 27.3298 3.75237C26.2028 3.33203 24.7918 3.33203 21.9697 3.33203C17.0311 3.33203 14.5618 3.33203 12.5896 4.06762C9.41904 5.25017 6.91814 7.75107 5.73559 10.9216C5 12.8938 5 15.3631 5 20.3017L5 24.5442C5 29.6598 5 32.2176 6.32972 33.9939C6.71071 34.5028 7.16254 34.9546 7.67148 35.3356C9.44779 36.6654 12.0056 36.6654 17.1212 36.6654H18.3333C20.2829 36.6654 24.1667 36.6654 24.1667 36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.332 23.8889H19.7326C20.8352 23.8889 21.3864 23.8889 21.8295 24.1793C22.2725 24.4697 22.519 24.9927 23.0121 26.0386L25.6654 31.6667L29.332 20L31.9853 25.6281C32.4783 26.674 32.7249 27.197 33.1679 27.4874C33.6109 27.7778 34.1622 27.7778 35.2648 27.7778H36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 19.9987C5 16.9304 7.48731 14.4431 10.5556 14.4431L12.4074 14.4431C13.2685 14.4431 13.699 14.4431 14.0523 14.3485C15.0109 14.0916 15.7596 13.3429 16.0165 12.3843C16.1111 12.0311 16.1111 11.6005 16.1111 10.7394V8.88759C16.1111 5.81934 18.5984 3.33203 21.6667 3.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Necessidades especiais</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Não</p>
                       </div>
@@ -3247,7 +3255,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
                         <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M20 7.5V10M20 10V12.5M20 10H22.5M20 10H17.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M14.3083 4.30834C13.332 5.28465 13.332 6.856 13.332 9.9987C13.332 13.1414 13.332 14.7127 14.3083 15.6891C15.2847 16.6654 16.856 16.6654 19.9987 16.6654C23.1414 16.6654 24.7127 16.6654 25.6891 15.6891C26.6654 14.7127 26.6654 13.1414 26.6654 9.9987C26.6654 6.856 26.6654 5.28465 25.6891 4.30834C24.7127 3.33203 23.1414 3.33203 19.9987 3.33203C16.856 3.33203 15.2847 3.33203 14.3083 4.30834Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 36.6654V19.9499C6.66797 14.4341 6.66797 11.6762 8.37651 9.96263C9.46239 8.87358 10.9689 8.47668 13.3346 8.33203M33.3346 36.6654V19.9499C33.3346 14.4341 33.3346 11.6762 31.6261 9.96263C30.5402 8.87358 29.0337 8.47668 26.668 8.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 36.668H35" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.832 36.6654V32.4987C15.832 30.941 15.832 30.1622 16.167 29.582C16.3864 29.202 16.702 28.8864 17.082 28.667C17.6622 28.332 18.441 28.332 19.9987 28.332C21.5564 28.332 22.3352 28.332 22.9154 28.667C23.2954 28.8864 23.611 29.202 23.8304 29.582C24.1654 30.1622 24.1654 30.941 24.1654 32.4987V36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M13.347 21.668H13.332M19.9987 21.668H19.9838M26.6673 21.668H26.6523" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Possui plano de saúde</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Sim</p>
                       </div>
@@ -3259,7 +3267,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
                       <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M24.9987 12.5013C24.9987 7.89893 21.2677 4.16797 16.6654 4.16797C12.063 4.16797 8.33203 7.89893 8.33203 12.5013C8.33203 17.1037 12.063 20.8346 16.6654 20.8346C21.2677 20.8346 24.9987 17.1037 24.9987 12.5013Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M34.9987 35.8346L32.4987 33.3346M33.332 29.168C33.332 26.4065 31.0935 24.168 28.332 24.168C25.5706 24.168 23.332 26.4065 23.332 29.168C23.332 31.9294 25.5706 34.168 28.332 34.168C31.0935 34.168 33.332 31.9294 33.332 29.168Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 32.5026C5 26.0593 10.2233 20.8359 16.6667 20.8359C18.456 20.8359 20.1512 21.2388 21.6667 21.9587" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </div>
-                    <div>
+                    <div className="flex flex-col gap-[4px]">
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Observações adicionais</p>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">ATENÇÃO: esse participante é alérgico a amendoim e frutos do mar.</p>
                     </div>
@@ -3284,17 +3292,17 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                   <div className="h-px bg-[#f5f5f5]" />
 
                   {/* Info rows */}
-                  <div className="grid grid-cols-2 gap-[12px]">
+                  <div className="grid grid-cols-2 gap-[16px]">
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M13.332 28.332L26.6654 28.332" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.332 21.668H19.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M21.668 4.16536V4.9987C21.668 9.71274 21.668 12.0698 23.1324 13.5342C24.5969 14.9987 26.9539 14.9987 31.668 14.9987L32.5013 14.9987M33.3346 17.7601V23.332C33.3346 29.6174 33.3346 32.7601 31.382 34.7127C29.4294 36.6654 26.2867 36.6654 20.0013 36.6654C13.7159 36.6654 10.5732 36.6654 8.62059 34.7127C6.66797 32.7601 6.66797 29.6174 6.66797 23.332L6.66797 15.7584C6.66797 10.3501 6.66797 7.64588 8.14476 5.81425C8.4431 5.44422 8.78016 5.10716 9.15019 4.80882C10.9818 3.33203 13.686 3.33203 19.0944 3.33203C20.2703 3.33203 20.8582 3.33203 21.3966 3.52205C21.5086 3.56156 21.6184 3.60704 21.7255 3.65827C22.2406 3.90462 22.6563 4.32036 23.4878 5.15184L31.382 13.0461C32.3454 14.0095 32.8272 14.4912 33.0809 15.1038C33.3346 15.7164 33.3346 16.3976 33.3346 17.7601Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">ID do pedido</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">#RE-9920</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M36.6654 19.9987C36.6654 29.2034 29.2034 36.6654 19.9987 36.6654C10.794 36.6654 3.33203 29.2034 3.33203 19.9987C3.33203 10.794 10.794 3.33203 19.9987 3.33203C29.2034 3.33203 36.6654 10.794 36.6654 19.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4"/></svg></div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Status de pagamento</p>
                         <div className="flex items-center gap-[6px]">
                           <div className="size-[8px] rounded-full bg-[#17b26a]" />
@@ -3304,14 +3312,14 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                     </div>
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M26.6654 3.33203V9.9987M13.332 3.33203L13.332 9.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 20.0013C35 13.7159 35 10.5732 33.0474 8.62059C31.0948 6.66797 27.9521 6.66797 21.6667 6.66797L18.3333 6.66797C12.0479 6.66797 8.90524 6.66797 6.95262 8.62059C5 10.5732 5 13.7159 5 20.0013L5 23.3346C5 29.62 5 32.7627 6.95262 34.7153C8.90524 36.668 12.0479 36.668 18.3333 36.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 16.668L35 16.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M30.4465 31.1672L28.3346 29.9987V27.11M35.0013 29.9987C35.0013 33.6806 32.0165 36.6654 28.3346 36.6654C24.6527 36.6654 21.668 33.6806 21.668 29.9987C21.668 26.3168 24.6527 23.332 28.3346 23.332C32.0165 23.332 35.0013 26.3168 35.0013 29.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Data / hora da atividade</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">18/02/2026, 08:00 AM (GMT+5:30)</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M19.9987 36.6654C29.2034 36.6654 36.6654 29.2034 36.6654 19.9987C36.6654 10.794 29.2034 3.33203 19.9987 3.33203C10.794 3.33203 3.33203 10.794 3.33203 19.9987C3.33203 29.2034 10.794 36.6654 19.9987 36.6654Z" stroke="currentColor" strokeWidth="3"/><path d="M20.0117 17.5127C18.631 17.5127 17.5117 18.6319 17.5117 20.0127C17.5117 21.3934 18.631 22.5127 20.0117 22.5127C21.3924 22.5127 22.5117 21.3934 22.5117 20.0127C22.5117 18.6319 21.3924 17.5127 20.0117 17.5127ZM20.0117 17.5127V11.6641M25.0232 25.0321L21.7755 21.7844" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
-                      <div>
+                      <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Duração da atividade</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">08:00 AM - 11:00 AM (2h)</p>
                       </div>
@@ -3321,7 +3329,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               </div>
 
               {/* Footer actions */}
-              <div className="shrink-0 flex items-center justify-between px-[24px] py-[24px] border-t border-[#eaecf0] bg-[#fafbfc]">
+              <div className="shrink-0 h-[88px] flex items-center justify-between px-[24px] border-t border-[#eaecf0] bg-[#fafbfc]">
                 <button onClick={handleQrDrawerCancel} disabled={isQrDrawerClosing} className={`flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors mr-[12px] ${isQrDrawerClosing ? "cursor-default" : "cursor-pointer"}`}>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Cancelar</p>
                 </button>
@@ -3511,6 +3519,86 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
                   className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
                 >
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Tentar novamente</p>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Scenario: wrong-date */}
+        {QR_SCENARIOS[qrScenario] === "wrong-date" && (
+          <>
+            <div className="flex-1 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
+            </div>
+
+            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
+              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+                {/* Warning icon with halo */}
+                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                  <div className="absolute inset-0 rounded-full bg-[#fefdf0] border border-[#fedf89]" />
+                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="relative size-[62px] rounded-full bg-[#dc6803] flex items-center justify-center">
+                    <svg className="size-[34px]" fill="none" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="1.875" />
+                      <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">Reserva confirmada para outra data</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">O participante João Silva está reservado para a atividade do dia 26/02. A atividade de hoje é 24/02.</p>
+
+                {/* Participant card */}
+                <div className="border border-[#f5f5f5] rounded-[16px] p-[16px] mt-[24px] w-full max-w-[480px]">
+                  <div className="flex items-center gap-[12px]">
+                    <div className="relative size-[40px] shrink-0">
+                      <svg className="absolute inset-0 size-full" fill="none" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19.5" fill="#EDF0FF" stroke="#D5DAFF"/></svg>
+                      <p className="absolute inset-0 flex items-center justify-center font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0b5ed7]">JS</p>
+                    </div>
+                    <div>
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] leading-[normal]">João Silva</p>
+                      <div className="flex items-center gap-[8px] mt-[2px]">
+                        <div className="flex items-center gap-[6px]">
+                          <svg className="size-[16px] text-[#717680] rotate-180 scale-x-[-1]" fill="none" viewBox="0 0 17.3334 17.3334">
+                            <path d="M11.1667 0.750024C12.3288 0.750024 12.9098 0.750024 13.3894 0.86515C14.9129 1.23092 16.1025 2.42046 16.4682 3.944C16.5834 4.42353 16.5834 5.00459 16.5834 6.16669M6.16669 0.750024C5.00459 0.750024 4.42353 0.750024 3.944 0.86515C2.42047 1.23092 1.23092 2.42046 0.86515 3.944C0.750025 4.42353 0.750025 5.00459 0.750025 6.16669M6.16669 16.5834C5.00459 16.5834 4.42353 16.5834 3.944 16.4682C2.42047 16.1025 1.23092 14.9129 0.86515 13.3894C0.750025 12.9098 0.750025 12.3288 0.750025 11.1667M11.1667 16.5834C12.3288 16.5834 12.9098 16.5834 13.3894 16.4682C14.9129 16.1025 16.1025 14.9129 16.4682 13.3894C16.5834 12.9098 16.5834 12.3288 16.5834 11.1667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M11.1667 10.7501C11.1667 12.1308 10.0474 13.2501 8.66669 13.2501C7.28598 13.2501 6.16669 12.1308 6.16669 10.7501C6.16669 9.3694 7.28598 8.25011 8.66669 8.25011C10.0474 8.25011 11.1667 9.3694 11.1667 10.7501Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M12.8334 4.08344C12.8334 6.38463 10.9679 8.25011 8.66669 8.25011C6.3655 8.25011 4.50002 6.38463 4.50002 4.08344" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">ID: #8823</p>
+                        </div>
+                        <div className="flex items-center gap-[6px]">
+                          <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 48 48">
+                            <path d="M39.4171 15.3008C39.7314 14.9865 40.2729 14.9544 40.5915 15.3019C42.4569 17.3365 43.4892 18.843 43.8292 20.5115C44.0248 21.4713 44.0526 22.4485 43.9114 23.3988C43.5297 25.9673 41.4488 28.0482 37.2869 32.2102L32.2102 37.2869C28.0482 41.4488 25.9673 43.5297 23.3988 43.9114C22.4485 44.0526 21.4713 44.0248 20.5115 43.8292C18.8432 43.4893 17.3368 42.4571 15.3025 40.5921C14.9547 40.2732 14.9868 39.731 15.3015 39.4163C17.0539 37.664 16.9706 34.7396 15.1155 32.8845C13.2604 31.0294 10.336 30.9461 8.58367 32.6985C8.26902 33.0132 7.72682 33.0453 7.40791 32.6975C5.54291 30.6632 4.51072 29.1568 4.17077 27.4885C3.97518 26.5287 3.94736 25.5515 4.08857 24.6012C4.47025 22.0327 6.55121 19.9518 10.7131 15.7898L15.7898 10.7131C19.9518 6.55121 22.0327 4.47025 24.6012 4.08857C25.5515 3.94736 26.5287 3.97518 27.4885 4.17078C29.157 4.51076 30.6635 5.54315 32.6981 7.40853C33.0456 7.72709 33.0135 8.26864 32.6993 8.58293C30.9469 10.3353 31.0301 13.2597 32.8852 15.1148C34.7403 16.9699 37.6647 17.0531 39.4171 15.3008Z" stroke="currentColor" strokeWidth="4" strokeLinejoin="round"/>
+                            <path d="M38 30L18 10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Tarifa: Infantil</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer actions - 2 outline side by side + 1 primary full width */}
+              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+                <div className="flex gap-[12px]">
+                  <button
+                    onClick={() => setShowQrScanner(false)}
+                    className="flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                  >
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                  </button>
+                  <button className="flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Visualizar reserva</p>
+                  </button>
+                </div>
+                <button
+                  onClick={() => setQrScenario(1)}
+                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                >
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Realizar novo check-in</p>
                 </button>
               </div>
             </div>

@@ -2658,6 +2658,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showHeaderMoreActions, setShowHeaderMoreActions] = useState(false);
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [showMoreActionsStickyBar, setShowMoreActionsStickyBar] = useState(false);
   const [showBulkCheckInTip, setShowBulkCheckInTip] = useState(false);
@@ -2700,7 +2701,18 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
 
   // Sticky bulk bar: track when original bar scrolls out of view
   const bulkBarRef = useRef<HTMLDivElement>(null);
+  const headerMoreActionsRef = useRef<HTMLDivElement>(null);
   const [bulkBarHidden, setBulkBarHidden] = useState(false);
+  useEffect(() => {
+    if (!showHeaderMoreActions) return;
+    const handleMouseDown = (e: MouseEvent) => {
+      if (headerMoreActionsRef.current && !headerMoreActionsRef.current.contains(e.target as Node)) {
+        setShowHeaderMoreActions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, [showHeaderMoreActions]);
   useEffect(() => {
     const el = bulkBarRef.current;
     if (!el) return;
@@ -3606,70 +3618,41 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
 
   return (
     <div className="w-full" style={{ paddingBottom: "40px" }}>
-      {/* ── Sticky TopBar: search + sort + filters (+ bulk actions when selected) ── */}
+      {/* ── Sticky TopBar: search + QR check-in ── */}
       {searchBarHidden && (
         <div
           ref={stickyTopBarRef}
           className="sticky top-0 z-[11] bg-white shadow-[0px_2px_8px_0px_rgba(0,0,0,0.08)] animate-[fadeSlideDown_350ms_cubic-bezier(0.22,1,0.36,1)]"
           style={{ animationFillMode: "both" }}
         >
-          {/* Search + Sort + Filters row */}
-          <div className="flex gap-[12px] items-center" style={{ padding: "16px 32px" }}>
-            <div className="bg-white flex-1 min-w-0 relative rounded-[10px]">
-              <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[10px]" />
-              <div className="content-stretch flex gap-[8px] items-center px-[14px] py-[10px] relative size-full">
-                <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#717680" strokeWidth="1.5"/><path d="M14 14l3 3" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          {/* Search + QR row */}
+          <div className="content-stretch flex gap-[16px] items-center relative w-full" style={{ padding: "16px 32px" }}>
+            <div className="bg-white flex-1 min-w-0 relative rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]">
+              <div className="content-stretch flex gap-[12px] items-center px-[18px] py-[14px] relative size-full">
+                <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#9ca3af" strokeWidth="1.5"/><path d="M13.5 13.5l3.5 3.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Buscar por nome, ID do pedido, etc..."
-                  className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[14px] text-[#414651] placeholder:text-[#a4a7ae] bg-transparent"
+                  className="flex-1 font-['Helvetica_Neue:Light',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[15px] text-[#1f2937] placeholder:text-[#9ca3af] bg-transparent"
                 />
               </div>
             </div>
-            <div className="relative">
-              <button
-                onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
-                className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
-              >
-                <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
-                <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ordenar Por</p>
-                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-              </button>
-              {showSort && (
-                <div className="absolute bg-white border border-[#e9eaeb] border-solid mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.1)] w-[200px] z-20">
-                  {["Alfabética", "Número de pedido", "Data da reserva"].map((opt) => (
-                    <button key={opt} onClick={() => setShowSort(false)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[14px] py-[10px] text-[14px] text-[#414651] text-left transition-colors w-full">
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              <button
-                onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
-                className="bg-white relative rounded-[8px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-colors"
-              >
-                <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[8px]" />
-                <div className="content-stretch flex gap-[6px] items-center px-[14px] py-[10px] relative size-full">
-                  <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M2 3h12M4 8h8M6 13h4" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Filtros</p>
-                </div>
-              </button>
-              {showFilters && <FiltersDrawer onClose={() => setShowFilters(false)} />}
-            </div>
+            <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
+              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
+                <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
+              </div>
+            </button>
           </div>
         </div>
       )}
 
       {/* Header — Activity banner with pattern */}
-      <div className="relative w-full overflow-hidden rounded-b-[24px]" style={{ background: "linear-gradient(135deg, #0b5ed7 0%, #084fb7 100%)" }}>
+      <div className="relative w-full overflow-visible rounded-b-[24px]" style={{ background: "linear-gradient(135deg, #0b5ed7 0%, #084fb7 100%)" }}>
         {/* Topographic pattern SVG */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.08] pointer-events-none" preserveAspectRatio="xMidYMid slice">
+        <svg className="absolute inset-0 w-full h-full opacity-[0.08] pointer-events-none rounded-b-[24px] overflow-hidden" preserveAspectRatio="xMidYMid slice">
           <defs>
             <pattern id="topo-pattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
               <path d="M0,50 Q50,40 100,50 T200,50" fill="none" stroke="white" strokeWidth="1.5" opacity="0.6"/>
@@ -3685,14 +3668,14 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
         </svg>
 
         {/* Mountain silhouette decoration */}
-        <div className="absolute bottom-0 left-0 right-0 h-[60px] opacity-[0.12] pointer-events-none">
+        <div className="absolute bottom-0 left-0 right-0 h-[60px] opacity-[0.12] pointer-events-none rounded-b-[24px] overflow-hidden">
           <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1200 60">
             <path d="M0,60 L0,40 L150,15 L300,35 L450,10 L600,30 L750,20 L900,40 L1050,25 L1200,45 L1200,60 Z" fill="white"/>
           </svg>
         </div>
 
         <div className="flex flex-col gap-[12px] relative z-[1]" style={{ padding: "24px 32px 32px" }}>
-            {/* Row 1: Breadcrumb + Listas e Manifestos */}
+            {/* Row 1: Breadcrumb */}
             <div className="flex items-center justify-between">
             <div className="flex items-center gap-[8px]">
               <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white/60 hover:text-white transition-colors cursor-pointer">Agenda</button>
@@ -3701,11 +3684,6 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               <svg className="size-[12px] text-white/40" fill="none" viewBox="0 0 12 12"><path d="M4.5 2.5l4 4.5-4 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white">Detalhes da atividade</span>
             </div>
-            <button className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 relative rounded-[8px] shrink-0 transition-all duration-200">
-              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Listas e Manifestos</p>
-              </div>
-            </button>
             </div>
             {/* Title + capacity badge */}
             <div className="flex items-center gap-[12px]">
@@ -3806,8 +3784,44 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
               )}
             </div>
             <div className="flex gap-[16px] items-end shrink-0 self-end">
-              <button className="bg-white hover:bg-white/95 relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
-                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+              <div className="relative" ref={headerMoreActionsRef}>
+                <button
+                  onClick={() => setShowHeaderMoreActions(!showHeaderMoreActions)}
+                  className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 h-[40px] relative rounded-[8px] shrink-0 transition-all duration-200 cursor-pointer"
+                >
+                  <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Mais ações</p>
+                    <svg className={`size-[14px] text-white transition-transform duration-200 ${showHeaderMoreActions ? "rotate-180" : ""}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                </button>
+                {showHeaderMoreActions && (
+                  <div className="absolute bg-white border border-[#f5f5f5] border-solid mt-[4px] right-0 rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-max min-w-[220px] z-40 p-[6px] flex flex-col gap-[4px]">
+                    {[
+                      "Listas e Manifestos",
+                      "Editar atividade",
+                      "Exportar participantes",
+                      "Enviar comunicado",
+                    ].map((label) => (
+                      <button
+                        key={label}
+                        onClick={() => setShowHeaderMoreActions(false)}
+                        className="cursor-pointer flex gap-[12px] items-center h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#f8fafc] text-[#414651]"
+                      >
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#414651]">{label}</p>
+                      </button>
+                    ))}
+                    <div className="bg-[#f5f5f5] h-px w-full" />
+                    <button
+                      onClick={() => setShowHeaderMoreActions(false)}
+                      className="cursor-pointer flex gap-[12px] items-center h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#fef3f2] text-[#d92d20]"
+                    >
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#d92d20]">Cancelar atividade</p>
+                    </button>
+                  </div>
+                )}
+              </div>
+              <button className="bg-white hover:bg-white/95 h-[40px] relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
+                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Concluir atividade</p>
                 </div>
               </button>
@@ -3817,7 +3831,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
       </div>
 
       {/* Search bar */}
-      <div ref={searchBarRef} className="content-stretch flex gap-[10px] items-center mt-[24px] relative w-full" style={{ padding: "0 32px" }}>
+      <div ref={searchBarRef} className="content-stretch flex gap-[16px] items-center mt-[24px] relative w-full" style={{ padding: "0 32px" }}>
         <div className="bg-white flex-1 min-w-0 relative rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]">
           <div className="content-stretch flex gap-[12px] items-center px-[18px] py-[14px] relative size-full">
             <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#9ca3af" strokeWidth="1.5"/><path d="M13.5 13.5l3.5 3.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/></svg>
@@ -3830,14 +3844,9 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
             />
           </div>
         </div>
-        <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] h-[48px] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
-          <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
-            <svg className="size-[16px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="8" height="8" rx="1" />
-              <rect x="14" y="2" width="8" height="8" rx="1" />
-              <rect x="2" y="14" width="8" height="8" rx="1" />
-              <path d="M14 14h3v3h-3zM20 14v3h-3M14 20h3M20 20h0" />
-            </svg>
+        <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
+          <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
+            <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
             <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
           </div>
         </button>

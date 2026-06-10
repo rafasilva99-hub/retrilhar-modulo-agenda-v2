@@ -138,6 +138,7 @@ const getShortLabel = (
       if (variant === "awaiting-payment") return "Aguardando pagamento";
       if (variant === "partial-payment") return "Pagamento parcial";
       if (variant === "refunded") return "Reembolsado";
+      if (variant === "alert") return "Falha no pagamento";
       return "";
 
     case "status":
@@ -269,6 +270,10 @@ const getIconConfig = (category: AttributeBadgeCategory, variant: AttributeBadge
         color = "#717680";
         textColor = "text-[#717680]";
         iconPath = iconPaths["refresh-cw"];
+      } else if (variant === "alert") {
+        color = "#D92D20";
+        textColor = "text-[#D92D20]";
+        iconPaths_multi = iconPaths["dollar-02"];
       }
       break;
 

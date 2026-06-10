@@ -5,18 +5,21 @@ interface AgendaUpdatesPageProps {
   activityId: string;
   initialTab: string;
   onBackToActivities: () => void;
+  initialOverlay?: string;
 }
 
 export function AgendaUpdatesPage({
   activityId,
   initialTab,
   onBackToActivities,
+  initialOverlay,
 }: AgendaUpdatesPageProps) {
   return (
     <AgendaAtualizacoes
       initialTab={initialTab}
       onBackToActivities={onBackToActivities}
       activityId={activityId}
+      initialOverlay={initialOverlay}
     />
   );
 }

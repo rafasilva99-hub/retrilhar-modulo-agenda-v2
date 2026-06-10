@@ -12,6 +12,9 @@ import {
 
 interface AgendaNovaAtividadeProps {
   onBack: () => void;
+  initialStep?: 1 | 2 | 3;
+  initialMultiplosHorarios?: boolean;
+  initialAtividadeRepete?: boolean;
 }
 
 interface FormState {
@@ -376,10 +379,15 @@ function TimeInput({
   );
 }
 
-export function AgendaNovaAtividade({ onBack }: AgendaNovaAtividadeProps) {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [multiplosHorarios, setMultiplosHorarios] = useState(false);
-  const [atividadeRepete, setAtividadeRepete] = useState(false);
+export function AgendaNovaAtividade({
+  onBack,
+  initialStep = 1,
+  initialMultiplosHorarios = false,
+  initialAtividadeRepete = false,
+}: AgendaNovaAtividadeProps) {
+  const [currentStep, setCurrentStep] = useState<number>(initialStep);
+  const [multiplosHorarios, setMultiplosHorarios] = useState(initialMultiplosHorarios);
+  const [atividadeRepete, setAtividadeRepete] = useState(initialAtividadeRepete);
   const [dataInicio, setDataInicio] = useState("");
   const [horarioInicio, setHorarioInicio] = useState("");
   const [dataTermino, setDataTermino] = useState("");

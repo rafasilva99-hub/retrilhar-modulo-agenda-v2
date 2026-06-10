@@ -2646,7 +2646,7 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
   );
 }
 
-function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities?: () => void; activity: Activity }) {
+function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { onBackToActivities?: () => void; activity: Activity; initialOverlay?: string }) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
@@ -2671,6 +2671,52 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   const qrDrawerCloseTimeoutRef = useRef<number | null>(null);
   const qrInstructionEnterTimeoutRef = useRef<number | null>(null);
   const QR_SCENARIOS = ["camera-blocked", "scanning", "valid-reservation", "checkin-success", "reservation-cancelled", "qr-not-recognized", "wrong-date"] as const;
+
+  // Preview-mode overlay injection. Map slug → state setter on mount only.
+  useEffect(() => {
+    if (!initialOverlay) return;
+    const firstRes = mockReservations.find((r) => r.participants?.length > 0) || mockReservations[0];
+    const firstPart = firstRes?.participants?.[0];
+    if (initialOverlay === "filters") setShowFilters(true);
+    else if (initialOverlay === "sort") setShowSort(true);
+    else if (initialOverlay === "team") setShowTeamModal(true);
+    else if (initialOverlay === "more-actions") setShowMoreActions(true);
+    else if (initialOverlay === "bulk-tip") setShowBulkCheckInTip(true);
+    else if (initialOverlay === "toast-success") {
+      setToast({ message: "Check-in realizado com sucesso", type: "success" });
+    }
+    else if (initialOverlay === "toast-error") {
+      setToast({ message: "Falha ao realizar check-in. Tente novamente.", type: "error" });
+    }
+    else if (initialOverlay === "cancel" && firstRes && firstPart) {
+      setCancelModal({ r: firstRes, p: firstPart });
+    }
+    else if (initialOverlay === "no-show" && firstRes && firstPart) {
+      setNoShowModal({ r: firstRes, p: firstPart });
+    }
+    else if (initialOverlay === "checkin-single" && firstPart) {
+      setCheckInModal([firstPart]);
+    }
+    else if (initialOverlay === "checkin-bulk") {
+      const bulk = mockReservations
+        .flatMap((r) => r.participants ?? [])
+        .slice(0, 3);
+      if (bulk.length > 0) setCheckInModal(bulk);
+    }
+    else if (initialOverlay === "payment-drawer" && firstRes) {
+      setPaymentDrawerRes(firstRes);
+    }
+    else if (initialOverlay === "details-drawer" && firstRes && firstPart) {
+      setDrawerData({ r: firstRes, p: firstPart });
+    }
+    else if (initialOverlay.startsWith("qr-")) {
+      const scenario = initialOverlay.replace("qr-", "");
+      const idx = QR_SCENARIOS.findIndex((s) => s === scenario);
+      setShowQrScanner(true);
+      if (idx >= 0) setQrScenario(idx);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!showQrScanner) setSearchBarHidden(false);
@@ -4532,7 +4578,7 @@ function ParticipantesTab({ onBackToActivities, activity }: { onBackToActivities
   );
 }
 
-export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBackToActivities, activityId = "act-001" }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string }) {
+export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBackToActivities, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string; initialOverlay?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const activity = mockActivities.find((a) => a.id === activityId) || mockActivities[0];
@@ -4641,7 +4687,7 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
             <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
           )}
           {activeTab === "participantes" && (
-            <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} />
+            <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} />
           )}
         </main>
       </div>

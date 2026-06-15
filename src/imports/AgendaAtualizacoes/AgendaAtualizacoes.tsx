@@ -5072,7 +5072,7 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col border-r border-[#e9eaeb] bg-white w-[380px] shrink-0 h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-[20px] py-[16px] border-b border-[#f5f5f5] shrink-0 gap-[8px]">
+      <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0 gap-[8px]">
         {searchOpen ? (
           /* Search input mode */
           <div className="flex items-center gap-[8px] flex-1 min-w-0">
@@ -5110,9 +5110,6 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
                 className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer"
               >
                 <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-              </button>
-              <button onClick={onClose} className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
-                <svg className="size-[14px] text-[#717680]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
               </button>
             </div>
           </>
@@ -5221,9 +5218,8 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBackToActivities, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string; initialOverlay?: string }) {
+export default function AgendaAtualizacoes({ initialTab = "participantes", onBackToActivities, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string; initialOverlay?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const activity = mockActivities.find((a) => a.id === activityId) || mockActivities[0];
   const activityHeaderTeam = getActivityHeaderTeam(activity);
 
@@ -5251,54 +5247,42 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
 
       {/* ── Body: sidebar + content ── */}
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar */}
-        <nav className={`flex flex-col shrink-0 border-r border-[#e9eaeb] bg-white py-[16px] gap-[4px] transition-all duration-300 ease-in-out ${sidebarCollapsed ? "w-[56px] px-[8px] overflow-visible" : "w-[220px] px-[12px] overflow-y-auto"}`}>
-          {/* Header with toggle */}
-          <div className={`flex items-center mb-[4px] ${sidebarCollapsed ? "justify-center" : "justify-between px-[10px]"}`}>
-            {!sidebarCollapsed && (
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[10px] text-[#a1a1aa] uppercase tracking-[1px]">Navegação</p>
-            )}
+        {/* Sidebar — icon-only, chevron toggles activity panel */}
+        <nav className="flex flex-col shrink-0 border-r border-[#e9eaeb] bg-white py-[16px] gap-[4px] w-[56px] px-[8px] overflow-visible">
+          {/* Chevron toggle — opens/closes activity panel */}
+          <div className="flex items-center justify-center mb-[4px]">
             <button
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              onClick={() => setActiveTab(activeTab === "atualizacoes" ? "participantes" : "atualizacoes")}
               className="group/toggle relative flex items-center justify-center size-[28px] rounded-[6px] text-[#717680] hover:text-[#252b37] hover:bg-[#f0f1f3] transition-colors cursor-pointer"
             >
-              <svg className={`size-[16px] transition-transform duration-300 ${sidebarCollapsed ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
+              <svg className={`size-[16px] transition-transform duration-300 ${activeTab === "atualizacoes" ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24">
                 <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              {sidebarCollapsed && (
-                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/toggle:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">Expandir menu</p>
-                  <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
-                </div>
-              )}
+              <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/toggle:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{activeTab === "atualizacoes" ? "Recolher" : "Expandir"}</p>
+                <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
+              </div>
             </button>
           </div>
+          {/* Nav items — icon only with tooltips */}
           {([
-            { id: "participantes", label: "Participantes", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-            { id: "atualizacoes", label: "Atualizações", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M12 8v4l3 3M3 12a9 9 0 1018 0 9 9 0 00-18 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+            { id: "atualizacoes", label: "Atualizações", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
             { id: "visao-geral", label: "Visão geral", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
           ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`group/nav relative flex items-center gap-[8px] py-[8px] rounded-[8px] text-left transition-colors cursor-pointer ${
-                sidebarCollapsed ? "justify-center px-[8px]" : "px-[10px]"
-              } ${
+              className={`group/nav relative flex items-center justify-center py-[8px] px-[8px] rounded-[8px] transition-colors cursor-pointer ${
                 activeTab === item.id
                   ? "bg-[#edf0ff] text-[#0b5ed7]"
                   : "text-[#717680] hover:text-[#252b37] hover:bg-[#f8fafc]"
               }`}
             >
               <div className="shrink-0">{item.icon}</div>
-              {!sidebarCollapsed && (
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap overflow-hidden">{item.label}</p>
-              )}
-              {sidebarCollapsed && (
-                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/nav:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{item.label}</p>
-                  <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
-                </div>
-              )}
+              <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/nav:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{item.label}</p>
+                <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
+              </div>
             </button>
           ))}
         </nav>

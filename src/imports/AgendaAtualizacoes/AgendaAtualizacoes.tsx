@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState, useMemo, useReducer, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
@@ -13,7 +14,13 @@ import type { ImageTermStatus } from "../../types/agenda";
 
 type ResAction =
   | { type: "CHECK_IN"; participantId: string }
-  | { type: "UNDO_CHECK_IN"; participantId: string };
+  | { type: "UNDO_CHECK_IN"; participantId: string }
+  | { type: "NO_SHOW"; participantId: string }
+  | { type: "UNDO_NO_SHOW"; participantId: string }
+  | { type: "CANCEL_PARTICIPANT"; participantId: string }
+  | { type: "UNDO_CANCEL_PARTICIPANT"; participantId: string }
+  | { type: "RESCHEDULE_PARTICIPANT"; participantId: string }
+  | { type: "UNDO_RESCHEDULE_PARTICIPANT"; participantId: string };
 
 const TARIFF_VARIANTS = [
   "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
@@ -103,32 +110,37 @@ function getActivityHeaderStats(activity: Activity, reservations: Reservation[])
 
 function reservationsReducer(state: Reservation[], action: ResAction): Reservation[] {
   return state.map((r) => {
-    // Check-in actions target participants
-    if (action.type !== "CHECK_IN" && action.type !== "UNDO_CHECK_IN") return r;
     const hasTarget = r.participants.some((p) => p.id === action.participantId);
     if (!hasTarget) return r;
     const newParticipants = r.participants.map((p) => {
       if (p.id !== action.participantId) return p;
       if (action.type === "CHECK_IN") return { ...p, checkInStatus: "Done" as CheckInStatus };
       if (action.type === "UNDO_CHECK_IN") return { ...p, checkInStatus: "Pending" as CheckInStatus };
+      if (action.type === "NO_SHOW") return { ...p, checkInStatus: "Absent" as CheckInStatus };
+      if (action.type === "UNDO_NO_SHOW") return { ...p, checkInStatus: "Pending" as CheckInStatus };
+      if (action.type === "CANCEL_PARTICIPANT") return { ...p, checkInStatus: "Cancelled" as CheckInStatus };
+      if (action.type === "UNDO_CANCEL_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
+      if (action.type === "RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Rescheduled" as CheckInStatus };
+      if (action.type === "UNDO_RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       return p;
     });
-    // r.status (sale cycle) does NOT change during check-in — only participants update
     return { ...r, participants: newParticipants };
   });
 }
 
 // Toast
-function Toast({ message, type, onClose }: { message: string; type: "success" | "error"; onClose: () => void }) {
+function Toast({ message, type, onClose, description, actions }: { message: string; type: "success" | "error"; onClose: () => void; description?: string; actions?: { label: string; onClick: () => void }[] }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     requestAnimationFrame(() => setVisible(true));
+    const timer = setTimeout(() => { setVisible(false); setTimeout(onClose, 200); }, 5000);
+    return () => clearTimeout(timer);
   }, []);
   const handleClose = () => { setVisible(false); setTimeout(onClose, 200); };
 
-  return (
+  return createPortal(
     <div
-      className={`fixed top-[24px] right-[24px] z-[60] w-[384px] flex overflow-clip rounded-[8px] border border-[#e4e4e7] border-solid bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)] transition-all duration-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-[8px]"}`}
+      className={`fixed top-[24px] right-[24px] z-[200] w-[384px] flex overflow-clip rounded-[8px] border border-[#e4e4e7] border-solid bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)] transition-all duration-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-[8px]"}`}
     >
       {/* Left color stripe with icon */}
       <div className={`flex items-center justify-center shrink-0 w-[60px] ${type === "success" ? "bg-[#ecfdf3]" : "bg-[#fef3f2]"}`}>
@@ -139,14 +151,39 @@ function Toast({ message, type, onClose }: { message: string; type: "success" | 
         )}
       </div>
       {/* Content area */}
-      <div className="flex flex-col justify-center gap-[4px] flex-1 px-[16px] py-[16px]">
-        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37]">{message}</p>
+      <div className="flex flex-col justify-center gap-[12px] flex-1 px-[16px] py-[16px]">
+        <div className="flex flex-col gap-[4px]">
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37]">{message}</p>
+          {description && (
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{description}</p>
+          )}
+        </div>
+        {actions && actions.length > 0 && (
+          <div className="flex items-center gap-[6px]">
+            {actions.map((action, i) => (
+              <button
+                key={i}
+                onClick={action.onClick}
+                className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] px-[12px] py-[6px] rounded-[6px] transition-colors cursor-pointer ${
+                  i === 0
+                    ? "border border-[#e9eaeb] text-[#252b37] hover:bg-[#f8fafc]"
+                    : "text-[#535862] hover:text-[#252b37]"
+                }`}
+              >
+                {action.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-      {/* Close button */}
-      <button onClick={handleClose} className="cursor-pointer flex items-center justify-center shrink-0 w-[40px] hover:bg-[#f8fafc] transition-colors">
-        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-      </button>
-    </div>
+      {/* Close button — hidden when actions are present */}
+      {!actions?.length && (
+        <button onClick={handleClose} className="cursor-pointer flex items-center justify-center shrink-0 w-[40px] hover:bg-[#f8fafc] transition-colors self-stretch">
+          <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+        </button>
+      )}
+    </div>,
+    document.body,
   );
 }
 
@@ -1441,17 +1478,20 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
     { label: "Termo de responsabilidade", icon: "doc", available: true },
   ].filter(d => d.available);
 
-  return (
-    <div className="fixed inset-0 z-50 flex justify-end py-[12px] pl-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex justify-end py-[12px] pl-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-l-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 animate-in slide-in-from-right duration-200 overflow-hidden">
 
         {/* ── 1. HEADER ── */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#e9eaeb] shrink-0">
-          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Detalhes do participante</p>
-          <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors shrink-0">
-            <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-          </button>
+        <div className="shrink-0">
+          <div className="flex items-center justify-between px-6 pt-5 pb-[16px]">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Detalhes do participante</p>
+            <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors shrink-0">
+              <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
+          </div>
+          <div className="mx-6 h-px bg-[#e9eaeb]" />
         </div>
 
         {/* ── Content ── */}
@@ -1745,7 +1785,8 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -1817,7 +1858,7 @@ function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke
         <div
           id={`tooltip-${tooltipKey}`}
           role="tooltip"
-          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[240px] z-50 pointer-events-none text-center"
+          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[14px] py-[6px] rounded-full shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] w-max max-w-[240px] z-50 pointer-events-none text-center"
         >
           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-white whitespace-nowrap">{content.title}</p>
           {content.subtitle && (
@@ -1855,7 +1896,7 @@ function PaymentBadge({ isPaid, onClick }: { isPaid: boolean; onClick: () => voi
       {show && content && (
         <div
           role="tooltip"
-          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[240px] z-50 pointer-events-none text-center"
+          className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[14px] py-[6px] rounded-full shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] w-max max-w-[240px] z-50 pointer-events-none text-center"
         >
           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-white whitespace-nowrap">{content.title}</p>
           {content.subtitle && (
@@ -1904,7 +1945,7 @@ function LabeledBadge({ icon, label, color, tooltipTitle, tooltipSub, onClick }:
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[10px] text-[#a1a1aa] whitespace-nowrap">{label}</p>
       </Tag>
       {show && tooltipTitle && (
-        <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[10px] py-[6px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] w-max max-w-[220px] z-50 pointer-events-none text-center">
+        <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[14px] py-[6px] rounded-full shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] w-max max-w-[220px] z-50 pointer-events-none text-center">
           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-white whitespace-nowrap">{tooltipTitle}</p>
           {tooltipSub && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[3px] not-italic text-[11px] text-[#a4a7ae]">{tooltipSub}</p>}
           <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
@@ -1967,7 +2008,7 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
         tooltipLabel={
           paymentStatus === "Paid" ? "Pago — Pagamento confirmado"
           : paymentStatus === "Partial" ? "Pagamento parcial — Saldo em aberto"
-          : paymentStatus === "Refunded" ? "Reembolsado — Valor devolvido"
+          : paymentStatus === "Refunded" ? "Reembolso — Valor em processo"
           : paymentStatus === "Failed" ? "Falha no pagamento — Cartão recusado"
           : "Aguardando pagamento — Pendente de confirmação"
         }
@@ -2015,17 +2056,18 @@ function getParticipantReservationStatusText(
   reservation: Reservation,
   participant: Participant,
 ): { title: string; subtitle: string } {
-  const isCancelled = reservation.status === "Cancelled";
+  const isCancelled = reservation.status === "Cancelled" || participant.checkInStatus === "Cancelled";
   const isNoShow = reservation.status === "NoShow";
   const isExpired = reservation.status === "Expired";
   const isPerformed = reservation.status === "Performed";
   const isIndividualAbsent = !isCancelled && !isNoShow && participant.checkInStatus === "Absent";
   const isDone = participant.checkInStatus === "Done";
 
+  if (participant.checkInStatus === "Rescheduled") return { title: "Reserva reagendada", subtitle: "Status da reserva" };
   if (isCancelled) return { title: "Reserva cancelada", subtitle: "Status da reserva" };
   if (isExpired) return { title: "Reserva expirada", subtitle: "Status da reserva" };
   if (isNoShow) return { title: "Não compareceu", subtitle: "Status da reserva" };
-  if (isIndividualAbsent) return { title: "Cancelado individualmente", subtitle: "Status da reserva" };
+  if (isIndividualAbsent) return { title: "Não compareceu", subtitle: "Status da reserva" };
   if (isPerformed) return { title: "Atividade realizada", subtitle: "Status da reserva" };
   if (isDone) return { title: "Check-in realizado", subtitle: "Status da reserva" };
   if (reservation.status === "AwaitingPayment") return { title: "Aguardando pagamento", subtitle: "Status da reserva" };
@@ -2059,14 +2101,14 @@ function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onC
   const schoolTrip = reservation.participants.filter((p) => p.tariffType === TARIFF_VARIANTS[3]).length;
   const isPaid = reservation.paymentStatus === "Paid";
 
-  return (
-    <div className="fixed inset-0 z-50 flex justify-end p-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex justify-end p-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
+      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
         <div className="flex flex-col flex-1 gap-[16px] overflow-y-auto p-[24px]">
           {/* Title bar */}
-          <div className="flex items-center justify-between shrink-0">
-            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Informações do pedido</p>
+          <div className="flex items-center justify-between shrink-0 pb-[16px]">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Informações do pedido</p>
             <div className="flex gap-[16px] items-center">
               <p className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] hover:underline">Ir para central de vendas</p>
               <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
@@ -2074,6 +2116,7 @@ function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onC
               </button>
             </div>
           </div>
+          <div className="h-px bg-[#e9eaeb] mb-[16px]" />
           {/* Reservation type card */}
           <div className="border border-[#e9eaeb] border-solid rounded-[12px]">
             <div className="flex items-center justify-between px-[20px] py-[16px]">
@@ -2192,7 +2235,8 @@ function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onC
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -2262,19 +2306,22 @@ function FiltersDrawer({ onClose }: { onClose: () => void }) {
   const hasAnyFilter = !!(alertas.size || tarifa.size || imagem || seguro || pedidos || periodo);
   const limpar = () => { setAlertas(new Set()); setTarifa(new Set()); setImagem(""); setSeguro(""); setPedidos(""); setPeriodo(""); };
 
-  return (
-    <div className="fixed inset-0 z-50 flex justify-end pl-[24px] pt-0 pr-0 pb-0" onKeyDown={(e) => e.key === "Escape" && onClose()}>
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex justify-end pl-[24px] pt-0 pr-0 pb-0" onKeyDown={(e) => e.key === "Escape" && onClose()}>
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-[16px] rounded-r-none shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
+      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
         {/* Header */}
-        <div className="flex items-center justify-between px-[24px] py-[20px] shrink-0">
-          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Filtros</p>
-          <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
-            <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-          </button>
+        <div className="shrink-0">
+          <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Filtros</p>
+            <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+              <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
+          </div>
+          <div className="mx-[24px] h-px bg-[#e9eaeb]" />
         </div>
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-[24px] pb-[24px]">
+        <div className="flex-1 overflow-y-auto px-[24px] py-[20px]">
           <div className="border border-[#e9eaeb] border-solid flex flex-col gap-[24px] p-[20px] rounded-[12px]">
             {/* Por alertas */}
             <div className="flex flex-col gap-[10px]">
@@ -2346,7 +2393,8 @@ function FiltersDrawer({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -2356,7 +2404,7 @@ type ParticipantesFilter = "todos" | "a-fazer-checkin" | "checkin-realizado" | "
 
 interface MenuSlot { id: string; label: string; icon: React.ReactNode; enabled: boolean; tooltip: string | null; destructive?: boolean; separator?: boolean; hasExtIcon?: boolean }
 
-function getMenuSlots(r: Reservation, insuranceStatus: string): MenuSlot[] {
+function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant): MenuSlot[] {
   const s = r.status;
   const sm = reservationStateMachine;
   const canTo = (target: ReservationStatus) => (sm[s] || []).includes(target);
@@ -2393,7 +2441,10 @@ function getMenuSlots(r: Reservation, insuranceStatus: string): MenuSlot[] {
     : { id: "register-payment", label: "Registrar pagamento", icon: iconPayment, enabled: s === "AwaitingPayment" && canTo("Confirmed"), tooltip: s === "Draft" ? "Finalize o carrinho antes de registrar pagamento" : inactive ? "Reserva inativa não permite registro de pagamento" : null };
 
   // Slot 4 — Remarcar ↔ Desfazer remarcação
-  const slot4: MenuSlot = { id: "reschedule", label: "Remarcar reserva", icon: iconCal, enabled: (s === "AwaitingPayment" || s === "Confirmed") && !inactive, tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de remarcar" : (s === "Performed" || inactive) ? "Reserva não pode ser remarcada no estado atual" : null };
+  const isRescheduled = p?.checkInStatus === "Rescheduled";
+  const slot4: MenuSlot = isRescheduled
+    ? { id: "undo-reschedule", label: "Desfazer remarcação de reserva", icon: iconCal, enabled: true, tooltip: null }
+    : { id: "reschedule", label: "Remarcar reserva", icon: iconCal, enabled: (s === "AwaitingPayment" || s === "Confirmed") && !inactive, tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de remarcar" : (s === "Performed" || inactive) ? "Reserva não pode ser remarcada no estado atual" : null };
 
   // Slot 5 — Contratar seguro ↔ Desfazer
   const slot5 = insuranceStatus === "Contracted"
@@ -2404,12 +2455,14 @@ function getMenuSlots(r: Reservation, insuranceStatus: string): MenuSlot[] {
   const slot6: MenuSlot = { id: "participant-data", label: "Dados do participante", icon: iconPerson, enabled: true, tooltip: null };
 
   // Slot 7 — Não compareceu ↔ Desfazer
-  const slot7 = s === "NoShow"
+  const isAbsent = p?.checkInStatus === "Absent" || s === "NoShow";
+  const slot7 = isAbsent
     ? { id: "undo-noshow", label: "Desfazer não comparecimento", icon: iconCalSync, separator: true, destructive: true, enabled: true, tooltip: null }
     : { id: "no-show", label: "Não compareceu", icon: iconCalRemove, separator: true, destructive: true, enabled: s === "Confirmed", tooltip: s === "CheckedIn" || s === "Performed" ? "Participante já realizou check-in" : s !== "Confirmed" ? "Não aplicável ao estado atual" : null };
 
   // Slot 8 — Cancelar ↔ Desfazer cancelamento
-  const slot8 = s === "Cancelled"
+  const isCancelledParticipant = p?.checkInStatus === "Cancelled" || s === "Cancelled";
+  const slot8 = isCancelledParticipant
     ? { id: "undo-cancel", label: "Desfazer cancelamento de reserva", icon: iconAccountRecovery, destructive: true, enabled: true, tooltip: null }
     : { id: "cancel", label: "Cancelar reserva", icon: iconUserRemove, destructive: true, enabled: s === "AwaitingPayment" || s === "Confirmed" || s === "CheckedIn", tooltip: s === "Performed" ? "Atividade já realizada não pode ser cancelada" : s === "NoShow" ? "Reserva marcada como não compareceu" : (s === "Expired" || s === "Draft") ? "Reserva inativa" : null };
 
@@ -2424,7 +2477,7 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
 }) {
   const [open, setOpen] = useState(false);
   const [hoveredDisabled, setHoveredDisabled] = useState<string | null>(null);
-  const slots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required"), [reservation, participantInsured]);
+  const slots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required", participant), [reservation, participantInsured, participant]);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu on outside click without blocking the target click
@@ -2475,9 +2528,9 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
                   </button>
                   {/* Tooltip for disabled items */}
                   {hoveredDisabled === slot.id && slot.tooltip && (
-                    <div role="tooltip" className="absolute bg-[#181d27] left-[-8px] -translate-x-full px-[12px] py-[8px] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.2)] top-1/2 -translate-y-1/2 w-max max-w-[220px] z-50 pointer-events-none">
+                    <div role="tooltip" className="absolute bg-[#181d27] left-[-8px] -translate-x-full px-[14px] py-[8px] rounded-full shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] top-1/2 -translate-y-1/2 w-max max-w-[220px] z-50 pointer-events-none">
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.4] not-italic text-[12px] text-white">{slot.tooltip}</p>
-                      <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 size-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-[#181d27]" />
+                      <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 size-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-[#181d27]" />
                     </div>
                   )}
                 </div>
@@ -2490,6 +2543,229 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
   );
 }
 
+// ─── Concluir Atividade Modal ───────────────────────────────────────────────
+
+function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: {
+  activity: Activity;
+  reservations: Reservation[];
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+  const [startTime, setStartTime] = useState("08:14");
+  const [endTime, setEndTime] = useState("16:03");
+  const [observations, setObservations] = useState("");
+  const [hasIncident, setHasIncident] = useState<boolean | null>(false);
+  const [incidentType, setIncidentType] = useState<string | null>(null);
+  const [severity, setSeverity] = useState<string | null>(null);
+  const [incidentDescription, setIncidentDescription] = useState("");
+
+  const allParticipants = reservations.flatMap((r) => r.participants);
+  const compareceram = allParticipants.filter((p) => p.checkInStatus === "Done").length;
+  const naoCompareceram = allParticipants.filter((p) => p.checkInStatus === "Absent").length;
+  const cancelaram = reservations.filter((r) => r.status === "Cancelled").flatMap((r) => r.participants).length;
+  const totalEsperado = allParticipants.length;
+
+  // Compute duration
+  const duration = (() => {
+    const [sh, sm] = startTime.split(":").map(Number);
+    const [eh, em] = endTime.split(":").map(Number);
+    if (isNaN(sh) || isNaN(sm) || isNaN(eh) || isNaN(em)) return "--";
+    const diff = (eh * 60 + em) - (sh * 60 + sm);
+    if (diff <= 0) return "--";
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+    return `${h}h${m.toString().padStart(2, "0")}m`;
+  })();
+
+  const stats = [
+    { value: compareceram, label: "Compareceram", color: "#0b5ed7" },
+    { value: naoCompareceram, label: "Não Compareceram", color: "#dc6803" },
+    { value: cancelaram, label: "Cancelaram", color: "#d92d20" },
+    { value: totalEsperado, label: "Total Esperado", color: "#252b37" },
+  ];
+
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && onClose()}>
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="bg-white relative flex flex-col h-full w-[640px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
+        {/* Header */}
+        <div className="shrink-0">
+          <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
+            <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Concluir Atividade</h2>
+          <button onClick={onClose} className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
+            <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+          </button>
+          </div>
+          <div className="mx-[24px] h-px bg-[#e9eaeb]" />
+        </div>
+
+        {/* Scrollable body */}
+        <div className="flex-1 overflow-y-auto px-[24px] py-[20px]">
+          {/* Resumo dos participantes */}
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7] uppercase tracking-[0.8px] mb-[12px]">Resumo dos participantes</p>
+          <div className="flex gap-[12px] mb-[24px]">
+            {stats.map((s) => (
+              <div key={s.label} className="flex-1 flex flex-col items-center gap-[4px] py-[14px] rounded-[10px] border border-[#e9eaeb] bg-[#fafafa]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[22px] leading-[1]" style={{ color: s.color }}>{s.value}</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680] text-center">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Horários registrados */}
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.8px] mb-[12px]">Horários registrados</p>
+          <div className="flex gap-[12px] mb-[24px]">
+            <div className="flex-1 flex flex-col gap-[6px]">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Início real</p>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[8px] px-[14px] py-[10px] outline-none focus:border-[#0b5ed7] transition-colors bg-white"
+              />
+            </div>
+            <div className="flex-1 flex flex-col gap-[6px]">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Término real</p>
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[8px] px-[14px] py-[10px] outline-none focus:border-[#0b5ed7] transition-colors bg-white"
+              />
+            </div>
+            <div className="flex-1 flex flex-col gap-[6px]">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Duração total</p>
+              <div className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680] border border-[#e9eaeb] rounded-[8px] px-[14px] py-[10px] bg-[#fafafa]">{duration}</div>
+            </div>
+          </div>
+
+          {/* Observações da operação */}
+          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.8px] mb-[12px]">Observações da operação</p>
+          <textarea
+            value={observations}
+            onChange={(e) => setObservations(e.target.value)}
+            placeholder="Insira as observações aqui"
+            className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[10px] px-[16px] py-[14px] outline-none focus:border-[#0b5ed7] transition-colors bg-white resize-none min-h-[100px] placeholder:text-[#a4a7ae] mb-[24px]"
+            rows={4}
+          />
+
+          {/* Intercorrência */}
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] mb-[12px]">Ocorreu alguma intercorrência durante a atividade?</p>
+          <div className="flex gap-[12px]">
+            <button
+              onClick={() => setHasIncident(false)}
+              className={`flex-1 h-[48px] rounded-[8px] border-2 font-['Helvetica_Neue:Regular',sans-serif] text-[14px] transition-colors cursor-pointer ${
+                hasIncident === false
+                  ? "border-[#0b5ed7] text-[#0b5ed7] bg-[#f0f5ff]"
+                  : "border-[#e9eaeb] text-[#535862] bg-white hover:border-[#d0d5dd]"
+              }`}
+            >
+              Não, tudo correu bem
+            </button>
+            <button
+              onClick={() => setHasIncident(true)}
+              className={`flex-1 h-[48px] rounded-[8px] border-2 font-['Helvetica_Neue:Regular',sans-serif] text-[14px] transition-colors cursor-pointer ${
+                hasIncident === true
+                  ? "border-[#0b5ed7] text-[#0b5ed7] bg-[#f0f5ff]"
+                  : "border-[#e9eaeb] text-[#535862] bg-white hover:border-[#d0d5dd]"
+              }`}
+            >
+              Sim, registrar ocorrência
+            </button>
+          </div>
+
+          {/* ── Incident details (shown when hasIncident === true) ── */}
+          {hasIncident && (
+            <>
+              {/* Tipo de ocorrência */}
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.8px] mb-[12px] mt-[28px]">Tipo de ocorrência</p>
+              <div className="grid grid-cols-3 gap-[12px] mb-[12px]">
+                {["Incidente de segurança", "Problema de saúde", "Condições climáticas"].map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setIncidentType(type)}
+                    className={`py-[10px] px-[12px] rounded-[8px] border-2 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-colors cursor-pointer ${
+                      incidentType === type
+                        ? "border-[#dc6803] text-[#dc6803] bg-[#fffbeb]"
+                        : "border-[#e9eaeb] text-[#535862] bg-white hover:border-[#d0d5dd]"
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setIncidentType("Outros (descrever abaixo)")}
+                className={`w-full py-[10px] px-[12px] rounded-[8px] border-2 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-colors cursor-pointer mb-[28px] ${
+                  incidentType === "Outros (descrever abaixo)"
+                    ? "border-[#dc6803] text-[#dc6803] bg-[#fffbeb]"
+                    : "border-[#e9eaeb] text-[#535862] bg-white hover:border-[#d0d5dd]"
+                }`}
+              >
+                Outros (descrever abaixo)
+              </button>
+
+              {/* Grau de severidade */}
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.8px] mb-[12px]">Grau de severidade</p>
+              <div className="grid grid-cols-3 gap-[12px]">
+                {(["Baixa", "Média", "Alta"] as const).map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setSeverity(level)}
+                    className={`py-[10px] px-[12px] rounded-[8px] border-2 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-colors cursor-pointer ${
+                      severity === level
+                        ? level === "Alta"
+                          ? "border-[#d92d20] text-[#d92d20] bg-[#fef3f2]"
+                          : "border-[#dc6803] text-[#dc6803] bg-[#fffbeb]"
+                        : "border-[#e9eaeb] text-[#535862] bg-white hover:border-[#d0d5dd]"
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+              {severity === "Alta" && (
+                <div className="flex items-start gap-[8px] mt-[12px] px-[2px]">
+                  <svg className="size-[16px] text-[#d92d20] shrink-0 mt-[1px]" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" /><path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#d92d20] leading-[16px]">Severidade Alta: o gestor operacional será notificado imediatamente ao confirmar o encerramento.</p>
+                </div>
+              )}
+
+              {/* Descrição */}
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.8px] mb-[12px] mt-[28px]">Descrição</p>
+              <textarea
+                value={incidentDescription}
+                onChange={(e) => setIncidentDescription(e.target.value)}
+                placeholder="Descreva o que aconteceu durante a atividade..."
+                className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[10px] px-[16px] py-[14px] outline-none focus:border-[#0b5ed7] transition-colors bg-white resize-none min-h-[100px] placeholder:text-[#a4a7ae]"
+                rows={4}
+              />
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex h-[74.5px] items-center justify-end gap-[12px] px-[24px] border-t border-[#f5f5f5] shrink-0">
+          <button
+            onClick={onClose}
+            className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] px-[20px] py-[10px] rounded-[8px] border border-[#e9eaeb] hover:bg-[#f8fafc] transition-colors cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white px-[24px] py-[10px] rounded-[8px] bg-[#0b5ed7] hover:bg-[#084fb7] transition-colors cursor-pointer"
+          >
+            {hasIncident ? "Confirmar encerramento com ocorrência" : "Confirmar encerramento"}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { onBackToActivities?: () => void; activity: Activity; initialOverlay?: string }) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
@@ -2499,7 +2775,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
   const [reservations, dispatch] = useReducer(reservationsReducer, mockReservations);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(mockReservations.filter((r) => r.type === "group").map((r) => r.id)));
   const [animatingGroups, setAnimatingGroups] = useState<Set<string>>(new Set());
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error"; description?: string; actions?: { label: string; onClick: () => void }[] } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showHeaderMoreActions, setShowHeaderMoreActions] = useState(false);
@@ -2512,6 +2788,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
   const [isQrDrawerClosing, setIsQrDrawerClosing] = useState(false);
   const [isConfirmingCheckIn, setIsConfirmingCheckIn] = useState(false);
   const [isQrInstructionEntering, setIsQrInstructionEntering] = useState(false);
+  const [showConcluirModal, setShowConcluirModal] = useState(false);
   const qrDrawerCloseTimeoutRef = useRef<number | null>(null);
   const qrInstructionEnterTimeoutRef = useRef<number | null>(null);
   const QR_SCENARIOS = ["camera-blocked", "scanning", "valid-reservation", "checkin-success", "reservation-cancelled", "qr-not-recognized", "wrong-date"] as const;
@@ -2782,6 +3059,11 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
   const [cancelModal, setCancelModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [cancelReason, setCancelReason] = useState("");
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
+  const [rescheduleModal, setRescheduleModal] = useState<{ r: Reservation; p: Participant } | null>(null);
+  const [rescheduleDropdownOpen, setRescheduleDropdownOpen] = useState(false);
+  const [rescheduleSelectedDate, setRescheduleSelectedDate] = useState<string | null>(null);
+  const [rescheduleCapacityConfirmed, setRescheduleCapacityConfirmed] = useState(false);
+  const [rescheduleNotify, setRescheduleNotify] = useState<"now" | "later">("now");
   const [checkInModal, setCheckInModal] = useState<Participant[] | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
@@ -2849,21 +3131,39 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
     if (actionId === "mark-performed") { showToast(`Reserva de ${name} marcada como realizada.`); return; }
     if (actionId === "undo-performed") { showToast(`Definição de realização de ${name} desfeita.`); return; }
     if (actionId === "undo-payment") { showToast(`Pagamento de ${name} desfeito.`); return; }
-    if (actionId === "reschedule") { showToast(`Reserva de ${name} remarcada.`); return; }
-    if (actionId === "undo-noshow") { showToast(`Não comparecimento de ${name} desfeito.`); return; }
-    if (actionId === "undo-cancel") { showToast(`Cancelamento de ${name} desfeito.`); return; }
+    if (actionId === "reschedule") { setRescheduleModal({ r, p }); setRescheduleDropdownOpen(false); setRescheduleSelectedDate(null); setRescheduleCapacityConfirmed(false); return; }
+    if (actionId === "undo-reschedule") { dispatch({ type: "UNDO_RESCHEDULE_PARTICIPANT", participantId: p.id }); showToast(`Remarcação de ${name} desfeita.`); return; }
+    if (actionId === "undo-noshow") { dispatch({ type: "UNDO_NO_SHOW", participantId: p.id }); showToast(`Não comparecimento de ${name} desfeito.`); return; }
+    if (actionId === "undo-cancel") { dispatch({ type: "UNDO_CANCEL_PARTICIPANT", participantId: p.id }); showToast(`Cancelamento de ${name} desfeito.`); return; }
   };
 
   const confirmCancel = () => {
     if (!cancelModal) return;
-    showToast(`Reserva de ${cancelModal.p.name.split(" ")[0]} cancelada.`);
+    const pId = cancelModal.p.id;
+    dispatch({ type: "CANCEL_PARTICIPANT", participantId: pId });
     setCancelModal(null);
+    setToast({
+      message: "A reserva selecionada foi cancelada",
+      description: "O cliente será notificado e o estorno será processado conforme a política.",
+      type: "error",
+      actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+    });
   };
 
   const confirmNoShow = () => {
     if (!noShowModal) return;
-    showToast(`${noShowModal.p.name.split(" ")[0]} marcado como não compareceu.`);
+    const pId = noShowModal.p.id;
+    dispatch({ type: "NO_SHOW", participantId: pId });
     setNoShowModal(null);
+    setToast({
+      message: "Participante marcado como \"Não compareceu\"",
+      description: "A reserva permanece ativa e pode ser remarcada.",
+      type: "success",
+      actions: [{
+        label: "Desfazer",
+        onClick: () => { dispatch({ type: "UNDO_NO_SHOW", participantId: pId }); setToast(null); },
+      }],
+    });
   };
 
   const handleCheckIn = (p: Participant) => {
@@ -2940,7 +3240,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
   ];
 
   if (showQrScanner) {
-    return (
+    return createPortal(
       <div className="fixed inset-0 z-[100] flex flex-col" style={{ backgroundColor: "#212121" }}>
         {/* Header bar */}
         <header className="relative z-10 shrink-0 flex items-center h-[64px] px-[32px]" style={{ backgroundColor: "rgba(62, 62, 66, 0.6)" }}>
@@ -3502,7 +3802,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
             </div>
           </>
         )}
-      </div>
+      </div>,
+      document.body,
     );
   }
 
@@ -3710,7 +4011,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                   </div>
                 )}
               </div>
-              <button className="bg-white hover:bg-white/95 h-[40px] relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)]">
+              <button onClick={() => setShowConcluirModal(true)} className="bg-white hover:bg-white/95 h-[40px] relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] cursor-pointer">
                 <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Concluir atividade</p>
                 </div>
@@ -3937,7 +4238,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                     <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer shrink-0 size-[12px] hover:opacity-70 transition-opacity">
                       <svg className="block size-full" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="#717680" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="#717680" strokeWidth="1.2"/></svg>
                     </button>
-                    <div className={`absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[6px] px-[8px] py-[4px] rounded-[6px] text-center transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 ${copiedId === r.orderId ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                    <div className={`absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[6px] px-[14px] py-[6px] rounded-full text-center transition-opacity duration-150 pointer-events-none whitespace-nowrap shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50 ${copiedId === r.orderId ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-white">{copiedId === r.orderId ? "Copiado!" : "Copiar ID"}</p>
                       <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
                     </div>
@@ -4036,7 +4337,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                     {/* Badges — atributos do participante */}
                     <div className="flex flex-1 items-center min-w-0" style={{ padding: "10px 12px" }}>
-                      <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
+                      <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
                     </div>
                     {/* Actions cell */}
                     <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
@@ -4091,7 +4392,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                                 <ParticipantReservationStatusCell reservation={r} participant={p} />
                                 <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                                 <div className="flex flex-1 items-center min-w-0" style={{ padding: "8px 12px" }}>
-                                  <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} />
+                                  <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} />
                                 </div>
                                 <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
                                   <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
@@ -4127,7 +4428,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
           );
         })}
       </div>
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} type={toast.type} description={toast.description} actions={toast.actions} onClose={() => setToast(null)} />}
       {/* Participant data drawer */}
       {drawerData && (
         <ParticipantDrawer
@@ -4144,8 +4445,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
       {/* Payment drawer */}
       {paymentDrawerRes && <PaymentDrawer reservation={paymentDrawerRes} onClose={() => setPaymentDrawerRes(null)} />}
       {/* Team modal */}
-      {showTeamModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" onKeyDown={(e) => e.key === "Escape" && setShowTeamModal(false)}>
+      {showTeamModal && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center" onKeyDown={(e) => e.key === "Escape" && setShowTeamModal(false)}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowTeamModal(false)} />
           <div className="bg-white max-w-[480px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
             {/* Header */}
@@ -4226,7 +4527,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
       {/* Cancel confirmation modal */}
       {/* Check-in confirmation modal */}
@@ -4259,8 +4561,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
             );
           };
 
-          return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center" onKeyDown={(e) => e.key === "Escape" && setCheckInModal(null)}>
+          return createPortal(
+            <div className="fixed inset-0 z-[60] flex items-center justify-center" onKeyDown={(e) => e.key === "Escape" && setCheckInModal(null)}>
               <div className="absolute inset-0 bg-black/40" onClick={() => setCheckInModal(null)} />
               <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10 flex flex-col max-h-[90vh]">
                 {/* Header */}
@@ -4367,57 +4669,554 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                   </div>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body,
           );
         };
         return <CheckInModalContent />;
       })()}
-      {cancelModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {cancelModal && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setCancelModal(null)} />
-          <div className="bg-white max-w-[480px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
-            <div className="flex flex-col gap-[16px] p-[24px]">
-              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Cancelar reserva</p>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[14px] text-[#535862]">
-                Tem certeza que deseja cancelar a reserva de <strong>{cancelModal.p.name}</strong>? O valor será retido para possível reembolso conforme a política vigente.
-              </p>
-              <div className="flex flex-col gap-[6px]">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-[#414651]">Motivo do cancelamento *</p>
-                <select value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} className="bg-white border border-[#e9eaeb] border-solid font-['Helvetica_Neue:Regular',sans-serif] not-italic outline-none px-[12px] py-[10px] rounded-[8px] text-[14px] text-[#414651]">
-                  <option value="">Selecione um motivo...</option>
-                  <option value="solicitacao-cliente">Solicitação do cliente</option>
-                  <option value="condicoes-climaticas">Condições climáticas</option>
-                  <option value="falta-quorum">Falta de quórum</option>
-                  <option value="problemas-operacionais">Problemas operacionais</option>
-                  <option value="outro">Outro</option>
-                </select>
+          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            {/* Header */}
+            <div className="flex items-start justify-between px-[24px] pt-[24px] pb-[4px]">
+              <div className="flex flex-col gap-[4px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Cancelar reserva</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Esta ação irá processar o estorno do pagamento e devolver a vaga ao estoque. O participante será notificado por e-mail e WhatsApp.</p>
               </div>
-              <div className="flex gap-[12px] justify-end mt-[8px]">
-                <button onClick={() => setCancelModal(null)} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Voltar</button>
-                <button onClick={confirmCancel} disabled={!cancelReason} className={`cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors ${cancelReason ? "bg-[#d92d20] hover:bg-[#b42318]" : "bg-[#fda29b] cursor-not-allowed"}`}>Confirmar cancelamento</button>
+              <button onClick={() => setCancelModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+            {/* Body */}
+            <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
+              <div className="flex flex-col gap-[8px]">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">Motivo do cancelamento</p>
+                <textarea
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  placeholder="Insira o motivo do cancelamento da reserva"
+                  className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[10px] px-[16px] py-[14px] outline-none focus:border-[#0b5ed7] transition-colors bg-white resize-none min-h-[100px] placeholder:text-[#a4a7ae]"
+                  rows={4}
+                />
+              </div>
+              <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">Essa reserva possui pagamento confirmado. O estorno será processado em até 7 dias úteis conforme a política da empresa.</p>
               </div>
             </div>
+            {/* Footer */}
+            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <button onClick={() => setCancelModal(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+              <button onClick={confirmCancel} className="flex-1 h-[40px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors">Cancelar reserva</button>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
       {/* No-show confirmation modal */}
-      {noShowModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {noShowModal && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setNoShowModal(null)} />
-          <div className="bg-white max-w-[440px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
-            <div className="flex flex-col gap-[16px] p-[24px]">
-              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Marcar como não compareceu</p>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[1.5] not-italic text-[14px] text-[#535862]">
-                Confirma que <strong>{noShowModal.p.name}</strong> não compareceu à atividade? Diferente de cancelar, o valor será retido para possível remarcação.
-              </p>
-              <div className="flex gap-[12px] justify-end mt-[8px]">
-                <button onClick={() => setNoShowModal(null)} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Voltar</button>
-                <button onClick={confirmNoShow} className="bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#b42318] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors">Confirmar</button>
+          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            {/* Header */}
+            <div className="flex items-start justify-between px-[24px] pt-[24px] pb-[4px]">
+              <div className="flex flex-col gap-[4px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Marcar como não compareceu</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Registra o não comparecimento sem cancelar a reserva.</p>
+              </div>
+              <button onClick={() => setNoShowModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+            {/* Body */}
+            <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
+              <div className="flex flex-col gap-[8px]">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">Descrição do motivo do não comparecimento</p>
+                <textarea
+                  placeholder="Insira o motivo do não comparecimento dos participantes"
+                  className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[10px] px-[16px] py-[14px] outline-none focus:border-[#0b5ed7] transition-colors bg-white resize-none min-h-[100px] placeholder:text-[#a4a7ae]"
+                  rows={4}
+                />
+              </div>
+              <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">O status de não comparecimento do participante aparecerá no histórico operacional da reserva.</p>
               </div>
             </div>
+            {/* Footer */}
+            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <button onClick={() => setNoShowModal(null)} className="flex-1 h-[48px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+              <button onClick={confirmNoShow} className="flex-1 h-[48px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors">Definir não comparecimento</button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+      {/* Remarcar reserva modal */}
+      {rescheduleModal && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setRescheduleModal(null)} />
+          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            {/* Header */}
+            <div className="flex items-start justify-between px-[24px] pt-[24px] pb-[4px]">
+              <div className="flex flex-col gap-[4px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Remarcar reserva</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Selecione a nova data e horário</p>
+              </div>
+              <button onClick={() => setRescheduleModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+            {/* Body */}
+            <div className="flex flex-col gap-[20px] px-[24px] py-[20px]">
+              {/* Activity card */}
+              <div className="flex flex-col gap-[8px]">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Atividade</p>
+                <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px]">
+                  <img src="/src/assets/activity-icon.png" alt="" className="size-[24px] shrink-0" />
+                  <div className="flex flex-col gap-[6px] min-w-0 flex-1">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37] leading-[20px]">{activity.name}</p>
+                    <div className="flex items-center gap-[6px] min-w-0 overflow-hidden">
+                      <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><circle cx="8" cy="6.17" r="1.83" stroke="currentColor" strokeWidth="1.2" /><path d="M4.33 12.33a4.33 4.33 0 017.34 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] truncate">{rescheduleModal.p.name}</span>
+                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
+                      <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{formatActivityDate(activity.date)}</span>
+                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
+                      <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{activity.startTime} - {activity.endTime}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Date/time selector */}
+              {(() => {
+                const dateOptions = [
+                  { date: "29/04/2026", time: "08:00 - 16:00", slots: 25, available: true },
+                  { date: "30/05/2026", time: "08:00 - 16:00", slots: 30, available: true },
+                  { date: "02/05/2026", time: "08:00 - 16:00", slots: 8, available: true },
+                  { date: "03/05/2026", time: "08:00 - 16:00", slots: 15, available: true },
+                  { date: "04/05/2026", time: "08:00 - 16:00", slots: 0, available: false },
+                  { date: "05/05/2026", time: "08:00 - 16:00", slots: 4, available: true },
+                ];
+                const selected = dateOptions.find((d) => d.date === rescheduleSelectedDate);
+                return (
+                  <div className="flex flex-col gap-[8px]">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Selecionar nova data / horário</p>
+                    <div className="relative">
+                      <button
+                        onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
+                        className={`flex items-center justify-between w-full rounded-[8px] px-[14px] py-[10px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                      >
+                        {selected ? (
+                          <>
+                            <div className="flex items-center gap-[6px]">
+                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.date}</span>
+                              <span className="text-[#d0d5dd]">·</span>
+                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.time}</span>
+                            </div>
+                            <div className="flex items-center gap-[8px] shrink-0">
+                              <div className="flex items-center gap-[5px] bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[10px] h-[24px]">
+                                <div className={`size-[6px] rounded-full ${selected.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                                <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] whitespace-nowrap ${selected.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
+                                  {selected.available ? `${selected.slots} vagas disponíveis` : "Sem vagas disponíveis"}
+                                </span>
+                              </div>
+                              <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar</p>
+                            <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </>
+                        )}
+                      </button>
+                      {rescheduleDropdownOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px] max-h-[220px] overflow-y-auto">
+                          {dateOptions.map((opt) => (
+                            <button
+                              key={opt.date}
+                              onClick={() => { setRescheduleSelectedDate(opt.date); setRescheduleDropdownOpen(false); }}
+                              className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleSelectedDate === opt.date ? "bg-[#f0f5ff]" : ""}`}
+                            >
+                              <div className="flex items-center gap-[6px]">
+                                {rescheduleSelectedDate === opt.date ? (
+                                  <svg className="size-[16px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                ) : (
+                                  <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                                )}
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.date}</span>
+                                <span className="text-[#d0d5dd]">·</span>
+                                <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.time}</span>
+                              </div>
+                              <div className="flex items-center gap-[4px] shrink-0">
+                                <div className={`size-[6px] rounded-full ${opt.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                                <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${opt.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
+                                  {opt.available ? `${opt.slots} vagas disponíveis` : "Sem vagas disponíveis"}
+                                </span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Notification options */}
+              <div className="flex flex-col gap-[8px]">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Notificação ao cliente</p>
+                <div className="grid grid-cols-2 gap-[12px]">
+                  <button
+                    onClick={() => setRescheduleNotify("now")}
+                    className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "now" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}
+                  >
+                    <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "now" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Notificar agora</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">E-mail e WhatsApp serão enviados imediatamente.</p>
+                  </button>
+                  <button
+                    onClick={() => setRescheduleNotify("later")}
+                    className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "later" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}
+                  >
+                    <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "later" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Remarcar sem notificar</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">Você pode notificar manualmente depois.</p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Alerts */}
+              {(() => {
+                const dateOptions = [
+                  { date: "29/04/2026", slots: 25 }, { date: "30/05/2026", slots: 30 },
+                  { date: "02/05/2026", slots: 8 }, { date: "03/05/2026", slots: 15 },
+                  { date: "04/05/2026", slots: 0 }, { date: "05/05/2026", slots: 4 },
+                ];
+                const selectedOpt = dateOptions.find((d) => d.date === rescheduleSelectedDate);
+                const isNoSlots = selectedOpt && selectedOpt.slots === 0;
+                const capacity = activity.capacity || 200;
+                const current = capacity;
+                const afterMove = current + 1;
+
+                return (
+                  <>
+                    {isNoSlots ? (
+                      <>
+                        {/* Capacity warning */}
+                        <div className="flex items-center gap-[10px] bg-[#fef9ec] border border-[#fef0c7] rounded-[10px] px-[12px] py-[10px]">
+                          <img src="/src/assets/alerta.png" alt="" className="size-[24px] shrink-0" />
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Essa atividade tem a capacidade para {capacity} participantes e ficará com {afterMove} (1 movido + {current} já existentes). Confirme se a operação suporta o excedente.</p>
+                        </div>
+                        {/* Capacity confirmation checkbox */}
+                        <button
+                          onClick={() => setRescheduleCapacityConfirmed(!rescheduleCapacityConfirmed)}
+                          className="flex items-center gap-[10px] cursor-pointer text-left"
+                        >
+                          <div className={`flex items-center justify-center shrink-0 size-[20px] rounded-[4px] border transition-colors ${rescheduleCapacityConfirmed ? "bg-[#0b5ed7] border-[#0b5ed7]" : "bg-white border-[#d5d7da]"}`}>
+                            {rescheduleCapacityConfirmed && (
+                              <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            )}
+                          </div>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">Confirmo que a operação suporta o excedente de capacidade nesta atividade.</p>
+                        </button>
+                      </>
+                    ) : rescheduleModal.r.type === "group" ? (
+                      <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                        <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">Esse participante pertence à reserva em grupo {rescheduleModal.r.orderId}. Os demais {rescheduleModal.r.participants.length - 1} membros do grupo permanecerão na atividade original.</p>
+                      </div>
+                    ) : null}
+                  </>
+                );
+              })()}
+            </div>
+            {/* Footer */}
+            {(() => {
+              const dateOptions = [
+                { date: "04/05/2026", slots: 0 },
+              ];
+              const selectedOpt = rescheduleSelectedDate === "04/05/2026";
+              const isNoSlots = selectedOpt;
+              const canConfirm = !isNoSlots || rescheduleCapacityConfirmed;
+
+              return (
+                <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+                  <button onClick={() => setRescheduleModal(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+                  <button
+                    onClick={() => {
+                      if (!canConfirm) return;
+                      const pId = rescheduleModal.p.id;
+                      const name = rescheduleModal.p.name.split(" ")[0];
+                      dispatch({ type: "RESCHEDULE_PARTICIPANT", participantId: pId });
+                      setRescheduleModal(null);
+                      setToast({
+                        message: "Reserva remarcada com sucesso",
+                        description: `A reserva de ${name} foi remarcada. O participante será notificado.`,
+                        type: "success",
+                        actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+                      });
+                    }}
+                    disabled={!canConfirm}
+                    className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${canConfirm ? "bg-[#0b5ed7] hover:bg-[#084fb7] cursor-pointer" : "bg-[#93b4ed] cursor-not-allowed"}`}
+                  >Remarcar reserva</button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>,
+        document.body,
+      )}
+      {/* Concluir Atividade modal */}
+      {showConcluirModal && (
+        <ConcluirAtividadeModal
+          activity={activity}
+          reservations={reservations}
+          onClose={() => setShowConcluirModal(false)}
+          onConfirm={() => {
+            setShowConcluirModal(false);
+            const now = new Date();
+            const day = now.getDate().toString().padStart(2, "0");
+            const month = (now.getMonth() + 1).toString().padStart(2, "0");
+            const hours = now.getHours().toString().padStart(2, "0");
+            const minutes = now.getMinutes().toString().padStart(2, "0");
+            setToast({
+              message: "Atividade encerrada com sucesso!",
+              description: `A atividade ${activity.name} foi definida como encerrada dia ${day}/${month}, às ${hours}:${minutes}.`,
+              type: "success",
+              actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+            });
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── Activity Panel (ClickUp-style sidebar) ────────────────────────────────
+
+const MOCK_ACTIVITY_LOG: { id: string; type: "comment" | "system"; user?: string; category?: string; categoryLabel?: string; text: string; time: string }[] = [
+  { id: "log-1", type: "comment", user: "Marina Costa", category: "observacao", categoryLabel: "Observação", text: "Participante João relatou dificuldade no trecho inicial. Recomendo atenção especial do guia auxiliar.", time: "10:30" },
+  { id: "log-2", type: "system", text: "Check-in realizado para Ana Souza", time: "10:15" },
+  { id: "log-3", type: "system", text: "Reserva #RE-4521 confirmada", time: "10:09" },
+  { id: "log-4", type: "comment", user: "Carlos Silva", category: "saude", categoryLabel: "Saúde", text: "Participante com alergia a picadas de inseto. Epinefrina disponível no kit de primeiros socorros.", time: "09:45" },
+  { id: "log-5", type: "system", text: "Status da atividade alterado para Em Andamento", time: "09:30" },
+  { id: "log-6", type: "comment", user: "Marina Costa", category: "equipamento", categoryLabel: "Equipamento", text: "Verificação de equipamentos concluída. 2 coletes extras adicionados ao kit.", time: "09:15" },
+  { id: "log-7", type: "system", text: "Manifesto de grupo exportado", time: "09:00" },
+  { id: "log-8", type: "comment", user: "Admin", category: "avisos", categoryLabel: "Avisos", text: "Previsão de chuva a partir das 15h. Monitorar condições e preparar plano B.", time: "08:30" },
+  { id: "log-9", type: "system", text: "Check-in realizado para Pedro Santos", time: "08:20" },
+  { id: "log-10", type: "comment", user: "Carlos Silva", category: "transporte", categoryLabel: "Transporte", text: "Van confirmada para retorno às 16:30. Ponto de embarque: portaria principal.", time: "08:00" },
+];
+
+function ActivityPanel({ onClose }: { onClose: () => void }) {
+  const [commentText, setCommentText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("observacao");
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [entries, setEntries] = useState(MOCK_ACTIVITY_LOG);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const categoryRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!categoryOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
+        setCategoryOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [categoryOpen]);
+
+  const currentCategory = CATEGORY_OPTIONS.find((c) => c.id === selectedCategory) || CATEGORY_OPTIONS[0];
+  const commentCount = entries.filter((e) => e.type === "comment").length;
+
+  function handleSave() {
+    if (!commentText.trim() || isSaving) return;
+    setIsSaving(true);
+    setTimeout(() => {
+      setEntries((prev) => [
+        {
+          id: `log-${Date.now()}`,
+          type: "comment" as const,
+          user: "Você",
+          category: selectedCategory,
+          categoryLabel: currentCategory.label,
+          text: commentText.trim(),
+          time: "Agora",
+        },
+        ...prev,
+      ]);
+      setCommentText("");
+      setIsSaving(false);
+    }, 800);
+  }
+
+  function getCategoryColor(category?: string) {
+    return CATEGORY_OPTIONS.find((c) => c.id === category)?.color || "#94a3b8";
+  }
+
+  function getUserInitials(name?: string) {
+    if (!name) return "?";
+    return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  }
+
+  return (
+    <div className="flex flex-col border-r border-[#e9eaeb] bg-white w-[380px] shrink-0 h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-[20px] py-[16px] border-b border-[#f5f5f5] shrink-0 gap-[8px]">
+        {searchOpen ? (
+          /* Search input mode */
+          <div className="flex items-center gap-[8px] flex-1 min-w-0">
+            <div className="flex items-center gap-[8px] flex-1 min-w-0 bg-[#f8fafc] rounded-[8px] px-[10px] py-[6px] border border-[#e9eaeb]">
+              <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar atividade..."
+                className="flex-1 min-w-0 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae]"
+                autoFocus
+              />
+            </div>
+            <button
+              onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
+              className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer shrink-0"
+            >
+              <svg className="size-[14px] text-[#717680]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            </button>
+          </div>
+        ) : (
+          /* Default title mode */
+          <>
+            <div className="flex items-center gap-[10px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Atividade</p>
+              <div className="bg-[#f04438] rounded-[6px] px-[6px] py-[1px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-white leading-[16px]">{commentCount}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-[4px]">
+              <button
+                onClick={() => { setSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 0); }}
+                className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer"
+              >
+                <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              </button>
+              <button onClick={onClose} className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
+                <svg className="size-[14px] text-[#717680]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Scrollable feed */}
+      <div className="flex-1 overflow-y-auto px-[20px] py-[12px]">
+        <div className="flex flex-col">
+          {entries.filter((entry) => {
+            if (!searchQuery.trim()) return true;
+            const q = searchQuery.toLowerCase();
+            return entry.text.toLowerCase().includes(q) || (entry.user || "").toLowerCase().includes(q) || (entry.categoryLabel || "").toLowerCase().includes(q);
+          }).map((entry, idx, filtered) => (
+            <div key={entry.id} className={`flex gap-[12px] py-[10px] ${idx < filtered.length - 1 ? "border-b border-[#f9fafb]" : ""}`}>
+              {entry.type === "comment" ? (
+                <>
+                  <div
+                    className="shrink-0 flex items-center justify-center size-[32px] rounded-full text-white font-['Helvetica_Neue:Medium',sans-serif]"
+                    style={{ backgroundColor: getCategoryColor(entry.category), fontSize: 11 }}
+                  >
+                    {getUserInitials(entry.user)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-[8px] mb-[4px]">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37] leading-[16px]">{entry.user}</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae] leading-[16px] whitespace-nowrap shrink-0">{entry.time}</p>
+                    </div>
+                    <div className="flex items-start gap-[6px]">
+                      <div className="shrink-0 mt-[6px] size-[6px] rounded-full" style={{ backgroundColor: getCategoryColor(entry.category) }} />
+                      <div className="min-w-0">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] text-[#717680] mb-[2px] uppercase tracking-[0.3px]">{entry.categoryLabel}</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">{entry.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="shrink-0 flex items-center justify-center w-[32px]">
+                    <div className="size-[5px] rounded-full bg-[#d0d5dd]" />
+                  </div>
+                  <div className="flex-1 flex items-center justify-between gap-[8px] min-w-0">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[16px]">{entry.text}</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae] whitespace-nowrap shrink-0">{entry.time}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom input */}
+      <div className="border-t border-[#f5f5f5] px-[16px] py-[14px] shrink-0">
+        <div className="relative rounded-[10px] border border-[#e4e4e7] bg-white">
+          <textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Escrever atualização..."
+            className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] bg-transparent outline-none resize-none px-[14px] pt-[12px] pb-[44px] min-h-[64px] placeholder:text-[#a4a7ae] leading-[18px]"
+            rows={2}
+            onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSave(); }}
+          />
+          <div className="absolute bottom-[8px] left-[8px] right-[8px] flex items-center justify-between">
+            <div className="relative" ref={categoryRef}>
+              <button
+                onClick={() => setCategoryOpen(!categoryOpen)}
+                className="flex items-center gap-[6px] px-[10px] py-[4px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer border border-[#e9eaeb]"
+              >
+                <div className="size-[8px] rounded-full" style={{ backgroundColor: currentCategory.color }} />
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#535862]">{currentCategory.label}</p>
+                <svg className={`size-[10px] text-[#a4a7ae] transition-transform ${categoryOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              {categoryOpen && (
+                <div className="absolute bottom-full mb-[4px] left-0 bg-white border border-[#f5f5f5] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] p-[4px] min-w-[160px] z-10">
+                  {CATEGORY_OPTIONS.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => { setSelectedCategory(cat.id); setCategoryOpen(false); }}
+                      className="flex items-center gap-[8px] w-full px-[10px] py-[6px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer"
+                    >
+                      <div className="size-[8px] rounded-full" style={{ backgroundColor: cat.color }} />
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651]">{cat.label}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={handleSave}
+              disabled={!commentText.trim() || isSaving}
+              className={`flex items-center gap-[4px] px-[12px] py-[4px] rounded-[6px] transition-colors ${commentText.trim() && !isSaving ? "bg-[#0b5ed7] text-white hover:bg-[#084fb7] cursor-pointer" : "bg-[#f5f5f5] text-[#a4a7ae] cursor-not-allowed"}`}
+            >
+              {isSaving ? (
+                <div className="size-[12px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <svg className="size-[12px]" fill="none" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              )}
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px]">{isSaving ? "Enviando..." : "Enviar"}</p>
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -4467,9 +5266,9 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
                 <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               {sidebarCollapsed && (
-                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/toggle:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/toggle:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">Expandir menu</p>
-                  <div className="absolute top-1/2 right-full size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
+                  <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
                 </div>
               )}
             </button>
@@ -4495,44 +5294,36 @@ export default function AgendaAtualizacoes({ initialTab = "atualizacoes", onBack
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap overflow-hidden">{item.label}</p>
               )}
               {sidebarCollapsed && (
-                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/nav:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/nav:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{item.label}</p>
-                  <div className="absolute top-1/2 right-full size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
+                  <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
                 </div>
               )}
             </button>
           ))}
         </nav>
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto">
-          {activeTab === "atualizacoes" && (
-            <div className="flex flex-col">
-              <div className="flex items-center gap-[8px] px-[24px] pt-[20px] pb-[4px]">
-                <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] hover:text-[#252b37] cursor-pointer transition-colors">Início</button>
-                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">···</span>
-                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <button onClick={onBackToActivities} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] hover:text-[#252b37] cursor-pointer transition-colors">Atividades do Dia</button>
-                <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M9 6C9 6 15 10.419 15 12C15 13.5812 9 18 9 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{activity.name}</p>
-              </div>
-              <div className="flex gap-[24px] p-[24px] pt-[16px]">
-              <div className="flex-1 min-w-0">
-                <Frame23 />
-              </div>
-              <div className="shrink-0">
-                <Frame24 />
-              </div>
+        {/* Content — push-drawer: panel on LEFT, content pushes right off-screen */}
+        <main className="flex-1 min-h-0 overflow-hidden relative">
+          <div
+            className="absolute inset-0 flex transition-transform duration-300 ease-in-out"
+            style={{
+              width: "calc(100% + 380px)",
+              transform: activeTab === "atualizacoes" ? "translateX(0)" : "translateX(-380px)",
+            }}
+          >
+            <div className="w-[380px] shrink-0 h-full">
+              <ActivityPanel onClose={() => setActiveTab("participantes")} />
             </div>
+            <div className="h-full overflow-y-auto" style={{ width: "calc(100% - 380px)" }}>
+              {(activeTab === "participantes" || activeTab === "atualizacoes") && (
+                <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} />
+              )}
+              {activeTab === "visao-geral" && (
+                <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
+              )}
             </div>
-          )}
-          {activeTab === "visao-geral" && (
-            <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
-          )}
-          {activeTab === "participantes" && (
-            <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} />
-          )}
+          </div>
         </main>
       </div>
     </div>

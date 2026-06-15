@@ -95,7 +95,7 @@ export type TariffType =
   | "Excursão Escolar Educativa (turma)"
   | (string & {});
 
-export type CheckInStatus = "Pending" | "Done" | "Absent";
+export type CheckInStatus = "Pending" | "Done" | "Absent" | "Cancelled" | "Rescheduled";
 
 export type ReservationType = "individual" | "group";
 

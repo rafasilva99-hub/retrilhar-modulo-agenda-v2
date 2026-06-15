@@ -137,7 +137,7 @@ const getShortLabel = (
       if (variant === "paid") return "Pago";
       if (variant === "awaiting-payment") return "Aguardando pagamento";
       if (variant === "partial-payment") return "Pagamento parcial";
-      if (variant === "refunded") return "Reembolsado";
+      if (variant === "refunded") return "Reembolso";
       if (variant === "alert") return "Falha no pagamento";
       return "";
 

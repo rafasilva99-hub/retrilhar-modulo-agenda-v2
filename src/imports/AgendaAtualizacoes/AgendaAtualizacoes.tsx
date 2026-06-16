@@ -1865,7 +1865,7 @@ function AttrBadge({ icon, stroke, tooltipKey }: { icon: React.ReactNode; stroke
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[4px] not-italic text-[12px] text-[#a4a7ae]">{content.subtitle}</p>
           )}
           {/* Arrow */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+          <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%-1px)] size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
         </div>
       )}
     </div>
@@ -1902,7 +1902,7 @@ function PaymentBadge({ isPaid, onClick }: { isPaid: boolean; onClick: () => voi
           {content.subtitle && (
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[4px] not-italic text-[12px] text-[#a4a7ae]">{content.subtitle}</p>
           )}
-          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
+          <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%-1px)] size-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#181d27]" />
         </div>
       )}
     </div>
@@ -1948,7 +1948,7 @@ function LabeledBadge({ icon, label, color, tooltipTitle, tooltipSub, onClick }:
         <div className="absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[8px] px-[14px] py-[6px] rounded-full shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] w-max max-w-[220px] z-50 pointer-events-none text-center">
           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-white whitespace-nowrap">{tooltipTitle}</p>
           {tooltipSub && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] mt-[3px] not-italic text-[11px] text-[#a4a7ae]">{tooltipSub}</p>}
-          <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
+          <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%-1px)] size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
         </div>
       )}
     </div>
@@ -2253,7 +2253,7 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function CheckInButton({ isDone, disabled, onCheckIn, onUndo }: { isDone: boolean; disabled?: boolean; insured?: boolean; onCheckIn: () => void; onUndo: () => void }) {
+function CheckInButton({ isDone, disabled, selected, onCheckIn, onUndo }: { isDone: boolean; disabled?: boolean; insured?: boolean; selected?: boolean; onCheckIn: () => void; onUndo: () => void }) {
   return (
     <div className="relative" onClick={(e) => e.stopPropagation()}>
       <button
@@ -2262,9 +2262,11 @@ function CheckInButton({ isDone, disabled, onCheckIn, onUndo }: { isDone: boolea
         className={`group flex items-center justify-center rounded-[8px] shrink-0 transition-all duration-200 ease-out ${
           disabled
             ? "cursor-not-allowed bg-[#f5f5f5] border border-[#e5e5e5]"
-            : isDone
-              ? "cursor-pointer bg-emerald-50 border border-emerald-200 hover:bg-emerald-100"
-              : "cursor-pointer bg-[#eff6ff] border border-[#bfdbfe] hover:bg-[#dbeafe] hover:border-[#93c5fd]"
+            : selected
+              ? "cursor-pointer bg-white border border-[#e9eaeb] hover:bg-[#f8fafc]"
+              : isDone
+                ? "cursor-pointer bg-emerald-50 border border-emerald-200 hover:bg-emerald-100"
+                : "cursor-pointer bg-[#eff6ff] border border-[#bfdbfe] hover:bg-[#dbeafe] hover:border-[#93c5fd]"
         }`}
         style={{ padding: "6px 14px" }}
       >
@@ -2318,7 +2320,7 @@ function FiltersDrawer({ onClose }: { onClose: () => void }) {
               <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
           </div>
-          <div className="mx-[24px] h-px bg-[#e9eaeb]" />
+          <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
         </div>
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-[24px] py-[20px]">
@@ -2597,7 +2599,7 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
             <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </button>
           </div>
-          <div className="mx-[24px] h-px bg-[#e9eaeb]" />
+          <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
         </div>
 
         {/* Scrollable body */}
@@ -2766,7 +2768,7 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
   );
 }
 
-function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { onBackToActivities?: () => void; activity: Activity; initialOverlay?: string }) {
+function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpenUpdates }: { onBackToActivities?: () => void; activity: Activity; initialOverlay?: string; onOpenUpdates?: () => void }) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
@@ -3023,6 +3025,33 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
       return;
     }
 
+    // Special handling for reschedule bulk — open modal
+    if (action === "reschedule") {
+      setShowMoreActions(false);
+      setBulkRescheduleModal(true);
+      setRescheduleDropdownOpen(false);
+      setRescheduleSelectedDate(null);
+      setRescheduleCapacityConfirmed(false);
+      setRescheduleNotify("now");
+      return;
+    }
+
+    // Special handling for no-show bulk — open modal
+    if (action === "no-show") {
+      setShowMoreActions(false);
+      setBulkNoShowModal(true);
+      return;
+    }
+
+    // Special handling for cancel bulk — open modal
+    if (action === "cancel") {
+      setShowMoreActions(false);
+      setBulkCancelModal(true);
+      setBulkCancelSearch("");
+      setBulkCancelExcluded(new Set());
+      return;
+    }
+
     const e = bulkEligibility[action];
     if (!e || e.eligible === 0) {
       showToast(`Nenhuma das reservas selecionadas pode receber esta ação. ${e?.reason || ""}`, "error");
@@ -3060,6 +3089,12 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
   const [cancelReason, setCancelReason] = useState("");
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [rescheduleModal, setRescheduleModal] = useState<{ r: Reservation; p: Participant } | null>(null);
+  const [bulkRescheduleModal, setBulkRescheduleModal] = useState(false);
+  const [bulkNoShowModal, setBulkNoShowModal] = useState(false);
+  const [bulkCancelModal, setBulkCancelModal] = useState(false);
+  const [bulkCancelSearch, setBulkCancelSearch] = useState("");
+  const [bulkCancelExcluded, setBulkCancelExcluded] = useState<Set<string>>(new Set());
+  const [bulkCancelResult, setBulkCancelResult] = useState<{ succeeded: number; failed: number; failedIds: string[] } | null>(null);
   const [rescheduleDropdownOpen, setRescheduleDropdownOpen] = useState(false);
   const [rescheduleSelectedDate, setRescheduleSelectedDate] = useState<string | null>(null);
   const [rescheduleCapacityConfirmed, setRescheduleCapacityConfirmed] = useState(false);
@@ -3175,11 +3210,10 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
     showToast(`Check-in de ${p.name.split(" ")[0]} desfeito.`);
   };
 
-  const handleCopyId = (orderId: string) => {
+  const handleCopyId = (orderId: string, copiedKey = orderId) => {
     navigator.clipboard?.writeText(orderId);
-    setCopiedId(orderId);
-    showToast("Copiado!");
-    setTimeout(() => setCopiedId(null), 2000);
+    setCopiedId(copiedKey);
+    setTimeout(() => setCopiedId(null), 4000);
   };
 
   const toggleGroup = (id: string) => {
@@ -3922,7 +3956,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                       </svg>
                       <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/info:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{activity.assignedGuides.length} seguro(s) contratado(s)</p>
-                        <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                        <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                       </div>
                     </div>
                   </div>
@@ -3953,7 +3987,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                       </svg>
                       <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{weatherCondition}</p>
-                        <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                        <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                       </div>
                     </div>
                     <div className="flex flex-col">
@@ -3975,7 +4009,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
               )}
             </div>
             <div className="flex gap-[16px] items-end shrink-0 self-end">
-              <div className="relative" ref={headerMoreActionsRef}>
+              <div className="relative z-[20]" ref={headerMoreActionsRef}>
                 <button
                   onClick={() => setShowHeaderMoreActions(!showHeaderMoreActions)}
                   className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 h-[40px] relative rounded-[8px] shrink-0 transition-all duration-200 cursor-pointer"
@@ -3986,19 +4020,22 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                   </div>
                 </button>
                 {showHeaderMoreActions && (
-                  <div className="absolute bg-white border border-[#f5f5f5] border-solid mt-[4px] right-0 rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-max min-w-[220px] z-40 p-[6px] flex flex-col gap-[4px]">
+                  <div className="absolute bg-white border border-[#f5f5f5] border-solid mt-[4px] right-0 rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-max min-w-[220px] p-[6px] flex flex-col gap-[4px]" style={{ zIndex: 9999 }}>
                     {[
-                      "Listas e Manifestos",
-                      "Editar atividade",
-                      "Exportar participantes",
-                      "Enviar comunicado",
-                    ].map((label) => (
+                      { label: "Listas e Manifestos", hasExtIcon: false, action: null },
+                      { label: "Editar atividade", hasExtIcon: true, action: null },
+                      { label: "Exportar participantes", hasExtIcon: false, action: null },
+                      { label: "Enviar comunicado", hasExtIcon: false, action: "open-updates" },
+                    ].map((item) => (
                       <button
-                        key={label}
-                        onClick={() => setShowHeaderMoreActions(false)}
-                        className="cursor-pointer flex gap-[12px] items-center h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#f8fafc] text-[#414651]"
+                        key={item.label}
+                        onClick={() => { setShowHeaderMoreActions(false); if (item.action === "open-updates") onOpenUpdates?.(); }}
+                        className="cursor-pointer flex items-center justify-between h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#f8fafc] text-[#414651]"
                       >
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#414651]">{label}</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#414651]">{item.label}</p>
+                        {item.hasExtIcon && (
+                          <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M17 7L6 18M11 6.13151C11 6.13151 16.6335 5.65662 17.4885 6.51153C18.3434 7.36645 17.8684 13 17.8684 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        )}
                       </button>
                     ))}
                     <div className="bg-[#f5f5f5] h-px w-full" />
@@ -4064,29 +4101,40 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
             {/* Divider */}
             <div className="w-px h-[24px] bg-white/20" />
             {/* Actions group */}
-            <div className="flex items-center gap-[8px]">
+            <div className="flex items-center gap-[12px]">
             {/* Check-in button — white bg */}
             {(() => {
               const isRealizarMode = checkInLabel === "Realizar Check-in's";
+              const selectedParticipants = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id));
+              const eligibleCheckIn = isRealizarMode
+                ? selectedParticipants.filter((p) => p.checkInStatus === "Pending").length
+                : selectedParticipants.filter((p) => p.checkInStatus === "Done").length;
               return (
               <button
                 onClick={() => handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
                 className="flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 cursor-pointer bg-white hover:bg-white/90 transition-all"
               >
                 <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4.5 8l2.5 2.5 4.5-5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#181d27] whitespace-nowrap">{isRealizarMode ? "Realizar Check-in" : "Desfazer Check-in"}</span>
+                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7] whitespace-nowrap">{isRealizarMode ? "Realizar Check-in" : "Desfazer Check-in"}</span>
+                <div className="flex items-center bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[8px] h-[20px]">
+                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680] whitespace-nowrap">{eligibleCheckIn} de {selectedIds.size}</span>
+                </div>
               </button>
               );
             })()}
             {/* Confirm/Undo button — outline style, red when undoing */}
             {(() => {
               const isUndoMode = confirmLabel !== "Confirmar reservas";
+              const selectedParticipants = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id));
+              const eligibleConfirm = isUndoMode
+                ? selectedParticipants.filter((p) => p.checkInStatus === "Done" || p.checkInStatus === "Pending").length
+                : selectedParticipants.filter((p) => p.checkInStatus === "Pending").length;
               return (
                 <button
                   onClick={() => handleBulkAction(isUndoMode ? "undo-confirm" : "confirm", confirmLabel)}
                   className={`cursor-pointer flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 border transition-colors ${
                     isUndoMode
-                      ? "border-[#f87171] bg-transparent hover:bg-[#fef2f2]/20 text-[#f87171]"
+                      ? "border-[#f87171] bg-[#d92d20]/20 hover:bg-[#d92d20]/30 text-[#f87171]"
                       : "border-white/30 bg-transparent hover:bg-white/10"
                   }`}
                 >
@@ -4094,6 +4142,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                     <path d="M4 8l2.5 2.5M6.5 10.5L12 4" stroke={isUndoMode ? "#f87171" : "white"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                   <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] whitespace-nowrap ${isUndoMode ? "text-[#f87171]" : "text-white"}`}>{confirmLabel}</span>
+                  <div className="flex items-center bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[8px] h-[20px]">
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680] whitespace-nowrap">{eligibleConfirm} de {selectedIds.size}</span>
+                  </div>
                 </button>
               );
             })()}
@@ -4103,28 +4154,46 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                 <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white whitespace-nowrap">Mais ações</span>
                 <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
-              {showMoreActions && (
-                <div className="absolute bg-white border border-[#e9eaeb] mt-[4px] right-0 rounded-[10px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[260px] z-20 py-[4px]">
+              {showMoreActions && (() => {
+                const selParts = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id));
+                const total = selectedIds.size;
+                const eligibleMap: Record<string, number> = {
+                  "mark-performed": selParts.filter((p) => p.checkInStatus === "Done").length,
+                  "add-insurance": selParts.filter((p) => p.insuranceStatus !== "Contracted").length,
+                  "undo-bulk-insurance": selParts.filter((p) => p.insuranceStatus === "Contracted").length,
+                  "resend-voucher": total,
+                  "reschedule": selParts.filter((p) => p.checkInStatus === "Pending").length,
+                  "no-show": selParts.filter((p) => p.checkInStatus === "Pending").length,
+                  "cancel": selParts.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent").length,
+                };
+                return (
+                <div className="absolute mt-[4px] bg-white border border-[#e9eaeb] right-0 rounded-[10px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[280px] z-40 py-[4px]">
                   {([
-                    { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false },
+                    { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false, separator: false },
+                    { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false, separator: false },
                     selectedUninsuredCount >= selectedInsuredCount
-                      ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false }
-                      : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer contratação de seguros", destructive: false },
-                    { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false },
-                    { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false },
-                    { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true },
-                    { action: "cancel" as BulkAction, label: "Cancelar reservas", destructive: true },
-                  ]).map(({ action, label, destructive }) => (
+                      ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false, separator: false }
+                      : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer seguros", destructive: false, separator: false },
+                    { action: "resend-voucher" as BulkAction, label: "Reenviar vouchers", destructive: false, separator: false },
+                    { action: "no-show" as BulkAction, label: "Não compareceram", destructive: true, separator: true },
+                    { action: "cancel" as BulkAction, label: "Cancelar reservas", destructive: true, separator: false },
+                  ]).map(({ action, label, destructive, separator }) => (
+                    <React.Fragment key={action}>
+                    {separator && <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />}
                     <button
-                      key={action}
                       onClick={() => handleBulkAction(action, label)}
-                      className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full hover:bg-[#f8fafc] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}
+                      className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full ${destructive ? "text-[#d92d20] hover:bg-[#fef3f2]" : "text-[#414651] hover:bg-[#f8fafc]"}`}
                     >
                       <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[14px] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{label}</p>
+                      <div className="flex items-center bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[8px] h-[20px]">
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680] whitespace-nowrap">{eligibleMap[action] ?? 0} de {total}</span>
+                      </div>
                     </button>
+                    </React.Fragment>
                   ))}
                 </div>
-              )}
+                );
+              })()}
             </div>
             </div>
             {/* Spacer + Clear selection — right aligned */}
@@ -4240,7 +4309,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                     </button>
                     <div className={`absolute bg-[#181d27] bottom-full left-1/2 -translate-x-1/2 mb-[6px] px-[14px] py-[6px] rounded-full text-center transition-opacity duration-150 pointer-events-none whitespace-nowrap shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50 ${copiedId === r.orderId ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-white">{copiedId === r.orderId ? "Copiado!" : "Copiar ID"}</p>
-                      <div className="absolute left-1/2 -translate-x-1/2 top-full size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
+                      <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%-1px)] size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
                     </div>
                   </div>
                   {/* Spacer */}
@@ -4343,7 +4412,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                     <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {/* Three-dot menu */}
                       <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
-                      <CheckInButton isDone={isDone} disabled={checkInDisabled} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
+                      <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                     </div>
                   </div>
                 );
@@ -4396,7 +4465,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                                 </div>
                                 <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
                                   <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
-                                  <CheckInButton isDone={isDone} disabled={checkInDisabled} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
+                                  <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                                 </div>
                               </div>
                             );
@@ -4680,7 +4749,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
           <div className="absolute inset-0 bg-black/40" onClick={() => setCancelModal(null)} />
           <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
             {/* Header */}
-            <div className="flex items-start justify-between px-[24px] pt-[24px] pb-[4px]">
+            <div className="shrink-0">
+            <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
               <div className="flex flex-col gap-[4px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Cancelar reserva</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Esta ação irá processar o estorno do pagamento e devolver a vaga ao estoque. O participante será notificado por e-mail e WhatsApp.</p>
@@ -4688,6 +4758,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
               <button onClick={() => setCancelModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
                 <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
               </button>
+            </div>
+            <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
             </div>
             {/* Body */}
             <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
@@ -4721,7 +4793,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
           <div className="absolute inset-0 bg-black/40" onClick={() => setNoShowModal(null)} />
           <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
             {/* Header */}
-            <div className="flex items-start justify-between px-[24px] pt-[24px] pb-[4px]">
+            <div className="shrink-0">
+            <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
               <div className="flex flex-col gap-[4px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Marcar como não compareceu</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Registra o não comparecimento sem cancelar a reserva.</p>
@@ -4729,6 +4802,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
               <button onClick={() => setNoShowModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
                 <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
               </button>
+            </div>
+            <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
             </div>
             {/* Body */}
             <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
@@ -4760,7 +4835,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
           <div className="absolute inset-0 bg-black/40" onClick={() => setRescheduleModal(null)} />
           <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
             {/* Header */}
-            <div className="flex items-start justify-between px-[24px] pt-[24px] pb-[4px]">
+            <div className="shrink-0">
+            <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
               <div className="flex flex-col gap-[4px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Remarcar reserva</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Selecione a nova data e horário</p>
@@ -4768,6 +4844,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
               <button onClick={() => setRescheduleModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
                 <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
               </button>
+            </div>
+            <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
             </div>
             {/* Body */}
             <div className="flex flex-col gap-[20px] px-[24px] py-[20px]">
@@ -4809,7 +4887,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
                     <div className="relative">
                       <button
                         onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
-                        className={`flex items-center justify-between w-full rounded-[8px] px-[14px] py-[10px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                        className={`flex items-center justify-between w-full h-[44px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
                       >
                         {selected ? (
                           <>
@@ -4973,6 +5051,486 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay }: { on
         </div>,
         document.body,
       )}
+      {/* Bulk Cancel modal */}
+      {bulkCancelModal && (() => {
+        const allSelected = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && !bulkCancelExcluded.has(p.id));
+        const eligible = allSelected.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent" && p.checkInStatus !== "Rescheduled");
+        const ineligible = allSelected.filter((p) => p.checkInStatus === "Cancelled" || p.checkInStatus === "Absent" || p.checkInStatus === "Rescheduled");
+        const alreadyCancelled = allSelected.filter((p) => p.checkInStatus === "Cancelled").length;
+        const alreadyPerformed = allSelected.filter((p) => p.checkInStatus === "Done").length;
+        const eligibleCount = eligible.length;
+        const paidCount = reservations.filter((r) => r.paymentStatus === "Paid" && r.participants.some((p) => selectedIds.has(p.id) && !bulkCancelExcluded.has(p.id))).length;
+        const filteredAll = allSelected.filter((p) => !bulkCancelSearch.trim() || p.name.toLowerCase().includes(bulkCancelSearch.toLowerCase()));
+
+        function getParticipantStatus(p: Participant): { label: string; variant: "green" | "amber" | "red" | "gray"; reason?: string } {
+          if (p.checkInStatus === "Cancelled") return { label: "", variant: "gray", reason: "Já cancelada · não pode ser cancelada" };
+          if (p.checkInStatus === "Done") return { label: "", variant: "gray", reason: "Atividade já realizada · não pode ser cancelada" };
+          if (p.checkInStatus === "Absent") return { label: "", variant: "gray", reason: "Não compareceu · não pode ser cancelada" };
+          return { label: "Confirmada", variant: "green" };
+        }
+
+        function getInitials(name: string) {
+          return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+        }
+
+
+        return createPortal(
+          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setBulkCancelModal(false)} />
+            <div className="bg-white max-w-[560px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10 flex flex-col max-h-[90vh]">
+              {/* Header */}
+              <div className="shrink-0">
+              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Cancelar {eligibleCount} reservas</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Esta ação irá processar o estorno do pagamento e devolver as vagas ao estoque. Os participantes serão notificados por e-mail e WhatsApp.</p>
+                </div>
+                <button onClick={() => setBulkCancelModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </button>
+              </div>
+              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+              </div>
+              {/* Body */}
+              <div className="flex flex-col gap-[16px] px-[24px] pt-[20px] pb-[20px] overflow-y-auto flex-1 min-h-0">
+                {/* Summary card */}
+                <div className={`flex items-center gap-[16px] bg-[#fafafa] border border-[#f5f5f5] rounded-[10px] px-[16px] py-[12px] ${ineligible.length > 0 ? "justify-center" : ""}`}>
+                  <div className="flex items-center gap-[8px]">
+                    <svg className="size-[20px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#17b26a" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#17b26a" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] whitespace-nowrap">Elegíveis p/ cancelamento: <strong>{eligibleCount}</strong></p>
+                  </div>
+                  {ineligible.length > 0 && (
+                    <>
+                      <div className="w-px h-[16px] bg-[#e9eaeb] shrink-0" />
+                      <div className="flex items-center gap-[8px]">
+                        <svg className="size-[20px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#dc6803" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#dc6803" /><path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] whitespace-nowrap">Não elegíveis p/ cancelamento: <strong>{ineligible.length}</strong></p>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Participants list */}
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.8px]">Participantes selecionados</p>
+                  <div className="bg-white border border-[#e9eaeb] rounded-[10px] overflow-hidden">
+                    {/* Search */}
+                    <div className="flex items-center gap-[8px] px-[12px] py-[10px] border-b border-[#f5f5f5]">
+                      <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5"/><path d="M14 14l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      <input
+                        type="text"
+                        value={bulkCancelSearch}
+                        onChange={(e) => setBulkCancelSearch(e.target.value)}
+                        placeholder="Buscar participantes..."
+                        className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae]"
+                      />
+                    </div>
+                    {/* List */}
+                    <div>
+                      {filteredAll.map((p, i) => {
+                        const status = getParticipantStatus(p);
+                        const isIneligible = !!status.reason;
+                        const pRes = reservations.find((r) => r.participants.some((pp) => pp.id === p.id));
+                        const orderId = pRes?.orderId || "";
+                        const copiedKey = `${p.id}:${orderId}`;
+                        return (
+                          <div key={p.id} className={`flex items-center gap-[10px] px-[12px] py-[10px] ${isIneligible ? "bg-[#fef9ec]" : ""} ${i < filteredAll.length - 1 ? "border-b border-[#f9fafb]" : ""}`}>
+                            <div className="bg-gradient-to-br from-[#0b5ed7] to-[#3b82f6] flex items-center justify-center size-[28px] rounded-full shrink-0">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-white">{getInitials(p.name)}</p>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] truncate ${isIneligible ? "text-[#dc6803]" : "text-[#252b37]"}`}>{p.name}</p>
+                              {isIneligible ? (
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#dc6803]">{status.reason}</p>
+                              ) : (
+                                <div className="flex items-center gap-[4px]">
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">Reserva confirmada ·</p>
+                                  <div className="group/copy relative">
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); navigator.clipboard?.writeText(orderId); setCopiedId(copiedKey); setTimeout(() => setCopiedId(null), 2000); }}
+                                      className="flex cursor-pointer items-center gap-[4px] hover:opacity-70 transition-opacity"
+                                    >
+                                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">{orderId}</span>
+                                      <svg className="size-[12px] shrink-0 text-[#a4a7ae]" fill="none" viewBox="0 0 16 16"><rect x="4.5" y="4.5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M11 4.5V3a1.5 1.5 0 00-1.5-1.5H3.5A1.5 1.5 0 002 3v6.5A1.5 1.5 0 003.5 11H5" stroke="currentColor" strokeWidth="1.2"/></svg>
+                                    </button>
+                                    <div className={`pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] rounded-full bg-[#181d27] px-[10px] py-[4px] text-center whitespace-nowrap transition-opacity duration-150 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-[9999] ${copiedId === copiedKey ? "opacity-100" : "opacity-0 group-hover/copy:opacity-100"}`}>
+                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-white leading-[16px]">{copiedId === copiedKey ? "ID copiada!" : "Copiar ID"}</p>
+                                      <div className="absolute left-1/2 top-[calc(100%-1px)] -translate-x-1/2 size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <div className="group/remove relative shrink-0">
+                              <button
+                                onClick={() => setBulkCancelExcluded((prev) => { const n = new Set(prev); n.add(p.id); return n; })}
+                                className="cursor-pointer flex items-center justify-center size-[20px] rounded-[4px] hover:bg-[#f5f5f5] transition-colors"
+                              >
+                                <svg className="size-[12px] text-[#a4a7ae]" fill="none" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                              </button>
+                              <div className="pointer-events-none absolute right-full mr-[8px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/remove:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-[100]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">Remover da seleção</p>
+                                <div className="absolute left-[calc(100%-1px)] top-1/2 -translate-y-1/2 size-0 border-l-[5px] border-t-[5px] border-b-[5px] border-l-[#181d27] border-t-transparent border-b-transparent" />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Motivo */}
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">Motivo do cancelamento</p>
+                  <textarea
+                    placeholder="Insira o motivo do cancelamento das reservas"
+                    className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[10px] px-[16px] py-[14px] outline-none focus:border-[#0b5ed7] transition-colors bg-white resize-none min-h-[100px] placeholder:text-[#a4a7ae]"
+                    rows={4}
+                  />
+                </div>
+
+                {/* Info alert */}
+                <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                  <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">{paidCount} das {eligibleCount} reservas possuem pagamento confirmado. O estorno será processado em até 7 dias úteis conforme a política da empresa.</p>
+                </div>
+              </div>
+              {/* Footer */}
+              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[20px] border-t border-[#e9eaeb] shrink-0">
+                <button onClick={() => setBulkCancelModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+                <button
+                  onClick={() => {
+                    // Random scenario: ~40% chance of partial failure
+                    const hasFailure = Math.random() < 0.4;
+                    if (hasFailure && eligible.length > 2) {
+                      const failCount = Math.max(1, Math.floor(eligible.length * (0.3 + Math.random() * 0.3)));
+                      const shuffled = [...eligible].sort(() => Math.random() - 0.5);
+                      const succeeded = shuffled.slice(0, eligible.length - failCount);
+                      const failed = shuffled.slice(eligible.length - failCount);
+                      for (const p of succeeded) dispatch({ type: "CANCEL_PARTICIPANT", participantId: p.id });
+                      setBulkCancelModal(false);
+                      setBulkCancelResult({ succeeded: succeeded.length, failed: failed.length, failedIds: failed.map((p) => p.id) });
+                    } else {
+                      for (const p of eligible) dispatch({ type: "CANCEL_PARTICIPANT", participantId: p.id });
+                      setBulkCancelModal(false);
+                      setToast({
+                        message: "As reservas selecionadas foram canceladas",
+                        description: `O estorno será processado para ${paidCount} reservas com pagamento confirmado.`,
+                        type: "error",
+                        actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+                      });
+                    }
+                  }}
+                  className="flex-1 h-[40px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors"
+                >Cancelar {eligibleCount} reservas</button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        );
+      })()}
+      {/* Bulk Cancel Result modal — partial failure */}
+      {bulkCancelResult && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setBulkCancelResult(null)} />
+          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            {/* Header */}
+            <div className="shrink-0">
+            <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+              <div className="flex items-start gap-[10px]">
+                <img src="/src/assets/alerta.png" alt="" className="size-[24px] shrink-0 mt-[1px]" />
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Cancelamento parcial concluído</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{bulkCancelResult.succeeded} das {bulkCancelResult.succeeded + bulkCancelResult.failed} reservas foram canceladas com sucesso. As {bulkCancelResult.failed} restantes tiveram falha técnica e podem ser reprocessadas.</p>
+                </div>
+              </div>
+              <button onClick={() => setBulkCancelResult(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+            <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+            </div>
+            {/* Body */}
+            <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
+              {/* Summary */}
+              <div className="flex flex-col gap-[8px] bg-[#fafafa] border border-[#f5f5f5] rounded-[10px] px-[16px] py-[12px]">
+                <div className="flex items-center gap-[8px]">
+                  <svg className="size-[20px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#17b26a" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#17b26a" /><path d="M8 12l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]"><strong>{bulkCancelResult.succeeded} reservas</strong> canceladas e estornos iniciados</p>
+                </div>
+                <div className="flex items-start gap-[8px]">
+                  <svg className="size-[20px] shrink-0 mt-[1px]" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#dc6803" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#dc6803" /><path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                  <div>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]"><strong>{bulkCancelResult.failed} reservas</strong> com falha de processamento:</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">{Math.max(1, bulkCancelResult.failed - 2)} cancelamento de seguro indisponível · {Math.min(2, bulkCancelResult.failed)} falha de envio de notificação</p>
+                  </div>
+                </div>
+              </div>
+              {/* Info */}
+              <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">As {bulkCancelResult.succeeded} reservas canceladas não voltarão à lista. As {bulkCancelResult.failed} com falha permanecem ativas até serem reprocessadas.</p>
+              </div>
+            </div>
+            {/* Footer */}
+            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <button onClick={() => setBulkCancelResult(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Ver detalhes</button>
+              <button
+                onClick={() => {
+                  const failedParts = reservations.flatMap((r) => r.participants).filter((p) => bulkCancelResult.failedIds.includes(p.id));
+                  for (const p of failedParts) dispatch({ type: "CANCEL_PARTICIPANT", participantId: p.id });
+                  setBulkCancelResult(null);
+                  setToast({
+                    message: "Reprocessamento concluído",
+                    description: `${failedParts.length} reservas foram canceladas com sucesso.`,
+                    type: "success",
+                    actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+                  });
+                }}
+                className="flex-1 h-[40px] bg-[#0b5ed7] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#084fb7] not-italic rounded-[8px] text-[14px] text-white transition-colors"
+              >Tentar novamente ({bulkCancelResult.failed})</button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+      {/* Bulk No-show modal */}
+      {bulkNoShowModal && (() => {
+        const eligibleParts = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && p.checkInStatus === "Pending");
+        const eligibleCount = eligibleParts.length;
+        return createPortal(
+          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setBulkNoShowModal(false)} />
+            <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+              {/* Header */}
+              <div className="shrink-0">
+              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Marcar {eligibleCount} como não compareceram</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Registra o não comparecimento sem cancelar as reservas.</p>
+                </div>
+                <button onClick={() => setBulkNoShowModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </button>
+              </div>
+              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+              </div>
+              {/* Body */}
+              <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">Descrição do motivo do não comparecimento</p>
+                  <textarea
+                    placeholder="Insira o motivo do não comparecimento dos participantes"
+                    className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] border border-[#e9eaeb] rounded-[10px] px-[16px] py-[14px] outline-none focus:border-[#0b5ed7] transition-colors bg-white resize-none min-h-[100px] placeholder:text-[#a4a7ae]"
+                    rows={4}
+                  />
+                </div>
+                <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                  <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">O status de não comparecimento dos participantes aparecerá no histórico operacional da reserva.</p>
+                </div>
+              </div>
+              {/* Footer */}
+              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+                <button onClick={() => setBulkNoShowModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+                <button
+                  onClick={() => {
+                    for (const p of eligibleParts) dispatch({ type: "NO_SHOW", participantId: p.id });
+                    setBulkNoShowModal(false);
+                    setToast({
+                      message: `${eligibleCount} participantes marcados como "Não compareceu"`,
+                      description: "As reservas permanecem ativas e podem ser remarcadas.",
+                      type: "success",
+                      actions: [{ label: "Desfazer", onClick: () => { for (const p of eligibleParts) dispatch({ type: "UNDO_NO_SHOW", participantId: p.id }); setToast(null); } }],
+                    });
+                  }}
+                  className="flex-1 h-[40px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors"
+                >Marcar {eligibleCount} participantes</button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        );
+      })()}
+      {/* Bulk Reschedule modal */}
+      {bulkRescheduleModal && (() => {
+        const eligibleParts = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && p.checkInStatus === "Pending");
+        const eligibleCount = eligibleParts.length;
+        const groupParts = reservations.filter((r) => r.type === "group").flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id));
+        const groupCount = groupParts.length;
+        const groupRes = reservations.find((r) => r.type === "group" && r.participants.some((p) => selectedIds.has(p.id)));
+        const remainingInGroup = groupRes ? groupRes.participants.filter((p) => !selectedIds.has(p.id)).length : 0;
+        const dateOptions = [
+          { date: "29/04/2026", time: "08:00 - 16:00", slots: 25, available: true },
+          { date: "30/05/2026", time: "08:00 - 16:00", slots: 30, available: true },
+          { date: "02/05/2026", time: "08:00 - 16:00", slots: 8, available: true },
+          { date: "03/05/2026", time: "08:00 - 16:00", slots: 15, available: true },
+          { date: "04/05/2026", time: "08:00 - 16:00", slots: 0, available: false },
+          { date: "05/05/2026", time: "08:00 - 16:00", slots: 4, available: true },
+        ];
+        const selected = dateOptions.find((d) => d.date === rescheduleSelectedDate);
+        const isNoSlots = selected && selected.slots === 0;
+        const canConfirm = !isNoSlots || rescheduleCapacityConfirmed;
+        return createPortal(
+          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setBulkRescheduleModal(false)} />
+            <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+              {/* Header */}
+              <div className="shrink-0">
+              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Remarcar {eligibleCount} reservas</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Selecione a nova data e horário</p>
+                </div>
+                <button onClick={() => setBulkRescheduleModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </button>
+              </div>
+              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+              </div>
+              {/* Body */}
+              <div className="flex flex-col gap-[20px] px-[24px] py-[20px]">
+                {/* Activity card */}
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Atividade</p>
+                  <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px]">
+                    <img src="/src/assets/activity-icon.png" alt="" className="size-[24px] shrink-0" />
+                    <div className="flex flex-col gap-[6px] min-w-0 flex-1">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37] leading-[20px]">{activity.name}</p>
+                      <div className="flex items-center gap-[6px] min-w-0 overflow-hidden">
+                        <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">{activity.occupancy} participantes</span>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
+                        <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{formatActivityDate(activity.date)}</span>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
+                        <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{activity.startTime} - {activity.endTime}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Date/time selector */}
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Selecionar nova data / horário</p>
+                  <div className="relative">
+                    <button
+                      onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
+                      className={`flex items-center justify-between w-full h-[44px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                    >
+                      {selected ? (
+                        <>
+                          <div className="flex items-center gap-[6px]">
+                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.date}</span>
+                            <span className="text-[#d0d5dd]">·</span>
+                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.time}</span>
+                          </div>
+                          <div className="flex items-center gap-[8px] shrink-0">
+                            <div className="flex items-center gap-[5px] bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[10px] h-[24px]">
+                              <div className={`size-[6px] rounded-full ${selected.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] whitespace-nowrap ${selected.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
+                                {selected.available ? `${selected.slots} vagas disponíveis` : "Sem vagas disponíveis"}
+                              </span>
+                            </div>
+                            <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar</p>
+                          <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </>
+                      )}
+                    </button>
+                    {rescheduleDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px] max-h-[220px] overflow-y-auto">
+                        {dateOptions.map((opt) => (
+                          <button key={opt.date} onClick={() => { setRescheduleSelectedDate(opt.date); setRescheduleDropdownOpen(false); }} className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleSelectedDate === opt.date ? "bg-[#f0f5ff]" : ""}`}>
+                            <div className="flex items-center gap-[6px]">
+                              {rescheduleSelectedDate === opt.date
+                                ? <svg className="size-[16px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                : <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              }
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.date}</span>
+                              <span className="text-[#d0d5dd]">·</span>
+                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.time}</span>
+                            </div>
+                            <div className="flex items-center gap-[4px] shrink-0">
+                              <div className={`size-[6px] rounded-full ${opt.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${opt.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>{opt.available ? `${opt.slots} vagas disponíveis` : "Sem vagas disponíveis"}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Notification options */}
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Notificação ao cliente</p>
+                  <div className="grid grid-cols-2 gap-[12px]">
+                    <button onClick={() => setRescheduleNotify("now")} className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "now" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}>
+                      <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "now" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Notificar agora</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">Serão notificados via e-mail e WhatsApp imediatamente.</p>
+                    </button>
+                    <button onClick={() => setRescheduleNotify("later")} className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "later" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}>
+                      <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "later" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Remarcar sem notificar</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">Você pode notificar manualmente depois.</p>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Alerts */}
+                {isNoSlots ? (
+                  <>
+                    <div className="flex items-center gap-[10px] bg-[#fef9ec] border border-[#fef0c7] rounded-[10px] px-[12px] py-[10px]">
+                      <img src="/src/assets/alerta.png" alt="" className="size-[24px] shrink-0" />
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Essa atividade tem a capacidade para {activity.capacity || 200} participantes e ficará com {(activity.capacity || 200) + eligibleCount} ({eligibleCount} movidos + {activity.capacity || 200} já existentes). Confirme se a operação suporta o excedente.</p>
+                    </div>
+                    <button onClick={() => setRescheduleCapacityConfirmed(!rescheduleCapacityConfirmed)} className="flex items-center gap-[10px] cursor-pointer text-left">
+                      <div className={`flex items-center justify-center shrink-0 size-[20px] rounded-[4px] border transition-colors ${rescheduleCapacityConfirmed ? "bg-[#0b5ed7] border-[#0b5ed7]" : "bg-white border-[#d5d7da]"}`}>
+                        {rescheduleCapacityConfirmed && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                      </div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">Confirmo que a operação suporta o excedente de capacidade nesta atividade.</p>
+                    </button>
+                  </>
+                ) : groupCount > 0 && (
+                  <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                    <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">{groupCount} dos {eligibleCount} participantes pertencem à reserva em grupo {groupRes?.orderId}. Os demais {remainingInGroup} membros do grupo permanecerão na atividade original.</p>
+                  </div>
+                )}
+              </div>
+              {/* Footer */}
+              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+                <button onClick={() => setBulkRescheduleModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+                <button
+                  onClick={() => {
+                    if (!canConfirm) return;
+                    for (const p of eligibleParts) dispatch({ type: "RESCHEDULE_PARTICIPANT", participantId: p.id });
+                    setBulkRescheduleModal(false);
+                    setToast({
+                      message: "As reservas selecionadas foram remarcadas",
+                      description: `Os ${eligibleCount} participantes selecionados serão notificados por e-mail e WhatsApp.`,
+                      type: "success",
+                      actions: [{ label: "Desfazer", onClick: () => { for (const p of eligibleParts) dispatch({ type: "UNDO_RESCHEDULE_PARTICIPANT", participantId: p.id }); setToast(null); } }],
+                    });
+                  }}
+                  disabled={!canConfirm}
+                  className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${canConfirm ? "bg-[#0b5ed7] hover:bg-[#084fb7] cursor-pointer" : "bg-[#93b4ed] cursor-not-allowed"}`}
+                >Remarcar {eligibleCount} reservas</button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        );
+      })()}
       {/* Concluir Atividade modal */}
       {showConcluirModal && (
         <ConcluirAtividadeModal
@@ -5014,7 +5572,7 @@ const MOCK_ACTIVITY_LOG: { id: string; type: "comment" | "system"; user?: string
   { id: "log-10", type: "comment", user: "Carlos Silva", category: "transporte", categoryLabel: "Transporte", text: "Van confirmada para retorno às 16:30. Ponto de embarque: portaria principal.", time: "08:00" },
 ];
 
-function ActivityPanel({ onClose }: { onClose: () => void }) {
+function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoFocusInput?: boolean }) {
   const [commentText, setCommentText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("observacao");
   const [categoryOpen, setCategoryOpen] = useState(false);
@@ -5022,8 +5580,46 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
   const [entries, setEntries] = useState(MOCK_ACTIVITY_LOG);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [entryMenuOpen, setEntryMenuOpen] = useState<string | null>(null);
+  const [editingEntry, setEditingEntry] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
+  const entryMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!entryMenuOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (entryMenuRef.current && !entryMenuRef.current.contains(e.target as Node)) setEntryMenuOpen(null);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [entryMenuOpen]);
+
+  function handleDeleteEntry(id: string) {
+    setEntries((prev) => prev.filter((e) => e.id !== id));
+    setEntryMenuOpen(null);
+  }
+
+  function handleStartEdit(entry: typeof entries[0]) {
+    setEditingEntry(entry.id);
+    setEditText(entry.text);
+    setEntryMenuOpen(null);
+  }
+
+  function handleSaveEdit(id: string) {
+    if (!editText.trim()) return;
+    setEntries((prev) => prev.map((e) => e.id === id ? { ...e, text: editText.trim() } : e));
+    setEditingEntry(null);
+    setEditText("");
+  }
+
+  useEffect(() => {
+    if (autoFocusInput) {
+      setTimeout(() => commentInputRef.current?.focus(), 300);
+    }
+  }, [autoFocusInput]);
 
   useEffect(() => {
     if (!categoryOpen) return;
@@ -5083,7 +5679,7 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar atividade..."
+                placeholder="Buscar comunicado..."
                 className="flex-1 min-w-0 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae]"
                 autoFocus
               />
@@ -5099,7 +5695,7 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
           /* Default title mode */
           <>
             <div className="flex items-center gap-[10px]">
-              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Atividade</p>
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Comunicados</p>
               <div className="bg-[#f04438] rounded-[6px] px-[6px] py-[1px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-white leading-[16px]">{commentCount}</p>
               </div>
@@ -5124,7 +5720,7 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
             const q = searchQuery.toLowerCase();
             return entry.text.toLowerCase().includes(q) || (entry.user || "").toLowerCase().includes(q) || (entry.categoryLabel || "").toLowerCase().includes(q);
           }).map((entry, idx, filtered) => (
-            <div key={entry.id} className={`flex gap-[12px] py-[10px] ${idx < filtered.length - 1 ? "border-b border-[#f9fafb]" : ""}`}>
+            <div key={entry.id} className={`group/entry flex gap-[12px] py-[10px] ${idx < filtered.length - 1 ? "border-b border-[#f9fafb]" : ""}`}>
               {entry.type === "comment" ? (
                 <>
                   <div
@@ -5135,16 +5731,56 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-[8px] mb-[4px]">
-                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37] leading-[16px]">{entry.user}</p>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae] leading-[16px] whitespace-nowrap shrink-0">{entry.time}</p>
-                    </div>
-                    <div className="flex items-start gap-[6px]">
-                      <div className="shrink-0 mt-[6px] size-[6px] rounded-full" style={{ backgroundColor: getCategoryColor(entry.category) }} />
-                      <div className="min-w-0">
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] text-[#717680] mb-[2px] uppercase tracking-[0.3px]">{entry.categoryLabel}</p>
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">{entry.text}</p>
+                      <div className="flex items-center gap-[8px] min-w-0">
+                        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37] leading-[16px]">{entry.user}</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae] leading-[16px] whitespace-nowrap shrink-0">{entry.time}</p>
                       </div>
+                      {entry.user === "Você" && editingEntry !== entry.id && (
+                        <div className="relative shrink-0" ref={entryMenuOpen === entry.id ? entryMenuRef : undefined}>
+                          <button
+                            onClick={() => setEntryMenuOpen(entryMenuOpen === entry.id ? null : entry.id)}
+                            className="flex items-center justify-center size-[24px] rounded-[4px] hover:bg-[#f5f5f5] transition-colors cursor-pointer opacity-0 group-hover/entry:opacity-100"
+                          >
+                            <svg className="size-[14px] text-[#a4a7ae]" fill="none" viewBox="0 0 16 16"><circle cx="4" cy="8" r="1.2" fill="currentColor" /><circle cx="8" cy="8" r="1.2" fill="currentColor" /><circle cx="12" cy="8" r="1.2" fill="currentColor" /></svg>
+                          </button>
+                          {entryMenuOpen === entry.id && (
+                            <div className="absolute right-0 top-full mt-[2px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.12)] py-[4px] w-[140px] z-10">
+                              <button onClick={() => handleStartEdit(entry)} className="flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
+                                <svg className="size-[14px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M16.545 3.455a2.1 2.1 0 013 3L7.5 18.5l-4 1 1-4L16.545 3.455z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Editar</p>
+                              </button>
+                              <button onClick={() => handleDeleteEntry(entry.id)} className="flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#fef3f2] transition-colors cursor-pointer">
+                                <svg className="size-[14px] text-[#d92d20]" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#d92d20]">Excluir</p>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
+                    {editingEntry === entry.id ? (
+                      <div className="flex flex-col gap-[8px]">
+                        <textarea
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] bg-white border border-[#e9eaeb] rounded-[8px] px-[10px] py-[8px] outline-none focus:border-[#0b5ed7] resize-none leading-[18px]"
+                          rows={3}
+                          autoFocus
+                        />
+                        <div className="flex gap-[6px] justify-end">
+                          <button onClick={() => { setEditingEntry(null); setEditText(""); }} className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] px-[10px] py-[4px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer border border-[#e9eaeb]">Cancelar</button>
+                          <button onClick={() => handleSaveEdit(entry.id)} className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-white bg-[#0b5ed7] hover:bg-[#084fb7] px-[10px] py-[4px] rounded-[6px] transition-colors cursor-pointer">Salvar</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-start gap-[6px]">
+                        <div className="shrink-0 mt-[6px] size-[6px] rounded-full" style={{ backgroundColor: getCategoryColor(entry.category) }} />
+                        <div className="min-w-0">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] text-[#717680] mb-[2px] uppercase tracking-[0.3px]">{entry.categoryLabel}</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">{entry.text}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </>
               ) : (
@@ -5165,16 +5801,17 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
 
       {/* Bottom input */}
       <div className="border-t border-[#f5f5f5] px-[16px] py-[14px] shrink-0">
-        <div className="relative rounded-[10px] border border-[#e4e4e7] bg-white">
+        <div className="flex flex-col rounded-[10px] border border-[#e4e4e7] bg-white">
           <textarea
+            ref={commentInputRef}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
-            placeholder="Escrever atualização..."
-            className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] bg-transparent outline-none resize-none px-[14px] pt-[12px] pb-[44px] min-h-[64px] placeholder:text-[#a4a7ae] leading-[18px]"
-            rows={2}
+            placeholder="Escrever comunicado..."
+            className="w-full font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] bg-transparent outline-none resize-none px-[14px] pt-[12px] pb-[8px] min-h-[68px] max-h-[120px] overflow-y-auto placeholder:text-[#a4a7ae] leading-[18px]"
+            rows={3}
             onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSave(); }}
           />
-          <div className="absolute bottom-[8px] left-[8px] right-[8px] flex items-center justify-between">
+          <div className="px-[8px] pt-[6px] pb-[8px] flex items-center justify-between">
             <div className="relative" ref={categoryRef}>
               <button
                 onClick={() => setCategoryOpen(!categoryOpen)}
@@ -5205,7 +5842,7 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
               className={`flex items-center gap-[4px] px-[12px] py-[4px] rounded-[6px] transition-colors ${commentText.trim() && !isSaving ? "bg-[#0b5ed7] text-white hover:bg-[#084fb7] cursor-pointer" : "bg-[#f5f5f5] text-[#a4a7ae] cursor-not-allowed"}`}
             >
               {isSaving ? (
-                <div className="size-[12px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="size-[12px] border-2 border-[#a4a7ae]/30 border-t-[#a4a7ae] rounded-full animate-spin" />
               ) : (
                 <svg className="size-[12px]" fill="none" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               )}
@@ -5220,6 +5857,7 @@ function ActivityPanel({ onClose }: { onClose: () => void }) {
 
 export default function AgendaAtualizacoes({ initialTab = "participantes", onBackToActivities, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string; initialOverlay?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [focusActivityInput, setFocusActivityInput] = useState(false);
   const activity = mockActivities.find((a) => a.id === activityId) || mockActivities[0];
   const activityHeaderTeam = getActivityHeaderTeam(activity);
 
@@ -5266,7 +5904,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           </div>
           {/* Nav items — icon only with tooltips */}
           {([
-            { id: "atualizacoes", label: "Atualizações", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+            { id: "atualizacoes", label: "Comunicados", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
             { id: "visao-geral", label: "Visão geral", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
           ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
             <button
@@ -5297,11 +5935,11 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
             }}
           >
             <div className="w-[380px] shrink-0 h-full">
-              <ActivityPanel onClose={() => setActiveTab("participantes")} />
+              <ActivityPanel onClose={() => { setActiveTab("participantes"); setFocusActivityInput(false); }} autoFocusInput={focusActivityInput} />
             </div>
             <div className="h-full overflow-y-auto" style={{ width: "calc(100% - 380px)" }}>
               {(activeTab === "participantes" || activeTab === "atualizacoes") && (
-                <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} />
+                <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} onOpenUpdates={() => { setActiveTab("atualizacoes"); setFocusActivityInput(true); }} />
               )}
               {activeTab === "visao-geral" && (
                 <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />

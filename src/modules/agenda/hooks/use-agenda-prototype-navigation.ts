@@ -46,7 +46,7 @@ export function useAgendaPrototypeNavigation() {
   const [isBoardRoute, setIsBoardRoute] = useState<boolean>(() => isBoardHash());
   const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
   const [atualizacoesInitialTab, setAtualizacoesInitialTab] =
-    useState<AgendaUpdatesInitialTab>("atualizacoes");
+    useState<AgendaUpdatesInitialTab>("participantes");
   const [returnTo, setReturnTo] = useState<AppPage>("agendaDia");
   const [calendarView, setCalendarView] = useState<AgendaViewMode>("mes");
   const [selectedActivityId, setSelectedActivityId] = useState<string>(() =>

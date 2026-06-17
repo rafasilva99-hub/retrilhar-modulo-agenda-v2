@@ -1438,7 +1438,7 @@ function getInsuranceStatusConfig(status: InsuranceStatus | undefined): { label:
   return { label: "Sem seguro", variant: "gray" };
 }
 
-function ParticipantDrawer({ participant, reservation, onClose, activity, isInsured, onCheckIn, onUndoCheckIn, onNoShow }: {
+function ParticipantDrawer({ participant, reservation, onClose, activity, isInsured, onCheckIn, onUndoCheckIn, onNoShow, activityLocked }: {
   participant: Participant;
   reservation: Reservation;
   onClose: () => void;
@@ -1447,15 +1447,19 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
   onCheckIn?: (p: Participant) => void;
   onUndoCheckIn?: (p: Participant) => void;
   onNoShow?: (r: Reservation, p: Participant) => void;
+  activityLocked?: boolean;
 }) {
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const p = participant;
   const r = reservation;
-  const initials = p.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-  const phone = p.phone || "(31) 99999-9999";
-  const email = p.email || (p.name.split(" ")[0].toLowerCase() + "." + (p.name.split(" ").pop() || "").toLowerCase() + "@email.com");
+  const isAnonymous = !p.name || p.name.trim() === "";
+  const participantIndex = r.participants.findIndex((pp) => pp.id === p.id) + 1;
+  const displayName = isAnonymous ? `Participante nº ${participantIndex}` : p.name;
+  const initials = isAnonymous ? `P${participantIndex}` : p.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const phone = p.phone || (isAnonymous ? undefined : "(31) 99999-9999");
+  const email = p.email || (isAnonymous ? undefined : (p.name.split(" ")[0].toLowerCase() + "." + (p.name.split(" ").pop() || "").toLowerCase() + "@email.com"));
   const participantDoc = p.document;
   const effectiveInsurance = isInsured ? "Contracted" as InsuranceStatus : (p.insuranceStatus || r.insuranceStatus);
   const hasInsurance = effectiveInsurance === "Contracted";
@@ -1490,7 +1494,7 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
 
   // Birth date mock (derived from age)
   const birthYear = new Date().getFullYear() - (p.age || 26);
-  const birthDateStr = `08/01/${birthYear} - ${p.age || 26} anos`;
+  const birthDateStr = (isAnonymous || p.age === 0) ? "Não preenchido" : `08/01/${birthYear} - ${p.age} anos`;
 
   // Participant reservation ID for display
   const reservationDisplayId = getParticipantReservationId(p.id);
@@ -1539,16 +1543,16 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
             {/* Top row: avatar + name + tariff */}
             {/* Name + tariff */}
             <div className="flex items-start gap-4">
-              <div className="flex items-center justify-center rounded-full size-12 shrink-0 border-2 border-[#bfdbfe] bg-[#eff6ff]">
+              <div className="flex items-center justify-center rounded-full size-12 shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#0b5ed7]">{initials}</p>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[15px] text-[#181d27]">{p.name}</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[15px] text-[#181d27]">{displayName}</p>
                   {p.notes === "Comprador" && (
-                    <span className="inline-flex items-center gap-[8px] p-[2px]">
+                    <span className="inline-flex items-center gap-[6px] p-[2px]">
                       <div className="size-[8px] rounded-full bg-[#0b5ed7] shrink-0" />
-                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#0b5ed7]">Comprador</p>
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#0b5ed7]">Comprador</p>
                     </span>
                   )}
                 </div>
@@ -1585,10 +1589,29 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
               <div className="flex-1 min-w-0">
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[6px]">Status</p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <div className="flex items-center gap-1.5 bg-[#ecfdf3] border border-[#a7f3d0] rounded-full px-2.5 py-1">
-                    <svg className="size-3.5 text-[#17b26a]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#17b26a]">{opStatus.label === "Aguardando check-in" ? "Reserva confirmada" : opStatus.label}</p>
-                  </div>
+                  {(() => {
+                    const opColors = {
+                      green: { bg: "bg-[#ecfdf3]", border: "border-[#a7f3d0]", text: "text-[#17b26a]" },
+                      amber: { bg: "bg-[#fffbeb]", border: "border-[#fbd38d]", text: "text-[#dc6803]" },
+                      red: { bg: "bg-[#fef3f2]", border: "border-[#fecdc9]", text: "text-[#d92d20]" },
+                      blue: { bg: "bg-[#eff6ff]", border: "border-[#bfdbfe]", text: "text-[#0b5ed7]" },
+                      gray: { bg: "bg-[#f5f5f5]", border: "border-[#e9eaeb]", text: "text-[#535862]" },
+                    };
+                    const oc = opColors[opStatus.variant];
+                    const opIcon = opStatus.variant === "green"
+                      ? <svg className={`size-3.5 ${oc.text}`} fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      : opStatus.variant === "amber"
+                      ? <svg className={`size-3.5 ${oc.text}`} fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                      : opStatus.variant === "red"
+                      ? <svg className={`size-3.5 ${oc.text}`} fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      : null;
+                    return (
+                      <div className={`flex items-center gap-1.5 ${oc.bg} border ${oc.border} rounded-full px-2.5 py-1`}>
+                        {opIcon}
+                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${oc.text}`}>{opStatus.label === "Aguardando check-in" ? "Reserva confirmada" : opStatus.label}</p>
+                      </div>
+                    );
+                  })()}
                   {hasInsurance && (
                     <div className="flex items-center gap-1.5 bg-[#ecfdf3] border border-[#a7f3d0] rounded-full px-2.5 py-1">
                       <svg className="size-3.5 text-[#17b26a]" fill="none" viewBox="0 0 14 14"><path d="M7 1.5c-1.5 0-2.9.33-4 .9-.5.25-.8.4-1 .8-.2.4-.2.8-.2 1.5v2.1c0 3.4 2.7 5.3 4.3 6.1.4.2.7.3 1 .3s.6-.1 1-.3c1.6-.8 4.3-2.7 4.3-6.1v-2.1c0-.7 0-1.1-.2-1.5-.2-.4-.5-.55-1-.8-1.1-.57-2.5-.9-4-.9z" stroke="currentColor" strokeWidth="1.2" /><path d="M5 7l1.5 1.5L9 5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -1596,7 +1619,21 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
                     </div>
                   )}
                   {!hasInsurance && (
-                    <DrawerStatusChip label={insStatus.label} variant={insStatus.variant} />
+                    <div className={`flex items-center gap-1.5 ${
+                      insStatus.variant === "amber" ? "bg-[#fffbeb] border-[#fbd38d] text-[#dc6803]" :
+                      insStatus.variant === "red" ? "bg-[#fef3f2] border-[#fecdc9] text-[#d92d20]" :
+                      insStatus.variant === "gray" ? "bg-[#f5f5f5] border-[#e9eaeb] text-[#535862]" :
+                      "bg-[#ecfdf3] border-[#a7f3d0] text-[#17b26a]"
+                    } border rounded-full px-2.5 py-1`}>
+                      {insStatus.variant === "amber" ? (
+                        <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                      ) : insStatus.variant === "red" ? (
+                        <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      ) : (
+                        <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      )}
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px]">{insStatus.label}</p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1665,7 +1702,7 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
           <DrawerSection title="Dados de saúde">
 
             {/* Emergency contact */}
-            <div className="flex items-center gap-[12px] mb-[16px]">
+            <div className={`flex items-center gap-[12px] ${!isAnonymous ? "mb-[16px]" : ""}`}>
               <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
                 <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M14.5827 11.2495V12.4994C14.5827 15.2493 14.5827 16.6242 13.7284 17.4785C12.8741 18.3328 11.4992 18.3328 8.74935 18.3328C5.99949 18.3328 4.62456 18.3328 3.77029 17.4785C2.91602 16.6242 2.91602 15.2493 2.91602 12.4994L2.91602 7.49945C2.91602 4.74959 2.91602 3.37466 3.77029 2.52038C4.48394 1.80673 5.56095 1.68926 7.49935 1.66992" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" /><path d="M13.3333 1.66602C12.146 1.66602 11.3762 2.42314 10.4657 2.6991C10.0955 2.81131 9.91042 2.86742 9.83551 2.94651C9.7606 3.0256 9.73867 3.14117 9.6948 3.37232C9.22534 5.84576 10.2514 8.13251 12.6986 9.02257C12.9615 9.1182 13.093 9.16602 13.3346 9.16602C13.5762 9.16601 13.7076 9.1182 13.9705 9.02256C16.4175 8.13249 17.4426 5.84576 16.9731 3.37231C16.9292 3.14113 16.9072 3.02554 16.8323 2.94645C16.7574 2.86736 16.5723 2.81128 16.2021 2.69914C15.2913 2.4232 14.5206 1.66602 13.3333 1.66602Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M7.91602 15.834H9.58268" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
@@ -1675,33 +1712,37 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
                   {p.emergencyContact ? `${p.emergencyContact.phone}` : phone}
                 </p>
               </div>
-              <button className="flex items-center gap-[6px] px-[12px] h-[32px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer shrink-0">
-                <svg className="size-[14px] text-[#075e54]" fill="none" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2.546 20.2A1.572 1.572 0 003.8 21.454l3.032-.892A9.96 9.96 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" stroke="currentColor" strokeWidth="1.5" /><path d="M8.59 10.29c.46 1.11 1.22 2.12 2.18 2.92.72.6 1.56 1.06 2.47 1.34.36.11.64-.14.87-.37l.27-.27c.39-.39 1.02-.39 1.41 0l1.06 1.06c.39.39.39 1.02 0 1.41l-.42.42c-.58.58-1.41.81-2.2.62a10.18 10.18 0 01-4.6-2.71 10.18 10.18 0 01-2.71-4.6c-.19-.79.04-1.62.62-2.2l.42-.42c.39-.39 1.02-.39 1.41 0L9.37 7.6c.39.39.39 1.02 0 1.41l-.27.27c-.23.23-.48.51-.37.87z" fill="currentColor" /></svg>
+              <button className="flex items-center gap-[6px] px-[12px] h-[40px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer shrink-0">
+                <svg className="size-[14px] text-[#075e54]" fill="none" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.3789 2.27907 14.6926 2.78382 15.8877C3.06278 16.5481 3.20226 16.8784 3.21953 17.128C3.2368 17.3776 3.16334 17.6521 3.01642 18.2012L2 22L5.79877 20.9836C6.34788 20.8367 6.62244 20.7632 6.87202 20.7805C7.12161 20.7977 7.45185 20.9372 8.11235 21.2162C9.30745 21.7209 10.6211 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M8.58815 12.3773L9.45909 11.2956C9.82616 10.8397 10.2799 10.4153 10.3155 9.80826C10.3244 9.65494 10.2166 8.96657 10.0008 7.58986C9.91601 7.04881 9.41086 7 8.97332 7C8.40314 7 8.11805 7 7.83495 7.12931C7.47714 7.29275 7.10979 7.75231 7.02917 8.13733C6.96539 8.44196 7.01279 8.65187 7.10759 9.07169C7.51023 10.8548 8.45481 12.6158 9.91948 14.0805C11.3842 15.5452 13.1452 16.4898 14.9283 16.8924C15.3481 16.9872 15.558 17.0346 15.8627 16.9708C16.2477 16.8902 16.7072 16.5229 16.8707 16.165C17 15.8819 17 15.5969 17 15.0267C17 14.5891 16.9512 14.084 16.4101 13.9992C15.0334 13.7834 14.3451 13.6756 14.1917 13.6845C13.5847 13.7201 13.1603 14.1738 12.7044 14.5409L11.6227 15.4118" stroke="currentColor" strokeWidth="1.5" /></svg>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#075e54] whitespace-nowrap">Falar via WhatsApp</p>
               </button>
             </div>
 
-            <div className="border-t border-[#f5f5f5] mb-[4px]" />
+            {!isAnonymous && (
+              <>
+                <div className="border-t border-[#f5f5f5] mb-[4px]" />
 
-            {/* Health items — inline text */}
-            <div className="flex flex-wrap gap-x-[16px] gap-y-[8px] pt-[12px]">
-              {[
-                { label: "Alergias", value: p.healthDetails?.allergies && p.healthDetails.allergies.length > 0 ? p.healthDetails.allergies.join(", ") : "não", hasValue: !!(p.healthDetails?.allergies && p.healthDetails.allergies.length > 0) },
-                { label: "Restrição alimentar", value: p.dietaryRestrictions && p.dietaryRestrictions.length > 0 ? p.dietaryRestrictions.join(", ") : "não", hasValue: !!(p.dietaryRestrictions && p.dietaryRestrictions.length > 0) },
-                { label: "Incapacidade física / mental", value: p.accessibility ? p.accessibility.type : "não", hasValue: !!p.accessibility },
-                { label: "Plano de saúde", value: p.healthDetails?.healthPlanProvider || "não", hasValue: !!p.healthDetails?.healthPlanProvider },
-                { label: "Medicação de uso contínuo", value: p.healthDetails?.medications && p.healthDetails.medications.length > 0 ? p.healthDetails.medications.join(", ") : "não", hasValue: !!(p.healthDetails?.medications && p.healthDetails.medications.length > 0) },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-[6px]">
-                  {item.hasValue ? (
-                    <svg className="size-[14px] text-[#17b26a] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  ) : (
-                    <svg className="size-[14px] text-[#d92d20] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                  )}
-                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${item.hasValue ? "text-[#17b26a]" : "text-[#414651]"}`}>{item.label} - {item.value}</p>
+                {/* Health items — inline text */}
+                <div className="flex flex-wrap gap-x-[16px] gap-y-[8px] pt-[12px]">
+                  {[
+                    { label: "Alergias", value: p.healthDetails?.allergies && p.healthDetails.allergies.length > 0 ? p.healthDetails.allergies.join(", ") : "não", hasValue: !!(p.healthDetails?.allergies && p.healthDetails.allergies.length > 0) },
+                    { label: "Restrição alimentar", value: p.dietaryRestrictions && p.dietaryRestrictions.length > 0 ? p.dietaryRestrictions.join(", ") : "não", hasValue: !!(p.dietaryRestrictions && p.dietaryRestrictions.length > 0) },
+                    { label: "Incapacidade física / mental", value: p.accessibility ? p.accessibility.type : "não", hasValue: !!p.accessibility },
+                    { label: "Plano de saúde", value: p.healthDetails?.healthPlanProvider || "não", hasValue: !!p.healthDetails?.healthPlanProvider },
+                    { label: "Medicação de uso contínuo", value: p.healthDetails?.medications && p.healthDetails.medications.length > 0 ? p.healthDetails.medications.join(", ") : "não", hasValue: !!(p.healthDetails?.medications && p.healthDetails.medications.length > 0) },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-[6px]">
+                      {item.hasValue ? (
+                        <svg className="size-[14px] text-[#17b26a] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      ) : (
+                        <svg className="size-[14px] text-[#d92d20] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      )}
+                      <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${item.hasValue ? "text-[#17b26a]" : "text-[#414651]"}`}>{item.label} - {item.value}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </DrawerSection>
 
           {/* ── 5. DADOS DE PAGAMENTO SECTION ── */}
@@ -1796,7 +1837,11 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
 
         {/* ── 7. FOOTER (sticky) ── */}
         <div className="px-6 py-4 border-t border-[#e9eaeb] bg-white flex items-center justify-end gap-3 shrink-0">
-          {isTerminal ? (
+          {activityLocked ? (
+            <button onClick={onClose} className="flex items-center justify-center gap-2 h-[40px] px-[20px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#fafafa] transition-colors cursor-pointer">
+              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</span>
+            </button>
+          ) : isTerminal ? (
             <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-[#9ca3af] flex-1 text-center">
               {isCancelled ? "Reserva cancelada" : isPerformed ? "Atividade realizada" : "Reserva expirada"}
             </p>
@@ -2508,15 +2553,23 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
   return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8];
 }
 
-function ParticipantMenu({ reservation, participant, onAction, participantInsured }: {
+function ParticipantMenu({ reservation, participant, onAction, participantInsured, activityLocked }: {
   reservation: Reservation;
   participant: Participant;
   onAction: (actionId: string, r: Reservation, p: Participant) => void;
   participantInsured: boolean;
+  activityLocked?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [hoveredDisabled, setHoveredDisabled] = useState<string | null>(null);
-  const slots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required", participant), [reservation, participantInsured, participant]);
+  const baseSlots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required", participant), [reservation, participantInsured, participant]);
+  const slots = useMemo(() => {
+    if (!activityLocked) return baseSlots;
+    return baseSlots.map((slot) => {
+      if (slot.id === "participant-data") return slot;
+      return { ...slot, enabled: false, tooltip: slot.tooltip || "Ação indisponível para esta atividade" };
+    });
+  }, [baseSlots, activityLocked]);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu on outside click without blocking the target click
@@ -2805,13 +2858,17 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
   );
 }
 
-function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpenUpdates }: { onBackToActivities?: () => void; activity: Activity; initialOverlay?: string; onOpenUpdates?: () => void }) {
+function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpenUpdates, onOpenTeam, teamGuides, teamInsuredCount }: { onBackToActivities?: () => void; activity: Activity; initialOverlay?: string; onOpenUpdates?: () => void; onOpenTeam?: () => void; teamGuides?: string[]; teamInsuredCount?: number }) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showManifestoDrawer, setShowManifestoDrawer] = useState(false);
+  const [showFichaDrawer, setShowFichaDrawer] = useState(false);
+  const [fichaExportOpen, setFichaExportOpen] = useState<number | null>(null);
+  const [manifestoUpdatedAt, setManifestoUpdatedAt] = useState(() => new Date());
+  const [manifestoNow, setManifestoNow] = useState(() => new Date());
   const [reservations, dispatch] = useReducer(reservationsReducer, mockReservations);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(mockReservations.filter((r) => r.type === "group").map((r) => r.id)));
   const [animatingGroups, setAnimatingGroups] = useState<Set<string>>(new Set());
@@ -2828,10 +2885,23 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   const [isQrDrawerClosing, setIsQrDrawerClosing] = useState(false);
   const [isConfirmingCheckIn, setIsConfirmingCheckIn] = useState(false);
   const [isQrInstructionEntering, setIsQrInstructionEntering] = useState(false);
+  const [qrGroupSelected, setQrGroupSelected] = useState<Set<string>>(new Set(["p-grp-1", "p-grp-2", "p-grp-3"]));
   const [showConcluirModal, setShowConcluirModal] = useState(false);
   const qrDrawerCloseTimeoutRef = useRef<number | null>(null);
   const qrInstructionEnterTimeoutRef = useRef<number | null>(null);
-  const QR_SCENARIOS = ["camera-blocked", "scanning", "valid-reservation", "checkin-success", "reservation-cancelled", "qr-not-recognized", "wrong-date"] as const;
+  const QR_SCENARIOS = ["camera-blocked", "scanning", "valid-reservation", "group-reservation", "checkin-success", "reservation-cancelled", "qr-not-recognized", "wrong-date"] as const;
+
+  const isActivityLocked = activity.lifecycleStatus !== "EmAndamento";
+
+  function getManifestoUpdatedLabel() {
+    const diffMinutes = Math.floor((manifestoNow.getTime() - manifestoUpdatedAt.getTime()) / 60000);
+    if (diffMinutes < 1) return "Atualizado agora há pouco";
+    if (diffMinutes === 1) return "Atualizado há 1 minuto";
+    if (diffMinutes < 60) return `Atualizado há ${diffMinutes} minutos`;
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours === 1) return "Atualizado há 1 hora";
+    return `Atualizado há ${diffHours} horas`;
+  }
 
   // Preview-mode overlay injection. Map slug → state setter on mount only.
   useEffect(() => {
@@ -2884,6 +2954,13 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   }, [showQrScanner]);
 
   useEffect(() => {
+    if (!showManifestoDrawer) return;
+    setManifestoNow(new Date());
+    const interval = window.setInterval(() => setManifestoNow(new Date()), 60000);
+    return () => window.clearInterval(interval);
+  }, [showManifestoDrawer]);
+
+  useEffect(() => {
     return () => {
       if (qrDrawerCloseTimeoutRef.current) window.clearTimeout(qrDrawerCloseTimeoutRef.current);
       if (qrInstructionEnterTimeoutRef.current) window.clearTimeout(qrInstructionEnterTimeoutRef.current);
@@ -2909,6 +2986,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   // Sticky bulk bar: track when original bar scrolls out of view
   const bulkBarRef = useRef<HTMLDivElement>(null);
   const headerMoreActionsRef = useRef<HTMLDivElement>(null);
+  const bulkMoreActionsRef = useRef<HTMLDivElement>(null);
   const [bulkBarHidden, setBulkBarHidden] = useState(false);
   useEffect(() => {
     if (!showHeaderMoreActions) return;
@@ -2920,6 +2998,17 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
     document.addEventListener("mousedown", handleMouseDown);
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [showHeaderMoreActions]);
+  useEffect(() => {
+    if (!showMoreActions && !showMoreActionsStickyBar) return;
+    const handleMouseDown = (e: MouseEvent) => {
+      if (bulkMoreActionsRef.current && !bulkMoreActionsRef.current.contains(e.target as Node)) {
+        setShowMoreActions(false);
+        setShowMoreActionsStickyBar(false);
+      }
+    };
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, [showMoreActions, showMoreActionsStickyBar]);
   useEffect(() => {
     const el = bulkBarRef.current;
     if (!el) return;
@@ -3001,6 +3090,10 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   };
 
   const handleBulkAction = (action: BulkAction, label: string) => {
+    if (isActivityLocked) {
+      showToast("Ação indisponível para esta atividade.", "error");
+      return;
+    }
     // Special handling for undo insurance bulk
     if (action === "undo-bulk-insurance" as any) {
       let undone = 0;
@@ -3060,6 +3153,24 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
         }
       }
       showToast(`Check-in desfeito para ${undone} participante(s).`);
+      return;
+    }
+
+    // Single selection → use individual modals instead of bulk
+    if (selectedIds.size === 1 && (action === "reschedule" || action === "no-show" || action === "cancel")) {
+      const pid = [...selectedIds][0];
+      let foundR: Reservation | null = null;
+      let foundP: Participant | null = null;
+      for (const r of reservations) {
+        const p = r.participants.find((pp) => pp.id === pid);
+        if (p) { foundR = r; foundP = p; break; }
+      }
+      if (foundR && foundP) {
+        setShowMoreActions(false);
+        if (action === "reschedule") { setRescheduleModal({ r: foundR, p: foundP }); setRescheduleDropdownOpen(false); setRescheduleSelectedDate(null); setRescheduleCapacityConfirmed(false); }
+        if (action === "no-show") { setNoShowModal({ r: foundR, p: foundP }); }
+        if (action === "cancel") { setCancelModal({ r: foundR, p: foundP }); setCancelReason(""); }
+      }
       return;
     }
 
@@ -3133,6 +3244,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   const [bulkCancelSearch, setBulkCancelSearch] = useState("");
   const [bulkCancelExcluded, setBulkCancelExcluded] = useState<Set<string>>(new Set());
   const [bulkCancelResult, setBulkCancelResult] = useState<{ succeeded: number; failed: number; failedIds: string[] } | null>(null);
+  const [cancelActivityModal, setCancelActivityModal] = useState(false);
+  const [cancelActivityConfirmText, setCancelActivityConfirmText] = useState("");
   const [rescheduleDropdownOpen, setRescheduleDropdownOpen] = useState(false);
   const [rescheduleSelectedDate, setRescheduleSelectedDate] = useState<string | null>(null);
   const [rescheduleCapacityConfirmed, setRescheduleCapacityConfirmed] = useState(false);
@@ -3143,11 +3256,11 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
 
   // Block body scroll when any modal is open
   useEffect(() => {
-    if (cancelModal || noShowModal || checkInModal) {
+    if (cancelModal || noShowModal || checkInModal || cancelActivityModal) {
       document.body.style.overflow = "hidden";
       return () => { document.body.style.overflow = ""; };
     }
-  }, [cancelModal, noShowModal, checkInModal]);
+  }, [cancelModal, noShowModal, checkInModal, cancelActivityModal]);
   // Per-participant insurance tracking — all start uninsured so user must contract
   const [insuredParticipants, setInsuredParticipants] = useState<Set<string>>(new Set());
   const isParticipantInsured = (pid: string) => insuredParticipants.has(pid);
@@ -3362,10 +3475,10 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   ))}
                   <div className="relative size-[48px] bg-white rounded-[10px] flex items-center justify-center border border-[#d6d8da] shadow-[0_1px_2px_rgba(10,13,18,0.05)]">
                     <svg className="size-[24px] text-[#414651]" fill="none" viewBox="0 0 48 48">
-                      <path d="M19.4317 19.4297C17.3574 20.8751 16 23.278 16 25.998C16 30.4162 19.5817 33.998 24 33.998C26.72 33.998 29.1229 32.6406 30.5683 30.5662" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M38 19V19.02" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M4 4L44 44" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M12.9919 12.9919C12.7629 13 12.4834 13 12.1074 13C10.1472 13 9.16715 13 8.36578 13.2268C6.3611 13.7943 4.79431 15.3611 4.22684 17.3658C4 18.1671 4 19.1472 4 21.1074V29C4 34.6569 4 37.4853 5.75736 39.2426C7.51472 41 10.3431 41 16 41H32C36 41 38.5858 41 40.3787 40.3787M43.7561 35.7561C44 34.0997 44 31.929 44 29V21.1074C44 19.1472 44 18.1671 43.7732 17.3658C43.2057 15.3611 41.6389 13.7943 39.6342 13.2268C38.8329 13 37.8528 13 35.8926 13C35.1607 13 34.7947 13 34.4538 12.9406C33.6091 12.7933 32.8341 12.3785 32.243 11.7574C32.0045 11.5067 31.406 10.609 31 10C30.2073 8.81088 29.8109 8.21633 29.269 7.80733C28.9381 7.55758 28.5704 7.36078 28.179 7.224C27.5382 7 26.8236 7 25.3944 7H22.6056C21.1764 7 20.4618 7 19.821 7.224C19.4296 7.36078 19.0619 7.55758 18.731 7.80733C18.2889 8.14101 17.9437 8.5982 17.401 9.40101" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M19.4317 19.4297C17.3574 20.8751 16 23.278 16 25.998C16 30.4162 19.5817 33.998 24 33.998C26.72 33.998 29.1229 32.6406 30.5683 30.5662" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M38 19V19.02" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M4 4L44 44" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M12.9919 12.9919C12.7629 13 12.4834 13 12.1074 13C10.1472 13 9.16715 13 8.36578 13.2268C6.3611 13.7943 4.79431 15.3611 4.22684 17.3658C4 18.1671 4 19.1472 4 21.1074V29C4 34.6569 4 37.4853 5.75736 39.2426C7.51472 41 10.3431 41 16 41H32C36 41 38.5858 41 40.3787 40.3787M43.7561 35.7561C44 34.0997 44 31.929 44 29V21.1074C44 19.1472 44 18.1671 43.7732 17.3658C43.2057 15.3611 41.6389 13.7943 39.6342 13.2268C38.8329 13 37.8528 13 35.8926 13C35.1607 13 34.7947 13 34.4538 12.9406C33.6091 12.7933 32.8341 12.3785 32.243 11.7574C32.0045 11.5067 31.406 10.609 31 10C30.2073 8.81088 29.8109 8.21633 29.269 7.80733C28.9381 7.55758 28.5704 7.36078 28.179 7.224C27.5382 7 26.8236 7 25.3944 7H22.6056C21.1764 7 20.4618 7 19.821 7.224C19.4296 7.36078 19.0619 7.55758 18.731 7.80733C18.2889 8.14101 17.9437 8.5982 17.401 9.40101" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
@@ -3609,7 +3722,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     setIsConfirmingCheckIn(true);
                     setTimeout(() => {
                       setIsConfirmingCheckIn(false);
-                      setQrScenario(3);
+                      setQrScenario(4);
                     }, 2000);
                   }}
                   disabled={isConfirmingCheckIn || isQrDrawerClosing}
@@ -3874,6 +3987,178 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
             </div>
           </>
         )}
+
+        {/* Scenario: group-reservation */}
+        {QR_SCENARIOS[qrScenario] === "group-reservation" && (() => {
+          const groupMembers = [
+            { id: "p-grp-1", name: "Marina Oliveira Albuquerque Figueiredo de Souza", resId: "RE-9921-1", tariff: "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso", checkedIn: false, buyer: true },
+            { id: "p-grp-2", name: "Carlos Henrique Oliveira Monteiro Nascimento", resId: "RE-9921-2", tariff: "Adulto Integral com Transporte Executivo e Kit Equipamento", checkedIn: false },
+            { id: "p-grp-3", name: "Helena Vitória Oliveira Albuquerque", resId: "RE-9921-3", tariff: "Infantil até 12 anos acompanhada com seguro obrigatório", checkedIn: false },
+            { id: "p-grp-4", name: "Pedro Augusto Oliveira de Albuquerque Figueiredo", resId: "RE-9921-4", tariff: "Infantil Promocional com Transporte Compartilhado", checkedIn: true, checkedInAt: "07:30" },
+          ];
+          const selectableMembers = groupMembers.filter((m) => !m.checkedIn);
+          const allSelected = selectableMembers.every((m) => qrGroupSelected.has(m.id));
+          const selectedCount = selectableMembers.filter((m) => qrGroupSelected.has(m.id)).length;
+          return (
+            <>
+              <div className="flex-1 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
+                <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 size-[420px] rounded-[8px] transition-[left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ left: isQrDrawerClosing ? "50%" : "calc(50% - 240px)" }}>
+                  <div className="absolute inset-0 bg-black/50 backdrop-blur-none mix-blend-difference rounded-[8px]" style={{ backdropFilter: "none" }} />
+                  <svg className="absolute inset-[-8px]" style={{ width: "calc(100% + 16px)", height: "calc(100% + 16px)" }} viewBox="0 0 1080 1080" fill="none">
+                    <path d="M0 33.75C0 24.7989 3.55579 16.2145 9.88515 9.88515C16.2145 3.55579 24.7989 0 33.75 0L236.25 0C245.201 0 253.786 3.55579 260.115 9.88515C266.444 16.2145 270 24.7989 270 33.75C270 42.7011 266.444 51.2855 260.115 57.6149C253.786 63.9442 245.201 67.5 236.25 67.5H109.5C86.304 67.5 67.5 86.304 67.5 109.5V236.25C67.5 245.201 63.9442 253.786 57.6149 260.115C51.2855 266.444 42.7011 270 33.75 270C24.7989 270 16.2145 266.444 9.88515 260.115C3.55579 253.786 0 245.201 0 236.25V33.75ZM810 33.75C810 24.7989 813.556 16.2145 819.885 9.88515C826.215 3.55579 834.799 0 843.75 0L1046.25 0C1055.2 0 1063.79 3.55579 1070.11 9.88515C1076.44 16.2145 1080 24.7989 1080 33.75V236.25C1080 245.201 1076.44 253.786 1070.11 260.115C1063.79 266.444 1055.2 270 1046.25 270C1037.3 270 1028.71 266.444 1022.39 260.115C1016.06 253.786 1012.5 245.201 1012.5 236.25V109.5C1012.5 86.304 993.696 67.5 970.5 67.5H843.75C834.799 67.5 826.215 63.9442 819.885 57.6149C813.556 51.2855 810 42.7011 810 33.75ZM33.75 810C42.7011 810 51.2855 813.556 57.6149 819.885C63.9442 826.214 67.5 834.799 67.5 843.75V970.5C67.5 993.696 86.304 1012.5 109.5 1012.5H236.25C245.201 1012.5 253.786 1016.06 260.115 1022.39C266.444 1028.71 270 1037.3 270 1046.25C270 1055.2 266.444 1063.79 260.115 1070.11C253.786 1076.44 245.201 1080 236.25 1080H33.75C24.7989 1080 16.2145 1076.44 9.88515 1070.11C3.55579 1063.79 0 1055.2 0 1046.25V843.75C0 834.799 3.55579 826.214 9.88515 819.885C16.2145 813.556 24.7989 810 33.75 810ZM1046.25 810C1055.2 810 1063.79 813.556 1070.11 819.885C1076.44 826.214 1080 834.799 1080 843.75V1046.25C1080 1055.2 1076.44 1063.79 1070.11 1070.11C1063.79 1076.44 1055.2 1080 1046.25 1080H843.75C834.799 1080 826.215 1076.44 819.885 1070.11C813.556 1063.79 810 1055.2 810 1046.25C810 1037.3 813.556 1028.71 819.885 1022.39C826.215 1016.06 834.799 1012.5 843.75 1012.5H970.5C993.696 1012.5 1012.5 993.696 1012.5 970.5V843.75C1012.5 834.799 1016.06 826.214 1022.39 819.885C1028.71 813.556 1037.3 810 1046.25 810Z" fill="#FAC515" />
+                  </svg>
+                  <div className="absolute inset-0 overflow-hidden rounded-[8px]">
+                    <div className="absolute left-0 right-0 h-[160px] animate-[scanGlow_2.8s_linear_infinite] pointer-events-none" style={{ top: "50%", transform: "translateY(-100%)", background: "linear-gradient(to bottom, transparent 0%, rgba(250,197,21,0.08) 30%, rgba(250,197,21,0.2) 60%, rgba(250,197,21,0.35) 85%, rgba(250,197,21,0.5) 100%)" }} />
+                    <div className="absolute left-0 right-0 h-[2px] bg-[#FAC515] animate-[scanLine_2.8s_linear_infinite] shadow-[0_0_16px_4px_rgba(250,197,21,0.5),0_0_4px_1px_rgba(250,197,21,0.8)]" style={{ top: "50%" }} />
+                  </div>
+                </div>
+              </div>
+
+              <div className={`absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isQrDrawerClosing ? "translate-x-full" : "translate-x-0"}`}>
+                <div className="flex-1 overflow-y-auto px-[20px] pt-[24px] pb-[32px] flex flex-col gap-[20px]">
+                  {/* Group header */}
+                  <div className="pb-[16px] border-b border-[#f5f5f5]">
+                    <div className="flex items-center gap-[12px]">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] leading-[normal]">Reserva em grupo</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Participants list */}
+                  <div>
+                    <div className="flex items-center justify-between mb-[16px]">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#717680] uppercase tracking-[0.8px]">Participantes do voucher ({groupMembers.length})</p>
+                      <button onClick={() => { if (allSelected) setQrGroupSelected(new Set()); else setQrGroupSelected(new Set(selectableMembers.map((m) => m.id))); }} className="flex items-center gap-[6px] cursor-pointer">
+                        <div className={`flex items-center justify-center rounded-[6px] size-[20px] ${allSelected ? "bg-[#0b5ed7]" : "bg-white border border-[#d5d7da]"}`}>
+                          {allSelected && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                        </div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Selecionar todos</p>
+                      </button>
+                    </div>
+                    <div className="flex flex-col gap-[12px]">
+                      {groupMembers.map((member) => {
+                        const initials = member.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+                        const isSelected = qrGroupSelected.has(member.id);
+                        return (
+                          <div key={member.id} className={`border rounded-[12px] px-[16px] py-[12px] flex items-center gap-[16px] ${member.checkedIn ? "border-[#f5f5f5] bg-[#fafafa]" : "border-[#e9eaeb] bg-white"}`}>
+                            {member.checkedIn ? (
+                              <div className="shrink-0">
+                                <div className="flex items-center justify-center rounded-[6px] size-[22px] bg-[#e9eaeb] cursor-not-allowed">
+                                  <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="#a4a7ae" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                              </div>
+                            ) : (
+                              <button onClick={() => setQrGroupSelected((prev) => { const n = new Set(prev); if (n.has(member.id)) n.delete(member.id); else n.add(member.id); return n; })} className="cursor-pointer shrink-0">
+                                <div className={`flex items-center justify-center rounded-[6px] size-[22px] ${isSelected ? "bg-[#0b5ed7]" : "bg-white border border-[#d5d7da]"}`}>
+                                  {isSelected && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                </div>
+                              </button>
+                            )}
+                            <div className="flex flex-1 min-w-0 items-center gap-[10px]">
+                              <div className="relative size-[36px] shrink-0">
+                                <svg className="absolute inset-0 size-full" fill="none" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19.5" fill="#EDF0FF" stroke="#D5DAFF"/></svg>
+                                <p className="absolute inset-0 flex items-center justify-center font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#0b5ed7]">{initials}</p>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27] leading-[normal] truncate">{member.name}</p>
+                                  {member.buyer && (
+                                    <span className="inline-flex items-center gap-[6px] p-[2px] shrink-0">
+                                      <div className="size-[8px] rounded-full bg-[#0b5ed7] shrink-0" />
+                                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#0b5ed7]">Comprador</p>
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-[6px] mt-[2px] min-w-0">
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680] shrink-0">Reserva {member.resId}</span>
+                                  <span className="text-[#d0d5dd]">·</span>
+                                  <div className="flex items-center gap-[3px] min-w-0">
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680] truncate">{member.tariff}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            {member.checkedIn && (
+                              <div className="flex items-center gap-[4px] shrink-0 bg-[#ecfdf3] border border-[#abefc6] rounded-full px-[10px] py-[4px]">
+                                <svg className="size-[12px] text-[#079455]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#079455]">Check-in às {member.checkedInAt}</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Activity data */}
+                  <div className="border border-[#f5f5f5] rounded-[16px] p-[16px] flex flex-col gap-[12px]">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#717680] uppercase tracking-[0.5px]">DADOS DA ATIVIDADE</p>
+                    <div className="flex items-start gap-[10px]">
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 48 48"><path d="M37.437 21.4303C37.0516 21.7957 36.5364 22 36.0002 22C35.464 22 34.9488 21.7957 34.5633 21.4303C31.0335 18.0634 26.3031 14.3022 28.61 8.8417C29.8573 5.88924 32.8514 4 36.0002 4C39.149 4 42.1431 5.88924 43.3904 8.8417C45.6944 14.2953 40.9756 18.075 37.437 21.4303Z" stroke="currentColor" strokeWidth="3"/><path d="M36 12H36.018" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><circle cx="10" cy="38" r="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 14H19C15.134 14 12 16.6863 12 20C12 23.3137 15.134 26 19 26H25C28.866 26 32 28.6863 32 32C32 35.3137 28.866 38 25 38H22" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                      <div>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#181d27] leading-[normal]">Trilha Pico do Itacolomi</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mt-[2px]">Parque Municipal, Sabará, Belo Horizonte</p>
+                      </div>
+                    </div>
+                    <div className="h-px bg-[#f5f5f5]" />
+                    <div className="grid grid-cols-2 gap-[16px]">
+                      <div className="flex items-start gap-[10px]">
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M13.332 28.332L26.6654 28.332" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.332 21.668H19.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M21.668 4.16536V4.9987C21.668 9.71274 21.668 12.0698 23.1324 13.5342C24.5969 14.9987 26.9539 14.9987 31.668 14.9987L32.5013 14.9987M33.3346 17.7601V23.332C33.3346 29.6174 33.3346 32.7601 31.382 34.7127C29.4294 36.6654 26.2867 36.6654 20.0013 36.6654C13.7159 36.6654 10.5732 36.6654 8.62059 34.7127C6.66797 32.7601 6.66797 29.6174 6.66797 23.332L6.66797 15.7584C6.66797 10.3501 6.66797 7.64588 8.14476 5.81425C8.4431 5.44422 8.78016 5.10716 9.15019 4.80882C10.9818 3.33203 13.686 3.33203 19.0944 3.33203C20.2703 3.33203 20.8582 3.33203 21.3966 3.52205C21.5086 3.56156 21.6184 3.60704 21.7255 3.65827C22.2406 3.90462 22.6563 4.32036 23.4878 5.15184L31.382 13.0461C32.3454 14.0095 32.8272 14.4912 33.0809 15.1038C33.3346 15.7164 33.3346 16.3976 33.3346 17.7601Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                        <div className="flex flex-col gap-[4px]">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">ID do pedido</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">#RE-9921</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-[10px]">
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M36.6654 19.9987C36.6654 29.2034 29.2034 36.6654 19.9987 36.6654C10.794 36.6654 3.33203 29.2034 3.33203 19.9987C3.33203 10.794 10.794 3.33203 19.9987 3.33203C29.2034 3.33203 36.6654 10.794 36.6654 19.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4"/></svg></div>
+                        <div className="flex flex-col gap-[4px]">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Status de pagamento</p>
+                          <div className="flex items-center gap-[6px]">
+                            <div className="size-[8px] rounded-full bg-[#17b26a]" />
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">Pagamento confirmado</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-[10px]">
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M26.6654 3.33203V9.9987M13.332 3.33203L13.332 9.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 20.0013C35 13.7159 35 10.5732 33.0474 8.62059C31.0948 6.66797 27.9521 6.66797 21.6667 6.66797L18.3333 6.66797C12.0479 6.66797 8.90524 6.66797 6.95262 8.62059C5 10.5732 5 13.7159 5 20.0013L5 23.3346C5 29.62 5 32.7627 6.95262 34.7153C8.90524 36.668 12.0479 36.668 18.3333 36.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 16.668L35 16.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                        <div className="flex flex-col gap-[4px]">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Data e hora</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">18/02/2026, 08:00</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-[10px]">
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M19.9987 36.6654C29.2034 36.6654 36.6654 29.2034 36.6654 19.9987C36.6654 10.794 29.2034 3.33203 19.9987 3.33203C10.794 3.33203 3.33203 10.794 3.33203 19.9987C3.33203 29.2034 10.794 36.6654 19.9987 36.6654Z" stroke="currentColor" strokeWidth="3"/><path d="M20.0117 17.5127C18.631 17.5127 17.5117 18.6319 17.5117 20.0127C17.5117 21.3934 18.631 22.5127 20.0117 22.5127C21.3924 22.5127 22.5117 21.3934 22.5117 20.0127C22.5117 18.6319 21.3924 17.5127 20.0117 17.5127ZM20.0117 17.5127V11.6641M25.0232 25.0321L21.7755 21.7844" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                        <div className="flex flex-col gap-[4px]">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Duração</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">08:00 às 11:00 (2h)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="shrink-0 h-[88px] flex items-center justify-between px-[24px] border-t border-[#eaecf0] bg-[#fafbfc]">
+                  <button onClick={handleQrDrawerCancel} disabled={isQrDrawerClosing} className={`flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors mr-[12px] ${isQrDrawerClosing ? "cursor-default" : "cursor-pointer"}`}>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Cancelar</p>
+                  </button>
+                  <button
+                    onClick={() => { if (isConfirmingCheckIn || selectedCount === 0) return; setIsConfirmingCheckIn(true); setTimeout(() => { setIsConfirmingCheckIn(false); setQrScenario(4); }, 2000); }}
+                    disabled={isConfirmingCheckIn || isQrDrawerClosing || selectedCount === 0}
+                    className={`flex-1 h-[48px] flex items-center justify-center gap-[8px] rounded-[8px] bg-[#0b5ed7] transition-colors ${isConfirmingCheckIn || isQrDrawerClosing || selectedCount === 0 ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-[#0a4fb3]"}`}
+                  >
+                    {isConfirmingCheckIn ? (
+                      <svg className="animate-spin shrink-0 size-[20px] text-white" fill="none" viewBox="0 0 20 20"><circle className="opacity-25" cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" /><path className="opacity-75" fill="currentColor" d="M10 2a8 8 0 018 8h-2a6 6 0 00-6-6V2z" /></svg>
+                    ) : null}
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">{isConfirmingCheckIn ? "Carregando" : `Confirmar check-in (${selectedCount})`}</p>
+                  </button>
+                </div>
+              </div>
+            </>
+          );
+        })()}
       </div>,
       document.body,
     );
@@ -3902,12 +4187,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 />
               </div>
             </div>
-            <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
-              <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
-                <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
-              </div>
-            </button>
+            {activity.lifecycleStatus === "EmAndamento" && (
+              <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
+                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
+                  <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
+                </div>
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -3983,17 +4270,17 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">Portaria · Parque do Itacolomi</p>
                 </div>
                 <div className="w-[1px] h-[28px] bg-white/20" />
-                <button onClick={() => setShowTeamModal(true)} className="flex flex-col items-start cursor-pointer hover:opacity-80 transition-opacity">
+                <button onClick={() => onOpenTeam?.()} className="flex flex-col items-start cursor-pointer hover:opacity-80 transition-opacity">
                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Equipe responsável</p>
                   <div className="flex items-center gap-[6px]">
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{activity.assignedGuides.length} atribuído(s)</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{(teamGuides ?? activity.assignedGuides).length} atribuído(s)</p>
                     <div className="group/info relative">
                       <svg className="size-[16px] text-white/40 hover:text-white/70 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10" />
                         <path d="M12 16v-4M12 8h.01" />
                       </svg>
                       <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/info:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{activity.assignedGuides.length} seguro(s) contratado(s)</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{teamInsuredCount ?? activity.assignedGuides.length} seguro(s) contratado(s)</p>
                         <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                       </div>
                     </div>
@@ -4035,16 +4322,6 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   </div>
                 );
               })()}
-
-              {activity.requiresInsurance && (
-                <div className="flex items-center gap-[6px] bg-emerald-500/15 backdrop-blur-sm border border-emerald-400/25 rounded-[10px] px-[12px] py-[8px]">
-                  <svg className="shrink-0 size-[14px]" viewBox="0 0 16 16" fill="none">
-                    <path d="M8 1.5c-1.5 0-2.9.33-4 .9-.5.25-.8.4-1 .8-.2.4-.2.8-.2 1.5v2.1c0 3.4 2.7 5.3 4.3 6.1.4.2.7.3 1 .3s.6-.1 1-.3c1.6-.8 4.3-2.7 4.3-6.1v-2.1c0-.7 0-1.1-.2-1.5-.2-.4-.5-.55-1-.8-1.1-.57-2.5-.9-4-.9Z" stroke="#86efac" strokeWidth="1.2"/>
-                    <path d="M6 8l1.5 1.5L10 6" stroke="#86efac" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-emerald-300">Seguro obrigatório</p>
-                </div>
-              )}
             </div>
             <div className="flex gap-[16px] items-end shrink-0 self-end">
               <div className="relative z-[20]" ref={headerMoreActionsRef}>
@@ -4063,13 +4340,13 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                       { label: "Editar atividade", hasExtIcon: true, action: null, separator: false },
                       { label: "Enviar comunicado", hasExtIcon: false, action: "open-updates", separator: false },
                       { label: "Atribuir equipe", hasExtIcon: false, action: "open-team", separator: false },
-                      { label: "Listas e manifestos", hasExtIcon: false, action: null, separator: true },
-                      { label: "Ficha de operação", hasExtIcon: false, action: "open-manifesto", separator: false },
+                      { label: "Listas e manifestos", hasExtIcon: false, action: "open-manifesto", separator: true },
+                      { label: "Ficha de operação", hasExtIcon: false, action: "open-ficha", separator: false },
                     ].map((item) => (
                       <React.Fragment key={item.label}>
                         {item.separator && <div className="bg-[#f5f5f5] h-px w-full" />}
                         <button
-                          onClick={() => { setShowHeaderMoreActions(false); if (item.action === "open-updates") onOpenUpdates?.(); if (item.action === "open-team") setShowTeamModal(true); if (item.action === "open-manifesto") setShowManifestoDrawer(true); }}
+                          onClick={() => { setShowHeaderMoreActions(false); if (item.action === "open-updates") onOpenUpdates?.(); if (item.action === "open-team") onOpenTeam?.(); if (item.action === "open-manifesto") setShowManifestoDrawer(true); if (item.action === "open-ficha") setShowFichaDrawer(true); }}
                           className="cursor-pointer flex items-center justify-between h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#f8fafc] text-[#414651]"
                         >
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#414651]">{item.label}</p>
@@ -4081,7 +4358,11 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     ))}
                     <div className="bg-[#f5f5f5] h-px w-full" />
                     <button
-                      onClick={() => setShowHeaderMoreActions(false)}
+                      onClick={() => {
+                        setShowHeaderMoreActions(false);
+                        setCancelActivityConfirmText("");
+                        setCancelActivityModal(true);
+                      }}
                       className="cursor-pointer flex gap-[12px] items-center h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#fef3f2] text-[#d92d20]"
                     >
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#d92d20]">Cancelar atividade</p>
@@ -4089,11 +4370,35 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   </div>
                 )}
               </div>
-              <button onClick={() => setShowConcluirModal(true)} className="bg-white hover:bg-white/95 h-[40px] relative rounded-[8px] shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] cursor-pointer">
-                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Concluir atividade</p>
-                </div>
-              </button>
+              {(() => {
+                const ls = activity.lifecycleStatus;
+                const canConclude = ls === "EmAndamento";
+                const disabledReason = ls === "NaoIniciada" ? "A atividade ainda não foi iniciada" : ls === "Realizada" ? "A atividade já foi concluída" : ls === "Cancelada" ? "A atividade foi cancelada" : null;
+                const disabledLabel = ls === "NaoIniciada" ? "Não iniciada" : ls === "Realizada" ? "Já realizada" : ls === "Cancelada" ? "Cancelada" : null;
+                return (
+                  <div className="relative group/concluir">
+                    <button
+                      onClick={() => canConclude && setShowConcluirModal(true)}
+                      disabled={!canConclude}
+                      className={`h-[40px] relative rounded-[8px] shrink-0 transition-all duration-200 ${canConclude ? "bg-white hover:bg-white/95 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] cursor-pointer" : "bg-white/20 border border-white/30 cursor-not-allowed"}`}
+                    >
+                      <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
+                        {canConclude ? (
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#0b5ed7]">Concluir atividade</p>
+                        ) : (
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-white/50">{disabledLabel}</p>
+                        )}
+                      </div>
+                    </button>
+                    {!canConclude && disabledReason && (
+                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/concluir:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{disabledReason}</p>
+                        <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             </div>
         </div>
@@ -4113,12 +4418,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
             />
           </div>
         </div>
-        <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
-          <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
-            <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
-            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
-          </div>
-        </button>
+        {activity.lifecycleStatus === "EmAndamento" && (
+          <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
+              <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
+            </div>
+          </button>
+        )}
       </div>
 
       {/* Filter tabs OR Bulk actions bar */}
@@ -4152,8 +4459,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 : selectedParticipants.filter((p) => p.checkInStatus === "Done").length;
               return (
               <button
-                onClick={() => handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
-                className="flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 cursor-pointer bg-white hover:bg-white/90 transition-all"
+                onClick={() => !isActivityLocked && handleBulkAction(isRealizarMode ? "check-in" : "undo-check-in", checkInLabel)}
+                className={`flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 transition-all ${isActivityLocked ? "cursor-not-allowed opacity-40 bg-white/50" : "cursor-pointer bg-white hover:bg-white/90"}`}
               >
                 <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4.5 8l2.5 2.5 4.5-5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7] whitespace-nowrap">{isRealizarMode ? "Realizar Check-in" : "Desfazer Check-in"}</span>
@@ -4172,11 +4479,12 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 : selectedParticipants.filter((p) => p.checkInStatus === "Pending").length;
               return (
                 <button
-                  onClick={() => handleBulkAction(isUndoMode ? "undo-confirm" : "confirm", confirmLabel)}
-                  className={`cursor-pointer flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 border transition-colors ${
+                  onClick={() => !isActivityLocked && handleBulkAction(isUndoMode ? "undo-confirm" : "confirm", confirmLabel)}
+                  className={`flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 border transition-colors ${
+                    isActivityLocked ? "cursor-not-allowed opacity-40 border-white/20 bg-transparent" :
                     isUndoMode
-                      ? "border-[#f87171] bg-[#d92d20]/20 hover:bg-[#d92d20]/30 text-[#f87171]"
-                      : "border-white/30 bg-transparent hover:bg-white/10"
+                      ? "cursor-pointer border-[#f87171] bg-[#d92d20]/20 hover:bg-[#d92d20]/30 text-[#f87171]"
+                      : "cursor-pointer border-white/30 bg-transparent hover:bg-white/10"
                   }`}
                 >
                   <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16">
@@ -4190,8 +4498,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
               );
             })()}
             {/* More actions dropdown — dark bg */}
-            <div className="relative">
-              <button onClick={() => setShowMoreActions(!showMoreActions)} className="cursor-pointer flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 bg-[#414651] hover:bg-[#535862] transition-colors">
+            <div className="relative" ref={bulkMoreActionsRef}>
+              <button onClick={() => !isActivityLocked && setShowMoreActions(!showMoreActions)} className={`flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] shrink-0 transition-colors ${isActivityLocked ? "cursor-not-allowed opacity-40 bg-[#414651]" : "cursor-pointer bg-[#414651] hover:bg-[#535862]"}`}>
                 <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-white whitespace-nowrap">Mais ações</span>
                 <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
@@ -4222,7 +4530,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     <React.Fragment key={action}>
                     {separator && <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />}
                     <button
-                      onClick={() => handleBulkAction(action, label)}
+                      onClick={() => { setShowMoreActions(false); setShowMoreActionsStickyBar(false); handleBulkAction(action, label); }}
                       className={`cursor-pointer flex items-center justify-between px-[14px] py-[10px] transition-colors w-full ${destructive ? "text-[#d92d20] hover:bg-[#fef3f2]" : "text-[#414651] hover:bg-[#f8fafc]"}`}
                     >
                       <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[14px] ${destructive ? "text-[#d92d20]" : "text-[#414651]"}`}>{label}</p>
@@ -4388,7 +4696,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 const isPerformed = r.status === "Performed";
                 const isIndividualAbsent = !isCancelled && !isNoShow && p.checkInStatus === "Absent";
                 const isDone = p.checkInStatus === "Done";
-                const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
+                const checkInDisabled = isActivityLocked || isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
                 const isLastRow = pIdx === visibleParticipants.length - 1;
                 const hasExpandButton = isGroup && r.participants.length > 1;
                 return (
@@ -4422,7 +4730,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     {/* Name cell */}
                     <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
                       <div className="flex flex-col gap-0 items-start min-w-0 flex-1 overflow-hidden">
-                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name}</p>
+                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name || `Participante nº ${pIdx + 1}`}</p>
                         <div className={`flex gap-[4px] items-center min-w-0 overflow-hidden ${isGroup && r.participants[0].id === p.id ? "mt-[-2px]" : ""}`}>
                           {isGroup && r.participants[0].id === p.id && (
                             <>
@@ -4431,7 +4739,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                               <span className="text-[#a1a1aa] shrink-0">·</span>
                             </>
                           )}
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)} · {p.age} anos</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)}{p.age > 0 ? ` · ${p.age} anos` : ""}</p>
                         </div>
                       </div>
                     </div>
@@ -4452,7 +4760,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     {/* Actions cell */}
                     <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {/* Three-dot menu */}
-                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
+                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} activityLocked={isActivityLocked} />
                       <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                     </div>
                   </div>
@@ -4465,14 +4773,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                         style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}
                       >
                         <div className="min-h-0 overflow-visible">
-                          {restParticipants.map((p) => {
+                          {restParticipants.map((p, rpIdx) => {
                             const isCancelled = r.status === "Cancelled";
                             const isNoShow = r.status === "NoShow";
                             const isExpired = r.status === "Expired";
                             const isPerformed = r.status === "Performed";
                             const isIndividualAbsent = !isCancelled && !isNoShow && p.checkInStatus === "Absent";
                             const isDone = p.checkInStatus === "Done";
-                            const checkInDisabled = isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
+                            const checkInDisabled = isActivityLocked || isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
                             return (
                               <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
                                 {selectedIds.has(p.id) && (
@@ -4489,9 +4797,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                                 </button>
                                 <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
                                   <div className="flex flex-col gap-0 items-start min-w-0 flex-1 overflow-hidden">
-                                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name}</p>
+                                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name || `Participante nº ${rpIdx + 2}`}</p>
                                     <div className="flex gap-[4px] items-center">
-                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)} · {p.age} anos</p>
+                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)}{p.age > 0 ? ` · ${p.age} anos` : ""}</p>
                                     </div>
                                   </div>
                                 </div>
@@ -4505,7 +4813,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                                   <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} />
                                 </div>
                                 <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
-                                  <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} />
+                                  <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} activityLocked={isActivityLocked} />
                                   <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                                 </div>
                               </div>
@@ -4539,6 +4847,63 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
         })}
       </div>
       {toast && <Toast message={toast.message} type={toast.type} description={toast.description} actions={toast.actions} onClose={() => setToast(null)} />}
+      {cancelActivityModal && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCancelActivityModal(false)} />
+          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            <div className="shrink-0">
+              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Cancelar atividade</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] not-italic text-[14px] text-[#535862]">
+                    Esta ação cancela a atividade <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">{activity.name}</span>. Para confirmar, digite <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">cancelar</span> abaixo.
+                  </p>
+                </div>
+                <button onClick={() => setCancelActivityModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                </button>
+              </div>
+              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+            </div>
+            <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
+              <div className="flex flex-col gap-[8px]">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Digite “cancelar” para habilitar a ação</p>
+                <input
+                  value={cancelActivityConfirmText}
+                  onChange={(e) => setCancelActivityConfirmText(e.target.value)}
+                  placeholder="cancelar"
+                  className="h-[40px] w-full rounded-[8px] border border-[#e9eaeb] bg-white px-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] outline-none transition-colors placeholder:text-[#a4a7ae] focus:border-[#0b5ed7]"
+                />
+              </div>
+              <div className="flex items-center gap-[10px] bg-[#fef3f2] border border-[#fecdca] rounded-[10px] px-[12px] py-[8px]">
+                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#D92D20" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#D92D20" /><path d="M12 8v5M12 15h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">Reservas, check-ins e comunicações vinculadas podem ser impactados. Confirme apenas se deseja prosseguir com o cancelamento da atividade.</p>
+              </div>
+            </div>
+            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <button onClick={() => setCancelActivityModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+              <button
+                disabled={cancelActivityConfirmText.trim() !== "cancelar"}
+                onClick={() => {
+                  if (cancelActivityConfirmText.trim() !== "cancelar") return;
+                  setCancelActivityModal(false);
+                  setCancelActivityConfirmText("");
+                  setToast({
+                    message: "Atividade cancelada",
+                    description: "A atividade foi enviada para cancelamento e os participantes serão notificados conforme a política definida.",
+                    type: "error",
+                    actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+                  });
+                }}
+                className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${cancelActivityConfirmText.trim() === "cancelar" ? "bg-[#d92d20] hover:bg-[#b42318] cursor-pointer" : "bg-[#fecdca] cursor-not-allowed"}`}
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
       {/* Participant data drawer */}
       {drawerData && (
         <ParticipantDrawer
@@ -4550,6 +4915,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
           onCheckIn={(pp) => { setDrawerData(null); setCheckInModal([pp]); }}
           onUndoCheckIn={(pp) => { dispatch({ type: "UNDO_CHECK_IN", participantId: pp.id }); showToast(`Check-in de ${pp.name.split(" ")[0]} desfeito.`); setDrawerData(null); }}
           onNoShow={(rr, pp) => { setDrawerData(null); setNoShowModal({ r: rr, p: pp }); }}
+          activityLocked={isActivityLocked}
         />
       )}
       {/* Payment drawer */}
@@ -4591,8 +4957,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     return (
                       <div key={i} className="rounded-[10px] border border-[#f5f5f5] bg-[#fafafa] overflow-clip">
                         <div className="flex items-center gap-[16px] bg-white border border-[#f5f5f5] rounded-t-[10px] rounded-b-none px-[16px] py-[14px]">
-                          <div className="flex items-center justify-center size-[32px] rounded-full bg-gradient-to-br from-[#0b5ed7] to-[#3b82f6] shrink-0">
-                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-white">{guide.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}</p>
+                          <div className="flex items-center justify-center size-[32px] rounded-full border border-[#bfdbfe] bg-[#eff6ff] shrink-0">
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{guide.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}</p>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-[6px]">
@@ -4666,32 +5032,206 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
           <div className="bg-white relative flex flex-col h-full w-[720px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
             {/* Header */}
             <div className="shrink-0">
-              <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Listas e manifestos</p>
-                <button onClick={() => setShowManifestoDrawer(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors">
+              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                <div className="flex flex-col gap-[6px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Listas e Manifestos</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] leading-[20px]">Exporte as fichas e manifestos para o dia da atividade. Os dados refletem o estado atual das reservas para uso em campo.</p>
+                </div>
+                <button onClick={() => setShowManifestoDrawer(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
                   <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 </button>
               </div>
               <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
             </div>
 
-            {/* Content */}
+            {/* Scrollable content */}
             <div className="flex-1 overflow-y-auto">
-              {/* Activity info card */}
               <div className="px-[24px] py-[20px]">
-                <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px]">
+              {/* Activity info card */}
+              <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px] mb-[20px]">
+                <img src="/src/assets/activity-icon.png" alt="" className="size-[32px] shrink-0" />
+                <div className="flex flex-col gap-[4px] min-w-0 flex-1">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37] leading-[18px]">{activity.name}</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">{formatActivityDate(activity.date)} · {activity.startTime} – {activity.endTime} · {reservations.flatMap((r) => r.participants).length} participante(s)</p>
+                </div>
+              </div>
+
+              {/* Participants summary row */}
+              {(() => {
+                const allParts = reservations.flatMap((r) => r.participants);
+                const confirmed = reservations.filter((r) => r.status === "Confirmed").flatMap((r) => r.participants).length;
+                const checkedIn = allParts.filter((p) => p.checkInStatus === "Done").length;
+                const performed = reservations.filter((r) => r.status === "Performed").flatMap((r) => r.participants).length;
+                const pendingPayment = reservations.filter((r) => r.paymentStatus === "Pending" || r.paymentStatus === "Partial").flatMap((r) => r.participants).length;
+                const healthIssues = allParts.filter((p) => p.hasHealthIssue).length;
+                const minors = allParts.filter((p) => p.isMinor).length;
+                return (
+                  <div className="flex items-start gap-[16px] pt-0 pb-0">
+                    <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                      <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4" /></svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[4px]">Status</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-1.5 bg-[#ecfdf3] border border-[#abefc6] rounded-full px-2.5 py-1">
+                          <svg className="size-3.5 text-[#079455]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#079455]">{confirmed} confirmados</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-full px-2.5 py-1">
+                          <svg className="size-3.5 text-[#0b5ed7]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">{checkedIn} check-in</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 bg-white border border-[#e9eaeb] rounded-full px-2.5 py-1">
+                          <svg className="size-3.5 text-[#414651]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" /><path d="M4.5 7l1.8 1.8 3.2-3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{performed} realizada</p>
+                        </div>
+                        {(pendingPayment > 0 || healthIssues > 0 || minors > 0) && (
+                          <>
+                          {pendingPayment > 0 && (
+                            <div className="flex items-center gap-1.5 bg-[#fffbeb] border border-[#fbd38d] rounded-full px-2.5 py-1">
+                              <svg className="size-3.5 text-[#dc6803]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" /><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#dc6803]">{pendingPayment} pgtos. pendentes</p>
+                            </div>
+                          )}
+                          {healthIssues > 0 && (
+                            <div className="flex items-center gap-1.5 bg-[#fef3f2] border border-[#fecdca] rounded-full px-2.5 py-1">
+                              <svg className="size-3.5 text-[#d92d20]" fill="none" viewBox="0 0 14 14"><path d="M11.3 2.7a3 3 0 00-4.25 0L7 2.75l-.05-.05A3 3 0 102.7 6.95L7 11.25l4.3-4.3a3 3 0 000-4.25z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#d92d20]">{healthIssues} saúde</p>
+                            </div>
+                          )}
+                          {minors > 0 && (
+                            <div className="flex items-center gap-1.5 bg-[#fef3f2] border border-[#fecdca] rounded-full px-2.5 py-1">
+                              <svg className="size-3.5 text-[#d92d20]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="4.5" r="2" stroke="currentColor" strokeWidth="1.2" /><path d="M3.5 11c.45-1.75 1.75-2.8 3.5-2.8s3.05 1.05 3.5 2.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#d92d20]">{minors} menores de idade</p>
+                            </div>
+                          )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              </div>
+              {/* Fichas disponíveis */}
+              <DrawerSection title="Fichas disponíveis (7)">
+              <div className="grid grid-cols-2 gap-[16px]">
+                {[
+                  { id: 1, title: "Lista de Presença", desc: "Conferência e assinatura no embarque. Pagamentos pendentes destacados.", contains: "nome, CPF, tarifa, pagamento, campo de assinatura", formats: ["TELA", "PDF", "EXCEL"], locked: false },
+                  { id: 2, title: "Ficha de Transporte (ANTT)", desc: "Manifesto para envio à ANTT e a parceiros sem acesso ao sistema.", contains: "dados completos de participantes e equipe, origem, destino, passageiros", formats: ["TELA", "PDF", "EXCEL"], locked: false },
+                  { id: 3, title: "Manifesto de Pontos de Embarque", desc: "Apoio ao guia ou motorista. Agrupado por ponto de embarque.", contains: "nome, CPF, ponto de embarque, horário, opcionais", formats: ["TELA", "PDF", "EXCEL"], locked: false },
+                  { id: 4, title: "Dados de Saúde e Segurança", desc: "Peso, altura, condições médicas, alergias, medicamentos e restrições.", contains: null, formats: [], locked: true, lockedNote: "Liberado apenas para perfis com permissão de saúde habilitada." },
+                  { id: 5, title: "Dados Completos dos Participantes", desc: "Consulta única com todas as informações da reserva.", contains: "dados pessoais, endereço, saúde, opcionais, embarque, tarifa, pagamento, seguro", formats: ["TELA", "PDF", "EXCEL"], locked: false },
+                  { id: 6, title: "Ficha de Operação", desc: "Documento oficial da operação para controle interno e SGS.", contains: "participantes e equipe, assinatura, início e fim, inventário, alertas de saúde", formats: ["TELA", "PDF"], locked: false },
+                  { id: 7, title: "Checklist de Inventário", desc: "Separação de materiais por tarifa e por adicional escolhido.", contains: "contagem de equipamentos por tarifa, itens adicionais contratados", formats: ["TELA", "PDF"], locked: false },
+                ].map((ficha) => (
+                  <div key={ficha.id} className={`flex flex-col border rounded-[12px] p-[16px] ${ficha.locked ? "border-[#e9eaeb] bg-[#fafafa]" : "border-[#e9eaeb] bg-white"}`}>
+                    {/* Title */}
+                    <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[14px] mb-[6px] ${ficha.locked ? "text-[#a4a7ae]" : "text-[#181d27]"}`}>{ficha.title}</p>
+                    {/* Description */}
+                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] mb-[8px] ${ficha.locked ? "text-[#a4a7ae]" : "text-[#535862]"}`}>{ficha.desc}</p>
+                    {/* Contains */}
+                    {ficha.contains && (
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680] leading-[15px] mb-[14px]"><span className="font-['Helvetica_Neue:Medium',sans-serif]">Contém:</span> {ficha.contains}</p>
+                    )}
+                    {ficha.locked && ficha.lockedNote && (
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae] italic leading-[15px] mb-[14px]">{ficha.lockedNote}</p>
+                    )}
+                    {/* Spacer to push buttons to bottom */}
+                    <div className="flex-1" />
+                    {/* Action buttons */}
+                    <div className="flex items-stretch gap-[8px] mt-[4px]">
+                      {ficha.locked ? (
+                        <span className="flex-1 flex items-center justify-center gap-[6px] h-[32px] rounded-[8px] border border-[#d0d5dd] bg-[#f5f5f5] px-[12px] cursor-not-allowed">
+                          <svg className="size-[13px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M12 17v-2M7 10V7a5 5 0 0110 0v3M5 10h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Sem permissão</p>
+                        </span>
+                      ) : (
+                        <>
+                          <button className="flex-1 flex items-center justify-center gap-[6px] h-[32px] rounded-[8px] bg-[#0b5ed7] px-[12px] hover:bg-[#0a4db3] transition-colors cursor-pointer">
+                            <svg className="size-[13px] text-white" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5"/></svg>
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-white">Visualizar</p>
+                          </button>
+                          {(ficha.formats.includes("PDF") || ficha.formats.includes("EXCEL")) && (
+                            <div className="relative flex-1">
+                              <button onClick={(e) => { e.stopPropagation(); setFichaExportOpen(fichaExportOpen === ficha.id ? null : ficha.id); }} className="flex items-center justify-center gap-[6px] w-full h-[32px] rounded-[8px] border border-[#e9eaeb] bg-white px-[12px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
+                                <svg className="size-[13px] text-[#414651]" fill="none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651]">Exportar</p>
+                                <svg className={`size-[10px] text-[#a4a7ae] transition-transform ${fichaExportOpen === ficha.id ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              </button>
+                              {fichaExportOpen === ficha.id && (
+                                <div className="absolute left-0 bottom-full mb-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[180px] z-10 py-[4px]">
+                                  {ficha.formats.includes("PDF") && (
+                                    <button onClick={() => setFichaExportOpen(null)} className="flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
+                                      <svg className="size-[16px] text-[#d92d20] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M20 13V10.6569C20 9.83935 20 9.4306 19.8478 9.06306C19.6955 8.69552 19.4065 8.40649 18.8284 7.82843L14.0919 3.09188C13.593 2.593 13.3436 2.34355 13.0345 2.19575C12.9702 2.165 12.9044 2.13772 12.8372 2.11401C12.5141 2 12.1614 2 11.4558 2C8.21082 2 6.58831 2 5.48933 2.88607C5.26731 3.06508 5.06508 3.26731 4.88607 3.48933C4 4.58831 4 6.21082 4 9.45584V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 2.5V3C13 5.82843 13 7.24264 13.8787 8.12132C14.7574 9 16.1716 9 19 9H19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M19.75 16H17.25C16.6977 16 16.25 16.4477 16.25 17V19M16.25 19V22M16.25 19H19.25M4.25 22V19.5M4.25 19.5V16H6C6.9665 16 7.75 16.7835 7.75 17.75C7.75 18.7165 6.9665 19.5 6 19.5H4.25ZM10.25 16H11.75C12.8546 16 13.75 16.8954 13.75 18V20C13.75 21.1046 12.8546 22 11.75 22H10.25V16Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Exportar como PDF</p>
+                                    </button>
+                                  )}
+                                  {ficha.formats.includes("EXCEL") && (
+                                    <button onClick={() => setFichaExportOpen(null)} className="flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
+                                      <svg className="size-[16px] text-[#079455] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M20 16H18C17.4477 16 17 16.4477 17 17V18C17 18.5523 17.4477 19 18 19H19C19.5523 19 20 19.4477 20 20V21C20 21.5523 19.5523 22 19 22H17M4 16L6 19M6 19L8 22M6 19L8 16M6 19L4 22M14.5 22H12.5C11.9477 22 11.5 21.5523 11.5 21V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M20 13V10.6569C20 9.83935 20 9.4306 19.8478 9.06306C19.6955 8.69552 19.4065 8.40649 18.8284 7.82843L14.0919 3.09188C13.593 2.593 13.3436 2.34355 13.0345 2.19575C12.9702 2.165 12.9044 2.13772 12.8372 2.11401C12.5141 2 12.1614 2 11.4558 2C8.21082 2 6.58831 2 5.48933 2.88607C5.26731 3.06508 5.06508 3.26731 4.88607 3.48933C4 4.58831 4 6.21082 4 9.45584V13M13 2.5V3C13 5.82843 13 7.24264 13.8787 8.12132C14.7574 9 16.1716 9 19 9H19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Exportar como Excel</p>
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              </DrawerSection>
+            </div>
+            <div className="border-t border-[#f5f5f5] px-[24px] py-[16px] flex items-center justify-between shrink-0">
+              <button
+                onClick={() => {
+                  const now = new Date();
+                  setManifestoUpdatedAt(now);
+                  setManifestoNow(now);
+                }}
+                className="flex items-center gap-[6px] rounded-[6px] transition-opacity hover:opacity-70 cursor-pointer"
+              >
+                <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24">
+                  <path d="M21 12a9 9 0 01-15.18 6.5M3 12a9 9 0 0115.18-6.5M18 3v4h-4M6 21v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">{getManifestoUpdatedLabel()}</p>
+              </button>
+              <button onClick={() => setShowManifestoDrawer(false)} className="flex h-[40px] items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px] transition-colors hover:bg-[#f8fafc] cursor-pointer">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</p>
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+      {/* Ficha de operação drawer */}
+      {showFichaDrawer && createPortal(
+        <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && setShowFichaDrawer(false)}>
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowFichaDrawer(false)} />
+          <div className="bg-white relative flex flex-col h-full w-[720px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
+            <div className="shrink-0">
+              <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Ficha de operação</p>
+                <button onClick={() => setShowFichaDrawer(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </button>
+              </div>
+              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="px-[24px] py-[20px]">
+                <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px] mb-[20px]">
                   <img src="/src/assets/activity-icon.png" alt="" className="size-[32px] shrink-0" />
                   <div className="flex flex-col gap-[4px] min-w-0 flex-1">
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37] leading-[18px]">{activity.name}</p>
                     <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Ficha de operação · {formatActivityDate(activity.date)} · {reservations.flatMap((r) => r.participants).length} participante(s)</p>
                   </div>
                 </div>
-              </div>
-
-              {/* Table */}
-              <div className="px-[24px] pb-[20px]">
                 <div className="overflow-hidden rounded-[10px] border border-[#e9eaeb]">
-                  {/* Table header */}
                   <div className="flex items-center border-b border-[#e9eaeb] bg-[#fafafa] px-[12px] py-[10px]">
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[40px] shrink-0">#</p>
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[130px] shrink-0">CPF</p>
@@ -4700,66 +5240,38 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[80px] shrink-0 text-center">Seguro</p>
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[80px] shrink-0 text-center">Check-in</p>
                   </div>
-
-                  {/* Table rows */}
                   <div>
-                    {reservations.flatMap((r) => r.participants.map((p, pIdx) => ({ r, p, globalIdx: pIdx }))).map(({ r, p }, idx) => {
-                      const doc = p.document || "000.000.000-00";
-                      const isPaid = r.paymentStatus === "Paid";
-                      const isInsured = p.insuranceStatus === "Contracted";
-                      const isCheckedIn = p.checkInStatus === "Done";
-                      return (
-                        <div key={p.id} className={`flex items-center py-[10px] px-[12px] ${idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"} ${idx > 0 ? "border-t border-[#f5f5f5]" : ""}`}>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680] w-[40px] shrink-0">{idx + 1}</p>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] w-[130px] shrink-0">{doc}</p>
-                          <div className="flex items-center flex-1 min-w-0">
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{p.name}</p>
-                          </div>
-                          <div className="w-[60px] shrink-0 flex justify-center">
-                            {isPaid ? (
-                              <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            ) : (
-                              <svg className="size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                            )}
-                          </div>
-                          <div className="w-[80px] shrink-0 flex justify-center">
-                            {isInsured ? (
-                              <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            ) : (
-                              <svg className="size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                            )}
-                          </div>
-                          <div className="w-[80px] shrink-0 flex justify-center">
-                            {isCheckedIn ? (
-                              <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            ) : (
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">—</p>
-                            )}
-                          </div>
+                    {reservations.flatMap((r) => r.participants.map((p, pi) => ({ r, p, pi }))).map(({ r, p, pi }, idx) => (
+                      <div key={p.id} className={`flex items-center py-[10px] px-[12px] ${idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"} ${idx > 0 ? "border-t border-[#f5f5f5]" : ""}`}>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680] w-[40px] shrink-0">{idx + 1}</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] w-[130px] shrink-0">{p.document || "—"}</p>
+                        <div className="flex items-center flex-1 min-w-0">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{p.name || `Participante nº ${pi + 1}`}</p>
                         </div>
-                      );
-                    })}
+                        <div className="w-[60px] shrink-0 flex justify-center">{r.paymentStatus === "Paid" ? <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> : <svg className="size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}</div>
+                        <div className="w-[80px] shrink-0 flex justify-center">{p.insuranceStatus === "Contracted" ? <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> : <svg className="size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}</div>
+                        <div className="w-[80px] shrink-0 flex justify-center">{p.checkInStatus === "Done" ? <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> : <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">—</p>}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Footer */}
             <div className="border-t border-[#f5f5f5] px-[24px] py-[16px] flex items-center justify-between shrink-0">
               <div className="flex items-center gap-[6px]">
                 <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{reservations.flatMap((r) => r.participants).length} participante(s) listado(s)</p>
               </div>
-              <div className="flex items-center gap-[12px]">
-                <button className="flex h-[40px] items-center gap-[6px] rounded-[8px] border border-[#bfdbfe] bg-white px-[14px] transition-colors hover:bg-[#eff6ff] cursor-pointer">
+              <div className="flex items-center gap-[8px]">
+                <button className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#bfdbfe] bg-white hover:bg-[#eff6ff] transition-colors cursor-pointer">
                   <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">Exportar PDF</p>
                 </button>
-                <button className="flex h-[40px] items-center gap-[6px] rounded-[8px] border border-[#bfdbfe] bg-white px-[14px] transition-colors hover:bg-[#eff6ff] cursor-pointer">
+                <button className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#bfdbfe] bg-white hover:bg-[#eff6ff] transition-colors cursor-pointer">
                   <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2M9 21h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 3h10v4H7V3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">Imprimir</p>
                 </button>
-                <button onClick={() => setShowManifestoDrawer(false)} className="flex h-[40px] items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px] transition-colors hover:bg-[#f8fafc] cursor-pointer">
+                <button onClick={() => setShowFichaDrawer(false)} className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</p>
                 </button>
               </div>
@@ -4817,7 +5329,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 <div className="flex flex-col gap-[16px] px-[24px] py-[16px] overflow-y-auto flex-1">
                   {/* Participant list */}
                   {isBulk ? (
-                    <div className="flex flex-col gap-[8px]">
+                    <div className="flex flex-col gap-[12px]">
                       <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">{participants.length} participantes selecionados</p>
                       <div className="flex flex-col gap-[4px] max-h-[180px] overflow-y-auto border border-[#f5f5f5] border-solid rounded-[8px] p-[12px]">
                         {participants.map(p => (
@@ -5239,6 +5751,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
         }
 
         function getInitials(name: string) {
+          if (!name) return "?";
           return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
         }
 
@@ -5308,7 +5821,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                               <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-white">{getInitials(p.name)}</p>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] truncate ${isIneligible ? "text-[#dc6803]" : "text-[#252b37]"}`}>{p.name}</p>
+                              <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] truncate ${isIneligible ? "text-[#dc6803]" : "text-[#252b37]"}`}>{p.name || `Participante nº ${i + 1}`}</p>
                               {isIneligible ? (
                                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#dc6803]">{status.reason}</p>
                               ) : (
@@ -6027,7 +6540,39 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
 export default function AgendaAtualizacoes({ initialTab = "participantes", onBackToActivities, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string; initialOverlay?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [focusActivityInput, setFocusActivityInput] = useState(false);
+  const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
+  const [teamSearch, setTeamSearch] = useState("");
+  const teamDropdownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!teamDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (teamDropdownRef.current && !teamDropdownRef.current.contains(e.target as Node)) {
+        setTeamDropdownOpen(false);
+        setTeamSearch("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [teamDropdownOpen]);
+  const [teamMemberMenu, setTeamMemberMenu] = useState<number | null>(null);
+  const [removeGuideConfirm, setRemoveGuideConfirm] = useState<string | null>(null);
+  const teamMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (teamMemberMenu === null) return;
+    const handleClick = (e: MouseEvent) => {
+      if (teamMenuRef.current && teamMenuRef.current.contains(e.target as Node)) return;
+      setTeamMemberMenu(null);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [teamMemberMenu]);
   const activity = mockActivities.find((a) => a.id === activityId) || mockActivities[0];
+  const [localGuides, setLocalGuides] = useState<string[]>(() => activity.assignedGuides);
+  const [guideInsurance, setGuideInsurance] = useState<Record<string, boolean>>(() => {
+    const map: Record<string, boolean> = {};
+    activity.assignedGuides.forEach((g, i) => { map[g] = i === 0; });
+    return map;
+  });
   const activityHeaderTeam = getActivityHeaderTeam(activity);
 
   return (
@@ -6059,14 +6604,14 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           {/* Chevron toggle — opens/closes activity panel */}
           <div className="flex items-center justify-center mb-[4px]">
             <button
-              onClick={() => setActiveTab(activeTab === "atualizacoes" ? "participantes" : "atualizacoes")}
+              onClick={() => setActiveTab(activeTab === "participantes" || activeTab === "visao-geral" ? "atualizacoes" : "participantes")}
               className="group/toggle relative flex items-center justify-center size-[28px] rounded-[6px] text-[#717680] hover:text-[#252b37] hover:bg-[#f0f1f3] transition-colors cursor-pointer"
             >
-              <svg className={`size-[16px] transition-transform duration-300 ${activeTab === "atualizacoes" ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24">
+              <svg className={`size-[16px] transition-transform duration-300 ${activeTab === "atualizacoes" || activeTab === "equipe" ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24">
                 <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/toggle:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{activeTab === "atualizacoes" ? "Recolher" : "Expandir"}</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{activeTab === "atualizacoes" || activeTab === "equipe" ? "Recolher" : "Expandir"}</p>
                 <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
               </div>
             </button>
@@ -6074,7 +6619,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           {/* Nav items — icon only with tooltips */}
           {([
             { id: "atualizacoes", label: "Comunicados", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-            { id: "visao-geral", label: "Visão geral", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><polyline points="14,2 14,8 20,8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+            { id: "equipe", label: "Equipe", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.5344 7.82853 17.5576 8.63092 17.0204C9.59321 16.3761 10.7524 16 12 16C13.2476 16 14.4068 16.3761 15.3691 17.0204C16.1715 17.5576 16.5 18.5344 16.5 19.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 11C18.6101 11 19.6415 11.3769 20.4974 12.0224C21.2229 12.5696 21.5 13.4951 21.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.5 11C5.38987 11 4.35846 11.3769 3.50256 12.0224C2.77706 12.5696 2.5 13.4951 2.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg> },
           ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
             <button
               key={item.id}
@@ -6100,15 +6645,134 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
             className="absolute inset-0 flex transition-transform duration-300 ease-in-out"
             style={{
               width: "calc(100% + 380px)",
-              transform: activeTab === "atualizacoes" ? "translateX(0)" : "translateX(-380px)",
+              transform: (activeTab === "atualizacoes" || activeTab === "equipe") ? "translateX(0)" : "translateX(-380px)",
             }}
           >
             <div className="w-[380px] shrink-0 h-full">
-              <ActivityPanel onClose={() => { setActiveTab("participantes"); setFocusActivityInput(false); }} autoFocusInput={focusActivityInput} />
+              {activeTab === "equipe" ? (
+                <div className="flex flex-col bg-white w-[380px] shrink-0 h-full border-r border-[#e9eaeb]">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Equipe responsável</p>
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 overflow-y-auto px-[16px] py-[16px]">
+                    {/* Search / Add member dropdown */}
+                    {(() => {
+                      const allGuides = ["João Silva", "Maria Costa", "Carlos Mendes", "Ana Oliveira", "Pedro Santos", "Fernanda Lima", "Lucas Almeida", "Beatriz Rocha"];
+                      const available = allGuides.filter((g) => !localGuides.includes(g));
+                      const filtered = available.filter((g) => !teamSearch.trim() || g.toLowerCase().includes(teamSearch.toLowerCase()));
+                      return (
+                        <div ref={teamDropdownRef} className="relative mb-[16px]">
+                          <div
+                            className={`flex items-center gap-[8px] w-full h-[40px] rounded-[8px] px-[12px] transition-colors border ${teamDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                          >
+                            <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                            <input
+                              type="text"
+                              value={teamSearch}
+                              onChange={(e) => { setTeamSearch(e.target.value); if (!teamDropdownOpen) setTeamDropdownOpen(true); }}
+                              onFocus={() => setTeamDropdownOpen(true)}
+                              placeholder="Buscar ou adicionar membro..."
+                              className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae]"
+                            />
+                            <button onClick={() => setTeamDropdownOpen(!teamDropdownOpen)} className="cursor-pointer shrink-0">
+                              <svg className={`size-[14px] text-[#a4a7ae] transition-transform ${teamDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </button>
+                          </div>
+                          {teamDropdownOpen && (
+                            <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 overflow-hidden">
+                              <div className="max-h-[200px] overflow-y-auto py-[4px]">
+                                {filtered.length > 0 ? filtered.map((g) => {
+                                  const gi = g.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                                  return (
+                                    <button
+                                      key={g}
+                                      onClick={() => { setLocalGuides((prev) => [...prev, g]); setGuideInsurance((prev) => ({ ...prev, [g]: false })); setTeamDropdownOpen(false); setTeamSearch(""); }}
+                                      className="flex items-center gap-[10px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors cursor-pointer"
+                                    >
+                                      <div className="flex items-center justify-center size-[28px] rounded-full bg-gradient-to-br from-[#0b5ed7] to-[#3b82f6] shrink-0">
+                                        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[9px] text-white">{gi}</p>
+                                      </div>
+                                      <div className="flex-1 min-w-0 text-left">
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37]">{g}</p>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">Disponível</p>
+                                      </div>
+                                      <svg className="size-[14px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                                    </button>
+                                  );
+                                }) : (
+                                  <div className="px-[12px] py-[12px]">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#a4a7ae] text-center">Nenhum membro encontrado</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+
+                    {/* Assigned members */}
+                    <div className="flex flex-col gap-[12px]">
+                      {localGuides.map((guide, i) => {
+                        const initials = guide.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                        const hasInsurance = guideInsurance[guide] ?? false;
+                        return (
+                          <div key={guide} className="flex items-center gap-[12px] px-[12px] py-[10px] rounded-[10px] border border-[#f5f5f5] bg-[#fafafa] hover:bg-[#f0f1f3] transition-colors">
+                            <div className="flex items-center justify-center rounded-full size-[32px] shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{initials}</p>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{guide}</p>
+                              <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${hasInsurance ? "text-[#079455]" : "text-[#dc6803]"}`}>{hasInsurance ? "Seguro contratado" : "Sem seguro"}</p>
+                            </div>
+                            <div className="relative shrink-0">
+                              <button onClick={(e) => { e.stopPropagation(); setTeamMemberMenu(teamMemberMenu === i ? null : i); }} className="cursor-pointer flex items-center justify-center size-[24px] rounded-[6px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors">
+                                <svg className="size-[12px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1.2" fill="#717680"/><circle cx="8" cy="8" r="1.2" fill="#717680"/><circle cx="8" cy="12.5" r="1.2" fill="#717680"/></svg>
+                              </button>
+                              {teamMemberMenu === i && (
+                                <div ref={teamMenuRef} className="absolute right-0 top-full mt-[4px] bg-white border border-[#f5f5f5] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[200px] z-10 py-[4px]">
+                                  <button onClick={() => { setGuideInsurance((prev) => ({ ...prev, [guide]: !prev[guide] })); setTeamMemberMenu(null); }} className="cursor-pointer flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors">
+                                    {hasInsurance ? (
+                                      <svg className="shrink-0 size-[16px] text-[#414651]" fill="none" viewBox="0 0 20 20"><path d="M16.54 10.4165C16.54 10.4165 16.6668 7.86136 16.54 7.55495C16.4131 7.24853 16.1722 7.00756 15.6905 6.52564L11.7434 2.5768C11.3277 2.16088 11.1198 1.95292 10.8623 1.8297C10.8087 1.80407 10.7538 1.78132 10.6978 1.76155C10.4286 1.6665 10.1346 1.6665 9.5467 1.6665C6.84251 1.6665 5.49042 1.6665 4.5746 2.40522C4.38959 2.55446 4.22106 2.72306 4.07189 2.90815C3.3335 3.82436 3.3335 5.17705 3.3335 7.88241V11.6709C3.3335 14.8149 3.3335 16.3869 4.30981 17.3637C5.09571 18.1499 7.48039 17.8866 9.5467 17.9165M10.8335 2.08335V2.5002C10.8335 4.85825 10.8335 6.03727 11.5657 6.76982C12.298 7.50237 13.4765 7.50237 15.8335 7.50237H16.2502" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M17.5 18.3335L12.5 13.3335M17.5 13.3335L12.5 18.3335" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                    ) : (
+                                      <svg className="shrink-0 size-[16px] text-[#414651]" fill="none" viewBox="0 0 20 20"><path d="M16.6668 9.99984V8.88055C16.6668 8.1993 16.6668 7.85867 16.54 7.55239C16.4131 7.2461 16.1722 7.00524 15.6905 6.52353L11.7434 2.57641C11.3277 2.16067 11.1198 1.9528 10.8623 1.82962C10.8087 1.80401 10.7538 1.78127 10.6978 1.76151C10.4286 1.6665 10.1346 1.6665 9.5467 1.6665C6.84251 1.6665 5.49042 1.6665 4.5746 2.4049C4.38959 2.55407 4.22106 2.7226 4.07189 2.90761C3.3335 3.82343 3.3335 5.17552 3.3335 7.87971V11.6665C3.3335 14.8092 3.3335 16.3805 4.30981 17.3569C5.28612 18.3332 6.85747 18.3332 10.0002 18.3332M10.8335 2.08317V2.49984C10.8335 4.85686 10.8335 6.03537 11.5657 6.7676C12.298 7.49984 13.4765 7.49984 15.8335 7.49984H16.2502" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M16.6668 14.6855V13.0429C16.6668 12.7845 16.4771 12.5701 16.231 12.5261C15.2393 12.3488 14.416 11.9544 14.0144 11.7356C13.8499 11.6461 13.6505 11.6461 13.486 11.7356C13.0843 11.9544 12.2611 12.3488 11.2693 12.5261C11.0232 12.5701 10.8335 12.7845 10.8335 13.0429V14.6855C10.8335 16.8283 12.9522 17.9971 13.5781 18.2956C13.6885 18.3483 13.8118 18.3483 13.9223 18.2956C14.5482 17.9971 16.6668 16.8283 16.6668 14.6855Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                                    )}
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{hasInsurance ? "Desfazer seguro" : "Contratar seguro"}</p>
+                                  </button>
+                                  <button onClick={() => setTeamMemberMenu(null)} className="cursor-pointer flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors">
+                                    <svg className="shrink-0 size-[16px] text-[#075e54]" fill="none" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.3789 2.27907 14.6926 2.78382 15.8877C3.06278 16.5481 3.20226 16.8784 3.21953 17.128C3.2368 17.3776 3.16334 17.6521 3.01642 18.2012L2 22L5.79877 20.9836C6.34788 20.8367 6.62244 20.7632 6.87202 20.7805C7.12161 20.7977 7.45185 20.9372 8.11235 21.2162C9.30745 21.7209 10.6211 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M8.58815 12.3773L9.45909 11.2956C9.82616 10.8397 10.2799 10.4153 10.3155 9.80826C10.3244 9.65494 10.2166 8.96657 10.0008 7.58986C9.91601 7.04881 9.41086 7 8.97332 7C8.40314 7 8.11805 7 7.83495 7.12931C7.47714 7.29275 7.10979 7.75231 7.02917 8.13733C6.96539 8.44196 7.01279 8.65187 7.10759 9.07169C7.51023 10.8548 8.45481 12.6158 9.91948 14.0805C11.3842 15.5452 13.1452 16.4898 14.9283 16.8924C15.3481 16.9872 15.558 17.0346 15.8627 16.9708C16.2477 16.8902 16.7072 16.5229 16.8707 16.165C17 15.8819 17 15.5969 17 15.0267C17 14.5891 16.9512 14.084 16.4101 13.9992C15.0334 13.7834 14.3451 13.6756 14.1917 13.6845C13.5847 13.7201 13.1603 14.1738 12.7044 14.5409L11.6227 15.4118" stroke="currentColor" strokeWidth="1.5" /></svg>
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#075e54]">Ligar via WhatsApp</p>
+                                  </button>
+                                  <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />
+                                  <button onClick={() => { setRemoveGuideConfirm(guide); setTeamMemberMenu(null); }} className="cursor-pointer flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#fef3f2] transition-colors">
+                                    <svg className="shrink-0 size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#d92d20]">Remover da atividade</p>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {/* Footer */}
+                  <div className="border-t border-[#f5f5f5] px-[16px] py-[12px] shrink-0">
+                    <div className="flex items-center gap-[6px]">
+                      <svg className="size-[14px] text-[#17b26a]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"/></svg>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">{localGuides.length} membro(s) · {localGuides.filter((g) => guideInsurance[g]).length} seguro(s)</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <ActivityPanel onClose={() => { setActiveTab("participantes"); setFocusActivityInput(false); }} autoFocusInput={focusActivityInput} />
+              )}
             </div>
             <div className="h-full overflow-y-auto" style={{ width: "calc(100% - 380px)" }}>
-              {(activeTab === "participantes" || activeTab === "atualizacoes") && (
-                <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} onOpenUpdates={() => { setActiveTab("atualizacoes"); setFocusActivityInput(true); }} />
+              {(activeTab === "participantes" || activeTab === "atualizacoes" || activeTab === "equipe") && (
+                <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} onOpenUpdates={() => { setActiveTab("atualizacoes"); setFocusActivityInput(true); }} onOpenTeam={() => setActiveTab("equipe")} teamGuides={localGuides} teamInsuredCount={localGuides.filter((g) => guideInsurance[g]).length} />
               )}
               {activeTab === "visao-geral" && (
                 <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
@@ -6117,6 +6781,49 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           </div>
         </main>
       </div>
+      {/* Remove team member confirmation modal */}
+      {removeGuideConfirm && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setRemoveGuideConfirm(null)} />
+          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            {/* Header */}
+            <div className="shrink-0">
+              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Remover membro da equipe</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Tem certeza que deseja remover <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">{removeGuideConfirm}</span> da equipe responsável por esta atividade?</p>
+                </div>
+                <button onClick={() => setRemoveGuideConfirm(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </button>
+              </div>
+              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+            </div>
+            {/* Body */}
+            <div className="flex flex-col gap-[12px] px-[24px] py-[20px]">
+              <div className="flex items-center gap-[12px] px-[12px] py-[10px] rounded-[10px] border border-[#f5f5f5] bg-[#fafafa]">
+                <div className="flex items-center justify-center size-[32px] rounded-full border border-[#bfdbfe] bg-[#eff6ff] shrink-0">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{removeGuideConfirm.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}</p>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37]">{removeGuideConfirm}</p>
+                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${guideInsurance[removeGuideConfirm] ? "text-[#079455]" : "text-[#dc6803]"}`}>{guideInsurance[removeGuideConfirm] ? "Seguro contratado" : "Sem seguro"}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">A remoção desse membro será efetivada imediatamente. Caso necessário, você poderá reatribuir a atividade posteriormente.</p>
+              </div>
+            </div>
+            {/* Footer */}
+            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <button onClick={() => setRemoveGuideConfirm(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar</button>
+              <button onClick={() => { const g = removeGuideConfirm; setLocalGuides((prev) => prev.filter((x) => x !== g)); setGuideInsurance((prev) => { const next = { ...prev }; delete next[g]; return next; }); setRemoveGuideConfirm(null); }} className="flex-1 h-[40px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors">Remover membro</button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

@@ -1,11 +1,12 @@
 // @ts-nocheck
 import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import svgPaths from "./svg-qtw4au3g97";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
-import { mockActivities, allHolidays } from "../../mocks/agenda";
+import { mockActivities, mockReservations, allHolidays } from "../../mocks/agenda";
 import type { Activity, ActivityStatus } from "../../types/agenda";
 import {
   getActivityStatusBadge,
@@ -2930,6 +2931,8 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
   const dateObj = new Date(today.getFullYear(), today.getMonth(), refDay);
   const iso = format(dateObj, "yyyy-MM-dd");
   const holiday = DIA_HOLIDAYS[iso];
+  const [showFichaDrawer, setShowFichaDrawer] = useState(false);
+  const [fichaIdx, setFichaIdx] = useState(0);
 
   const dayActivities = useMemo(
     () => mockActivities.filter((a) => a.date === iso).sort((a, b) => a.startTime.localeCompare(b.startTime)),
@@ -2942,7 +2945,7 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
   const monthAbbr = format(dateObj, "MMM", { locale: ptBR }).toUpperCase().replace(".", "");
   const holidayText = holiday ? `(${holiday})` : "(Sem feriados)";
 
-  return (
+  return (<>
     <div className="bg-[#f8fafc] relative size-full overflow-auto" data-name="AGENDA - ATIVIDADES DO DIA">
       <TopBar />
       {/* Header */}
@@ -2975,17 +2978,17 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
         </div>
         {/* Header buttons */}
         <div className="content-stretch flex gap-[16px] items-center relative shrink-0">
-          <div className="bg-white relative rounded-[8px] shrink-0">
+          <button onClick={() => setShowFichaDrawer(true)} className="bg-white relative rounded-[8px] shrink-0 h-[40px] cursor-pointer hover:bg-[#f8fafc] transition-colors">
             <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[8px]" />
-            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] whitespace-nowrap">Ficha de Operação</p>
             </div>
-          </div>
-          <div className="relative rounded-[8px] shrink-0" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
-            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
+          </button>
+          <button className="relative rounded-[8px] shrink-0 h-[40px] cursor-pointer hover:opacity-90 transition-opacity" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
               <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Concluir Atividades do Dia</p>
             </div>
-          </div>
+          </button>
         </div>
       </div>
       {/* Divider */}
@@ -3026,5 +3029,95 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
         </div>
       </div>
     </div>
-  );
+    {showFichaDrawer && createPortal(
+      <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && setShowFichaDrawer(false)}>
+        <div className="absolute inset-0 bg-black/40" onClick={() => setShowFichaDrawer(false)} />
+        <div className="bg-white relative flex flex-col h-full w-[720px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
+          <div className="shrink-0">
+            <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Ficha de operação</p>
+              <button onClick={() => setShowFichaDrawer(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              </button>
+            </div>
+            <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <div className="px-[24px] py-[20px]">
+              <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px] mb-[20px]">
+                <img src="/src/assets/activity-icon.png" alt="" className="size-[32px] shrink-0" />
+                <div className="flex flex-col gap-[4px] min-w-0 flex-1">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37] leading-[18px]">{dayActivities[fichaIdx]?.name || "Atividade"}</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Ficha de operação · {dayActivities[fichaIdx] ? format(new Date(dayActivities[fichaIdx].date + "T12:00"), "dd/MM/yyyy") : ""} · {dayActivities[fichaIdx]?.occupancy || 0} participante(s)</p>
+                </div>
+                <div className="flex items-center gap-[6px] shrink-0">
+                  <button
+                    onClick={() => setFichaIdx((prev) => Math.max(0, prev - 1))}
+                    disabled={fichaIdx === 0}
+                    className={`flex items-center justify-center size-[28px] rounded-full border transition-colors ${fichaIdx === 0 ? "border-[#f0f1f3] bg-[#fafafa] text-[#d0d5dd] cursor-not-allowed" : "border-[#e9eaeb] bg-white cursor-pointer hover:bg-[#f0f1f3] text-[#717680]"}`}
+                  >
+                    <svg className="size-[14px]" fill="none" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </button>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680] min-w-[28px] text-center">{fichaIdx + 1}/{dayActivities.length}</p>
+                  <button
+                    onClick={() => setFichaIdx((prev) => Math.min(dayActivities.length - 1, prev + 1))}
+                    disabled={fichaIdx >= dayActivities.length - 1}
+                    className={`flex items-center justify-center size-[28px] rounded-full border transition-colors ${fichaIdx >= dayActivities.length - 1 ? "border-[#f0f1f3] bg-[#fafafa] text-[#d0d5dd] cursor-not-allowed" : "border-[#e9eaeb] bg-white cursor-pointer hover:bg-[#f0f1f3] text-[#717680]"}`}
+                  >
+                    <svg className="size-[14px]" fill="none" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-hidden rounded-[10px] border border-[#e9eaeb]">
+                {/* Table header */}
+                <div className="flex items-center border-b border-[#e9eaeb] bg-[#fafafa] px-[12px] py-[10px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[40px] shrink-0">#</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[130px] shrink-0">CPF</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] flex-1 min-w-0">Nome</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[60px] shrink-0 text-center">Pago</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[80px] shrink-0 text-center">Seguro</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680] uppercase tracking-[0.5px] w-[80px] shrink-0 text-center">Check-in</p>
+                </div>
+                {/* Table rows */}
+                <div>
+                  {mockReservations.flatMap((r) => r.participants.map((p) => ({ r, p }))).map(({ r, p }, idx) => (
+                    <div key={p.id} className={`flex items-center py-[10px] px-[12px] ${idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"} ${idx > 0 ? "border-t border-[#f5f5f5]" : ""}`}>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680] w-[40px] shrink-0">{idx + 1}</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] w-[130px] shrink-0">{p.document || "000.000.000-00"}</p>
+                      <div className="flex items-center flex-1 min-w-0">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{p.name}</p>
+                      </div>
+                      <div className="w-[60px] shrink-0 flex justify-center">{r.paymentStatus === "Paid" ? <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> : <svg className="size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}</div>
+                      <div className="w-[80px] shrink-0 flex justify-center">{p.insuranceStatus === "Contracted" ? <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> : <svg className="size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>}</div>
+                      <div className="w-[80px] shrink-0 flex justify-center">{p.checkInStatus === "Done" ? <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> : <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">—</p>}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-[#f5f5f5] px-[24px] py-[16px] flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-[6px]">
+              <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{dayActivities[fichaIdx]?.occupancy || mockReservations.flatMap((r) => r.participants).length} participante(s) listado(s)</p>
+            </div>
+            <div className="flex items-center gap-[8px]">
+              <button className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#bfdbfe] bg-white hover:bg-[#eff6ff] transition-colors cursor-pointer">
+                <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">Exportar PDF</p>
+              </button>
+              <button className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#bfdbfe] bg-white hover:bg-[#eff6ff] transition-colors cursor-pointer">
+                <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2M9 21h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 3h10v4H7V3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">Imprimir</p>
+              </button>
+              <button onClick={() => setShowFichaDrawer(false)} className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</p>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    )}
+  </>);
 }

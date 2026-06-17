@@ -4,6 +4,7 @@ import ContextoMissao from "@/app/components/ContextoMissao";
 import { IntroTeste } from "@/app/components/IntroTeste";
 import { AppShell } from "@/components/layout/app-shell";
 import { shellNavItems, shellOrganization, shellProfile } from "@/mocks/shell";
+import { ProdutosPage } from "@/modules/produtos/ProdutosPage";
 
 import { AgendaDayPage } from "../adapters/figma-agenda-day-page";
 import { AgendaMonthPage } from "../adapters/figma-agenda-month-page";
@@ -67,10 +68,6 @@ function isAgendaViewMode(v: string | null): v is AgendaViewMode {
   return v === "mes" || v === "semana" || v === "dia";
 }
 
-function isNovaAtividadeStep(v: string | null | undefined): v is "1" | "2" | "3" {
-  return v === "1" || v === "2" || v === "3";
-}
-
 function AgendaPrototypeApp() {
   const agenda = useAgendaPrototypeNavigation();
 
@@ -91,26 +88,14 @@ function AgendaPrototypeApp() {
         return <IntroTeste onStart={() => undefined} />;
       case "contexto":
         return <ContextoMissao onStart={() => undefined} />;
-      case "novaAtividade": {
-        // variant: "{step}" or "{step}/{toggle}" (toggle: "multi-times" | "repeat")
-        const parts = variant?.split("/") ?? [];
-        const initialStep = isNovaAtividadeStep(parts[0])
-          ? (Number(parts[0]) as 1 | 2 | 3)
-          : 1;
-        const toggle = parts[1];
-        return (
-          <AgendaNovaAtividade
-            onBack={() => undefined}
-            initialStep={initialStep}
-            initialMultiplosHorarios={toggle === "multi-times"}
-            initialAtividadeRepete={toggle === "repeat"}
-          />
-        );
-      }
+      case "novaAtividade":
+        return <AgendaNovaAtividade onBack={() => undefined} />;
       case "atualizacoes": {
         // variant can be "{tab}" or "{tab}/{overlay}"
         const parts = variant?.split("/") ?? [];
-        const tab: AtualizacoesTab = isAtualizacoesTab(parts[0] ?? null) ? (parts[0] as AtualizacoesTab) : "atualizacoes";
+        const tab: AtualizacoesTab = isAtualizacoesTab(parts[0] ?? null)
+          ? (parts[0] as AtualizacoesTab)
+          : "atualizacoes";
         const overlay = parts[1];
         return (
           <AgendaUpdatesPage
@@ -149,8 +134,32 @@ function AgendaPrototypeApp() {
     }
   }
 
+  if (agenda.currentPage === "produtos") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <ProdutosPage />
+      </AppShell>
+    );
+  }
+
   if (agenda.currentPage === "novaAtividade") {
-    return <AgendaNovaAtividade onBack={agenda.handleBackToAgenda} />;
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <AgendaNovaAtividade onBack={agenda.handleBackToAgenda} />
+      </AppShell>
+    );
   }
 
   if (agenda.currentPage === "atualizacoes") {

@@ -1877,23 +1877,23 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
 // 2.2 — Status → badge mapping
 // Figma-exact primary badges — from BADGES PRIMÁRIOS section (15513:515241)
 // All badges: bg #fffaeb, border #e9eaeb 0.5px, radius 4, px:6 py:2, gap:5, fontSize:12
-const STATUS_BADGE_MAP: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  CheckedIn:       { label: "Check-in realizado",   color: "#0b5ed7", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M3.3335 9.6665C3.3335 9.6665 4.3335 9.6665 5.66683 11.9998C5.66683 11.9998 9.37271 5.88873 12.6668 4.6665" stroke="#0B5ED7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  Confirmed:       { label: "Check-in pendente",    color: "#dc6803", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M3.3335 9.6665C3.3335 9.6665 4.66683 9.99984 5.66683 11.9998C5.66683 11.9998 6.77471 10.1729 8.31741 8.31708M12.6668 4.6665C11.6361 5.04894 10.565 5.91004 9.57981 6.91282" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.3335 3.3335L12.6668 12.6668" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  AwaitingPayment: { label: "Reserva agendada",     color: "#dc6803", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 19" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665H8" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.0002 16.0668V15.3335M12.0002 13.9366V13.934M14.6668 15.0002C14.6668 16.4729 13.4729 17.6668 12.0002 17.6668C10.5274 17.6668 9.3335 16.4729 9.3335 15.0002C9.3335 13.5274 10.5274 12.3335 12.0002 12.3335C13.4729 12.3335 14.6668 13.5274 14.6668 15.0002Z" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  Draft:           { label: "Pré-reservada",         color: "#535862", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H7.66667" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.4905 10.7834L10.4905 9.85653C10.4905 9.71962 10.4962 9.58101 10.5453 9.45316C10.6759 9.11284 11.0219 8.66699 11.6519 8.66699C12.2818 8.66699 12.6415 9.11284 12.7721 9.45316C12.8212 9.58101 12.8269 9.71962 12.8269 9.85653L12.8269 10.7834M10.5368 14.6654H12.7941C13.4587 14.6654 13.9974 14.1276 13.9974 13.4643V12.1301C13.9974 11.4668 13.4587 10.9291 12.7941 10.9291H10.5368C9.87223 10.9291 9.3335 11.4668 9.3335 12.1301V13.4643C9.3335 14.1276 9.87223 14.6654 10.5368 14.6654Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  Performed:       { label: "Realizou a atividade", color: "#079455", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M12.0004 12.3333L12.1853 11.4092C12.2831 10.9204 12.5444 10.4699 12.6376 9.98019C12.6569 9.87865 12.6671 9.77384 12.6671 9.66667C12.6671 8.74619 11.9209 8 11.0004 8C10.0799 8 9.33372 8.74619 9.33372 9.66667C9.33372 9.77384 9.34383 9.87865 9.36316 9.98019C9.45637 10.4699 9.71769 10.9204 9.81549 11.4092L10.0004 12.3333M12.0004 12.3333H10.0004M12.0004 12.3333L13.6646 12.7773C14.2502 12.9074 14.6668 13.4268 14.6668 14.0267C14.6668 14.3801 14.3803 14.6667 14.0269 14.6667H13.6646H8.3335H7.97345C7.62001 14.6667 7.3335 14.3801 7.3335 14.0267C7.3335 13.4268 7.75015 12.9074 8.33576 12.7773L10.0004 12.3333" stroke="#079455" strokeWidth="1.2"/><path d="M11.3335 6.00016V5.3335C11.3335 3.44788 11.3335 2.50507 10.7477 1.91928C10.1619 1.3335 9.21911 1.3335 7.3335 1.3335H5.3335C3.44788 1.3335 2.50507 1.3335 1.91928 1.91928C1.3335 2.50507 1.3335 3.44788 1.3335 5.3335V10.6668C1.3335 12.5524 1.3335 13.4953 1.91928 14.081C2.50507 14.6668 3.44788 14.6668 5.3335 14.6668" stroke="#079455" strokeWidth="1.2" strokeLinecap="round"/><path d="M4.6665 5.77778C4.6665 5.77778 5.08317 5.77778 5.49984 6.66667C5.49984 6.66667 6.82337 4.44444 7.99984 4" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 9.3335H6.66667" stroke="#079455" strokeWidth="1.2" strokeLinecap="round"/><path d="M4 11.3335H6.66667" stroke="#079455" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  Cancelled:       { label: "Reserva cancelada",    color: "#d92d20", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.33366V8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H8" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.1855 10.8147L10.1618 13.8384M14.0002 12.3333C14.0002 13.622 12.9555 14.6667 11.6668 14.6667C10.3782 14.6667 9.3335 13.622 9.3335 12.3333C9.3335 11.0447 10.3782 10 11.6668 10C12.9555 10 14.0002 11.0447 14.0002 12.3333Z" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  NoShow:          { label: "Não compareceu",       color: "#d92d20", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665H8" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665H14" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 10.6665L12 12.6665M12 12.6665L10 14.6665M12 12.6665L14 14.6665M12 12.6665L10 10.6665" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  Expired:         { label: "Reserva cancelada",    color: "#535862", icon: <svg className="shrink-0 size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.33366V8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H8" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.1855 10.8147L10.1618 13.8384M14.0002 12.3333C14.0002 13.622 12.9555 14.6667 11.6668 14.6667C10.3782 14.6667 9.3335 13.622 9.3335 12.3333C9.3335 11.0447 10.3782 10 11.6668 10C12.9555 10 14.0002 11.0447 14.0002 12.3333Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+const STATUS_BADGE_MAP: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
+  CheckedIn:       { label: "Check-in realizado",   color: "#0b5ed7", bg: "#eff6ff", border: "#bfdbfe", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Confirmed:       { label: "Check-in pendente",    color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  AwaitingPayment: { label: "Aguardando pagamento", color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  Draft:           { label: "Pré-reservada",        color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M7 3.5v4M5 5.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/></svg> },
+  Performed:       { label: "Atividade realizada",  color: "#079455", bg: "#ecfdf3", border: "#abefc6", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Cancelled:       { label: "Reserva cancelada",    color: "#d92d20", bg: "#fef3f2", border: "#fecdca", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+  NoShow:          { label: "Não compareceu",       color: "#d92d20", bg: "#fef3f2", border: "#fecdca", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+  Expired:         { label: "Reserva expirada",     color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
 };
 
 function ReservationStatusBadge({ status, tooltip }: { status: string; tooltip?: string }) {
   const cfg = STATUS_BADGE_MAP[status] || STATUS_BADGE_MAP.Confirmed;
   return (
-    <div className="bg-white border-[0.5px] border-[#e9eaeb] border-solid flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" title={tooltip}>
+    <div className="flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: cfg.bg, borderWidth: "0.5px", borderStyle: "solid", borderColor: cfg.border, color: cfg.color }} title={tooltip}>
+      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap">{cfg.label}</p>
       {cfg.icon}
-      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap" style={{ color: cfg.color }}>{cfg.label}</p>
     </div>
   );
 }
@@ -2134,10 +2134,12 @@ function ParticipantTariffCell({ tariffType }: { tariffType: string }) {
   );
 }
 
+type StatusVariant = "blue" | "amber" | "red" | "green" | "gray" | "purple";
+
 function getParticipantReservationStatusText(
   reservation: Reservation,
   participant: Participant,
-): { title: string; subtitle: string } {
+): { title: string; subtitle: string; variant: StatusVariant } {
   const isCancelled = reservation.status === "Cancelled" || participant.checkInStatus === "Cancelled";
   const isNoShow = reservation.status === "NoShow";
   const isExpired = reservation.status === "Expired";
@@ -2145,26 +2147,39 @@ function getParticipantReservationStatusText(
   const isIndividualAbsent = !isCancelled && !isNoShow && participant.checkInStatus === "Absent";
   const isDone = participant.checkInStatus === "Done";
 
-  if (participant.checkInStatus === "Rescheduled") return { title: "Reserva reagendada", subtitle: "Status da reserva" };
-  if (isCancelled) return { title: "Reserva cancelada", subtitle: "Status da reserva" };
-  if (isExpired) return { title: "Reserva expirada", subtitle: "Status da reserva" };
-  if (isNoShow) return { title: "Não compareceu", subtitle: "Status da reserva" };
-  if (isIndividualAbsent) return { title: "Não compareceu", subtitle: "Status da reserva" };
-  if (isPerformed) return { title: "Atividade realizada", subtitle: "Status da reserva" };
-  if (isDone) return { title: "Check-in realizado", subtitle: "Status da reserva" };
-  if (reservation.status === "AwaitingPayment") return { title: "Aguardando pagamento", subtitle: "Status da reserva" };
-  if (reservation.status === "Draft") return { title: "Pré-reservada", subtitle: "Status da reserva" };
+  if (participant.checkInStatus === "Rescheduled") return { title: "Reagendada", subtitle: "Status da reserva", variant: "purple" };
+  if (isCancelled) return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
+  if (isExpired) return { title: "Expirada", subtitle: "Status da reserva", variant: "gray" };
+  if (isNoShow) return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
+  if (isIndividualAbsent) return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
+  if (isPerformed) return { title: "Atividade realizada", subtitle: "Status da reserva", variant: "green" };
+  if (isDone) return { title: "Check-in realizado", subtitle: "Status da reserva", variant: "blue" };
+  if (reservation.status === "AwaitingPayment") return { title: "Aguardando pagamento", subtitle: "Status da reserva", variant: "amber" };
+  if (reservation.status === "Draft") return { title: "Pré-reservada", subtitle: "Status da reserva", variant: "gray" };
 
-  return { title: "Reserva confirmada", subtitle: "Status da reserva" };
+  return { title: "Confirmada", subtitle: "Status da reserva", variant: "green" };
 }
+
+const STATUS_VARIANT_STYLES: Record<StatusVariant, { color: string; bg: string; border: string; icon: React.ReactNode }> = {
+  blue:   { color: "#0b5ed7", bg: "#eff6ff", border: "#bfdbfe", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  amber:  { color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  red:    { color: "#d92d20", bg: "#fef3f2", border: "#fecdca", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+  green:  { color: "#079455", bg: "#ecfdf3", border: "#abefc6", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  gray:   { color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  purple: { color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M5 9l4-4M7 3l2 2-2 2M7 11l-2-2 2-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+};
 
 function ParticipantReservationStatusCell({ reservation, participant }: { reservation: Reservation; participant: Participant }) {
   const status = getParticipantReservationStatusText(reservation, participant);
+  const vs = STATUS_VARIANT_STYLES[status.variant];
 
   return (
     <div className="flex items-center shrink-0 min-w-0" style={{ width: "180px", padding: "8px 12px" }}>
       <div className="flex flex-col gap-[1px] min-w-0 w-full">
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] truncate w-full">{status.title}</p>
+        <div className="flex items-center gap-[4px]" style={{ color: vs.color }}>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] truncate">{status.title}</p>
+          {vs.icon}
+        </div>
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{status.subtitle}</p>
       </div>
     </div>
@@ -2344,11 +2359,9 @@ function CheckInButton({ isDone, disabled, selected, onCheckIn, onUndo }: { isDo
         className={`group flex items-center justify-center rounded-[8px] shrink-0 transition-all duration-200 ease-out ${
           disabled
             ? "cursor-not-allowed bg-[#f5f5f5] border border-[#e5e5e5]"
-            : selected
-              ? "cursor-pointer bg-white border border-[#e9eaeb] hover:bg-[#f8fafc]"
-              : isDone
-                ? "cursor-pointer bg-emerald-50 border border-emerald-200 hover:bg-emerald-100"
-                : "cursor-pointer bg-[#eff6ff] border border-[#bfdbfe] hover:bg-[#dbeafe] hover:border-[#93c5fd]"
+            : isDone
+              ? "cursor-pointer bg-emerald-50 border border-emerald-200 hover:bg-emerald-100"
+              : "cursor-pointer bg-[#0b5ed7] border border-[#0b5ed7] hover:bg-[#0a4fb3]"
         }`}
         style={{ padding: "6px 14px" }}
       >
@@ -2362,9 +2375,9 @@ function CheckInButton({ isDone, disabled, selected, onCheckIn, onUndo }: { isDo
         ) : (
           <>
             <svg className="shrink-0 size-[14px] mr-[6px]" fill="none" viewBox="0 0 16 16">
-              <path d="M4.5 8l2.5 2.5 4.5-5" stroke={disabled ? "#a1a1aa" : "#0b5ed7"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M4.5 8l2.5 2.5 4.5-5" stroke={disabled ? "#a1a1aa" : "white"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${disabled ? "text-zinc-400" : "text-[#0b5ed7]"}`}>Check-in</span>
+            <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${disabled ? "text-zinc-400" : "text-white"}`}>Check-in</span>
           </>
         )}
       </button>
@@ -2677,6 +2690,18 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
     { value: totalEsperado, label: "Total Esperado", color: "#252b37" },
   ];
 
+  const pendingParticipants = allParticipants.filter((p) => {
+    const r = reservations.find((rv) => rv.participants.includes(p));
+    if (r && (r.status === "Cancelled" || r.status === "Expired")) return false;
+    return p.checkInStatus === "Pending";
+  });
+  const pendingCheckIn = pendingParticipants.length;
+  const hasValidTimes = startTime.trim() !== "" && endTime.trim() !== "" && duration !== "--";
+  const hasIncidentFilled = hasIncident === false || (hasIncident === true && incidentType && severity && incidentDescription.trim());
+  const canConfirm = hasValidTimes && !!hasIncidentFilled;
+  const [showPendingModal, setShowPendingModal] = useState(false);
+  const [markPendingAsNoShow, setMarkPendingAsNoShow] = useState(false);
+
   return createPortal(
     <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && onClose()}>
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
@@ -2845,13 +2870,77 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
           >
             Cancelar
           </button>
-          <button
-            onClick={onConfirm}
-            className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white px-[24px] py-[10px] rounded-[8px] bg-[#0b5ed7] hover:bg-[#084fb7] transition-colors cursor-pointer"
-          >
-            {hasIncident ? "Confirmar encerramento com ocorrência" : "Confirmar encerramento"}
-          </button>
+          <div className="relative group/confirm-btn">
+            <button
+              onClick={() => {
+                if (!canConfirm) return;
+                if (pendingCheckIn > 0) { setShowPendingModal(true); setMarkPendingAsNoShow(false); return; }
+                onConfirm();
+              }}
+              disabled={!canConfirm}
+              className={`font-['Helvetica_Neue:Medium',sans-serif] text-[14px] px-[24px] py-[10px] rounded-[8px] transition-colors ${canConfirm ? "text-white bg-[#0b5ed7] hover:bg-[#084fb7] cursor-pointer" : "text-white/60 bg-[#0b5ed7]/50 cursor-not-allowed"}`}
+            >
+              Concluir atividade
+            </button>
+            {!canConfirm && (
+              <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-[8px] bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/confirm-btn:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">
+                  {!hasValidTimes ? "Preencha os horários de início e fim" : "Preencha os dados da ocorrência"}
+                </p>
+                <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Pending check-in modal */}
+        {showPendingModal && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setShowPendingModal(false)} />
+            <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+              {/* Header */}
+              <div className="shrink-0">
+                <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                  <div className="flex flex-col gap-[4px]">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Participantes com check-in pendente</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{pendingCheckIn} participante(s) ainda não realizaram check-in. Escolha como deseja proceder ao concluir a atividade.</p>
+                  </div>
+                  <button onClick={() => setShowPendingModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                    <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  </button>
+                </div>
+                <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+              </div>
+              {/* Body */}
+              <div className="flex flex-col gap-[12px] px-[24px] py-[20px]">
+                {/* Participant list preview */}
+                <div className="flex flex-col gap-[6px] max-h-[160px] overflow-y-auto">
+                  {pendingParticipants.map((p, idx) => (
+                    <div key={p.id} className="flex items-center gap-[10px] px-[12px] py-[8px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5]">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{p.name || `Participante nº ${idx + 1}`}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* No-show checkbox option */}
+                <button onClick={() => setMarkPendingAsNoShow(!markPendingAsNoShow)} className="flex items-center gap-[10px] bg-[#fef3f2] border border-[#fecdca] rounded-[10px] px-[12px] py-[10px] cursor-pointer hover:bg-[#fef0ef] transition-colors">
+                  <div className={`flex items-center justify-center rounded-[6px] size-[22px] shrink-0 ${markPendingAsNoShow ? "bg-[#d92d20]" : "bg-white border border-[#d0d5dd]"}`}>
+                    {markPendingAsNoShow && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  </div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] text-left leading-[18px]">Marcar {pendingCheckIn} participante(s) pendente(s) como <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#d92d20]">não compareceu</span> ao invés de realizar check-in automático</p>
+                </button>
+              </div>
+              {/* Footer */}
+              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+                <button onClick={() => setShowPendingModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Voltar</button>
+                <button onClick={() => { setShowPendingModal(false); onConfirm(); }} className={`flex-1 h-[40px] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors flex items-center justify-center gap-[6px] ${markPendingAsNoShow ? "bg-[#d92d20] hover:bg-[#b42318]" : "bg-[#0b5ed7] hover:bg-[#084fb7]"}`}>
+                  {markPendingAsNoShow && <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  {markPendingAsNoShow ? `Informar ausências (${pendingCheckIn})` : `Realizar check-in's pendentes (${pendingCheckIn})`}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>,
     document.body,
@@ -4856,7 +4945,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 <div className="flex flex-col gap-[4px]">
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Cancelar atividade</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] not-italic text-[14px] text-[#535862]">
-                    Esta ação cancela a atividade <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">{activity.name}</span>. Para confirmar, digite <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">cancelar</span> abaixo.
+                    Esta ação cancela a atividade <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">{activity.name}</span>. Para confirmar, digite o nome da atividade abaixo.
                   </p>
                 </div>
                 <button onClick={() => setCancelActivityModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
@@ -4867,11 +4956,11 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
             </div>
             <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
               <div className="flex flex-col gap-[8px]">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Digite “cancelar” para habilitar a ação</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Digite “{activity.name}” para habilitar a ação</p>
                 <input
                   value={cancelActivityConfirmText}
                   onChange={(e) => setCancelActivityConfirmText(e.target.value)}
-                  placeholder="cancelar"
+                  placeholder={activity.name}
                   className="h-[40px] w-full rounded-[8px] border border-[#e9eaeb] bg-white px-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] outline-none transition-colors placeholder:text-[#a4a7ae] focus:border-[#0b5ed7]"
                 />
               </div>
@@ -4883,9 +4972,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
             <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
               <button onClick={() => setCancelActivityModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
               <button
-                disabled={cancelActivityConfirmText.trim() !== "cancelar"}
+                disabled={cancelActivityConfirmText.trim() !== activity.name}
                 onClick={() => {
-                  if (cancelActivityConfirmText.trim() !== "cancelar") return;
+                  if (cancelActivityConfirmText.trim() !== activity.name) return;
                   setCancelActivityModal(false);
                   setCancelActivityConfirmText("");
                   setToast({
@@ -4895,9 +4984,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     actions: [{ label: "Entendido", onClick: () => setToast(null) }],
                   });
                 }}
-                className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${cancelActivityConfirmText.trim() === "cancelar" ? "bg-[#d92d20] hover:bg-[#b42318] cursor-pointer" : "bg-[#fecdca] cursor-not-allowed"}`}
+                className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${cancelActivityConfirmText.trim() === activity.name ? "bg-[#d92d20] hover:bg-[#b42318] cursor-pointer" : "bg-[#fecdca] cursor-not-allowed"}`}
               >
-                Excluir
+                Cancelar atividade
               </button>
             </div>
           </div>
@@ -6230,8 +6319,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
               message: "Atividade encerrada com sucesso!",
               description: `A atividade ${activity.name} foi definida como encerrada dia ${day}/${month}, às ${hours}:${minutes}.`,
               type: "success",
-              actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+              actions: [{ label: "Entendido", onClick: () => { setToast(null); onBackToActivities?.(); } }],
             });
+            setTimeout(() => { onBackToActivities?.(); }, 3000);
           }}
         />
       )}
@@ -6377,7 +6467,7 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
           /* Default title mode */
           <>
             <div className="flex items-center gap-[10px]">
-              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Comunicados</p>
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Histórico</p>
               <div className="bg-[#f04438] rounded-[6px] px-[6px] py-[1px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-white leading-[16px]">{commentCount}</p>
               </div>

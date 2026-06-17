@@ -2933,11 +2933,18 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
   const holiday = DIA_HOLIDAYS[iso];
   const [showFichaDrawer, setShowFichaDrawer] = useState(false);
   const [fichaIdx, setFichaIdx] = useState(0);
+  const [activitySearch, setActivitySearch] = useState("");
 
   const dayActivities = useMemo(
     () => mockActivities.filter((a) => a.date === iso).sort((a, b) => a.startTime.localeCompare(b.startTime)),
     [iso]
   );
+
+  const filteredActivities = useMemo(() => {
+    if (!activitySearch.trim()) return dayActivities;
+    const q = activitySearch.toLowerCase();
+    return dayActivities.filter((a) => a.name.toLowerCase().includes(q) || a.startTime.includes(q) || a.endTime.includes(q) || a.guideName.toLowerCase().includes(q));
+  }, [dayActivities, activitySearch]);
 
   // Cards are no longer expandable/collapsible — always show full info
 
@@ -2991,15 +2998,35 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
           </button>
         </div>
       </div>
-      {/* Divider */}
-      <div className="absolute bg-[#e9eaeb] h-px left-[var(--shell-offset,248px)] right-[24px] top-[234px]" />
+      {/* Search bar */}
+      <div className="absolute left-[var(--shell-offset,248px)] right-[24px] top-[234px] pb-[16px]">
+        <div className="bg-white flex-1 min-w-0 relative rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]">
+          <div className="content-stretch flex gap-[12px] items-center px-[18px] py-[12px] relative size-full">
+            <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#9ca3af" strokeWidth="1.5"/><path d="M13.5 13.5l3.5 3.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <input
+              type="text"
+              value={activitySearch}
+              onChange={(e) => setActivitySearch(e.target.value)}
+              placeholder="Buscar atividade por nome, horário, participante, etc..."
+              className="flex-1 font-['Helvetica_Neue:Light',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[15px] text-[#1f2937] placeholder:text-[#9ca3af] bg-transparent"
+            />
+          </div>
+        </div>
+      </div>
       {/* Activity cards */}
-      <div className="absolute left-[var(--shell-offset,248px)] right-[24px] top-[258px]" style={{ paddingBottom: "40px" }}>
-        {dayActivities.length === 0 ? (
-          <DiaEmptyState onBack={onBackToAgenda} />
+      <div className="absolute left-[var(--shell-offset,248px)] right-[24px] top-[290px]" style={{ paddingBottom: "40px" }}>
+        {filteredActivities.length === 0 ? (
+          dayActivities.length === 0 ? (
+            <DiaEmptyState onBack={onBackToAgenda} />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-[48px] gap-[8px]">
+              <svg className="size-[32px] text-[#a4a7ae]" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680]">Nenhuma atividade encontrada para "{activitySearch}"</p>
+            </div>
+          )
         ) : (
           <div className="content-stretch flex flex-col gap-[24px] items-start relative w-full">
-            {dayActivities.map((a) => (
+            {filteredActivities.map((a) => (
               <DiaActivityCard
                 key={a.id}
                 a={a}

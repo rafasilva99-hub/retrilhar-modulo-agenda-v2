@@ -1,69 +1,27 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import {
-  NewActivityCapacitySection,
-  NewActivityFormActions,
-  NewActivityIdentificationSection,
-  NewActivityScheduleSection,
-  NewActivityVisibilitySection,
-} from "./new-activity-sections";
+import { FieldGroup } from "./new-activity-sections";
 
-describe("new activity form sections", () => {
-  it("renders the first-step identification, capacity, and visibility sections", () => {
+describe("FieldGroup", () => {
+  it("renders label and children", () => {
     render(
-      <>
-        <NewActivityIdentificationSection
-          titleField={<input aria-label="Título da atividade" />}
-          localField={<input aria-label="Local da atividade" />}
-          productField={<input aria-label="Produto" />}
-        />
-        <NewActivityCapacitySection
-          slider={<div>Slider</div>}
-          minField={<input aria-label="Capacidade mínima" />}
-          maxField={<input aria-label="Capacidade máxima" />}
-        />
-        <NewActivityVisibilitySection
-          visibilityField={<div>Pública</div>}
-          groupLinkField={<input aria-label="Link de Grupo" />}
-          clientGroupField={<input aria-label="Grupo de clientes" />}
-        />
-      </>
+      <FieldGroup label="Nome do campo">
+        <input aria-label="Nome do campo" />
+      </FieldGroup>
     );
 
-    expect(
-      screen.getByText("Insira as informações de identificação da atividade")
-    ).toBeInTheDocument();
-    expect(screen.getByText("Capacidade da atividade")).toBeInTheDocument();
-    expect(
-      screen.getByText("Insira as informações de visibilidade da atividade")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Nome do campo")).toBeInTheDocument();
+    expect(screen.getByLabelText("Nome do campo")).toBeInTheDocument();
   });
 
-  it("renders schedule controls and footer actions", () => {
+  it("renders optional hint text", () => {
     render(
-      <>
-        <NewActivityScheduleSection
-          startDateField={<input aria-label="Data de início" />}
-          startTimeField={<input aria-label="Horário de início" />}
-          endDateField={<input aria-label="Data de término" />}
-          endTimeField={<input aria-label="Horário de término" />}
-          multipleTimesToggle={<button>Múltiplos horários</button>}
-          repeatToggle={<button>Essa atividade se repete?</button>}
-        />
-        <NewActivityFormActions
-          currentStep={2}
-          onBack={() => undefined}
-          onCancel={() => undefined}
-          onNext={() => undefined}
-        />
-      </>
+      <FieldGroup label="Campo" hint="Texto de ajuda">
+        <input />
+      </FieldGroup>
     );
 
-    expect(
-      screen.getByText("Insira as informações de data e hora da atividade")
-    ).toBeInTheDocument();
-    expect(screen.getByText("Voltar ao passo anterior")).toBeInTheDocument();
-    expect(screen.getByText("Ir para o próximo passo")).toBeInTheDocument();
+    expect(screen.getByText("Texto de ajuda")).toBeInTheDocument();
   });
 });

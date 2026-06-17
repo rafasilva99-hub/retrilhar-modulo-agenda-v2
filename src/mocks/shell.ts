@@ -28,7 +28,7 @@ export const shellNavItems: ShellNavItem[] = [
   { title: "Agenda", page: "agenda", icon: Calendar03Icon, badge: 4 },
   { title: "Vendas", icon: Money01Icon, enabled: false },
   { title: "Clientes", icon: UserGroupIcon, enabled: false },
-  { title: "Produtos", icon: PackageIcon, enabled: false },
+  { title: "Produtos", page: "produtos", icon: PackageIcon },
   { title: "Relatórios", icon: AnalyticsUpIcon, enabled: false },
   { title: "Configurações", icon: Settings01Icon, enabled: false },
 ];

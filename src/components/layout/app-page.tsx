@@ -60,7 +60,10 @@ export function AppPage({
   onBack,
 }: AppPageProps) {
   return (
-    <div className="animate-in fade-in flex w-full flex-1 flex-col gap-[1.5em] px-[1em] pt-[0.75em] pb-[1.5em] duration-500 md:px-[1.5em]">
+    <div
+      className="animate-in fade-in flex min-h-screen flex-col gap-6 pt-[112px] pr-6 pb-6 duration-500"
+      style={{ paddingLeft: "var(--shell-offset, 248px)" }}
+    >
       {(title || actions || breadcrumb || onBack) && (
         <div className="flex flex-col gap-[0.75em]">
           {onBack && (

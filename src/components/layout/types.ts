@@ -6,7 +6,8 @@ export type AppPage =
   | "agenda"
   | "agendaDia"
   | "atualizacoes"
-  | "novaAtividade";
+  | "novaAtividade"
+  | "produtos";
 
 export interface ShellNavItem {
   title: string;

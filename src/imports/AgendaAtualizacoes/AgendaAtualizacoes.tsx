@@ -1375,9 +1375,19 @@ function FileTypeIcon({ type, size = 40 }: { type: string; size?: number }) {
 
 function DrawerSection({ title, children, defaultOpen = true, action }: { title: string; children: React.ReactNode; defaultOpen?: boolean; action?: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
+  const ref = useRef<HTMLDivElement>(null);
+  const handleToggle = () => {
+    const willOpen = !open;
+    setOpen(willOpen);
+    if (willOpen && ref.current) {
+      setTimeout(() => {
+        ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+  };
   return (
-    <div>
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[24px] h-[32px] cursor-pointer hover:bg-[#f0f1f3] transition-colors" style={{ marginLeft: 0, marginRight: 0 }}>
+    <div ref={ref}>
+      <button onClick={handleToggle} className="w-full flex items-center justify-between bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[24px] h-[32px] cursor-pointer hover:bg-[#f0f1f3] transition-colors" style={{ marginLeft: 0, marginRight: 0 }}>
         <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">{title}</p>
         <div className="flex items-center gap-[12px]">
           {action && <div onClick={(e) => e.stopPropagation()}>{action}</div>}
@@ -1450,8 +1460,11 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
   activityLocked?: boolean;
 }) {
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+  const [isClosing, setIsClosing] = useState(false);
+  const handleClose = () => { if (isClosing) return; setIsClosing(true); setTimeout(() => onClose(), 200); };
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const historyRef = useRef<HTMLDivElement>(null);
   const p = participant;
   const r = reservation;
   const isAnonymous = !p.name || p.name.trim() === "";
@@ -1520,15 +1533,15 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
   ].filter(d => d.available);
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && onClose()}>
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-l-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 animate-in slide-in-from-right duration-200 overflow-hidden">
+    <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && handleClose()}>
+      <div className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isClosing ? "opacity-0" : "opacity-100"}`} onClick={handleClose} />
+      <div className={`bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-l-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 overflow-hidden ${isClosing ? "animate-out slide-out-to-right duration-200 fill-mode-forwards" : "animate-in slide-in-from-right duration-200"}`}>
 
         {/* ── 1. HEADER ── */}
         <div className="shrink-0">
           <div className="flex items-center justify-between px-6 pt-5 pb-[16px]">
             <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Detalhes do participante</p>
-            <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors shrink-0">
+            <button onClick={handleClose} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors shrink-0">
               <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
           </div>
@@ -1564,7 +1577,7 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
             </div>
 
             {/* Documento + Data de nascimento */}
-            <div className="flex items-center gap-4 mt-5 py-4 border-t border-[#f5f5f5]">
+            <div className="flex items-center gap-4 mt-5 pb-4">
               <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
                 <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M19.4999 10C19.4999 6.22876 19.4999 4.34315 18.3284 3.17157C17.1568 2 15.2712 2 11.4999 2H10.5C6.72883 2 4.84323 2 3.67166 3.17156C2.50008 4.34312 2.50007 6.22872 2.50004 9.99993L2.5 13.9999C2.49997 17.7712 2.49995 19.6568 3.67153 20.8284C4.8431 22 6.72873 22 10.5 22H12" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M7 7H15M7 12H13.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" /><path d="M15.8613 22H20.1387C21.0238 22 21.7723 21.3987 21.4039 20.753C20.8135 19.7186 19.5114 19 18 19C16.4886 19 15.1865 19.7186 14.5961 20.753C14.2277 21.3987 14.9762 22 15.8613 22Z" stroke="#535862" strokeWidth="1.5" strokeLinejoin="round" /><path d="M17.9969 16.5C18.9639 16.5 19.7477 15.7165 19.7477 14.75C19.7477 13.7835 18.9639 13 17.9969 13C17.03 13 16.2461 13.7835 16.2461 14.75C16.2461 15.7165 17.03 16.5 17.9969 16.5Z" stroke="#535862" strokeWidth="1.5" /></svg>
               </div>
@@ -1588,60 +1601,196 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[6px]">Status</p>
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex gap-[6px] items-center flex-wrap">
                   {(() => {
-                    const opColors = {
-                      green: { bg: "bg-[#ecfdf3]", border: "border-[#a7f3d0]", text: "text-[#17b26a]" },
-                      amber: { bg: "bg-[#fffbeb]", border: "border-[#fbd38d]", text: "text-[#dc6803]" },
-                      red: { bg: "bg-[#fef3f2]", border: "border-[#fecdc9]", text: "text-[#d92d20]" },
-                      blue: { bg: "bg-[#eff6ff]", border: "border-[#bfdbfe]", text: "text-[#0b5ed7]" },
-                      gray: { bg: "bg-[#f5f5f5]", border: "border-[#e9eaeb]", text: "text-[#535862]" },
+                    const colorMap = {
+                      green: "#17b26a", amber: "#dc6803", red: "#d92d20", blue: "#0b5ed7", gray: "#535862",
                     };
-                    const oc = opColors[opStatus.variant];
-                    const opIcon = opStatus.variant === "green"
-                      ? <svg className={`size-3.5 ${oc.text}`} fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      : opStatus.variant === "amber"
-                      ? <svg className={`size-3.5 ${oc.text}`} fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                      : opStatus.variant === "red"
-                      ? <svg className={`size-3.5 ${oc.text}`} fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                      : null;
+                    const color = colorMap[opStatus.variant];
+                    const label = opStatus.label === "Aguardando check-in" ? "Reserva confirmada" : opStatus.label;
                     return (
-                      <div className={`flex items-center gap-1.5 ${oc.bg} border ${oc.border} rounded-full px-2.5 py-1`}>
-                        {opIcon}
-                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${oc.text}`}>{opStatus.label === "Aguardando check-in" ? "Reserva confirmada" : opStatus.label}</p>
+                      <div className="group relative">
+                        <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] h-[24px] whitespace-nowrap bg-white">
+                          {(opStatus.variant === "green" || opStatus.variant === "blue") && <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                          {opStatus.variant === "amber" && <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke={color} strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke={color} strokeWidth="1.2" strokeLinecap="round"/></svg>}
+                          {opStatus.variant === "red" && <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke={color} strokeWidth="1.5" strokeLinecap="round"/></svg>}
+                          <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none" style={{ color }}>{label}</span>
+                        </div>
+                        <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">{label}</p>
+                          <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                        </div>
                       </div>
                     );
                   })()}
                   {hasInsurance && (
-                    <div className="flex items-center gap-1.5 bg-[#ecfdf3] border border-[#a7f3d0] rounded-full px-2.5 py-1">
-                      <svg className="size-3.5 text-[#17b26a]" fill="none" viewBox="0 0 14 14"><path d="M7 1.5c-1.5 0-2.9.33-4 .9-.5.25-.8.4-1 .8-.2.4-.2.8-.2 1.5v2.1c0 3.4 2.7 5.3 4.3 6.1.4.2.7.3 1 .3s.6-.1 1-.3c1.6-.8 4.3-2.7 4.3-6.1v-2.1c0-.7 0-1.1-.2-1.5-.2-.4-.5-.55-1-.8-1.1-.57-2.5-.9-4-.9z" stroke="currentColor" strokeWidth="1.2" /><path d="M5 7l1.5 1.5L9 5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#17b26a]">Seguro contratado</p>
+                    <div className="group relative">
+                      <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] h-[24px] whitespace-nowrap bg-white">
+                        <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M7 1.5c-1.5 0-2.9.33-4 .9-.5.25-.8.4-1 .8-.2.4-.2.8-.2 1.5v2.1c0 3.4 2.7 5.3 4.3 6.1.4.2.7.3 1 .3s.6-.1 1-.3c1.6-.8 4.3-2.7 4.3-6.1v-2.1c0-.7 0-1.1-.2-1.5-.2-.4-.5-.55-1-.8-1.1-.57-2.5-.9-4-.9z" stroke="#17b26a" strokeWidth="1.2" /><path d="M5 7l1.5 1.5L9 5.5" stroke="#17b26a" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#17b26a]">Seguro contratado</span>
+                      </div>
+                      <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Seguro contratado</p>
+                        <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                      </div>
                     </div>
                   )}
-                  {!hasInsurance && (
-                    <div className={`flex items-center gap-1.5 ${
-                      insStatus.variant === "amber" ? "bg-[#fffbeb] border-[#fbd38d] text-[#dc6803]" :
-                      insStatus.variant === "red" ? "bg-[#fef3f2] border-[#fecdc9] text-[#d92d20]" :
-                      insStatus.variant === "gray" ? "bg-[#f5f5f5] border-[#e9eaeb] text-[#535862]" :
-                      "bg-[#ecfdf3] border-[#a7f3d0] text-[#17b26a]"
-                    } border rounded-full px-2.5 py-1`}>
-                      {insStatus.variant === "amber" ? (
-                        <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                      ) : insStatus.variant === "red" ? (
-                        <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                      ) : (
-                        <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      )}
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px]">{insStatus.label}</p>
-                    </div>
-                  )}
+                  {!hasInsurance && (() => {
+                    const insColorMap = { amber: "#dc6803", red: "#d92d20", gray: "#535862", green: "#17b26a" };
+                    const insColor = insColorMap[insStatus.variant] || "#535862";
+                    return (
+                      <div className="group relative">
+                        <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] h-[24px] whitespace-nowrap bg-white">
+                          {insStatus.variant === "amber" && <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke={insColor} strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke={insColor} strokeWidth="1.2" strokeLinecap="round"/></svg>}
+                          {insStatus.variant === "red" && <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke={insColor} strokeWidth="1.5" strokeLinecap="round"/></svg>}
+                          {(insStatus.variant === "green" || insStatus.variant === "gray") && <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke={insColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                          <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none" style={{ color: insColor }}>{insStatus.label}</span>
+                        </div>
+                        <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">{insStatus.label}</p>
+                          <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ── 3. ANEXOS SECTION ── */}
-          <DrawerSection title={`Anexos (${documents.length})`} action={<button className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7] hover:text-[#0a4fb3] cursor-pointer transition-colors">Baixar todos</button>}>
+          {/* ── 3. DADOS DE SAUDE SECTION ── */}
+          <DrawerSection title="Dados de saúde">
+
+            {/* Emergency contact */}
+            <div className={`flex items-center gap-[12px] ${!isAnonymous ? "mb-[16px]" : ""}`}>
+              <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M14.5827 11.2495V12.4994C14.5827 15.2493 14.5827 16.6242 13.7284 17.4785C12.8741 18.3328 11.4992 18.3328 8.74935 18.3328C5.99949 18.3328 4.62456 18.3328 3.77029 17.4785C2.91602 16.6242 2.91602 15.2493 2.91602 12.4994L2.91602 7.49945C2.91602 4.74959 2.91602 3.37466 3.77029 2.52038C4.48394 1.80673 5.56095 1.68926 7.49935 1.66992" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" /><path d="M13.3333 1.66602C12.146 1.66602 11.3762 2.42314 10.4657 2.6991C10.0955 2.81131 9.91042 2.86742 9.83551 2.94651C9.7606 3.0256 9.73867 3.14117 9.6948 3.37232C9.22534 5.84576 10.2514 8.13251 12.6986 9.02257C12.9615 9.1182 13.093 9.16602 13.3346 9.16602C13.5762 9.16601 13.7076 9.1182 13.9705 9.02256C16.4175 8.13249 17.4426 5.84576 16.9731 3.37231C16.9292 3.14113 16.9072 3.02554 16.8323 2.94645C16.7574 2.86736 16.5723 2.81128 16.2021 2.69914C15.2913 2.4232 14.5206 1.66602 13.3333 1.66602Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M7.91602 15.834H9.58268" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Contato de emergência</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">
+                  {p.emergencyContact ? `${p.emergencyContact.phone}` : phone}
+                </p>
+              </div>
+              <button className="flex items-center gap-[6px] px-[12px] h-[40px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer shrink-0">
+                <svg className="size-[14px] text-[#075e54]" fill="none" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.3789 2.27907 14.6926 2.78382 15.8877C3.06278 16.5481 3.20226 16.8784 3.21953 17.128C3.2368 17.3776 3.16334 17.6521 3.01642 18.2012L2 22L5.79877 20.9836C6.34788 20.8367 6.62244 20.7632 6.87202 20.7805C7.12161 20.7977 7.45185 20.9372 8.11235 21.2162C9.30745 21.7209 10.6211 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M8.58815 12.3773L9.45909 11.2956C9.82616 10.8397 10.2799 10.4153 10.3155 9.80826C10.3244 9.65494 10.2166 8.96657 10.0008 7.58986C9.91601 7.04881 9.41086 7 8.97332 7C8.40314 7 8.11805 7 7.83495 7.12931C7.47714 7.29275 7.10979 7.75231 7.02917 8.13733C6.96539 8.44196 7.01279 8.65187 7.10759 9.07169C7.51023 10.8548 8.45481 12.6158 9.91948 14.0805C11.3842 15.5452 13.1452 16.4898 14.9283 16.8924C15.3481 16.9872 15.558 17.0346 15.8627 16.9708C16.2477 16.8902 16.7072 16.5229 16.8707 16.165C17 15.8819 17 15.5969 17 15.0267C17 14.5891 16.9512 14.084 16.4101 13.9992C15.0334 13.7834 14.3451 13.6756 14.1917 13.6845C13.5847 13.7201 13.1603 14.1738 12.7044 14.5409L11.6227 15.4118" stroke="currentColor" strokeWidth="1.5" /></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#075e54] whitespace-nowrap">Falar via WhatsApp</p>
+              </button>
+            </div>
+
+            {!isAnonymous && (
+              <>
+                {/* Health items — inline text */}
+                <div className="flex flex-wrap gap-x-[16px] gap-y-[8px] pt-[4px]">
+                  {[
+                    { label: "Alergias", value: p.healthDetails?.allergies && p.healthDetails.allergies.length > 0 ? p.healthDetails.allergies.join(", ") : "não", hasValue: !!(p.healthDetails?.allergies && p.healthDetails.allergies.length > 0) },
+                    { label: "Restrição alimentar", value: p.dietaryRestrictions && p.dietaryRestrictions.length > 0 ? p.dietaryRestrictions.join(", ") : "não", hasValue: !!(p.dietaryRestrictions && p.dietaryRestrictions.length > 0) },
+                    { label: "Incapacidade física / mental", value: p.accessibility ? p.accessibility.type : "não", hasValue: !!p.accessibility },
+                    { label: "Plano de saúde", value: p.healthDetails?.healthPlanProvider || "não", hasValue: !!p.healthDetails?.healthPlanProvider },
+                    { label: "Medicação de uso contínuo", value: p.healthDetails?.medications && p.healthDetails.medications.length > 0 ? p.healthDetails.medications.join(", ") : "não", hasValue: !!(p.healthDetails?.medications && p.healthDetails.medications.length > 0) },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-[6px]">
+                      {item.hasValue ? (
+                        <svg className="size-[14px] text-[#17b26a] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      ) : (
+                        <svg className="size-[14px] text-[#d92d20] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      )}
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{item.label} - {item.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </DrawerSection>
+
+          {/* ── 5. DADOS DE PAGAMENTO SECTION ── */}
+          <DrawerSection title="Dados de pagamento">
+
+            {/* Order ID + Payment method */}
+            <div className="flex items-center gap-[12px] mb-[20px]">
+              <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M6.66602 14.166L13.3327 14.166" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M6.66602 10.834H9.99935" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M10.834 2.08268V2.49935C10.834 4.85637 10.834 6.03488 11.5662 6.76712C12.2984 7.49935 13.477 7.49935 15.834 7.49935L16.2507 7.49935M16.6673 8.88006V11.666C16.6673 14.8087 16.6673 16.3801 15.691 17.3564C14.7147 18.3327 13.1433 18.3327 10.0007 18.3327C6.85795 18.3327 5.28661 18.3327 4.3103 17.3564C3.33398 16.3801 3.33398 14.8087 3.33398 11.666L3.33398 7.87922C3.33398 5.17503 3.33398 3.82294 4.07238 2.90712C4.22155 2.72211 4.39008 2.55358 4.57509 2.40441C5.49091 1.66602 6.843 1.66602 9.54719 1.66602C10.1351 1.66602 10.4291 1.66602 10.6983 1.76102C10.7543 1.78078 10.8092 1.80352 10.8627 1.82914C11.1203 1.95231 11.3281 2.16018 11.7439 2.57592L15.691 6.52304C16.1727 7.00476 16.4136 7.24561 16.5405 7.5519C16.6673 7.85818 16.6673 8.19881 16.6673 8.88006Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">ID do pedido</p>
+                <CopyValue field="orderId" value={r.orderId} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]" />
+              </div>
+              <div className="shrink-0 text-right">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">Forma de pagamento</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">{r.paymentMethod || "PIX"}</p>
+              </div>
+              <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M1.67969 5.83452C3.51266 5.83452 4.99858 4.3486 4.99858 2.51562" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M15 2.51562V2.59222C15 4.38289 16.4516 5.83452 18.2423 5.83452" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.68245 10.8492C3.51531 10.8493 5.0013 12.3338 5.0013 14.1667C3.70676 14.1277 2.93462 13.9833 2.4002 13.4489C1.86598 12.9146 1.72151 12.1429 1.68245 10.8492ZM1.68245 10.8492C1.68237 10.8492 1.68253 10.8492 1.68245 10.8492ZM1.68245 10.8492C1.66797 10.3697 1.66797 9.81849 1.66797 9.18111L1.66797 7.5C1.66797 5.14298 1.66797 3.96447 2.4002 3.23223C3.13243 2.5 4.31095 2.5 6.66797 2.5L13.3346 2.5C15.6917 2.5 16.8702 2.5 17.6024 3.23223C18.3346 3.96447 18.3346 5.14298 18.3346 7.5V9.18111C18.3346 11.5381 18.3346 12.7166 17.6024 13.4489C17.068 13.9833 16.2958 14.1291 15.0013 14.1681C15.0013 12.3512 16.4755 10.8752 18.2866 10.8495" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 14.166V17.4993" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M12.5 14.166V15.8327" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M7.5 14.166V15.8327" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M12.5 8.33594C12.5 6.95523 11.3807 5.83594 10 5.83594C8.61929 5.83594 7.5 6.95523 7.5 8.33594C7.5 9.71665 8.61929 10.8359 10 10.8359C11.3807 10.8359 12.5 9.71665 12.5 8.33594Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </div>
+            </div>
+
+            {/* Pricing breakdown */}
+            <div className="space-y-[8px]">
+              <div className="flex justify-between">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#62748E]">Subtotal</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+              </div>
+              {(couponDiscount > 0 || r.coupon) && (
+                <div className="flex justify-between">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#17b26a]">Desconto</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#d92d20]">- R$ {Math.round(couponDiscount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+                </div>
+              )}
+              <div className="border-t border-dashed border-[#e9eaeb] pt-[12px] mt-[8px] flex justify-between items-center">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Total</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+              </div>
+            </div>
+          </DrawerSection>
+
+          {/* ── 6. HISTORICO DE PAGAMENTO SECTION (collapsible) ── */}
+          {r.history && r.history.length > 0 && (
+            <div ref={historyRef}>
+              <button onClick={() => { const willOpen = !historyOpen; setHistoryOpen(willOpen); if (willOpen) setTimeout(() => historyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); }} className="w-full flex items-center justify-between bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[24px] h-[32px] cursor-pointer hover:bg-[#f0f1f3] transition-colors">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Histórico de pagamento</p>
+                <svg className={`size-4 text-[#a4a7ae] transition-transform duration-300 ease-in-out ${historyOpen ? "" : "-rotate-90"}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              <div
+                className="grid transition-[grid-template-rows] duration-300 ease-in-out overflow-hidden"
+                style={{ gridTemplateRows: historyOpen ? "1fr" : "0fr" }}
+              >
+                <div className="min-h-0 overflow-hidden">
+                  <div className="px-6 py-[16px]">
+                    <div className="relative">
+                      <div className="space-y-4">
+                        {[...r.history].reverse().map((event, index, events) => {
+                          const date = new Date(event.timestamp).toLocaleDateString("pt-BR");
+                          const time = event.timestamp.slice(11, 16);
+                          const subtitle = [event.actor, event.detail].filter(Boolean).join(" · ");
+
+                          return (
+                            <div key={event.id} className="flex gap-3 relative">
+                              {index < events.length - 1 && (
+                                <div className="absolute left-[5px] top-[19px] bottom-[-12px] w-px bg-[#e9eaeb]" />
+                              )}
+                              <div className="size-[11px] rounded-full bg-[#3b82f6] shrink-0 mt-0.5 z-10" />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-[12px]">
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[16px]">{event.action}</p>
+                                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-[#9ca3af] leading-[16px] whitespace-nowrap">{date}, {time}</p>
+                                </div>
+                                {subtitle && (
+                                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-[#9ca3af] leading-[16px] mt-[2px]">{subtitle}</p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── 7. ANEXOS SECTION ── */}
+          <DrawerSection title={`Anexos (${documents.length})`} defaultOpen={false} action={<button className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7] hover:text-[#0a4fb3] cursor-pointer transition-colors">Baixar todos</button>}>
             <div className="group/attachments relative" onMouseEnter={() => {
               const el = document.getElementById("attachments-scroll");
               if (!el) return;
@@ -1698,147 +1847,12 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
             </div>
           </DrawerSection>
 
-          {/* ── 4. DADOS DE SAUDE SECTION ── */}
-          <DrawerSection title="Dados de saúde">
-
-            {/* Emergency contact */}
-            <div className={`flex items-center gap-[12px] ${!isAnonymous ? "mb-[16px]" : ""}`}>
-              <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M14.5827 11.2495V12.4994C14.5827 15.2493 14.5827 16.6242 13.7284 17.4785C12.8741 18.3328 11.4992 18.3328 8.74935 18.3328C5.99949 18.3328 4.62456 18.3328 3.77029 17.4785C2.91602 16.6242 2.91602 15.2493 2.91602 12.4994L2.91602 7.49945C2.91602 4.74959 2.91602 3.37466 3.77029 2.52038C4.48394 1.80673 5.56095 1.68926 7.49935 1.66992" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" /><path d="M13.3333 1.66602C12.146 1.66602 11.3762 2.42314 10.4657 2.6991C10.0955 2.81131 9.91042 2.86742 9.83551 2.94651C9.7606 3.0256 9.73867 3.14117 9.6948 3.37232C9.22534 5.84576 10.2514 8.13251 12.6986 9.02257C12.9615 9.1182 13.093 9.16602 13.3346 9.16602C13.5762 9.16601 13.7076 9.1182 13.9705 9.02256C16.4175 8.13249 17.4426 5.84576 16.9731 3.37231C16.9292 3.14113 16.9072 3.02554 16.8323 2.94645C16.7574 2.86736 16.5723 2.81128 16.2021 2.69914C15.2913 2.4232 14.5206 1.66602 13.3333 1.66602Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M7.91602 15.834H9.58268" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Contato de emergência</p>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">
-                  {p.emergencyContact ? `${p.emergencyContact.phone}` : phone}
-                </p>
-              </div>
-              <button className="flex items-center gap-[6px] px-[12px] h-[40px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer shrink-0">
-                <svg className="size-[14px] text-[#075e54]" fill="none" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.3789 2.27907 14.6926 2.78382 15.8877C3.06278 16.5481 3.20226 16.8784 3.21953 17.128C3.2368 17.3776 3.16334 17.6521 3.01642 18.2012L2 22L5.79877 20.9836C6.34788 20.8367 6.62244 20.7632 6.87202 20.7805C7.12161 20.7977 7.45185 20.9372 8.11235 21.2162C9.30745 21.7209 10.6211 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M8.58815 12.3773L9.45909 11.2956C9.82616 10.8397 10.2799 10.4153 10.3155 9.80826C10.3244 9.65494 10.2166 8.96657 10.0008 7.58986C9.91601 7.04881 9.41086 7 8.97332 7C8.40314 7 8.11805 7 7.83495 7.12931C7.47714 7.29275 7.10979 7.75231 7.02917 8.13733C6.96539 8.44196 7.01279 8.65187 7.10759 9.07169C7.51023 10.8548 8.45481 12.6158 9.91948 14.0805C11.3842 15.5452 13.1452 16.4898 14.9283 16.8924C15.3481 16.9872 15.558 17.0346 15.8627 16.9708C16.2477 16.8902 16.7072 16.5229 16.8707 16.165C17 15.8819 17 15.5969 17 15.0267C17 14.5891 16.9512 14.084 16.4101 13.9992C15.0334 13.7834 14.3451 13.6756 14.1917 13.6845C13.5847 13.7201 13.1603 14.1738 12.7044 14.5409L11.6227 15.4118" stroke="currentColor" strokeWidth="1.5" /></svg>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#075e54] whitespace-nowrap">Falar via WhatsApp</p>
-              </button>
-            </div>
-
-            {!isAnonymous && (
-              <>
-                <div className="border-t border-[#f5f5f5] mb-[4px]" />
-
-                {/* Health items — inline text */}
-                <div className="flex flex-wrap gap-x-[16px] gap-y-[8px] pt-[12px]">
-                  {[
-                    { label: "Alergias", value: p.healthDetails?.allergies && p.healthDetails.allergies.length > 0 ? p.healthDetails.allergies.join(", ") : "não", hasValue: !!(p.healthDetails?.allergies && p.healthDetails.allergies.length > 0) },
-                    { label: "Restrição alimentar", value: p.dietaryRestrictions && p.dietaryRestrictions.length > 0 ? p.dietaryRestrictions.join(", ") : "não", hasValue: !!(p.dietaryRestrictions && p.dietaryRestrictions.length > 0) },
-                    { label: "Incapacidade física / mental", value: p.accessibility ? p.accessibility.type : "não", hasValue: !!p.accessibility },
-                    { label: "Plano de saúde", value: p.healthDetails?.healthPlanProvider || "não", hasValue: !!p.healthDetails?.healthPlanProvider },
-                    { label: "Medicação de uso contínuo", value: p.healthDetails?.medications && p.healthDetails.medications.length > 0 ? p.healthDetails.medications.join(", ") : "não", hasValue: !!(p.healthDetails?.medications && p.healthDetails.medications.length > 0) },
-                  ].map((item) => (
-                    <div key={item.label} className="flex items-center gap-[6px]">
-                      {item.hasValue ? (
-                        <svg className="size-[14px] text-[#17b26a] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      ) : (
-                        <svg className="size-[14px] text-[#d92d20] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                      )}
-                      <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${item.hasValue ? "text-[#17b26a]" : "text-[#414651]"}`}>{item.label} - {item.value}</p>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </DrawerSection>
-
-          {/* ── 5. DADOS DE PAGAMENTO SECTION ── */}
-          <DrawerSection title="Dados de pagamento">
-
-            {/* Order ID + Payment method */}
-            <div className="flex items-center gap-[12px] mb-[20px]">
-              <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M6.66602 14.166L13.3327 14.166" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M6.66602 10.834H9.99935" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M10.834 2.08268V2.49935C10.834 4.85637 10.834 6.03488 11.5662 6.76712C12.2984 7.49935 13.477 7.49935 15.834 7.49935L16.2507 7.49935M16.6673 8.88006V11.666C16.6673 14.8087 16.6673 16.3801 15.691 17.3564C14.7147 18.3327 13.1433 18.3327 10.0007 18.3327C6.85795 18.3327 5.28661 18.3327 4.3103 17.3564C3.33398 16.3801 3.33398 14.8087 3.33398 11.666L3.33398 7.87922C3.33398 5.17503 3.33398 3.82294 4.07238 2.90712C4.22155 2.72211 4.39008 2.55358 4.57509 2.40441C5.49091 1.66602 6.843 1.66602 9.54719 1.66602C10.1351 1.66602 10.4291 1.66602 10.6983 1.76102C10.7543 1.78078 10.8092 1.80352 10.8627 1.82914C11.1203 1.95231 11.3281 2.16018 11.7439 2.57592L15.691 6.52304C16.1727 7.00476 16.4136 7.24561 16.5405 7.5519C16.6673 7.85818 16.6673 8.19881 16.6673 8.88006Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">ID do pedido</p>
-                <CopyValue field="orderId" value={r.orderId} className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]" />
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">Forma de pagamento</p>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">{r.paymentMethod || "PIX"}</p>
-              </div>
-              <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M1.67969 5.83452C3.51266 5.83452 4.99858 4.3486 4.99858 2.51562" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M15 2.51562V2.59222C15 4.38289 16.4516 5.83452 18.2423 5.83452" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.68245 10.8492C3.51531 10.8493 5.0013 12.3338 5.0013 14.1667C3.70676 14.1277 2.93462 13.9833 2.4002 13.4489C1.86598 12.9146 1.72151 12.1429 1.68245 10.8492ZM1.68245 10.8492C1.68237 10.8492 1.68253 10.8492 1.68245 10.8492ZM1.68245 10.8492C1.66797 10.3697 1.66797 9.81849 1.66797 9.18111L1.66797 7.5C1.66797 5.14298 1.66797 3.96447 2.4002 3.23223C3.13243 2.5 4.31095 2.5 6.66797 2.5L13.3346 2.5C15.6917 2.5 16.8702 2.5 17.6024 3.23223C18.3346 3.96447 18.3346 5.14298 18.3346 7.5V9.18111C18.3346 11.5381 18.3346 12.7166 17.6024 13.4489C17.068 13.9833 16.2958 14.1291 15.0013 14.1681C15.0013 12.3512 16.4755 10.8752 18.2866 10.8495" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 14.166V17.4993" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M12.5 14.166V15.8327" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M7.5 14.166V15.8327" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M12.5 8.33594C12.5 6.95523 11.3807 5.83594 10 5.83594C8.61929 5.83594 7.5 6.95523 7.5 8.33594C7.5 9.71665 8.61929 10.8359 10 10.8359C11.3807 10.8359 12.5 9.71665 12.5 8.33594Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </div>
-            </div>
-
-            <div className="border-t border-[#f5f5f5]" />
-
-            {/* Pricing breakdown */}
-            <div className="space-y-[8px] pt-[12px]">
-              <div className="flex justify-between">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#62748E]">Subtotal</p>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">R$ {subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
-              </div>
-              {(couponDiscount > 0 || r.coupon) && (
-                <div className="flex justify-between">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#17b26a]">Desconto</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#d92d20]">- R$ {Math.round(couponDiscount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
-                </div>
-              )}
-              <div className="border-t border-dashed border-[#e9eaeb] pt-[12px] mt-[8px] flex justify-between items-center">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Total</p>
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
-              </div>
-            </div>
-          </DrawerSection>
-
-          {/* ── 6. HISTORICO DE PAGAMENTO SECTION (collapsible) ── */}
-          {r.history && r.history.length > 0 && (
-            <div>
-              <button onClick={() => setHistoryOpen(!historyOpen)} className="w-full flex items-center justify-between bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[24px] h-[32px] cursor-pointer hover:bg-[#f0f1f3] transition-colors">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Histórico de pagamento</p>
-                <svg className={`size-4 text-[#a4a7ae] transition-transform duration-300 ease-in-out ${historyOpen ? "" : "-rotate-90"}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-              <div
-                className="grid transition-[grid-template-rows] duration-300 ease-in-out overflow-hidden"
-                style={{ gridTemplateRows: historyOpen ? "1fr" : "0fr" }}
-              >
-                <div className="min-h-0 overflow-hidden">
-                  <div className="px-6 py-[16px]">
-                    <div className="relative">
-                      <div className="space-y-4">
-                        {[...r.history].reverse().map((event, index, events) => {
-                          const date = new Date(event.timestamp).toLocaleDateString("pt-BR");
-                          const time = event.timestamp.slice(11, 16);
-                          const subtitle = [event.actor, event.detail].filter(Boolean).join(" · ");
-
-                          return (
-                            <div key={event.id} className="flex gap-3 relative">
-                              {index < events.length - 1 && (
-                                <div className="absolute left-[5px] top-[19px] bottom-[-12px] w-px bg-[#e9eaeb]" />
-                              )}
-                              <div className="size-[11px] rounded-full bg-[#3b82f6] shrink-0 mt-0.5 z-10" />
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-[12px]">
-                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[16px]">{event.action}</p>
-                                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-[#9ca3af] leading-[16px] whitespace-nowrap">{date}, {time}</p>
-                                </div>
-                                {subtitle && (
-                                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-[#9ca3af] leading-[16px] mt-[2px]">{subtitle}</p>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
         </div>
 
-        {/* ── 7. FOOTER (sticky) ── */}
+        {/* ── 8. FOOTER (sticky) ── */}
         <div className="px-6 py-4 border-t border-[#e9eaeb] bg-white flex items-center justify-end gap-3 shrink-0">
           {activityLocked ? (
-            <button onClick={onClose} className="flex items-center justify-center gap-2 h-[40px] px-[20px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#fafafa] transition-colors cursor-pointer">
+            <button onClick={handleClose} className="flex items-center justify-center gap-2 h-[40px] px-[20px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#fafafa] transition-colors cursor-pointer">
               <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</span>
             </button>
           ) : isTerminal ? (
@@ -2190,6 +2204,8 @@ function ParticipantReservationStatusCell({ reservation, participant }: { reserv
 
 function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onClose: () => void }) {
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+  const [isClosing, setIsClosing] = useState(false);
+  const handleClose = () => { if (isClosing) return; setIsClosing(true); setTimeout(() => onClose(), 200); };
   const isGroup = reservation.type === "group";
   const pCount = reservation.participants.length;
   const adults = reservation.participants.filter((p) => p.tariffType === TARIFF_VARIANTS[0]).length;
@@ -2199,16 +2215,16 @@ function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onC
   const isPaid = reservation.paymentStatus === "Paid";
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex justify-end p-[24px]" onKeyDown={(e) => e.key === "Escape" && onClose()}>
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
+    <div className="fixed inset-0 z-[60] flex justify-end p-[24px]" onKeyDown={(e) => e.key === "Escape" && handleClose()}>
+      <div className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isClosing ? "opacity-0" : "opacity-100"}`} onClick={handleClose} />
+      <div className={`bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 ${isClosing ? "animate-out slide-out-to-right duration-200 fill-mode-forwards" : "animate-in slide-in-from-right duration-200"}`}>
         <div className="flex flex-col flex-1 gap-[16px] overflow-y-auto p-[24px]">
           {/* Title bar */}
           <div className="flex items-center justify-between shrink-0 pb-[16px]">
             <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Informações do pedido</p>
             <div className="flex gap-[16px] items-center">
               <p className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] hover:underline">Ir para central de vendas</p>
-              <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+              <button onClick={handleClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
                 <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
               </button>
             </div>
@@ -2325,7 +2341,7 @@ function PaymentDrawer({ reservation, onClose }: { reservation: Reservation; onC
         </div>
         {/* Footer buttons */}
         <div className="border-t border-[#e9eaeb] flex gap-[12px] items-center justify-end px-[24px] py-[16px] shrink-0">
-          <button onClick={onClose} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[24px] py-[12px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar aba</button>
+          <button onClick={handleClose} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[24px] py-[12px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar aba</button>
           <button className="cursor-pointer flex gap-[8px] items-center justify-center px-[24px] py-[12px] rounded-[8px] transition-colors hover:opacity-90" style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>
             <svg className="shrink-0 size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 12h10" stroke="white" strokeWidth="1.5" strokeLinecap="round"/></svg>
             <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Baixar comprovante (PDF)</p>
@@ -2387,6 +2403,8 @@ function CheckInButton({ isDone, disabled, selected, onCheckIn, onUndo }: { isDo
 
 function FiltersDrawer({ onClose }: { onClose: () => void }) {
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+  const [isClosing, setIsClosing] = useState(false);
+  const handleClose = () => { if (isClosing) return; setIsClosing(true); setTimeout(() => onClose(), 200); };
   const [alertas, setAlertas] = useState<Set<string>>(new Set());
   const [tarifa, setTarifa] = useState<Set<string>>(new Set());
   const [imagem, setImagem] = useState("");
@@ -2404,14 +2422,14 @@ function FiltersDrawer({ onClose }: { onClose: () => void }) {
   const limpar = () => { setAlertas(new Set()); setTarifa(new Set()); setImagem(""); setSeguro(""); setPedidos(""); setPeriodo(""); };
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex justify-end pl-[24px] pt-0 pr-0 pb-0" onKeyDown={(e) => e.key === "Escape" && onClose()}>
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10">
+    <div className="fixed inset-0 z-[60] flex justify-end pl-[24px] pt-0 pr-0 pb-0" onKeyDown={(e) => e.key === "Escape" && handleClose()}>
+      <div className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isClosing ? "opacity-0" : "opacity-100"}`} onClick={handleClose} />
+      <div className={`bg-white border border-[#e9eaeb] border-solid flex flex-col max-h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 ${isClosing ? "animate-out slide-out-to-right duration-200 fill-mode-forwards" : "animate-in slide-in-from-right duration-200"}`}>
         {/* Header */}
         <div className="shrink-0">
           <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
             <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Filtros</p>
-            <button onClick={onClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+            <button onClick={handleClose} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
               <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
           </div>
@@ -2485,8 +2503,8 @@ function FiltersDrawer({ onClose }: { onClose: () => void }) {
             </button>
           ) : <div />}
           <div className="flex gap-[12px]">
-            <button onClick={onClose} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[20px] py-[10px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar</button>
-            <button onClick={hasAnyFilter ? onClose : undefined} disabled={!hasAnyFilter} className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[20px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors ${hasAnyFilter ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`} style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>Aplicar filtros</button>
+            <button onClick={handleClose} className="bg-white border border-[#e2e8f0] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] leading-[normal] not-italic px-[20px] py-[10px] rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar</button>
+            <button onClick={hasAnyFilter ? handleClose : undefined} disabled={!hasAnyFilter} className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[20px] py-[10px] rounded-[8px] text-[14px] text-white transition-colors ${hasAnyFilter ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`} style={{ backgroundImage: "linear-gradient(rgb(11,94,215), rgb(8,79,183))" }}>Aplicar filtros</button>
           </div>
         </div>
       </div>
@@ -2657,6 +2675,8 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
   onConfirm: () => void;
 }) {
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+  const [isClosing, setIsClosing] = useState(false);
+  const handleClose = () => { if (isClosing) return; setIsClosing(true); setTimeout(() => onClose(), 200); };
   const [startTime, setStartTime] = useState("08:14");
   const [endTime, setEndTime] = useState("16:03");
   const [observations, setObservations] = useState("");
@@ -2703,14 +2723,14 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
   const [markPendingAsNoShow, setMarkPendingAsNoShow] = useState(false);
 
   return createPortal(
-    <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && onClose()}>
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="bg-white relative flex flex-col h-full w-[640px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
+    <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && handleClose()}>
+      <div className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isClosing ? "opacity-0" : "opacity-100"}`} onClick={handleClose} />
+      <div className={`bg-white relative flex flex-col h-full w-[640px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] ${isClosing ? "animate-out slide-out-to-right duration-200 fill-mode-forwards" : "animate-in slide-in-from-right duration-200"}`}>
         {/* Header */}
         <div className="shrink-0">
           <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
             <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Concluir Atividade</h2>
-          <button onClick={onClose} className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
+          <button onClick={handleClose} className="flex items-center justify-center size-[32px] rounded-[6px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
             <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </button>
           </div>
@@ -2865,7 +2885,7 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
         {/* Footer */}
         <div className="flex h-[74.5px] items-center justify-end gap-[12px] px-[24px] border-t border-[#f5f5f5] shrink-0">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] px-[20px] py-[10px] rounded-[8px] border border-[#e9eaeb] hover:bg-[#f8fafc] transition-colors cursor-pointer"
           >
             Cancelar
@@ -2953,8 +2973,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
+  const [isTeamClosing, setIsTeamClosing] = useState(false);
+  const closeTeamModal = () => { if (isTeamClosing) return; setIsTeamClosing(true); setTimeout(() => { setShowTeamModal(false); setIsTeamClosing(false); }, 200); };
   const [showManifestoDrawer, setShowManifestoDrawer] = useState(false);
+  const [isManifestoClosing, setIsManifestoClosing] = useState(false);
+  const closeManifestoDrawer = () => { if (isManifestoClosing) return; setIsManifestoClosing(true); setTimeout(() => { setShowManifestoDrawer(false); setIsManifestoClosing(false); }, 200); };
   const [showFichaDrawer, setShowFichaDrawer] = useState(false);
+  const [isFichaClosing, setIsFichaClosing] = useState(false);
+  const closeFichaDrawer = () => { if (isFichaClosing) return; setIsFichaClosing(true); setTimeout(() => { setShowFichaDrawer(false); setIsFichaClosing(false); }, 200); };
   const [fichaExportOpen, setFichaExportOpen] = useState<number | null>(null);
   const [manifestoUpdatedAt, setManifestoUpdatedAt] = useState(() => new Date());
   const [manifestoNow, setManifestoNow] = useState(() => new Date());
@@ -3698,7 +3724,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   <div className="grid grid-cols-2 gap-[16px]">
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
-                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M21.669 3.33203C23.5089 3.33203 25.0004 4.88413 25.0004 6.79875C25.0004 8.38062 25.0603 9.78828 23.782 10.952C19.5978 14.7609 17.5057 16.6654 15.0004 16.6654C12.4952 16.6654 10.4031 14.7609 6.21888 10.952C4.94044 9.78819 5.00044 8.38037 5.00044 6.79839C5.00044 4.88397 6.49183 3.33203 8.33155 3.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 23.332V29.165C15 33.3074 18.3581 36.6655 22.5006 36.6655C26.643 36.6655 30.0011 33.3074 30.0011 29.165V26.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M23.3346 11.668L21.1643 17.0939C20.5873 18.5363 20.2988 19.2575 19.8157 19.85C19.3326 20.4426 18.6844 20.8705 17.3878 21.7262L14.9506 23.3346L12.556 21.7219C11.2883 20.8681 10.6544 20.4412 10.1816 19.8557C9.70884 19.2702 9.42502 18.5606 8.85738 17.1415L6.66797 11.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 21.668C35 24.4294 32.7614 26.668 30 26.668C27.2386 26.668 25 24.4294 25 21.668C25 18.9065 27.2386 16.668 30 16.668C32.7614 16.668 35 18.9065 35 21.668Z" stroke="currentColor" strokeWidth="3"/><path d="M30.012 21.668L29.9971 21.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M21.669 3.33203C23.5089 3.33203 25.0004 4.88413 25.0004 6.79875C25.0004 8.38062 25.0603 9.78828 23.782 10.952C19.5978 14.7609 17.5057 16.6654 15.0004 16.6654C12.4952 16.6654 10.4031 14.7609 6.21888 10.952C4.94044 9.78819 5.00044 8.38037 5.00044 6.79839C5.00044 4.88397 6.49183 3.33203 8.33155 3.33203" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15 23.332V29.165C15 33.3074 18.3581 36.6655 22.5006 36.6655C26.643 36.6655 30.0011 33.3074 30.0011 29.165V26.6654" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M23.3346 11.668L21.1643 17.0939C20.5873 18.5363 20.2988 19.2575 19.8157 19.85C19.3326 20.4426 18.6844 20.8705 17.3878 21.7262L14.9506 23.3346L12.556 21.7219C11.2883 20.8681 10.6544 20.4412 10.1816 19.8557C9.70884 19.2702 9.42502 18.5606 8.85738 17.1415L6.66797 11.668" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 21.668C35 24.4294 32.7614 26.668 30 26.668C27.2386 26.668 25 24.4294 25 21.668C25 18.9065 27.2386 16.668 30 16.668C32.7614 16.668 35 18.9065 35 21.668Z" stroke="currentColor" strokeWidth="2.5"/><path d="M30.012 21.668L29.9971 21.668" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Alertas de Saúde</p>
@@ -3707,7 +3733,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     </div>
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
-                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M3.33203 28.3359H36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M20 11.6667C20 11.6667 22.5 9.94397 22.5 7.81892C22.5 4.06036 17.5 4.06036 17.5 7.81892C17.5 9.94397 20 11.6667 20 11.6667Z" stroke="currentColor" strokeWidth="3" strokeLinejoin="round"/><path d="M5 28.3359L6.03545 32.4777C6.40642 33.9616 7.7397 35.0026 9.26925 35.0026H30.7307C32.2603 35.0026 33.5936 33.9616 33.9646 32.4777L35 28.3359" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M34.1654 24.168C33.3348 17.1294 27.3089 11.668 19.9987 11.668C12.6885 11.668 6.6626 17.1294 5.83203 24.168" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M3.33203 28.3359H36.6654" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/><path d="M20 11.6667C20 11.6667 22.5 9.94397 22.5 7.81892C22.5 4.06036 17.5 4.06036 17.5 7.81892C17.5 9.94397 20 11.6667 20 11.6667Z" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/><path d="M5 28.3359L6.03545 32.4777C6.40642 33.9616 7.7397 35.0026 9.26925 35.0026H30.7307C32.2603 35.0026 33.5936 33.9616 33.9646 32.4777L35 28.3359" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/><path d="M34.1654 24.168C33.3348 17.1294 27.3089 11.668 19.9987 11.668C12.6885 11.668 6.6626 17.1294 5.83203 24.168" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/></svg>
                       </div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Restrições alimentares</p>
@@ -3716,7 +3742,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     </div>
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
-                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M31.6667 14.9987V13.029C31.6667 10.2069 31.6667 8.7959 31.2463 7.66894C30.5706 5.85719 29.1415 4.42811 27.3298 3.75237C26.2028 3.33203 24.7918 3.33203 21.9697 3.33203C17.0311 3.33203 14.5618 3.33203 12.5896 4.06762C9.41904 5.25017 6.91814 7.75107 5.73559 10.9216C5 12.8938 5 15.3631 5 20.3017L5 24.5442C5 29.6598 5 32.2176 6.32972 33.9939C6.71071 34.5028 7.16254 34.9546 7.67148 35.3356C9.44779 36.6654 12.0056 36.6654 17.1212 36.6654H18.3333C20.2829 36.6654 24.1667 36.6654 24.1667 36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.332 23.8889H19.7326C20.8352 23.8889 21.3864 23.8889 21.8295 24.1793C22.2725 24.4697 22.519 24.9927 23.0121 26.0386L25.6654 31.6667L29.332 20L31.9853 25.6281C32.4783 26.674 32.7249 27.197 33.1679 27.4874C33.6109 27.7778 34.1622 27.7778 35.2648 27.7778H36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 19.9987C5 16.9304 7.48731 14.4431 10.5556 14.4431L12.4074 14.4431C13.2685 14.4431 13.699 14.4431 14.0523 14.3485C15.0109 14.0916 15.7596 13.3429 16.0165 12.3843C16.1111 12.0311 16.1111 11.6005 16.1111 10.7394V8.88759C16.1111 5.81934 18.5984 3.33203 21.6667 3.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M31.6667 14.9987V13.029C31.6667 10.2069 31.6667 8.7959 31.2463 7.66894C30.5706 5.85719 29.1415 4.42811 27.3298 3.75237C26.2028 3.33203 24.7918 3.33203 21.9697 3.33203C17.0311 3.33203 14.5618 3.33203 12.5896 4.06762C9.41904 5.25017 6.91814 7.75107 5.73559 10.9216C5 12.8938 5 15.3631 5 20.3017L5 24.5442C5 29.6598 5 32.2176 6.32972 33.9939C6.71071 34.5028 7.16254 34.9546 7.67148 35.3356C9.44779 36.6654 12.0056 36.6654 17.1212 36.6654H18.3333C20.2829 36.6654 24.1667 36.6654 24.1667 36.6654" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.332 23.8889H19.7326C20.8352 23.8889 21.3864 23.8889 21.8295 24.1793C22.2725 24.4697 22.519 24.9927 23.0121 26.0386L25.6654 31.6667L29.332 20L31.9853 25.6281C32.4783 26.674 32.7249 27.197 33.1679 27.4874C33.6109 27.7778 34.1622 27.7778 35.2648 27.7778H36.6654" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 19.9987C5 16.9304 7.48731 14.4431 10.5556 14.4431L12.4074 14.4431C13.2685 14.4431 13.699 14.4431 14.0523 14.3485C15.0109 14.0916 15.7596 13.3429 16.0165 12.3843C16.1111 12.0311 16.1111 11.6005 16.1111 10.7394V8.88759C16.1111 5.81934 18.5984 3.33203 21.6667 3.33203" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Necessidades especiais</p>
@@ -3725,7 +3751,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     </div>
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
-                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M20 7.5V10M20 10V12.5M20 10H22.5M20 10H17.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M14.3083 4.30834C13.332 5.28465 13.332 6.856 13.332 9.9987C13.332 13.1414 13.332 14.7127 14.3083 15.6891C15.2847 16.6654 16.856 16.6654 19.9987 16.6654C23.1414 16.6654 24.7127 16.6654 25.6891 15.6891C26.6654 14.7127 26.6654 13.1414 26.6654 9.9987C26.6654 6.856 26.6654 5.28465 25.6891 4.30834C24.7127 3.33203 23.1414 3.33203 19.9987 3.33203C16.856 3.33203 15.2847 3.33203 14.3083 4.30834Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 36.6654V19.9499C6.66797 14.4341 6.66797 11.6762 8.37651 9.96263C9.46239 8.87358 10.9689 8.47668 13.3346 8.33203M33.3346 36.6654V19.9499C33.3346 14.4341 33.3346 11.6762 31.6261 9.96263C30.5402 8.87358 29.0337 8.47668 26.668 8.33203" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 36.668H35" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.832 36.6654V32.4987C15.832 30.941 15.832 30.1622 16.167 29.582C16.3864 29.202 16.702 28.8864 17.082 28.667C17.6622 28.332 18.441 28.332 19.9987 28.332C21.5564 28.332 22.3352 28.332 22.9154 28.667C23.2954 28.8864 23.611 29.202 23.8304 29.582C24.1654 30.1622 24.1654 30.941 24.1654 32.4987V36.6654" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M13.347 21.668H13.332M19.9987 21.668H19.9838M26.6673 21.668H26.6523" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M20 7.5V10M20 10V12.5M20 10H22.5M20 10H17.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/><path d="M14.3083 4.30834C13.332 5.28465 13.332 6.856 13.332 9.9987C13.332 13.1414 13.332 14.7127 14.3083 15.6891C15.2847 16.6654 16.856 16.6654 19.9987 16.6654C23.1414 16.6654 24.7127 16.6654 25.6891 15.6891C26.6654 14.7127 26.6654 13.1414 26.6654 9.9987C26.6654 6.856 26.6654 5.28465 25.6891 4.30834C24.7127 3.33203 23.1414 3.33203 19.9987 3.33203C16.856 3.33203 15.2847 3.33203 14.3083 4.30834Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 36.6654V19.9499C6.66797 14.4341 6.66797 11.6762 8.37651 9.96263C9.46239 8.87358 10.9689 8.47668 13.3346 8.33203M33.3346 36.6654V19.9499C33.3346 14.4341 33.3346 11.6762 31.6261 9.96263C30.5402 8.87358 29.0337 8.47668 26.668 8.33203" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 36.668H35" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.832 36.6654V32.4987C15.832 30.941 15.832 30.1622 16.167 29.582C16.3864 29.202 16.702 28.8864 17.082 28.667C17.6622 28.332 18.441 28.332 19.9987 28.332C21.5564 28.332 22.3352 28.332 22.9154 28.667C23.2954 28.8864 23.611 29.202 23.8304 29.582C24.1654 30.1622 24.1654 30.941 24.1654 32.4987V36.6654" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/><path d="M13.347 21.668H13.332M19.9987 21.668H19.9838M26.6673 21.668H26.6523" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Possui plano de saúde</p>
@@ -3737,7 +3763,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   {/* Observations */}
                   <div className="flex items-start gap-[10px]">
                     <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0">
-                      <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M24.9987 12.5013C24.9987 7.89893 21.2677 4.16797 16.6654 4.16797C12.063 4.16797 8.33203 7.89893 8.33203 12.5013C8.33203 17.1037 12.063 20.8346 16.6654 20.8346C21.2677 20.8346 24.9987 17.1037 24.9987 12.5013Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M34.9987 35.8346L32.4987 33.3346M33.332 29.168C33.332 26.4065 31.0935 24.168 28.332 24.168C25.5706 24.168 23.332 26.4065 23.332 29.168C23.332 31.9294 25.5706 34.168 28.332 34.168C31.0935 34.168 33.332 31.9294 33.332 29.168Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 32.5026C5 26.0593 10.2233 20.8359 16.6667 20.8359C18.456 20.8359 20.1512 21.2388 21.6667 21.9587" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M24.9987 12.5013C24.9987 7.89893 21.2677 4.16797 16.6654 4.16797C12.063 4.16797 8.33203 7.89893 8.33203 12.5013C8.33203 17.1037 12.063 20.8346 16.6654 20.8346C21.2677 20.8346 24.9987 17.1037 24.9987 12.5013Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M34.9987 35.8346L32.4987 33.3346M33.332 29.168C33.332 26.4065 31.0935 24.168 28.332 24.168C25.5706 24.168 23.332 26.4065 23.332 29.168C23.332 31.9294 25.5706 34.168 28.332 34.168C31.0935 34.168 33.332 31.9294 33.332 29.168Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 32.5026C5 26.0593 10.2233 20.8359 16.6667 20.8359C18.456 20.8359 20.1512 21.2388 21.6667 21.9587" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </div>
                     <div className="flex flex-col gap-[4px]">
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Observações adicionais</p>
@@ -3766,14 +3792,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   {/* Info rows */}
                   <div className="grid grid-cols-2 gap-[16px]">
                     <div className="flex items-start gap-[10px]">
-                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M13.332 28.332L26.6654 28.332" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.332 21.668H19.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M21.668 4.16536V4.9987C21.668 9.71274 21.668 12.0698 23.1324 13.5342C24.5969 14.9987 26.9539 14.9987 31.668 14.9987L32.5013 14.9987M33.3346 17.7601V23.332C33.3346 29.6174 33.3346 32.7601 31.382 34.7127C29.4294 36.6654 26.2867 36.6654 20.0013 36.6654C13.7159 36.6654 10.5732 36.6654 8.62059 34.7127C6.66797 32.7601 6.66797 29.6174 6.66797 23.332L6.66797 15.7584C6.66797 10.3501 6.66797 7.64588 8.14476 5.81425C8.4431 5.44422 8.78016 5.10716 9.15019 4.80882C10.9818 3.33203 13.686 3.33203 19.0944 3.33203C20.2703 3.33203 20.8582 3.33203 21.3966 3.52205C21.5086 3.56156 21.6184 3.60704 21.7255 3.65827C22.2406 3.90462 22.6563 4.32036 23.4878 5.15184L31.382 13.0461C32.3454 14.0095 32.8272 14.4912 33.0809 15.1038C33.3346 15.7164 33.3346 16.3976 33.3346 17.7601Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M13.332 28.332L26.6654 28.332" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.332 21.668H19.9987" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M21.668 4.16536V4.9987C21.668 9.71274 21.668 12.0698 23.1324 13.5342C24.5969 14.9987 26.9539 14.9987 31.668 14.9987L32.5013 14.9987M33.3346 17.7601V23.332C33.3346 29.6174 33.3346 32.7601 31.382 34.7127C29.4294 36.6654 26.2867 36.6654 20.0013 36.6654C13.7159 36.6654 10.5732 36.6654 8.62059 34.7127C6.66797 32.7601 6.66797 29.6174 6.66797 23.332L6.66797 15.7584C6.66797 10.3501 6.66797 7.64588 8.14476 5.81425C8.4431 5.44422 8.78016 5.10716 9.15019 4.80882C10.9818 3.33203 13.686 3.33203 19.0944 3.33203C20.2703 3.33203 20.8582 3.33203 21.3966 3.52205C21.5086 3.56156 21.6184 3.60704 21.7255 3.65827C22.2406 3.90462 22.6563 4.32036 23.4878 5.15184L31.382 13.0461C32.3454 14.0095 32.8272 14.4912 33.0809 15.1038C33.3346 15.7164 33.3346 16.3976 33.3346 17.7601Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">ID do pedido</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">#RE-9920</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-[10px]">
-                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M36.6654 19.9987C36.6654 29.2034 29.2034 36.6654 19.9987 36.6654C10.794 36.6654 3.33203 29.2034 3.33203 19.9987C3.33203 10.794 10.794 3.33203 19.9987 3.33203C29.2034 3.33203 36.6654 10.794 36.6654 19.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4"/></svg></div>
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M36.6654 19.9987C36.6654 29.2034 29.2034 36.6654 19.9987 36.6654C10.794 36.6654 3.33203 29.2034 3.33203 19.9987C3.33203 10.794 10.794 3.33203 19.9987 3.33203C29.2034 3.33203 36.6654 10.794 36.6654 19.9987Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4"/></svg></div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Status de pagamento</p>
                         <div className="flex items-center gap-[6px]">
@@ -3783,14 +3809,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                       </div>
                     </div>
                     <div className="flex items-start gap-[10px]">
-                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M26.6654 3.33203V9.9987M13.332 3.33203L13.332 9.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 20.0013C35 13.7159 35 10.5732 33.0474 8.62059C31.0948 6.66797 27.9521 6.66797 21.6667 6.66797L18.3333 6.66797C12.0479 6.66797 8.90524 6.66797 6.95262 8.62059C5 10.5732 5 13.7159 5 20.0013L5 23.3346C5 29.62 5 32.7627 6.95262 34.7153C8.90524 36.668 12.0479 36.668 18.3333 36.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 16.668L35 16.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M30.4465 31.1672L28.3346 29.9987V27.11M35.0013 29.9987C35.0013 33.6806 32.0165 36.6654 28.3346 36.6654C24.6527 36.6654 21.668 33.6806 21.668 29.9987C21.668 26.3168 24.6527 23.332 28.3346 23.332C32.0165 23.332 35.0013 26.3168 35.0013 29.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M26.6654 3.33203V9.9987M13.332 3.33203L13.332 9.9987" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 20.0013C35 13.7159 35 10.5732 33.0474 8.62059C31.0948 6.66797 27.9521 6.66797 21.6667 6.66797L18.3333 6.66797C12.0479 6.66797 8.90524 6.66797 6.95262 8.62059C5 10.5732 5 13.7159 5 20.0013L5 23.3346C5 29.62 5 32.7627 6.95262 34.7153C8.90524 36.668 12.0479 36.668 18.3333 36.668" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 16.668L35 16.668" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M30.4465 31.1672L28.3346 29.9987V27.11M35.0013 29.9987C35.0013 33.6806 32.0165 36.6654 28.3346 36.6654C24.6527 36.6654 21.668 33.6806 21.668 29.9987C21.668 26.3168 24.6527 23.332 28.3346 23.332C32.0165 23.332 35.0013 26.3168 35.0013 29.9987Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Data / hora da atividade</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">18/02/2026, 08:00 AM (GMT+5:30)</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-[10px]">
-                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M19.9987 36.6654C29.2034 36.6654 36.6654 29.2034 36.6654 19.9987C36.6654 10.794 29.2034 3.33203 19.9987 3.33203C10.794 3.33203 3.33203 10.794 3.33203 19.9987C3.33203 29.2034 10.794 36.6654 19.9987 36.6654Z" stroke="currentColor" strokeWidth="3"/><path d="M20.0117 17.5127C18.631 17.5127 17.5117 18.6319 17.5117 20.0127C17.5117 21.3934 18.631 22.5127 20.0117 22.5127C21.3924 22.5127 22.5117 21.3934 22.5117 20.0127C22.5117 18.6319 21.3924 17.5127 20.0117 17.5127ZM20.0117 17.5127V11.6641M25.0232 25.0321L21.7755 21.7844" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                      <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M19.9987 36.6654C29.2034 36.6654 36.6654 29.2034 36.6654 19.9987C36.6654 10.794 29.2034 3.33203 19.9987 3.33203C10.794 3.33203 3.33203 10.794 3.33203 19.9987C3.33203 29.2034 10.794 36.6654 19.9987 36.6654Z" stroke="currentColor" strokeWidth="2.5"/><path d="M20.0117 17.5127C18.631 17.5127 17.5117 18.6319 17.5117 20.0127C17.5117 21.3934 18.631 22.5127 20.0117 22.5127C21.3924 22.5127 22.5117 21.3934 22.5117 20.0127C22.5117 18.6319 21.3924 17.5127 20.0117 17.5127ZM20.0117 17.5127V11.6641M25.0232 25.0321L21.7755 21.7844" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                       <div className="flex flex-col gap-[4px]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Duração da atividade</p>
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">08:00 AM - 11:00 AM (2h)</p>
@@ -4171,9 +4197,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                               </div>
                             </div>
                             {member.checkedIn && (
-                              <div className="flex items-center gap-[4px] shrink-0 bg-[#ecfdf3] border border-[#abefc6] rounded-full px-[10px] py-[4px]">
-                                <svg className="size-[12px] text-[#079455]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#079455]">Check-in às {member.checkedInAt}</p>
+                              <div className="flex items-center gap-[6px] shrink-0 rounded-full border border-[#e4e4e7] px-[8px] h-[24px] bg-white">
+                                <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="#079455" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#079455]">Check-in realizado</span>
                               </div>
                             )}
                           </div>
@@ -4195,14 +4221,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     <div className="h-px bg-[#f5f5f5]" />
                     <div className="grid grid-cols-2 gap-[16px]">
                       <div className="flex items-start gap-[10px]">
-                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M13.332 28.332L26.6654 28.332" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.332 21.668H19.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M21.668 4.16536V4.9987C21.668 9.71274 21.668 12.0698 23.1324 13.5342C24.5969 14.9987 26.9539 14.9987 31.668 14.9987L32.5013 14.9987M33.3346 17.7601V23.332C33.3346 29.6174 33.3346 32.7601 31.382 34.7127C29.4294 36.6654 26.2867 36.6654 20.0013 36.6654C13.7159 36.6654 10.5732 36.6654 8.62059 34.7127C6.66797 32.7601 6.66797 29.6174 6.66797 23.332L6.66797 15.7584C6.66797 10.3501 6.66797 7.64588 8.14476 5.81425C8.4431 5.44422 8.78016 5.10716 9.15019 4.80882C10.9818 3.33203 13.686 3.33203 19.0944 3.33203C20.2703 3.33203 20.8582 3.33203 21.3966 3.52205C21.5086 3.56156 21.6184 3.60704 21.7255 3.65827C22.2406 3.90462 22.6563 4.32036 23.4878 5.15184L31.382 13.0461C32.3454 14.0095 32.8272 14.4912 33.0809 15.1038C33.3346 15.7164 33.3346 16.3976 33.3346 17.7601Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M13.332 28.332L26.6654 28.332" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.332 21.668H19.9987" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M21.668 4.16536V4.9987C21.668 9.71274 21.668 12.0698 23.1324 13.5342C24.5969 14.9987 26.9539 14.9987 31.668 14.9987L32.5013 14.9987M33.3346 17.7601V23.332C33.3346 29.6174 33.3346 32.7601 31.382 34.7127C29.4294 36.6654 26.2867 36.6654 20.0013 36.6654C13.7159 36.6654 10.5732 36.6654 8.62059 34.7127C6.66797 32.7601 6.66797 29.6174 6.66797 23.332L6.66797 15.7584C6.66797 10.3501 6.66797 7.64588 8.14476 5.81425C8.4431 5.44422 8.78016 5.10716 9.15019 4.80882C10.9818 3.33203 13.686 3.33203 19.0944 3.33203C20.2703 3.33203 20.8582 3.33203 21.3966 3.52205C21.5086 3.56156 21.6184 3.60704 21.7255 3.65827C22.2406 3.90462 22.6563 4.32036 23.4878 5.15184L31.382 13.0461C32.3454 14.0095 32.8272 14.4912 33.0809 15.1038C33.3346 15.7164 33.3346 16.3976 33.3346 17.7601Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                         <div className="flex flex-col gap-[4px]">
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">ID do pedido</p>
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">#RE-9921</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-[10px]">
-                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M36.6654 19.9987C36.6654 29.2034 29.2034 36.6654 19.9987 36.6654C10.794 36.6654 3.33203 29.2034 3.33203 19.9987C3.33203 10.794 10.794 3.33203 19.9987 3.33203C29.2034 3.33203 36.6654 10.794 36.6654 19.9987Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4"/></svg></div>
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M36.6654 19.9987C36.6654 29.2034 29.2034 36.6654 19.9987 36.6654C10.794 36.6654 3.33203 29.2034 3.33203 19.9987C3.33203 10.794 10.794 3.33203 19.9987 3.33203C29.2034 3.33203 36.6654 10.794 36.6654 19.9987Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4"/></svg></div>
                         <div className="flex flex-col gap-[4px]">
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Status de pagamento</p>
                           <div className="flex items-center gap-[6px]">
@@ -4212,14 +4238,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                         </div>
                       </div>
                       <div className="flex items-start gap-[10px]">
-                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M26.6654 3.33203V9.9987M13.332 3.33203L13.332 9.9987" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 20.0013C35 13.7159 35 10.5732 33.0474 8.62059C31.0948 6.66797 27.9521 6.66797 21.6667 6.66797L18.3333 6.66797C12.0479 6.66797 8.90524 6.66797 6.95262 8.62059C5 10.5732 5 13.7159 5 20.0013L5 23.3346C5 29.62 5 32.7627 6.95262 34.7153C8.90524 36.668 12.0479 36.668 18.3333 36.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 16.668L35 16.668" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M26.6654 3.33203V9.9987M13.332 3.33203L13.332 9.9987" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M35 20.0013C35 13.7159 35 10.5732 33.0474 8.62059C31.0948 6.66797 27.9521 6.66797 21.6667 6.66797L18.3333 6.66797C12.0479 6.66797 8.90524 6.66797 6.95262 8.62059C5 10.5732 5 13.7159 5 20.0013L5 23.3346C5 29.62 5 32.7627 6.95262 34.7153C8.90524 36.668 12.0479 36.668 18.3333 36.668" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 16.668L35 16.668" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M30.4465 31.1672L28.3346 29.9987V27.11M35.0013 29.9987C35.0013 33.6806 32.0165 36.6654 28.3346 36.6654C24.6527 36.6654 21.668 33.6806 21.668 29.9987C21.668 26.3168 24.6527 23.332 28.3346 23.332C32.0165 23.332 35.0013 26.3168 35.0013 29.9987Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                         <div className="flex flex-col gap-[4px]">
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Data e hora</p>
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">18/02/2026, 08:00</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-[10px]">
-                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M19.9987 36.6654C29.2034 36.6654 36.6654 29.2034 36.6654 19.9987C36.6654 10.794 29.2034 3.33203 19.9987 3.33203C10.794 3.33203 3.33203 10.794 3.33203 19.9987C3.33203 29.2034 10.794 36.6654 19.9987 36.6654Z" stroke="currentColor" strokeWidth="3"/><path d="M20.0117 17.5127C18.631 17.5127 17.5117 18.6319 17.5117 20.0127C17.5117 21.3934 18.631 22.5127 20.0117 22.5127C21.3924 22.5127 22.5117 21.3934 22.5117 20.0127C22.5117 18.6319 21.3924 17.5127 20.0117 17.5127ZM20.0117 17.5127V11.6641M25.0232 25.0321L21.7755 21.7844" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                        <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 40 40"><path d="M19.9987 36.6654C29.2034 36.6654 36.6654 29.2034 36.6654 19.9987C36.6654 10.794 29.2034 3.33203 19.9987 3.33203C10.794 3.33203 3.33203 10.794 3.33203 19.9987C3.33203 29.2034 10.794 36.6654 19.9987 36.6654Z" stroke="currentColor" strokeWidth="2.5"/><path d="M20.0117 17.5127C18.631 17.5127 17.5117 18.6319 17.5117 20.0127C17.5117 21.3934 18.631 22.5127 20.0117 22.5127C21.3924 22.5127 22.5117 21.3934 22.5117 20.0127C22.5117 18.6319 21.3924 17.5127 20.0117 17.5127ZM20.0117 17.5127V11.6641M25.0232 25.0321L21.7755 21.7844" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                         <div className="flex flex-col gap-[4px]">
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">Duração</p>
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27] leading-[normal]">08:00 às 11:00 (2h)</p>
@@ -5011,14 +5037,14 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
       {paymentDrawerRes && <PaymentDrawer reservation={paymentDrawerRes} onClose={() => setPaymentDrawerRes(null)} />}
       {/* Team modal */}
       {showTeamModal && createPortal(
-        <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && setShowTeamModal(false)}>
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowTeamModal(false)} />
-          <div className="bg-white relative flex flex-col h-full w-[640px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
+        <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && closeTeamModal()}>
+          <div className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isTeamClosing ? "opacity-0" : "opacity-100"}`} onClick={closeTeamModal} />
+          <div className={`bg-white relative flex flex-col h-full w-[640px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] ${isTeamClosing ? "animate-out slide-out-to-right duration-200 fill-mode-forwards" : "animate-in slide-in-from-right duration-200"}`}>
             {/* Header */}
             <div className="shrink-0">
               <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Equipe responsável</p>
-                <button onClick={() => setShowTeamModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <button onClick={closeTeamModal} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors">
                   <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 </button>
               </div>
@@ -5106,7 +5132,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 <svg className="size-[16px] text-[#17b26a]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"/></svg>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{activity.assignedGuides.length} seguro(s) contratado(s)</p>
               </div>
-              <button onClick={() => setShowTeamModal(false)} className="flex items-center gap-[6px] px-[16px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer">
+              <button onClick={closeTeamModal} className="flex items-center gap-[6px] px-[16px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer">
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</p>
               </button>
             </div>
@@ -5116,9 +5142,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
       )}
       {/* Listas e manifestos drawer */}
       {showManifestoDrawer && createPortal(
-        <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && setShowManifestoDrawer(false)}>
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowManifestoDrawer(false)} />
-          <div className="bg-white relative flex flex-col h-full w-[720px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
+        <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && closeManifestoDrawer()}>
+          <div className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isManifestoClosing ? "opacity-0" : "opacity-100"}`} onClick={closeManifestoDrawer} />
+          <div className={`bg-white relative flex flex-col h-full w-[720px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] ${isManifestoClosing ? "animate-out slide-out-to-right duration-200 fill-mode-forwards" : "animate-in slide-in-from-right duration-200"}`}>
             {/* Header */}
             <div className="shrink-0">
               <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -5126,7 +5152,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[18px] text-[#181d27]">Listas e Manifestos</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] leading-[20px]">Exporte as fichas e manifestos para o dia da atividade. Os dados refletem o estado atual das reservas para uso em campo.</p>
                 </div>
-                <button onClick={() => setShowManifestoDrawer(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <button onClick={closeManifestoDrawer} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
                   <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 </button>
               </div>
@@ -5154,6 +5180,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 const pendingPayment = reservations.filter((r) => r.paymentStatus === "Pending" || r.paymentStatus === "Partial").flatMap((r) => r.participants).length;
                 const healthIssues = allParts.filter((p) => p.hasHealthIssue).length;
                 const minors = allParts.filter((p) => p.isMinor).length;
+                const minorsWithAuth = allParts.filter((p) => p.isMinor && p.guardian).length;
                 return (
                   <div className="flex items-start gap-[16px] pt-0 pb-0">
                     <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
@@ -5161,40 +5188,66 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[4px]">Status</p>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <div className="flex items-center gap-1.5 bg-[#ecfdf3] border border-[#abefc6] rounded-full px-2.5 py-1">
-                          <svg className="size-3.5 text-[#079455]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#079455]">{confirmed} confirmados</p>
+                      <div className="flex gap-[6px] items-center flex-wrap">
+                        <div className="group relative">
+                          <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                            <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="#079455" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#079455]">{confirmed} confirmados / {checkedIn} check-in</span>
+                          </div>
+                          <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Confirmados / Check-in</p>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">Reservas confirmadas e check-ins realizados</p>
+                            <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-full px-2.5 py-1">
-                          <svg className="size-3.5 text-[#0b5ed7]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">{checkedIn} check-in</p>
+                        <div className="group relative">
+                          <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                            <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="#414651" strokeWidth="1.2" /><path d="M4.5 7l1.8 1.8 3.2-3.5" stroke="#414651" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#414651]">{performed} realizada</span>
+                          </div>
+                          <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Atividade realizada</p>
+                            <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-white border border-[#e9eaeb] rounded-full px-2.5 py-1">
-                          <svg className="size-3.5 text-[#414651]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" /><path d="M4.5 7l1.8 1.8 3.2-3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{performed} realizada</p>
-                        </div>
-                        {(pendingPayment > 0 || healthIssues > 0 || minors > 0) && (
-                          <>
-                          {pendingPayment > 0 && (
-                            <div className="flex items-center gap-1.5 bg-[#fffbeb] border border-[#fbd38d] rounded-full px-2.5 py-1">
-                              <svg className="size-3.5 text-[#dc6803]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" /><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#dc6803]">{pendingPayment} pgtos. pendentes</p>
+                        {pendingPayment > 0 && (
+                          <div className="group relative">
+                            <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                              <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#dc6803" strokeLinecap="round" strokeLinejoin="round"><path d="M18.4167 8.14815C18.4167 5.85719 15.5438 4 12 4C8.45617 4 5.58333 5.85719 5.58333 8.14815C5.58333 10.4391 7.33333 11.7037 12 11.7037C16.6667 11.7037 19 12.8889 19 15.8519C19 18.8148 15.866 20 12 20C8.13401 20 5 18.1428 5 15.8519" /><path d="M12 2V22" /></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#dc6803]">{pendingPayment} pgtos. pendentes</span>
                             </div>
-                          )}
-                          {healthIssues > 0 && (
-                            <div className="flex items-center gap-1.5 bg-[#fef3f2] border border-[#fecdca] rounded-full px-2.5 py-1">
-                              <svg className="size-3.5 text-[#d92d20]" fill="none" viewBox="0 0 14 14"><path d="M11.3 2.7a3 3 0 00-4.25 0L7 2.75l-.05-.05A3 3 0 102.7 6.95L7 11.25l4.3-4.3a3 3 0 000-4.25z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#d92d20]">{healthIssues} saúde</p>
+                            <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Pagamentos pendentes</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">Aguardando confirmação</p>
+                              <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                             </div>
-                          )}
-                          {minors > 0 && (
-                            <div className="flex items-center gap-1.5 bg-[#fef3f2] border border-[#fecdca] rounded-full px-2.5 py-1">
-                              <svg className="size-3.5 text-[#d92d20]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="4.5" r="2" stroke="currentColor" strokeWidth="1.2" /><path d="M3.5 11c.45-1.75 1.75-2.8 3.5-2.8s3.05 1.05 3.5 2.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#d92d20]">{minors} menores de idade</p>
+                          </div>
+                        )}
+                        {healthIssues > 0 && (
+                          <div className="group relative">
+                            <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                              <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M13.0014 2C14.1053 2 15.0003 2.93126 15.0003 4.08003C15.0003 5.02915 15.0362 5.87375 14.2692 6.57196C11.7587 8.85732 10.5034 10 9.00027 10C7.49714 10 6.24187 8.85732 3.73133 6.57196C2.96426 5.87369 3.00027 5.029 3.00027 4.07981C3.00027 2.93116 3.8951 2 4.99893 2" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 14V17.4998C9 19.9852 11.0149 22.0001 13.5003 22.0001C15.9858 22.0001 18.0007 19.9852 18.0007 17.4998V16" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 7L12.6978 10.2556C12.3516 11.121 12.1785 11.5537 11.8887 11.9092C11.5988 12.2648 11.2098 12.5215 10.4319 13.0349L8.9696 14L7.53283 13.0323C6.77221 12.5201 6.39189 12.2639 6.10821 11.9126C5.82452 11.5613 5.65423 11.1356 5.31365 10.2841L4 7" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M21 13C21 14.6569 19.6569 16 18 16C16.3431 16 15 14.6569 15 13C15 11.3431 16.3431 10 18 10C19.6569 10 21 11.3431 21 13Z" stroke="#d92d20" strokeWidth="1.5"/><path d="M18.008 13L17.999 13" stroke="#d92d20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#d92d20]">Alertas de saúde</span>
                             </div>
-                          )}
-                          </>
+                            <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Atenção à saúde</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">Participantes com restrições</p>
+                              <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                            </div>
+                          </div>
+                        )}
+                        {minors > 0 && (
+                          <div className="group relative">
+                            <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                              <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 5.73791C14 5.73791 12.8849 6.23808 12.1017 5.85651C11.1464 5.39118 10.1991 3.44619 12.0914 2" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.00897 9H8M16 9H15.991" stroke="#d92d20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 15C8.91212 16.2144 10.3643 17 12 17C13.6357 17 15.0879 16.2144 16 15" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#d92d20]">{minors} menores de idade</span>
+                            </div>
+                            <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Menores de idade</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">{minorsWithAuth} com autorização / {minors - minorsWithAuth} pendente{minors - minorsWithAuth !== 1 ? "s" : ""}</p>
+                              <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -5233,21 +5286,21 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     <div className="flex items-stretch gap-[8px] mt-[4px]">
                       {ficha.locked ? (
                         <span className="flex-1 flex items-center justify-center gap-[6px] h-[32px] rounded-[8px] border border-[#d0d5dd] bg-[#f5f5f5] px-[12px] cursor-not-allowed">
-                          <svg className="size-[13px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M12 17v-2M7 10V7a5 5 0 0110 0v3M5 10h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                          <svg className="size-[13px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M12 17v-2M7 10V7a5 5 0 0110 0v3M5 10h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Sem permissão</p>
                         </span>
                       ) : (
                         <>
                           <button className="flex-1 flex items-center justify-center gap-[6px] h-[32px] rounded-[8px] bg-[#0b5ed7] px-[12px] hover:bg-[#0a4db3] transition-colors cursor-pointer">
-                            <svg className="size-[13px] text-white" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5"/></svg>
+                            <svg className="size-[13px] text-white" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/></svg>
                             <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-white">Visualizar</p>
                           </button>
                           {(ficha.formats.includes("PDF") || ficha.formats.includes("EXCEL")) && (
                             <div className="relative flex-1">
                               <button onClick={(e) => { e.stopPropagation(); setFichaExportOpen(fichaExportOpen === ficha.id ? null : ficha.id); }} className="flex items-center justify-center gap-[6px] w-full h-[32px] rounded-[8px] border border-[#e9eaeb] bg-white px-[12px] hover:bg-[#f8fafc] transition-colors cursor-pointer">
-                                <svg className="size-[13px] text-[#414651]" fill="none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg className="size-[13px] text-[#414651]" fill="none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651]">Exportar</p>
-                                <svg className={`size-[10px] text-[#a4a7ae] transition-transform ${fichaExportOpen === ficha.id ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <svg className={`size-[10px] text-[#a4a7ae] transition-transform ${fichaExportOpen === ficha.id ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                               </button>
                               {fichaExportOpen === ficha.id && (
                                 <div className="absolute left-0 bottom-full mb-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[180px] z-10 py-[4px]">
@@ -5289,7 +5342,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 </svg>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">{getManifestoUpdatedLabel()}</p>
               </button>
-              <button onClick={() => setShowManifestoDrawer(false)} className="flex h-[40px] items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px] transition-colors hover:bg-[#f8fafc] cursor-pointer">
+              <button onClick={closeManifestoDrawer} className="flex h-[40px] items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px] transition-colors hover:bg-[#f8fafc] cursor-pointer">
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</p>
               </button>
             </div>
@@ -5299,13 +5352,13 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
       )}
       {/* Ficha de operação drawer */}
       {showFichaDrawer && createPortal(
-        <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && setShowFichaDrawer(false)}>
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowFichaDrawer(false)} />
-          <div className="bg-white relative flex flex-col h-full w-[720px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] animate-in slide-in-from-right duration-200">
+        <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && closeFichaDrawer()}>
+          <div className={`absolute inset-0 bg-black/40 transition-opacity duration-200 ${isFichaClosing ? "opacity-0" : "opacity-100"}`} onClick={closeFichaDrawer} />
+          <div className={`bg-white relative flex flex-col h-full w-[720px] z-10 shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] rounded-tl-[16px] rounded-bl-[16px] ${isFichaClosing ? "animate-out slide-out-to-right duration-200 fill-mode-forwards" : "animate-in slide-in-from-right duration-200"}`}>
             <div className="shrink-0">
               <div className="flex items-center justify-between px-[24px] pt-[20px] pb-[16px]">
                 <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Ficha de operação</p>
-                <button onClick={() => setShowFichaDrawer(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                <button onClick={closeFichaDrawer} className="cursor-pointer flex items-center justify-center rounded-[6px] size-[32px] hover:bg-[#f5f5f5] transition-colors">
                   <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 </button>
               </div>
@@ -5360,7 +5413,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   <svg className="size-[14px] text-[#0b5ed7]" fill="none" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2M9 21h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 3h10v4H7V3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#0b5ed7]">Imprimir</p>
                 </button>
-                <button onClick={() => setShowFichaDrawer(false)} className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer">
+                <button onClick={closeFichaDrawer} className="flex items-center gap-[6px] px-[14px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors cursor-pointer">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Fechar aba</p>
                 </button>
               </div>
@@ -6708,8 +6761,8 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           </div>
           {/* Nav items — icon only with tooltips */}
           {([
-            { id: "atualizacoes", label: "Comunicados", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-            { id: "equipe", label: "Equipe", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.5344 7.82853 17.5576 8.63092 17.0204C9.59321 16.3761 10.7524 16 12 16C13.2476 16 14.4068 16.3761 15.3691 17.0204C16.1715 17.5576 16.5 18.5344 16.5 19.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 11C18.6101 11 19.6415 11.3769 20.4974 12.0224C21.2229 12.5696 21.5 13.4951 21.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.5 11C5.38987 11 4.35846 11.3769 3.50256 12.0224C2.77706 12.5696 2.5 13.4951 2.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+            { id: "atualizacoes", label: "Histórico", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+            { id: "equipe", label: "Equipe responsável", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.5344 7.82853 17.5576 8.63092 17.0204C9.59321 16.3761 10.7524 16 12 16C13.2476 16 14.4068 16.3761 15.3691 17.0204C16.1715 17.5576 16.5 18.5344 16.5 19.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 11C18.6101 11 19.6415 11.3769 20.4974 12.0224C21.2229 12.5696 21.5 13.4951 21.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.5 11C5.38987 11 4.35846 11.3769 3.50256 12.0224C2.77706 12.5696 2.5 13.4951 2.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg> },
           ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
             <button
               key={item.id}
@@ -6852,7 +6905,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                   <div className="border-t border-[#f5f5f5] px-[16px] py-[12px] shrink-0">
                     <div className="flex items-center gap-[6px]">
                       <svg className="size-[14px] text-[#17b26a]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"/></svg>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">{localGuides.length} membro(s) · {localGuides.filter((g) => guideInsurance[g]).length} seguro(s)</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">{localGuides.length} membro(s) · {localGuides.filter((g) => guideInsurance[g]).length} seguro(s) contratado(s)</p>
                     </div>
                   </div>
                 </div>

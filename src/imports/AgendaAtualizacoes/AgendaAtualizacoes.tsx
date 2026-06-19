@@ -20,7 +20,9 @@ type ResAction =
   | { type: "CANCEL_PARTICIPANT"; participantId: string }
   | { type: "UNDO_CANCEL_PARTICIPANT"; participantId: string }
   | { type: "RESCHEDULE_PARTICIPANT"; participantId: string }
-  | { type: "UNDO_RESCHEDULE_PARTICIPANT"; participantId: string };
+  | { type: "UNDO_RESCHEDULE_PARTICIPANT"; participantId: string }
+  | { type: "UNDO_CONFIRM_PARTICIPANT"; participantId: string }
+  | { type: "SET_RESERVATION_STATUS"; reservationId: string; status: ReservationStatus };
 
 const TARIFF_VARIANTS = [
   "Adulto Meia-Entrada Estudante com Transporte e Seguro Incluso",
@@ -109,6 +111,9 @@ function getActivityHeaderStats(activity: Activity, reservations: Reservation[])
 }
 
 function reservationsReducer(state: Reservation[], action: ResAction): Reservation[] {
+  if (action.type === "SET_RESERVATION_STATUS") {
+    return state.map((r) => r.id === action.reservationId ? { ...r, status: action.status } : r);
+  }
   return state.map((r) => {
     const hasTarget = r.participants.some((p) => p.id === action.participantId);
     if (!hasTarget) return r;
@@ -122,6 +127,7 @@ function reservationsReducer(state: Reservation[], action: ResAction): Reservati
       if (action.type === "UNDO_CANCEL_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       if (action.type === "RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Rescheduled" as CheckInStatus };
       if (action.type === "UNDO_RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
+      if (action.type === "UNDO_CONFIRM_PARTICIPANT") return { ...p, checkInStatus: "Scheduled" as CheckInStatus };
       return p;
     });
     return { ...r, participants: newParticipants };
@@ -1117,7 +1123,25 @@ function Frame20({ activeTab, setActiveTab }: { activeTab: string; setActiveTab:
           </div>
         </div>
       </button>
-      {/* 3. Atualizações (third position) */}
+      {/* 3. Resumo da atividade (third position) */}
+      <button
+        onClick={() => setActiveTab("resumo-atividade")}
+        className={`${activeTab === "resumo-atividade" ? "bg-[#f0f5ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
+        data-name="Menu action component"
+      >
+        <div className="flex flex-row items-center size-full">
+          <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">
+            <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 24 24" style={{ stroke: activeTab === "resumo-atividade" ? "#0b5ed7" : "#414651" }}>
+              <path d="M7 18V15M12 18V12M17 18V9M4 4C4 4 5.2 5.2 5.8 5.8M20 4C20 4 18.8 5.2 18.2 5.8M5.8 5.8C7.4 7.4 9.6 8.5 12 8.5C14.4 8.5 16.6 7.4 18.2 5.8M5.8 5.8L4 8M18.2 5.8L20 8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div className="content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start justify-center min-w-px relative">
+              <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[14px] whitespace-nowrap ${activeTab === "resumo-atividade" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Resumo da atividade</p>
+            </div>
+            {activeTab === "resumo-atividade" && <Container11 />}
+          </div>
+        </div>
+      </button>
+      {/* 4. Atualizações (fourth position) */}
       <button
         onClick={() => setActiveTab("atualizacoes")}
         className={`${activeTab === "atualizacoes" ? "bg-[#f0f5ff]" : "bg-white"} h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors`}
@@ -1423,12 +1447,11 @@ function DrawerStatusChip({ label, variant }: { label: string; variant: "green" 
 
 function getOperationalStatus(r: Reservation, p: Participant): { label: string; variant: "green" | "amber" | "red" | "blue" | "gray" } {
   if (r.status === "Cancelled") return { label: "Cancelada", variant: "gray" };
-  if (r.status === "Expired") return { label: "Expirada", variant: "gray" };
   if (r.status === "Performed") return { label: "Realizada", variant: "gray" };
   if (p.checkInStatus === "Absent") return { label: "Não compareceu", variant: "amber" };
   if (p.checkInStatus === "Done") return { label: "Check-in realizado", variant: "green" };
   if (r.status === "Confirmed") return { label: "Aguardando check-in", variant: "blue" };
-  if (r.status === "AwaitingPayment") return { label: "Aguardando pagamento", variant: "amber" };
+  if (r.status === "Scheduled") return { label: "Agendada", variant: "amber" };
   return { label: "Agendada", variant: "blue" };
 }
 
@@ -1502,8 +1525,7 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
   const isCancelled = r.status === "Cancelled";
   const isNoShow = p.checkInStatus === "Absent";
   const isPerformed = r.status === "Performed";
-  const isExpired = r.status === "Expired";
-  const isTerminal = isCancelled || isPerformed || isExpired;
+  const isTerminal = isCancelled || isPerformed;
 
   // Birth date mock (derived from age)
   const birthYear = new Date().getFullYear() - (p.age || 26);
@@ -1894,12 +1916,10 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
 const STATUS_BADGE_MAP: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
   CheckedIn:       { label: "Check-in realizado",   color: "#0b5ed7", bg: "#eff6ff", border: "#bfdbfe", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   Confirmed:       { label: "Check-in pendente",    color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
-  AwaitingPayment: { label: "Aguardando pagamento", color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+  Scheduled:       { label: "Agendada",             color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
   Draft:           { label: "Pré-reservada",        color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M7 3.5v4M5 5.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/></svg> },
   Performed:       { label: "Atividade realizada",  color: "#079455", bg: "#ecfdf3", border: "#abefc6", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   Cancelled:       { label: "Reserva cancelada",    color: "#d92d20", bg: "#fef3f2", border: "#fecdca", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-  NoShow:          { label: "Não compareceu",       color: "#d92d20", bg: "#fef3f2", border: "#fecdca", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-  Expired:         { label: "Reserva expirada",     color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
 };
 
 function ReservationStatusBadge({ status, tooltip }: { status: string; tooltip?: string }) {
@@ -2008,24 +2028,20 @@ function PaymentBadge({ isPaid, onClick }: { isPaid: boolean; onClick: () => voi
 // Figma-exact reservation status icons (from BADGES SECUNDÁRIOS section)
 const RESERVATION_STATUS_ICON: Record<string, { stroke: string; tooltipKey: string; icon: React.ReactNode }> = {
   Confirmed:       { stroke: "#079455", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.6665 12.9998C8.6665 12.9998 9.56547 13.3376 9.99984 14.6665C9.99984 14.6665 12.1175 11.3332 13.9998 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  AwaitingPayment: { stroke: "#dc6803", tooltipKey: "res-awaiting", icon: <svg className="size-[16px]" viewBox="0 0 16 19" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665H8" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.0002 16.0668V15.3335M12.0002 13.9366V13.934M14.6668 15.0002C14.6668 16.4729 13.4729 17.6668 12.0002 17.6668C10.5274 17.6668 9.3335 16.4729 9.3335 15.0002C9.3335 13.5274 10.5274 12.3335 12.0002 12.3335C13.4729 12.3335 14.6668 13.5274 14.6668 15.0002Z" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+  Scheduled:       { stroke: "#dc6803", tooltipKey: "res-scheduled", icon: <svg className="size-[16px]" viewBox="0 0 16 19" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665H8" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.0002 16.0668V15.3335M12.0002 13.9366V13.934M14.6668 15.0002C14.6668 16.4729 13.4729 17.6668 12.0002 17.6668C10.5274 17.6668 9.3335 16.4729 9.3335 15.0002C9.3335 13.5274 10.5274 12.3335 12.0002 12.3335C13.4729 12.3335 14.6668 13.5274 14.6668 15.0002Z" stroke="#DC6803" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   Cancelled:       { stroke: "#d92d20", tooltipKey: "res-cancelled", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.33366V8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H8" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.1855 10.8147L10.1618 13.8384M14.0002 12.3333C14.0002 13.622 12.9555 14.6667 11.6668 14.6667C10.3782 14.6667 9.3335 13.622 9.3335 12.3333C9.3335 11.0447 10.3782 10 11.6668 10C12.9555 10 14.0002 11.0447 14.0002 12.3333Z" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   Draft:           { stroke: "#535862", tooltipKey: "res-draft", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H7.66667" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.4905 10.7834L10.4905 9.85653C10.4905 9.71962 10.4962 9.58101 10.5453 9.45316C10.6759 9.11284 11.0219 8.66699 11.6519 8.66699C12.2818 8.66699 12.6415 9.11284 12.7721 9.45316C12.8212 9.58101 12.8269 9.71962 12.8269 9.85653L12.8269 10.7834M10.5368 14.6654H12.7941C13.4587 14.6654 13.9974 14.1276 13.9974 13.4643V12.1301C13.9974 11.4668 13.4587 10.9291 12.7941 10.9291H10.5368C9.87223 10.9291 9.3335 11.4668 9.3335 12.1301V13.4643C9.3335 14.1276 9.87223 14.6654 10.5368 14.6654Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   CheckedIn:       { stroke: "#079455", tooltipKey: "res-confirmed", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.6665 12.9998C8.6665 12.9998 9.56547 13.3376 9.99984 14.6665C9.99984 14.6665 12.1175 11.3332 13.9998 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   Performed:       { stroke: "#079455", tooltipKey: "res-performed", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335L5.3335 4.00016" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.6665V7.99984C14 5.48568 14 4.2286 13.219 3.44755C12.4379 2.6665 11.1808 2.6665 8.66667 2.6665L7.33333 2.6665C4.81918 2.6665 3.5621 2.6665 2.78105 3.44755C2 4.2286 2 5.48568 2 7.99984L2 9.33317C2 11.8473 2 13.1044 2.78105 13.8855C3.5621 14.6665 4.81918 14.6665 7.33333 14.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.6665L14 6.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.6665 12.9998C8.6665 12.9998 9.56547 13.3376 9.99984 14.6665C9.99984 14.6665 12.1175 11.3332 13.9998 10.6665" stroke="#079455" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  NoShow:          { stroke: "#d92d20", tooltipKey: "res-noshow", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.33366V8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H8" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.1855 10.8147L10.1618 13.8384M14.0002 12.3333C14.0002 13.622 12.9555 14.6667 11.6668 14.6667C10.3782 14.6667 9.3335 13.622 9.3335 12.3333C9.3335 11.0447 10.3782 10 11.6668 10C12.9555 10 14.0002 11.0447 14.0002 12.3333Z" stroke="#D92D20" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  Expired:         { stroke: "#535862", tooltipKey: "res-expired", icon: <svg className="size-[16px]" viewBox="0 0 16 16" fill="none"><path d="M10.6668 1.3335V4.00016M5.3335 1.3335V4.00016" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 8.00033C14 5.48617 14 4.22909 13.219 3.44804C12.4379 2.66699 11.1808 2.66699 8.66667 2.66699H7.33333C4.81918 2.66699 3.5621 2.66699 2.78105 3.44804C2 4.22909 2 5.48617 2 8.00033V9.33366C2 11.8478 2 13.1049 2.78105 13.8859C3.5621 14.667 4.81918 14.667 7.33333 14.667H7.66667" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 6.66699H14" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.4905 10.7834L10.4905 9.85653C10.4905 9.71962 10.4962 9.58101 10.5453 9.45316C10.6759 9.11284 11.0219 8.66699 11.6519 8.66699C12.2818 8.66699 12.6415 9.11284 12.7721 9.45316C12.8212 9.58101 12.8269 9.71962 12.8269 9.85653L12.8269 10.7834M10.5368 14.6654H12.7941C13.4587 14.6654 13.9974 14.1276 13.9974 13.4643V12.1301C13.9974 11.4668 13.4587 10.9291 12.7941 10.9291H10.5368C9.87223 10.9291 9.3335 11.4668 9.3335 12.1301V13.4643C9.3335 14.1276 9.87223 14.6654 10.5368 14.6654Z" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
 };
 
 // Add reservation status tooltips to the content map
 Object.assign(TOOLTIP_CONTENT, {
   "res-confirmed":  { title: "Reserva confirmada", subtitle: "Pagamento processado, vaga garantida" },
-  "res-awaiting":   { title: "Reserva não confirmada", subtitle: "Aguardando pagamento" },
+  "res-scheduled":  { title: "Agendada", subtitle: "Reserva agendada, pendente de confirmação" },
   "res-cancelled":  { title: "Reserva cancelada", subtitle: "Vaga estornada e devolvida" },
   "res-draft":      { title: "Pré-reservada", subtitle: "Carrinho iniciado, não finalizado" },
   "res-performed":  { title: "Atividade realizada", subtitle: "Atividade concluída com sucesso" },
-  "res-noshow":     { title: "Não compareceu", subtitle: "Participante não apareceu" },
-  "res-expired":    { title: "Reserva expirada", subtitle: "Expirada por inatividade" },
 });
 
 function LabeledBadge({ icon, label, color, tooltipTitle, tooltipSub, onClick }: { icon: React.ReactNode; label: string; color: string; tooltipTitle?: string; tooltipSub?: string; onClick?: () => void }) {
@@ -2090,7 +2106,7 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
   }
 
   return (
-    <div className="flex gap-[6px] items-center flex-wrap" style={{ padding: "10px 12px" }}>
+    <div className="flex gap-[6px] items-center flex-wrap" style={{ padding: "10px 6px" }}>
       {/* 1. Pagamento — sempre presente */}
       <ParticipantAttributeBadge
         category="payment"
@@ -2140,7 +2156,7 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
 function ParticipantTariffCell({ tariffType }: { tariffType: string }) {
   return (
     <div className="flex items-center shrink-0 min-w-0" style={{ width: "240px", padding: "8px 12px" }}>
-      <div className="flex flex-col gap-[1px] min-w-0 w-full">
+      <div className="flex w-fit flex-col gap-[1px] min-w-0">
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] truncate w-full">{tariffType}</p>
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">Tipo de tarifa</p>
       </div>
@@ -2150,28 +2166,24 @@ function ParticipantTariffCell({ tariffType }: { tariffType: string }) {
 
 type StatusVariant = "blue" | "amber" | "red" | "green" | "gray" | "purple";
 
-function getParticipantReservationStatusText(
+function getReservationStatusText(
   reservation: Reservation,
-  participant: Participant,
 ): { title: string; subtitle: string; variant: StatusVariant } {
-  const isCancelled = reservation.status === "Cancelled" || participant.checkInStatus === "Cancelled";
-  const isNoShow = reservation.status === "NoShow";
-  const isExpired = reservation.status === "Expired";
-  const isPerformed = reservation.status === "Performed";
-  const isIndividualAbsent = !isCancelled && !isNoShow && participant.checkInStatus === "Absent";
-  const isDone = participant.checkInStatus === "Done";
-
-  if (participant.checkInStatus === "Rescheduled") return { title: "Reagendada", subtitle: "Status da reserva", variant: "purple" };
-  if (isCancelled) return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
-  if (isExpired) return { title: "Expirada", subtitle: "Status da reserva", variant: "gray" };
-  if (isNoShow) return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
-  if (isIndividualAbsent) return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
-  if (isPerformed) return { title: "Atividade realizada", subtitle: "Status da reserva", variant: "green" };
-  if (isDone) return { title: "Check-in realizado", subtitle: "Status da reserva", variant: "blue" };
-  if (reservation.status === "AwaitingPayment") return { title: "Aguardando pagamento", subtitle: "Status da reserva", variant: "amber" };
-  if (reservation.status === "Draft") return { title: "Pré-reservada", subtitle: "Status da reserva", variant: "gray" };
-
+  if (reservation.status === "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
+  if (reservation.status === "Performed") return { title: "Atividade realizada", subtitle: "Status da reserva", variant: "green" };
+  if (reservation.status === "CheckedIn") return { title: "Check-in", subtitle: "Status da reserva", variant: "blue" };
+  if (reservation.status === "Scheduled") return { title: "Agendada", subtitle: "Status da reserva", variant: "amber" };
+  if (reservation.status === "Draft") return { title: "Rascunho", subtitle: "Status da reserva", variant: "gray" };
   return { title: "Confirmada", subtitle: "Status da reserva", variant: "green" };
+}
+
+function getParticipantBadge(
+  participant: Participant,
+): { label: string; variant: StatusVariant } | null {
+  if (participant.checkInStatus === "Rescheduled") return { label: "Reagendada", variant: "purple" };
+  if (participant.checkInStatus === "Absent") return { label: "Não compareceu", variant: "red" };
+  if (participant.checkInStatus === "Cancelled") return { label: "Cancelada", variant: "red" };
+  return null;
 }
 
 const STATUS_VARIANT_STYLES: Record<StatusVariant, { color: string; bg: string; border: string; icon: React.ReactNode }> = {
@@ -2183,16 +2195,36 @@ const STATUS_VARIANT_STYLES: Record<StatusVariant, { color: string; bg: string; 
   purple: { color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M5 9l4-4M7 3l2 2-2 2M7 11l-2-2 2-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
 };
 
+function getParticipantOverrideStatus(participant: Participant, reservation: Reservation): { title: string; subtitle: string; variant: StatusVariant } | null {
+  if (participant.checkInStatus === "Cancelled" && reservation.status !== "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
+  if (participant.checkInStatus === "Absent") return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
+  if (participant.checkInStatus === "Rescheduled") return { title: "Reagendada", subtitle: "Status da reserva", variant: "purple" };
+  if (participant.checkInStatus === "Scheduled") return { title: "Agendada", subtitle: "Status da reserva", variant: "amber" };
+  return null;
+}
+
 function ParticipantReservationStatusCell({ reservation, participant }: { reservation: Reservation; participant: Participant }) {
-  const status = getParticipantReservationStatusText(reservation, participant);
+  const override = getParticipantOverrideStatus(participant, reservation);
+  const status = override
+    ? override
+    : getReservationStatusText(reservation);
+  const badge = getParticipantBadge(participant);
   const vs = STATUS_VARIANT_STYLES[status.variant];
+  const icon = status.title === "Cancelada"
+    ? (
+      <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 24 24">
+        <path d="M5 5L19 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    )
+    : vs.icon;
 
   return (
-    <div className="flex items-center shrink-0 min-w-0" style={{ width: "180px", padding: "8px 12px" }}>
-      <div className="flex flex-col gap-[1px] min-w-0 w-full">
-        <div className="flex items-center gap-[4px]" style={{ color: vs.color }}>
+    <div className="flex items-center shrink-0 min-w-0" style={{ width: "160px", padding: "8px 12px" }}>
+      <div className="flex w-fit flex-col gap-[1px] min-w-0">
+        <div className="flex w-fit items-center gap-[4px]" style={{ color: vs.color }}>
           <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] truncate">{status.title}</p>
-          {vs.icon}
+          {icon}
         </div>
         <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{status.subtitle}</p>
       </div>
@@ -2523,7 +2555,7 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
   const s = r.status;
   const sm = reservationStateMachine;
   const canTo = (target: ReservationStatus) => (sm[s] || []).includes(target);
-  const inactive = s === "Cancelled" || s === "NoShow" || s === "Expired";
+  const inactive = s === "Cancelled";
   const iconConfirm = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M24 40C24 40 26 40 28 44C28 44 34.3529 34 40 32" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M40 26.0096V21.3212C40 19.6855 40 18.8677 39.6955 18.1323C39.391 17.3969 38.813 16.8185 37.6569 15.6619L28.1838 6.18472C27.186 5.18651 26.6871 4.68741 26.069 4.39166C25.9405 4.33015 25.8087 4.27556 25.6744 4.22812C25.0283 4 24.3228 4 22.9117 4C16.4216 4 13.1766 4 10.9787 5.77292C10.5346 6.13108 10.1302 6.53573 9.77215 6.97995C8 9.17886 8 12.4253 8 18.9182V28.0104C8 35.5562 8 39.3291 10.3431 41.6732C12.2293 43.5602 15.0409 43.9282 20 44M26 5.00043V6.00087C26 11.6602 26 14.4898 27.7574 16.248C29.5147 18.0061 32.3431 18.0061 38 18.0061H39" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
   const iconUndoConfirm = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M40 28.0104V21.3212C40 19.6855 40 18.8677 39.6955 18.1323C39.391 17.3969 38.813 16.8185 37.6569 15.6619L28.1838 6.18472C27.186 5.18651 26.6871 4.68741 26.069 4.39166C25.9405 4.33015 25.8087 4.27556 25.6744 4.22812C25.0283 4 24.3228 4 22.9117 4C16.4216 4 13.1766 4 10.9787 5.77292C10.5346 6.13108 10.1302 6.53573 9.77215 6.97995C8 9.17886 8 12.4253 8 18.9182V28.0104C8 35.5562 8 39.3291 10.3431 41.6732C12.2293 43.5602 15.0409 43.9282 20 44M26 5.00043V6.00087C26 11.6602 26 14.4898 27.7574 16.248C29.5147 18.0061 32.3431 18.0061 38 18.0061H39" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 32L24 36C24.4852 32.6077 27.4735 30 31 30C33.3787 30 35.4803 31.1865 36.7453 33M40 42L38 38C37.5148 41.3923 34.5264 44 31 44C28.6212 44 26.5196 42.8135 25.2547 41" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
   const iconPerformed = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M6 26.6667C6 26.6667 9 28 13 34C13 34 13.5697 33.0384 14.6427 31.5053M34 12C29.4169 14.2915 24.6238 19.1036 20.7758 23.6446" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 26.6667C16 26.6667 19 28 23 34C23 34 34 17 44 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
@@ -2541,9 +2573,11 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
   const iconAccountRecovery = <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 48 48"><path d="M7 40.6877H12.9692V35M35.0308 13V7.31233L41 7M30 4.91692C23.1215 2.76058 15.3082 4.40756 9.85786 9.85786C2.04738 17.6684 2.04738 30.3316 9.85787 38.1421C10.536 38.8203 11.2508 39.4396 11.9958 40M18 43.0831C24.8785 45.2394 32.6918 43.5924 38.1421 38.1421C45.9526 30.3316 45.9526 17.6683 38.1421 9.85786C37.464 9.17969 36.7492 8.5604 36.0042 8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M24 23C26.7614 23 29 20.7614 29 18C29 15.2386 26.7614 13 24 13C21.2386 13 19 15.2386 19 18C19 20.7614 21.2386 23 24 23ZM24 23C19.5817 23 16 26.5817 16 31M24 23C28.4183 23 32 26.5817 32 31" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 
   // Slot 1 — Confirmar ↔ Desfazer confirmação
-  const slot1 = s === "Confirmed" || s === "CheckedIn" || s === "Performed"
-    ? { id: "undo-confirm", label: "Desfazer confirmação de reserva", icon: iconUndoConfirm, enabled: s === "Confirmed" && canTo("AwaitingPayment"), tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de desfazer a confirmação" : s === "Performed" ? "A atividade já foi realizada" : null }
-    : { id: "confirm", label: "Confirmar reserva", icon: iconConfirm, enabled: canTo("Confirmed"), tooltip: s === "Draft" ? "Carrinho ainda não finalizado" : inactive ? `Reserva ${s === "Cancelled" ? "cancelada" : s === "NoShow" ? "marcada como não compareceu" : "expirada"} não pode ser confirmada` : null };
+  const isParticipantScheduled = p?.checkInStatus === "Scheduled";
+  const showUndoConfirm = !isParticipantScheduled && (s === "Confirmed" || s === "CheckedIn" || s === "Performed");
+  const slot1 = showUndoConfirm
+    ? { id: "undo-confirm", label: "Desfazer confirmação de reserva", icon: iconUndoConfirm, enabled: s === "Confirmed" && canTo("Scheduled"), tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de desfazer a confirmação" : s === "Performed" ? "A atividade já foi realizada" : null }
+    : { id: "confirm", label: "Confirmar reserva", icon: iconConfirm, enabled: isParticipantScheduled || canTo("Confirmed"), tooltip: !isParticipantScheduled && s === "Draft" ? "Carrinho ainda não finalizado" : !isParticipantScheduled && inactive ? "Reserva cancelada não pode ser confirmada" : null };
 
   // Slot 2 — Definir realizado ↔ Desfazer
   const slot2 = s === "Performed"
@@ -2552,14 +2586,15 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
 
   // Slot 3 — Registrar pagamento ↔ Desfazer
   const slot3 = (s === "Confirmed" || s === "CheckedIn" || s === "Performed")
-    ? { id: "undo-payment", label: "Desfazer registro de pagamento", icon: iconUndoPayment, enabled: canTo("AwaitingPayment"), tooltip: null }
-    : { id: "register-payment", label: "Registrar pagamento", icon: iconPayment, enabled: s === "AwaitingPayment" && canTo("Confirmed"), tooltip: s === "Draft" ? "Finalize o carrinho antes de registrar pagamento" : inactive ? "Reserva inativa não permite registro de pagamento" : null };
+    ? { id: "undo-payment", label: "Desfazer registro de pagamento", icon: iconUndoPayment, enabled: canTo("Scheduled"), tooltip: null }
+    : { id: "register-payment", label: "Registrar pagamento", icon: iconPayment, enabled: s === "Scheduled" && canTo("Confirmed"), tooltip: s === "Draft" ? "Finalize o carrinho antes de registrar pagamento" : inactive ? "Reserva inativa não permite registro de pagamento" : null };
 
   // Slot 4 — Remarcar ↔ Desfazer remarcação
   const isRescheduled = p?.checkInStatus === "Rescheduled";
+  const isAbsentForReschedule = p?.checkInStatus === "Absent";
   const slot4: MenuSlot = isRescheduled
     ? { id: "undo-reschedule", label: "Desfazer remarcação de reserva", icon: iconCal, enabled: true, tooltip: null }
-    : { id: "reschedule", label: "Remarcar reserva", icon: iconCal, enabled: (s === "AwaitingPayment" || s === "Confirmed") && !inactive, tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de remarcar" : (s === "Performed" || inactive) ? "Reserva não pode ser remarcada no estado atual" : null };
+    : { id: "reschedule", label: "Remarcar reserva", icon: iconCal, enabled: (s === "Scheduled" || s === "Confirmed" || isAbsentForReschedule) && !inactive, tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de remarcar" : (s === "Performed" || inactive) ? "Reserva não pode ser remarcada no estado atual" : null };
 
   // Slot 5 — Contratar seguro ↔ Desfazer
   const slot5 = insuranceStatus === "Contracted"
@@ -2570,7 +2605,7 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
   const slot6: MenuSlot = { id: "participant-data", label: "Dados do participante", icon: iconPerson, enabled: true, tooltip: null };
 
   // Slot 7 — Não compareceu ↔ Desfazer
-  const isAbsent = p?.checkInStatus === "Absent" || s === "NoShow";
+  const isAbsent = p?.checkInStatus === "Absent";
   const slot7 = isAbsent
     ? { id: "undo-noshow", label: "Desfazer não comparecimento", icon: iconCalSync, separator: true, destructive: true, enabled: true, tooltip: null }
     : { id: "no-show", label: "Não compareceu", icon: iconCalRemove, separator: true, destructive: true, enabled: s === "Confirmed", tooltip: s === "CheckedIn" || s === "Performed" ? "Participante já realizou check-in" : s !== "Confirmed" ? "Não aplicável ao estado atual" : null };
@@ -2579,7 +2614,7 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
   const isCancelledParticipant = p?.checkInStatus === "Cancelled" || s === "Cancelled";
   const slot8 = isCancelledParticipant
     ? { id: "undo-cancel", label: "Desfazer cancelamento de reserva", icon: iconAccountRecovery, destructive: true, enabled: true, tooltip: null }
-    : { id: "cancel", label: "Cancelar reserva", icon: iconUserRemove, destructive: true, enabled: s === "AwaitingPayment" || s === "Confirmed" || s === "CheckedIn", tooltip: s === "Performed" ? "Atividade já realizada não pode ser cancelada" : s === "NoShow" ? "Reserva marcada como não compareceu" : (s === "Expired" || s === "Draft") ? "Reserva inativa" : null };
+    : { id: "cancel", label: "Cancelar reserva", icon: iconUserRemove, destructive: true, enabled: s === "Scheduled" || s === "Confirmed" || s === "CheckedIn", tooltip: s === "Performed" ? "Atividade já realizada não pode ser cancelada" : s === "Draft" ? "Reserva inativa" : null };
 
   return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8];
 }
@@ -2712,7 +2747,7 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
 
   const pendingParticipants = allParticipants.filter((p) => {
     const r = reservations.find((rv) => rv.participants.includes(p));
-    if (r && (r.status === "Cancelled" || r.status === "Expired")) return false;
+    if (r && r.status === "Cancelled") return false;
     return p.checkInStatus === "Pending";
   });
   const pendingCheckIn = pendingParticipants.length;
@@ -3344,7 +3379,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   }, [selectedReservations, selectedIds]);
 
   const confirmLabel = useMemo(() => {
-    const awaiting = selectedReservations.filter((r) => r.status === "AwaitingPayment").length;
+    const awaiting = selectedReservations.filter((r) => r.status === "Scheduled").length;
     const confirmed = selectedReservations.filter((r) => r.status === "Confirmed").length;
     return awaiting > confirmed ? "Confirmar reservas" : "Desfazer confirmação de reservas";
   }, [selectedReservations]);
@@ -3427,21 +3462,45 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
       return;
     }
     if (actionId === "resend-voucher") { showToast(`Voucher reenviado para ${name}.`); return; }
-    if (actionId === "confirm" || actionId === "register-payment") { showToast(`Reserva de ${name} confirmada.`); return; }
-    if (actionId === "undo-confirm") { showToast(`Confirmação de ${name} desfeita.`); return; }
-    if (actionId === "mark-performed") { showToast(`Reserva de ${name} marcada como realizada.`); return; }
-    if (actionId === "undo-performed") { showToast(`Definição de realização de ${name} desfeita.`); return; }
-    if (actionId === "undo-payment") { showToast(`Pagamento de ${name} desfeito.`); return; }
+    if (actionId === "confirm" || actionId === "register-payment") {
+      if (p.checkInStatus === "Scheduled") dispatch({ type: "UNDO_CHECK_IN", participantId: p.id }); // Scheduled→Pending
+      if (r.participants.length === 1) dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Confirmed" });
+      showToast(`Reserva de ${name} confirmada.`);
+      return;
+    }
+    if (actionId === "undo-confirm") {
+      dispatch({ type: "UNDO_CONFIRM_PARTICIPANT", participantId: p.id });
+      showToast(`Confirmação de ${name} desfeita.`);
+      return;
+    }
+    if (actionId === "mark-performed") {
+      if (r.participants.length === 1) dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Performed" });
+      showToast(`Reserva de ${name} marcada como realizada.`);
+      return;
+    }
+    if (actionId === "undo-performed") {
+      if (r.participants.length === 1) dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Confirmed" });
+      showToast(`Definição de realização de ${name} desfeita.`);
+      return;
+    }
+    if (actionId === "undo-payment") {
+      if (r.participants.length === 1) dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Scheduled" });
+      showToast(`Pagamento de ${name} desfeito.`);
+      return;
+    }
     if (actionId === "reschedule") { setRescheduleModal({ r, p }); setRescheduleDropdownOpen(false); setRescheduleSelectedDate(null); setRescheduleCapacityConfirmed(false); return; }
     if (actionId === "undo-reschedule") { dispatch({ type: "UNDO_RESCHEDULE_PARTICIPANT", participantId: p.id }); showToast(`Remarcação de ${name} desfeita.`); return; }
     if (actionId === "undo-noshow") { dispatch({ type: "UNDO_NO_SHOW", participantId: p.id }); showToast(`Não comparecimento de ${name} desfeito.`); return; }
-    if (actionId === "undo-cancel") { dispatch({ type: "UNDO_CANCEL_PARTICIPANT", participantId: p.id }); showToast(`Cancelamento de ${name} desfeito.`); return; }
+    if (actionId === "undo-cancel") { dispatch({ type: "UNDO_CANCEL_PARTICIPANT", participantId: p.id }); if (r.status === "Cancelled") dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Confirmed" }); showToast(`Cancelamento de ${name} desfeito. Reserva retornou para Confirmada.`); return; }
   };
 
   const confirmCancel = () => {
     if (!cancelModal) return;
     const pId = cancelModal.p.id;
+    const r = cancelModal.r;
     dispatch({ type: "CANCEL_PARTICIPANT", participantId: pId });
+    const allCancelled = r.participants.every((pp) => pp.id === pId || pp.checkInStatus === "Cancelled");
+    if (allCancelled) dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Cancelled" });
     setCancelModal(null);
     setToast({
       message: "A reserva selecionada foi cancelada",
@@ -3502,7 +3561,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
   const totalCount = useMemo(() => reservations.reduce((s, r) => s + r.participants.length, 0), [reservations]);
 
   // Filter counts
-  const inactiveStatuses = new Set(["Cancelled", "Expired", "NoShow"]);
+  const inactiveStatuses = new Set(["Cancelled"]);
   const counts = useMemo(() => {
     let pending = 0, done = 0, cancelled = 0;
     for (const r of reservations) {
@@ -4198,8 +4257,8 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                             </div>
                             {member.checkedIn && (
                               <div className="flex items-center gap-[6px] shrink-0 rounded-full border border-[#e4e4e7] px-[8px] h-[24px] bg-white">
-                                <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="#079455" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#079455]">Check-in realizado</span>
+                                <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#0b5ed7]">Check-in realizado</span>
                               </div>
                             )}
                           </div>
@@ -4778,6 +4837,32 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   </div>
                   {/* Spacer */}
                   <div className="flex-1" />
+                  {/* Participant-level badges (only for active reservations) */}
+                  {r.status !== "Cancelled" && r.status !== "Performed" && (() => {
+                    const absentParts = r.participants.filter((p) => p.checkInStatus === "Absent");
+                    const rescheduledParts = r.participants.filter((p) => p.checkInStatus === "Rescheduled");
+                    const cancelledParts = r.participants.filter((p) => p.checkInStatus === "Cancelled");
+                    const scheduledParts = r.participants.filter((p) => p.checkInStatus === "Scheduled");
+                    const BadgeWithTooltip = ({ parts, label, labelPlural, bg, color }: { parts: Participant[]; label: string; labelPlural: string; bg: string; color: string }) => (
+                      <div className="group/badge relative">
+                        <span className={`${bg} ${color} text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px] cursor-default`}>{parts.length > 1 ? `${parts.length} ${labelPlural}` : label}</span>
+                        <div className="pointer-events-none absolute z-50 rounded-[8px] bg-[#181d27] px-[12px] py-[8px] whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/badge:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                          {parts.map((pp) => (
+                            <p key={pp.id} className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[18px] text-white not-italic">{pp.name || "Participante"}</p>
+                          ))}
+                          <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                        </div>
+                      </div>
+                    );
+                    return (
+                      <>
+                        {absentParts.length > 0 && <BadgeWithTooltip parts={absentParts} label="Não compareceu" labelPlural="não compareceram" bg="bg-[#fef3f2]" color="text-[#d92d20]" />}
+                        {rescheduledParts.length > 0 && <BadgeWithTooltip parts={rescheduledParts} label="Reagendada" labelPlural="reagendadas" bg="bg-[#f5f3ff]" color="text-[#7c3aed]" />}
+                        {cancelledParts.length > 0 && <BadgeWithTooltip parts={cancelledParts} label="Cancelada" labelPlural="canceladas" bg="bg-[#f3f4f6]" color="text-[#6b7280]" />}
+                        {scheduledParts.length > 0 && <BadgeWithTooltip parts={scheduledParts} label="Agendada" labelPlural="agendadas" bg="bg-[#fffaeb]" color="text-[#dc6803]" />}
+                      </>
+                    );
+                  })()}
                   {/* Payment status chip (right edge) */}
                   {r.status !== "Cancelled" && r.paymentStatus === "Paid" && (
                     <span className="bg-[#ecfdf3] text-[#079455] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Pedido pago</span>
@@ -4805,13 +4890,11 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 return (
                   <>
                     {visibleParticipants.map((p, pIdx) => {
-                const isCancelled = r.status === "Cancelled";
-                const isNoShow = r.status === "NoShow";
-                const isExpired = r.status === "Expired";
+                const isCancelled = r.status === "Cancelled" || p.checkInStatus === "Cancelled";
                 const isPerformed = r.status === "Performed";
-                const isIndividualAbsent = !isCancelled && !isNoShow && p.checkInStatus === "Absent";
+                const isIndividualAbsent = !isCancelled && p.checkInStatus === "Absent";
                 const isDone = p.checkInStatus === "Done";
-                const checkInDisabled = isActivityLocked || isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
+                const checkInDisabled = isActivityLocked || isCancelled || r.status === "Scheduled" || isPerformed;
                 const isLastRow = pIdx === visibleParticipants.length - 1;
                 const hasExpandButton = isGroup && r.participants.length > 1;
                 return (
@@ -4889,13 +4972,11 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                       >
                         <div className="min-h-0 overflow-visible">
                           {restParticipants.map((p, rpIdx) => {
-                            const isCancelled = r.status === "Cancelled";
-                            const isNoShow = r.status === "NoShow";
-                            const isExpired = r.status === "Expired";
+                            const isCancelled = r.status === "Cancelled" || p.checkInStatus === "Cancelled";
                             const isPerformed = r.status === "Performed";
-                            const isIndividualAbsent = !isCancelled && !isNoShow && p.checkInStatus === "Absent";
+                            const isIndividualAbsent = !isCancelled && p.checkInStatus === "Absent";
                             const isDone = p.checkInStatus === "Done";
-                            const checkInDisabled = isActivityLocked || isCancelled || r.status === "AwaitingPayment" || isNoShow || isExpired || isPerformed;
+                            const checkInDisabled = isActivityLocked || isCancelled || r.status === "Scheduled" || isPerformed;
                             return (
                               <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
                                 {selectedIds.has(p.id) && (
@@ -6747,20 +6828,21 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           {/* Chevron toggle — opens/closes activity panel */}
           <div className="flex items-center justify-center mb-[4px]">
             <button
-              onClick={() => setActiveTab(activeTab === "participantes" || activeTab === "visao-geral" ? "atualizacoes" : "participantes")}
+              onClick={() => setActiveTab(activeTab === "participantes" || activeTab === "visao-geral" ? "resumo-atividade" : "participantes")}
               className="group/toggle relative flex items-center justify-center size-[28px] rounded-[6px] text-[#717680] hover:text-[#252b37] hover:bg-[#f0f1f3] transition-colors cursor-pointer"
             >
-              <svg className={`size-[16px] transition-transform duration-300 ${activeTab === "atualizacoes" || activeTab === "equipe" ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24">
+              <svg className={`size-[16px] transition-transform duration-300 ${activeTab === "atualizacoes" || activeTab === "equipe" || activeTab === "resumo-atividade" ? "" : "rotate-180"}`} fill="none" viewBox="0 0 24 24">
                 <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <div className="pointer-events-none absolute left-full ml-[10px] top-1/2 -translate-y-1/2 rounded-full bg-[#181d27] px-[14px] py-[8px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/toggle:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{activeTab === "atualizacoes" || activeTab === "equipe" ? "Recolher" : "Expandir"}</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[16px] text-white">{activeTab === "atualizacoes" || activeTab === "equipe" || activeTab === "resumo-atividade" ? "Recolher" : "Expandir"}</p>
                 <div className="absolute top-1/2 right-[calc(100%-1px)] size-0 -translate-y-1/2 border-r-[5px] border-t-[5px] border-b-[5px] border-r-[#181d27] border-t-transparent border-b-transparent" />
               </div>
             </button>
           </div>
           {/* Nav items — icon only with tooltips */}
           {([
+            { id: "resumo-atividade", label: "Resumo da atividade", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M19 13.0052V10.6606C19 9.84276 19 9.43383 18.8478 9.06613C18.6955 8.69843 18.4065 8.40927 17.8284 7.83096L13.0919 3.09236C12.593 2.59325 12.3436 2.3437 12.0345 2.19583C11.9702 2.16508 11.9044 2.13778 11.8372 2.11406C11.5141 2 11.1614 2 10.4558 2C7.21082 2 5.58831 2 4.48933 2.88646C4.26731 3.06554 4.06508 3.26787 3.88607 3.48998C3 4.58943 3 6.21265 3 9.45908V14.0052C3 17.7781 3 19.6645 4.17157 20.8366C5.11466 21.7801 6.52043 21.9641 9 22M12 2.50022V3.00043C12 5.83009 12 7.24492 12.8787 8.12398C13.7574 9.00304 15.1716 9.00304 18 9.00304H18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 22C18.7614 22 21 19 21 19C21 19 18.7614 16 16 16C13.2386 16 11 19 11 19C11 19 13.2386 22 16 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M15.9922 19H16.0012" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
             { id: "atualizacoes", label: "Histórico", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
             { id: "equipe", label: "Equipe responsável", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.5344 7.82853 17.5576 8.63092 17.0204C9.59321 16.3761 10.7524 16 12 16C13.2476 16 14.4068 16.3761 15.3691 17.0204C16.1715 17.5576 16.5 18.5344 16.5 19.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 11C18.6101 11 19.6415 11.3769 20.4974 12.0224C21.2229 12.5696 21.5 13.4951 21.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.5 11C5.38987 11 4.35846 11.3769 3.50256 12.0224C2.77706 12.5696 2.5 13.4951 2.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg> },
           ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
@@ -6788,11 +6870,22 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
             className="absolute inset-0 flex transition-transform duration-300 ease-in-out"
             style={{
               width: "calc(100% + 380px)",
-              transform: (activeTab === "atualizacoes" || activeTab === "equipe") ? "translateX(0)" : "translateX(-380px)",
+              transform: (activeTab === "atualizacoes" || activeTab === "equipe" || activeTab === "resumo-atividade") ? "translateX(0)" : "translateX(-380px)",
             }}
           >
             <div className="w-[380px] shrink-0 h-full">
-              {activeTab === "equipe" ? (
+              {activeTab === "resumo-atividade" ? (
+                <div className="flex flex-col bg-white w-[380px] shrink-0 h-full border-r border-[#e9eaeb]">
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Resumo da atividade</p>
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1 overflow-y-auto px-[16px] py-[16px]">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Conteúdo do resumo da atividade será exibido aqui.</p>
+                  </div>
+                </div>
+              ) : activeTab === "equipe" ? (
                 <div className="flex flex-col bg-white w-[380px] shrink-0 h-full border-r border-[#e9eaeb]">
                   {/* Header */}
                   <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0">
@@ -6914,7 +7007,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
               )}
             </div>
             <div className="h-full overflow-y-auto" style={{ width: "calc(100% - 380px)" }}>
-              {(activeTab === "participantes" || activeTab === "atualizacoes" || activeTab === "equipe") && (
+              {(activeTab === "participantes" || activeTab === "atualizacoes" || activeTab === "equipe" || activeTab === "resumo-atividade") && (
                 <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} onOpenUpdates={() => { setActiveTab("atualizacoes"); setFocusActivityInput(true); }} onOpenTeam={() => setActiveTab("equipe")} teamGuides={localGuides} teamInsuredCount={localGuides.filter((g) => guideInsurance[g]).length} />
               )}
               {activeTab === "visao-geral" && (

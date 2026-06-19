@@ -69,13 +69,11 @@ export interface Activity {
 
 export type ReservationStatus =
   | "Draft"
-  | "AwaitingPayment"
+  | "Scheduled"
   | "Confirmed"
   | "CheckedIn"
   | "Performed"
-  | "Cancelled"
-  | "NoShow"
-  | "Expired";
+  | "Cancelled";
 
 export type PaymentStatus = "Pending" | "Partial" | "Paid" | "Refunded" | "Failed";
 
@@ -95,7 +93,7 @@ export type TariffType =
   | "Excursão Escolar Educativa (turma)"
   | (string & {});
 
-export type CheckInStatus = "Pending" | "Done" | "Absent" | "Cancelled" | "Rescheduled";
+export type CheckInStatus = "Pending" | "Done" | "Absent" | "Cancelled" | "Rescheduled" | "Scheduled";
 
 export type ReservationType = "individual" | "group";
 

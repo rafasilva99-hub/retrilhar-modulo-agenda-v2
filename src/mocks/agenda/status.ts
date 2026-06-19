@@ -16,14 +16,12 @@ import type {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const reservationStateMachine: ReservationStateMachine = {
-  Draft: ["AwaitingPayment", "Confirmed", "Expired"],
-  AwaitingPayment: ["Confirmed", "Cancelled"],
-  Confirmed: ["CheckedIn", "Cancelled", "AwaitingPayment"],
-  CheckedIn: ["Performed", "Confirmed"],
+  Draft: ["Scheduled", "Confirmed", "Cancelled"],
+  Scheduled: ["Confirmed", "Cancelled"],
+  Confirmed: ["CheckedIn", "Cancelled", "Scheduled"],
+  CheckedIn: ["Confirmed"],
   Performed: ["Confirmed"],
-  Cancelled: [],
-  NoShow: [],
-  Expired: [],
+  Cancelled: ["Confirmed"],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,8 +46,8 @@ const ELIGIBILITY_RULES: Record<BulkAction, EligibilityRule> = {
     reason: "Somente reservas com check-in realizado podem desfazer o check-in.",
   },
   confirm: {
-    test: (r) => r.status === "AwaitingPayment" || r.status === "Draft",
-    reason: "Somente reservas aguardando pagamento ou em rascunho podem ser confirmadas.",
+    test: (r) => r.status === "Scheduled" || r.status === "Draft",
+    reason: "Somente reservas agendadas ou em rascunho podem ser confirmadas.",
   },
   "undo-confirm": {
     test: (r) => r.status === "Confirmed",
@@ -70,8 +68,8 @@ const ELIGIBILITY_RULES: Record<BulkAction, EligibilityRule> = {
     reason: "Somente reservas confirmadas ou com check-in realizado podem ter o voucher reenviado.",
   },
   reschedule: {
-    test: (r) => r.status === "Confirmed" || r.status === "AwaitingPayment",
-    reason: "Somente reservas confirmadas ou aguardando pagamento podem ser reagendadas.",
+    test: (r) => r.status === "Scheduled" || r.status === "Confirmed",
+    reason: "Somente reservas agendadas ou confirmadas podem ser reagendadas.",
   },
   "no-show": {
     test: (r) => r.status === "Confirmed",
@@ -80,11 +78,9 @@ const ELIGIBILITY_RULES: Record<BulkAction, EligibilityRule> = {
   cancel: {
     test: (r) =>
       r.status !== "Performed" &&
-      r.status !== "Cancelled" &&
-      r.status !== "NoShow" &&
-      r.status !== "Expired",
+      r.status !== "Cancelled",
     reason:
-      "Reservas realizadas, canceladas, não comparecimento ou expiradas não podem ser canceladas.",
+      "Reservas realizadas ou canceladas não podem ser canceladas.",
   },
 };
 

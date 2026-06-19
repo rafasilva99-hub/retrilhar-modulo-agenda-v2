@@ -25,13 +25,11 @@ const insuranceStatusMap: Record<InsuranceStatus, IndicatorConfig> = {
 
 const reservationStatusMap: Record<ReservationStatus, IndicatorConfig> = {
   Draft: { label: "Rascunho", tone: "neutral" },
-  AwaitingPayment: { label: "Aguardando pagamento", tone: "warning" },
+  Scheduled: { label: "Agendada", tone: "warning" },
   Confirmed: { label: "Confirmada", tone: "success" },
   CheckedIn: { label: "Check-in realizado", tone: "success" },
-  Performed: { label: "Realizada", tone: "neutral" },
+  Performed: { label: "Atividade realizada", tone: "neutral" },
   Cancelled: { label: "Cancelada", tone: "neutral" },
-  NoShow: { label: "Não compareceu", tone: "destructive" },
-  Expired: { label: "Expirada", tone: "neutral" },
 };
 
 function getPaymentStatusIndicator(status: PaymentStatus): IndicatorConfig {

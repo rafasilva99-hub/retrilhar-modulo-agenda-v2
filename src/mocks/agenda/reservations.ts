@@ -21,10 +21,9 @@ const BP_POUSADA = "Pousada da Cachoeira";
 //
 // Distribution (30 total):
 //   Confirmed        18 (~60%) — 8 with Contracted, 10 with Required
-//   AwaitingPayment   5 (~17%)
+//   Scheduled         5 (~17%)
 //   CheckedIn         5 (~17%)
-//   Cancelled         1 (~3%)
-//   NoShow            1 (~3%)
+//   Cancelled         2 (~6%)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const mockReservations: Reservation[] = [
@@ -232,7 +231,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-9921",
     type: "individual",
     buyerName: "Vera Gabriela da Mota",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-04-16T14:30:00",
@@ -288,7 +287,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-9922",
     type: "individual",
     buyerName: "Samuel Isaac Roberto Araújo",
-    status: "NoShow",
+    status: "Confirmed",
     paymentStatus: "Paid",
     insuranceStatus: "Contracted",
     createdAt: "2026-04-18T09:15:00",
@@ -1109,7 +1108,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0019",
     type: "individual",
     buyerName: "Vanessa Lopes Ferreira",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-05-05T14:00:00",
@@ -1133,7 +1132,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0020",
     type: "group",
     buyerName: "Eduardo Macedo Ramos",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-05-06T09:30:00",
@@ -1168,7 +1167,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0021",
     type: "individual",
     buyerName: "Sandra Borges Nascimento",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-05-07T11:15:00",
@@ -1192,7 +1191,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0022",
     type: "group",
     buyerName: "André Figueiredo Santos",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-05-08T10:00:00",
@@ -1238,7 +1237,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0023",
     type: "individual",
     buyerName: "Priscila Moura Carvalho",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-05-09T15:30:00",
@@ -1455,7 +1454,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0030",
     type: "individual",
     buyerName: "Júlio César Azevedo",
-    status: "NoShow",
+    status: "Confirmed",
     paymentStatus: "Paid",
     insuranceStatus: "Contracted",
     createdAt: "2026-05-01T09:30:00",
@@ -1483,7 +1482,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0031",
     type: "group",
     buyerName: "Helena Martins Duarte",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Partial",
     insuranceStatus: "Required",
     createdAt: "2026-05-10T11:00:00",
@@ -1621,7 +1620,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0033",
     type: "individual",
     buyerName: "Marcia Lúcia Fernandes",
-    status: "Expired",
+    status: "Cancelled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-05-01T16:00:00",
@@ -1672,7 +1671,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0034",
     type: "individual",
     buyerName: "Anderson Vieira Lopes",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Failed",
     insuranceStatus: "Required",
     createdAt: "2026-05-09T20:15:00",
@@ -1720,7 +1719,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0035",
     type: "group",
     buyerName: "Aventura MG Turismo (B2B)",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Contracted",
     createdAt: "2026-05-08T14:00:00",
@@ -1865,7 +1864,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-0037",
     type: "individual",
     buyerName: "Diogo Ferreira Campos",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Partial",
     insuranceStatus: "Contracted",
     createdAt: "2026-04-25T09:00:00",
@@ -2133,7 +2132,7 @@ export const mockReservations: Reservation[] = [
     orderId: "#RE-7702",
     type: "individual",
     buyerName: "Reserva Anônima",
-    status: "AwaitingPayment",
+    status: "Scheduled",
     paymentStatus: "Pending",
     insuranceStatus: "Required",
     createdAt: "2026-05-08T14:30:00",

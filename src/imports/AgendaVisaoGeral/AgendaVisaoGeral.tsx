@@ -1647,6 +1647,18 @@ function Frame46({ onAtualizacoesClick }: { onAtualizacoesClick?: () => void }) 
           </div>
         </div>
       </div>
+      <div className="bg-white h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors" data-name="Menu action component">
+        <div className="flex flex-row items-center size-full">
+          <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">
+            <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 24 24" stroke="#414651">
+              <path d="M7 18V15M12 18V12M17 18V9M4 4C4 4 5.2 5.2 5.8 5.8M20 4C20 4 18.8 5.2 18.2 5.8M5.8 5.8C7.4 7.4 9.6 8.5 12 8.5C14.4 8.5 16.6 7.4 18.2 5.8M5.8 5.8L4 8M18.2 5.8L20 8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div className="content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-start justify-center min-w-px relative">
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#414651] text-[14px] whitespace-nowrap">Resumo da atividade</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <button onClick={onAtualizacoesClick} className="bg-white h-[48px] relative rounded-[14px] shrink-0 w-full cursor-pointer hover:bg-[#f8fafc] transition-colors" data-name="Component 4">
         <div className="flex flex-row items-center size-full">
           <div className="content-stretch flex gap-[12px] items-center pl-[16px] pr-[12px] py-[14px] relative size-full">

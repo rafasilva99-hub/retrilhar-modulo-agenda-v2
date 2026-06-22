@@ -238,6 +238,8 @@ export interface Reservation {
   /** Insurance policy number */
   insurancePolicyNumber?: string;
   history?: ReservationHistoryEvent[];
+  /** Whether this reservation was rescheduled from another activity/date */
+  isRescheduled?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

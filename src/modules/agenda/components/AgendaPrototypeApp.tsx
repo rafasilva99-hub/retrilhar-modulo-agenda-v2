@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 
 import ContextoMissao from "@/app/components/ContextoMissao";
 import { IntroTeste } from "@/app/components/IntroTeste";
@@ -70,6 +70,25 @@ function isAgendaViewMode(v: string | null): v is AgendaViewMode {
 
 function AgendaPrototypeApp() {
   const agenda = useAgendaPrototypeNavigation();
+  const [dayToast, setDayToast] = useState<{
+    message: string;
+    type: "success" | "error";
+    description?: string;
+  } | null>(null);
+
+  const handleActivityCancelled = useCallback(
+    (activityDate?: string) => {
+      setDayToast({
+        message: "Atividade cancelada",
+        description:
+          "A atividade foi enviada para cancelamento e os participantes serão notificados conforme a política definida.",
+        type: "error",
+      });
+      agenda.handleActivityCancelled(activityDate);
+    },
+    [agenda.handleActivityCancelled]
+  );
+  const handleDayToastClose = useCallback(() => setDayToast(null), []);
 
   // Board route: dedicated canvas page (lazy-loaded module).
   if (agenda.isBoardRoute) {
@@ -167,6 +186,7 @@ function AgendaPrototypeApp() {
       <AgendaUpdatesPage
         initialTab={agenda.atualizacoesInitialTab}
         onBackToActivities={agenda.handleBackToActivities}
+        onActivityCancelled={handleActivityCancelled}
         activityId={agenda.selectedActivityId}
       />
     );
@@ -183,9 +203,12 @@ function AgendaPrototypeApp() {
       >
         <AgendaDayPage
           day={agenda.selectedDay}
+          dateIso={agenda.selectedDate}
           onBackToAgenda={agenda.handleBackToAgenda}
           onViewDetails={agenda.handleViewDetails}
           onGoToCheckIn={agenda.handleGoToCheckIn}
+          toast={dayToast}
+          onToastClose={handleDayToastClose}
         />
       </AppShell>
     );

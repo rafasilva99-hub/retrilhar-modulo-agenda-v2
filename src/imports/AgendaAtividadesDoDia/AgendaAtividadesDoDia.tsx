@@ -18,6 +18,52 @@ import {
 } from "../../lib/agenda/activityCard";
 import type { ContextualBadge as ContextualBadgeType } from "../../lib/agenda/activityCard";
 
+type DayToast = {
+  message: string;
+  type: "success" | "error";
+  description?: string;
+};
+
+function DayToastNotification({ toast, onClose }: { toast: DayToast; onClose: () => void }) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    requestAnimationFrame(() => setVisible(true));
+    const timer = setTimeout(() => {
+      setVisible(false);
+      setTimeout(onClose, 200);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(onClose, 200);
+  };
+
+  return createPortal(
+    <div className={`fixed top-[24px] right-[24px] z-[200] w-[384px] flex overflow-clip rounded-[8px] border border-[#e4e4e7] border-solid bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.1),0px_10px_15px_-3px_rgba(0,0,0,0.1)] transition-all duration-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-[8px]"}`}>
+      <div className={`flex items-center justify-center shrink-0 w-[60px] ${toast.type === "success" ? "bg-[#ecfdf3]" : "bg-[#fef3f2]"}`}>
+        {toast.type === "success" ? (
+          <svg className="size-[28px]" viewBox="0 0 28 28" fill="none"><path d="M9.91699 14.5833L12.8337 17.5L19.8337 10.5" stroke="#079455" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M25.6663 14.0002C25.6663 20.4435 20.443 25.6668 13.9997 25.6668C7.55635 25.6668 2.33301 20.4435 2.33301 14.0002C2.33301 7.55684 7.55635 2.3335 13.9997 2.3335C20.443 2.3335 25.6663 7.55684 25.6663 14.0002Z" stroke="#079455" strokeWidth="1.5"/></svg>
+        ) : (
+          <svg className="size-[28px]" viewBox="0 0 28 28" fill="none"><path d="M2.91699 13.9998C2.91699 8.7751 2.91699 6.16274 4.54011 4.53962C6.16323 2.9165 8.77559 2.9165 14.0003 2.9165C19.2251 2.9165 21.8374 2.9165 23.4605 4.53962C25.0837 6.16274 25.0837 8.7751 25.0837 13.9998C25.0837 19.2246 25.0837 21.8369 23.4605 23.4601C21.8374 25.0832 19.2251 25.0832 14.0003 25.0832C8.77559 25.0832 6.16323 25.0832 4.54011 23.4601C2.91699 21.8369 2.91699 19.2246 2.91699 13.9998Z" stroke="#D92D20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 9.3335V14.5835" stroke="#D92D20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 18.6528V18.6645" stroke="#D92D20" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        )}
+      </div>
+      <div className="flex flex-col justify-center gap-[4px] flex-1 px-[16px] py-[16px]">
+        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#252b37]">{toast.message}</p>
+        {toast.description && (
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">{toast.description}</p>
+        )}
+      </div>
+      <button onClick={handleClose} className="flex items-start justify-center shrink-0 w-[44px] pt-[16px] text-[#a4a7ae] hover:text-[#717680] transition-colors cursor-pointer">
+        <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+      </button>
+    </div>,
+    document.body,
+  );
+}
+
 // Componentes padronizados para informações dos cards
 function InfoField({ icon, label, value, valueColor = "#252b37" }: { icon: React.ReactNode; label: string; value: string; valueColor?: string }) {
   return (
@@ -2882,13 +2928,13 @@ function DiaActivityCard({ a, onViewDetails, onGoToCheckIn }: {
             />
             <div className="bg-[#f5f5f5] self-stretch shrink-0 w-px" />
             <InfoField
-              icon={<svg className="block size-full" viewBox="0 0 20 20" fill="none"><path d="M6.25 16.2502C6.25 15.4455 6.52378 14.6315 7.19243 14.1838C7.99435 13.6469 8.96035 13.3335 10 13.3335C11.0397 13.3335 12.0057 13.6469 12.8076 14.1838C13.4762 14.6315 13.75 15.4455 13.75 16.2502" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9.99935" cy="9.16683" r="2.08333" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14.583 9.1665C15.5081 9.1665 16.3676 9.48057 17.0809 10.0185C17.6855 10.4745 17.9163 11.2458 17.9163 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="14.5827" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.41634 9.1665C4.49123 9.1665 3.63173 9.48057 2.91847 10.0185C2.31389 10.4745 2.08301 11.2458 2.08301 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="5.41667" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              icon={<svg className="block size-full" viewBox="0 0 24 24" fill="none"><path d="M15.5 11C15.5 9.067 13.933 7.5 12 7.5C10.067 7.5 8.5 9.067 8.5 11C8.5 12.933 10.067 14.5 12 14.5C13.933 14.5 15.5 12.933 15.5 11Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.4811 11.3499C15.803 11.4475 16.1446 11.5 16.4984 11.5C18.4314 11.5 19.9984 9.933 19.9984 8C19.9984 6.067 18.4314 4.5 16.4984 4.5C14.6834 4.5 13.1912 5.8814 13.0156 7.65013" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.9827 7.65013C10.8072 5.8814 9.31492 4.5 7.5 4.5C5.567 4.5 4 6.067 4 8C4 9.933 5.567 11.5 7.5 11.5C7.85381 11.5 8.19535 11.4475 8.51727 11.3499" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 16.5C22 13.7386 19.5376 11.5 16.5 11.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 19.5C17.5 16.7386 15.0376 14.5 12 14.5C8.96243 14.5 6.5 16.7386 6.5 19.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.5 11.5C4.46243 11.5 2 13.7386 2 16.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
               label="Participantes"
               value={a.occupancy > 0 ? `${a.occupancy} participante${a.occupancy > 1 ? 's' : ''}` : 'Nenhum participante'}
             />
             <div className="bg-[#f5f5f5] self-stretch shrink-0 w-px" />
             <InfoField
-              icon={<svg className="block size-full" viewBox="0 0 20 20" fill="none"><path d="M6.25 16.2502C6.25 15.4455 6.52378 14.6315 7.19243 14.1838C7.99435 13.6469 8.96035 13.3335 10 13.3335C11.0397 13.3335 12.0057 13.6469 12.8076 14.1838C13.4762 14.6315 13.75 15.4455 13.75 16.2502" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9.99935" cy="9.16683" r="2.08333" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14.583 9.1665C15.5081 9.1665 16.3676 9.48057 17.0809 10.0185C17.6855 10.4745 17.9163 11.2458 17.9163 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="14.5827" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.41634 9.1665C4.49123 9.1665 3.63173 9.48057 2.91847 10.0185C2.31389 10.4745 2.08301 11.2458 2.08301 12.003V12.0832" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="5.41667" cy="5.41667" r="1.66667" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              icon={<svg className="block size-full" viewBox="0 0 24 24" fill="none"><path d="M15.5 11C15.5 9.067 13.933 7.5 12 7.5C10.067 7.5 8.5 9.067 8.5 11C8.5 12.933 10.067 14.5 12 14.5C13.933 14.5 15.5 12.933 15.5 11Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.4811 11.3499C15.803 11.4475 16.1446 11.5 16.4984 11.5C18.4314 11.5 19.9984 9.933 19.9984 8C19.9984 6.067 18.4314 4.5 16.4984 4.5C14.6834 4.5 13.1912 5.8814 13.0156 7.65013" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.9827 7.65013C10.8072 5.8814 9.31492 4.5 7.5 4.5C5.567 4.5 4 6.067 4 8C4 9.933 5.567 11.5 7.5 11.5C7.85381 11.5 8.19535 11.4475 8.51727 11.3499" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 16.5C22 13.7386 19.5376 11.5 16.5 11.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 19.5C17.5 16.7386 15.0376 14.5 12 14.5C8.96243 14.5 6.5 16.7386 6.5 19.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.5 11.5C4.46243 11.5 2 13.7386 2 16.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
               label="Equipe responsável"
               value={team.label}
               valueColor={team.color}
@@ -2920,16 +2966,21 @@ function DiaEmptyState({ onBack }: { onBack?: () => void }) {
   );
 }
 
-export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetails, onGoToCheckIn }: {
+export default function AgendaAtividadesDoDia({ day, dateIso, onBackToAgenda, onViewDetails, onGoToCheckIn, toast, onToastClose }: {
   day?: number;
+  dateIso?: string | null;
   onBackToAgenda?: () => void;
   onViewDetails?: (activityId?: string) => void;
   onGoToCheckIn?: (activityId?: string) => void;
+  toast?: DayToast | null;
+  onToastClose?: () => void;
 }) {
-  const refDay = day ?? 11;
   const today = new Date();
-  const dateObj = new Date(today.getFullYear(), today.getMonth(), refDay);
-  const iso = format(dateObj, "yyyy-MM-dd");
+  const dateObj = dateIso
+    ? new Date(`${dateIso}T12:00:00`)
+    : new Date(today.getFullYear(), today.getMonth(), day ?? 11);
+  const refDay = dateObj.getDate();
+  const iso = dateIso ?? format(dateObj, "yyyy-MM-dd");
   const holiday = DIA_HOLIDAYS[iso];
   const [showFichaDrawer, setShowFichaDrawer] = useState(false);
   const [fichaIdx, setFichaIdx] = useState(0);
@@ -3146,5 +3197,6 @@ export default function AgendaAtividadesDoDia({ day, onBackToAgenda, onViewDetai
       </div>,
       document.body,
     )}
+    {toast && <DayToastNotification toast={toast} onClose={onToastClose ?? (() => undefined)} />}
   </>);
 }

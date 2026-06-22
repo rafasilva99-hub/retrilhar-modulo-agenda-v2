@@ -50,6 +50,7 @@ export function useAgendaPrototypeNavigation() {
     useState<AgendaUpdatesInitialTab>("participantes");
   const [returnTo, setReturnTo] = useState<AppPage>("agendaDia");
   const [calendarView, setCalendarView] = useState<AgendaViewMode>("mes");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string>(() =>
     getDefaultActivityId()
   );
@@ -100,6 +101,7 @@ export function useAgendaPrototypeNavigation() {
   const handleDayClick = useCallback(
     (day: number) => {
       setSelectedDay(day);
+      setSelectedDate(null);
       navigateTo("agendaDia");
     },
     [navigateTo]
@@ -129,6 +131,17 @@ export function useAgendaPrototypeNavigation() {
     navigateTo(returnTo);
   }, [navigateTo, returnTo]);
 
+  const handleActivityCancelled = useCallback(
+    (activityDate?: string) => {
+      const activityDay = activityDate ? Number(activityDate.slice(-2)) : NaN;
+      if (Number.isFinite(activityDay) && activityDay > 0) setSelectedDay(activityDay);
+      setSelectedDate(activityDate ?? null);
+      setReturnTo("agendaDia");
+      navigateTo("agendaDia");
+    },
+    [navigateTo]
+  );
+
   const handleBackToAgenda = useCallback(() => {
     navigateTo("agenda");
   }, [navigateTo]);
@@ -143,6 +156,7 @@ export function useAgendaPrototypeNavigation() {
     currentPage,
     handleBackToActivities,
     handleBackToAgenda,
+    handleActivityCancelled,
     handleDayClick,
     handleGoToCheckIn,
     handleNewActivity,
@@ -150,6 +164,7 @@ export function useAgendaPrototypeNavigation() {
     isBoardRoute,
     navigateTo,
     previewSelection,
+    selectedDate,
     selectedActivityId,
     selectedDay,
     setCalendarView,

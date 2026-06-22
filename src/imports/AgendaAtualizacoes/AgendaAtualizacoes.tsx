@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import svgPaths from "./svg-axule6rb2z";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import AgendaVisaoGeral from "../AgendaVisaoGeral/AgendaVisaoGeral";
-import { mockReservations, mockActivities, isEligibleForBulkAction, reservationStateMachine } from "../../mocks/agenda";
+import { mockReservations, mockActivities, isEligibleForBulkAction, reservationStateMachine, mockWeather } from "../../mocks/agenda";
 import type { Activity, Reservation, Participant, CheckInStatus, BulkAction, ReservationStatus, InsuranceStatus } from "../../types/agenda";
 import { ParticipantCountBadge } from "../../components/ui/participant-count-badge";
 import { ParticipantAttributeBadge } from "../../components/ui/participant-attribute-badge";
@@ -970,7 +970,7 @@ function Container10({ onBackToActivities }: { onBackToActivities?: () => void }
                   </div>
                 </div>
               </div>
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#0f172a] text-[16px] whitespace-nowrap">Voltar as atividades</p>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#0f172a] text-[16px] whitespace-nowrap">Voltar às atividades</p>
             </div>
           </button>
         </div>
@@ -2196,9 +2196,10 @@ const STATUS_VARIANT_STYLES: Record<StatusVariant, { color: string; bg: string; 
 };
 
 function getParticipantOverrideStatus(participant: Participant, reservation: Reservation): { title: string; subtitle: string; variant: StatusVariant } | null {
-  if (participant.checkInStatus === "Cancelled" && reservation.status !== "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
+  // Reservation-level terminal states take precedence over participant-level overrides
+  if (reservation.status === "Cancelled" || reservation.status === "Performed") return null;
+  if (participant.checkInStatus === "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
   if (participant.checkInStatus === "Absent") return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
-  if (participant.checkInStatus === "Rescheduled") return { title: "Reagendada", subtitle: "Status da reserva", variant: "purple" };
   if (participant.checkInStatus === "Scheduled") return { title: "Agendada", subtitle: "Status da reserva", variant: "amber" };
   return null;
 }
@@ -2601,20 +2602,20 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
     ? { id: "undo-insurance", label: "Desfazer contratação de seguro", icon: iconFileRemove, separator: true, enabled: !inactive && s !== "Draft" && s !== "Performed", tooltip: inactive || s === "Draft" || s === "Performed" ? "Reserva inativa não permite operação de seguro" : null }
     : { id: "add-insurance", label: "Contratar seguro", icon: iconFileSecurity, separator: true, enabled: !inactive && s !== "Draft" && s !== "Performed", tooltip: inactive || s === "Draft" || s === "Performed" ? "Reserva inativa não permite operação de seguro" : null };
 
-  // Slot 6 — Dados do participante (always enabled)
-  const slot6: MenuSlot = { id: "participant-data", label: "Dados do participante", icon: iconPerson, enabled: true, tooltip: null };
+  // Slot 6 — Detalhes do participante (always enabled)
+  const slot6: MenuSlot = { id: "participant-data", label: "Detalhes do participante", icon: iconPerson, enabled: true, tooltip: null };
 
   // Slot 7 — Não compareceu ↔ Desfazer
   const isAbsent = p?.checkInStatus === "Absent";
   const slot7 = isAbsent
-    ? { id: "undo-noshow", label: "Desfazer não comparecimento", icon: iconCalSync, separator: true, destructive: true, enabled: true, tooltip: null }
+    ? { id: "undo-noshow", label: "Desfazer não comparecimento", icon: iconCalSync, separator: true, destructive: true, enabled: !inactive, tooltip: inactive ? "Desfaça o cancelamento da reserva para habilitar a ação" : null }
     : { id: "no-show", label: "Não compareceu", icon: iconCalRemove, separator: true, destructive: true, enabled: s === "Confirmed", tooltip: s === "CheckedIn" || s === "Performed" ? "Participante já realizou check-in" : s !== "Confirmed" ? "Não aplicável ao estado atual" : null };
 
   // Slot 8 — Cancelar ↔ Desfazer cancelamento
   const isCancelledParticipant = p?.checkInStatus === "Cancelled" || s === "Cancelled";
   const slot8 = isCancelledParticipant
     ? { id: "undo-cancel", label: "Desfazer cancelamento de reserva", icon: iconAccountRecovery, destructive: true, enabled: true, tooltip: null }
-    : { id: "cancel", label: "Cancelar reserva", icon: iconUserRemove, destructive: true, enabled: s === "Scheduled" || s === "Confirmed" || s === "CheckedIn", tooltip: s === "Performed" ? "Atividade já realizada não pode ser cancelada" : s === "Draft" ? "Reserva inativa" : null };
+    : { id: "cancel", label: "Cancelar reserva", icon: iconUserRemove, destructive: true, enabled: (s === "Scheduled" || s === "Confirmed" || s === "CheckedIn") || isAbsent, tooltip: s === "Performed" ? "Atividade já realizada não pode ser cancelada" : s === "Draft" ? "Reserva inativa" : null };
 
   return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8];
 }
@@ -3002,7 +3003,7 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
   );
 }
 
-function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpenUpdates, onOpenTeam, teamGuides, teamInsuredCount }: { onBackToActivities?: () => void; activity: Activity; initialOverlay?: string; onOpenUpdates?: () => void; onOpenTeam?: () => void; teamGuides?: string[]; teamInsuredCount?: number }) {
+function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, initialOverlay, onOpenUpdates, onOpenTeam, teamGuides, teamInsuredCount }: { onBackToActivities?: () => void; onActivityCancelled?: (activityDate?: string) => void; activity: Activity; initialOverlay?: string; onOpenUpdates?: () => void; onOpenTeam?: () => void; teamGuides?: string[]; teamInsuredCount?: number }) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
@@ -4424,7 +4425,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
             <div className="flex items-center justify-between gap-[16px]">
             <div className="flex items-center gap-[16px] flex-wrap">
               {/* Info card - Date | Time | Location | Guide */}
-              <div className="relative z-[1] flex items-center gap-[14px] bg-white/10 backdrop-blur-sm border border-white/15 rounded-[12px] px-[14px] py-[10px]">
+              <div className="relative z-20 hover:z-40 flex items-center gap-[14px] bg-white/10 backdrop-blur-sm border border-white/15 rounded-[12px] px-[14px] py-[10px]">
                 <div className="flex flex-col">
                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Hoje</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{(() => {
@@ -4440,7 +4441,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 </div>
                 <div className="w-[1px] h-[28px] bg-white/20" />
                 <div className="flex flex-col">
-                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Local</p>
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Local de início</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">Portaria · Parque do Itacolomi</p>
                 </div>
                 <div className="w-[1px] h-[28px] bg-white/20" />
@@ -4453,7 +4454,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                         <circle cx="12" cy="12" r="10" />
                         <path d="M12 16v-4M12 8h.01" />
                       </svg>
-                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/info:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/info:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-[100]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{teamInsuredCount ?? activity.assignedGuides.length} seguro(s) contratado(s)</p>
                         <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                       </div>
@@ -4469,11 +4470,11 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                 const isPast = activityDate < now && (now.getTime() - activityDate.getTime()) > 3 * 60 * 60 * 1000;
                 const isNow = !isPast && Math.abs(now.getTime() - activityDate.getTime()) <= 3 * 60 * 60 * 1000;
                 const weatherLabel = isPast ? "Estava" : isNow ? "Agora" : "Previsão";
-                const weatherCondition = "Ensolarado";
-                const temp = 16;
+                const weatherCondition = mockWeather.current.rainChancePct > 50 ? "Chuvoso" : mockWeather.current.tempC >= 28 ? "Ensolarado" : mockWeather.current.tempC >= 22 ? "Parcialmente nublado" : "Nublado";
+                const temp = mockWeather.current.tempC;
 
                 return (
-                  <div className="flex items-center gap-[10px] bg-gradient-to-r from-amber-400/15 to-orange-400/10 backdrop-blur-sm border border-amber-300/20 rounded-[12px] px-[14px] py-[10px]">
+                  <div className="relative z-20 hover:z-40 flex items-center gap-[10px] bg-gradient-to-r from-amber-400/15 to-orange-400/10 backdrop-blur-sm border border-amber-300/20 rounded-[12px] px-[14px] py-[10px]">
                     <div className="group relative">
                       <svg className="size-[28px] cursor-default" viewBox="0 0 32 32" fill="none">
                         <circle cx="16" cy="16" r="6" fill="#fbbf24" />
@@ -4484,7 +4485,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                           <path d="M8.2 23.8l2-2" /><path d="M21.8 10.2l2-2" />
                         </g>
                       </svg>
-                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-[100]">
                         <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">{weatherCondition}</p>
                         <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                       </div>
@@ -4835,6 +4836,10 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                       <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%-1px)] size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
                     </div>
                   </div>
+                  {/* Rescheduled reservation badge */}
+                  {r.isRescheduled && (
+                    <span className="bg-[#f5f3ff] text-[#7c3aed] text-[10px] leading-none font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Reagendada</span>
+                  )}
                   {/* Spacer */}
                   <div className="flex-1" />
                   {/* Participant-level badges (only for active reservations) */}
@@ -4846,9 +4851,9 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     const BadgeWithTooltip = ({ parts, label, labelPlural, bg, color }: { parts: Participant[]; label: string; labelPlural: string; bg: string; color: string }) => (
                       <div className="group/badge relative">
                         <span className={`${bg} ${color} text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px] cursor-default`}>{parts.length > 1 ? `${parts.length} ${labelPlural}` : label}</span>
-                        <div className="pointer-events-none absolute z-50 rounded-[8px] bg-[#181d27] px-[12px] py-[8px] whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/badge:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                        <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] opacity-0 transition-opacity duration-150 group-hover/badge:opacity-100 max-w-[200px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
                           {parts.map((pp) => (
-                            <p key={pp.id} className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[18px] text-white not-italic">{pp.name || "Participante"}</p>
+                            <p key={pp.id} className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[18px] text-white not-italic truncate">{pp.name || "Participante"}</p>
                           ))}
                           <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                         </div>
@@ -4857,7 +4862,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                     return (
                       <>
                         {absentParts.length > 0 && <BadgeWithTooltip parts={absentParts} label="Não compareceu" labelPlural="não compareceram" bg="bg-[#fef3f2]" color="text-[#d92d20]" />}
-                        {rescheduledParts.length > 0 && <BadgeWithTooltip parts={rescheduledParts} label="Reagendada" labelPlural="reagendadas" bg="bg-[#f5f3ff]" color="text-[#7c3aed]" />}
+                        {rescheduledParts.length > 0 && <BadgeWithTooltip parts={rescheduledParts} label="1 reserva reagendada" labelPlural="reservas reagendadas" bg="bg-[#f5f3ff]" color="text-[#7c3aed]" />}
                         {cancelledParts.length > 0 && <BadgeWithTooltip parts={cancelledParts} label="Cancelada" labelPlural="canceladas" bg="bg-[#f3f4f6]" color="text-[#6b7280]" />}
                         {scheduledParts.length > 0 && <BadgeWithTooltip parts={scheduledParts} label="Agendada" labelPlural="agendadas" bg="bg-[#fffaeb]" color="text-[#dc6803]" />}
                       </>
@@ -5084,12 +5089,7 @@ function ParticipantesTab({ onBackToActivities, activity, initialOverlay, onOpen
                   if (cancelActivityConfirmText.trim() !== activity.name) return;
                   setCancelActivityModal(false);
                   setCancelActivityConfirmText("");
-                  setToast({
-                    message: "Atividade cancelada",
-                    description: "A atividade foi enviada para cancelamento e os participantes serão notificados conforme a política definida.",
-                    type: "error",
-                    actions: [{ label: "Entendido", onClick: () => setToast(null) }],
-                  });
+                  onActivityCancelled?.(activity.date);
                 }}
                 className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${cancelActivityConfirmText.trim() === activity.name ? "bg-[#d92d20] hover:bg-[#b42318] cursor-pointer" : "bg-[#fecdca] cursor-not-allowed"}`}
               >
@@ -6478,6 +6478,33 @@ const MOCK_ACTIVITY_LOG: { id: string; type: "comment" | "system"; user?: string
   { id: "log-10", type: "comment", user: "Carlos Silva", category: "transporte", categoryLabel: "Transporte", text: "Van confirmada para retorno às 16:30. Ponto de embarque: portaria principal.", time: "08:00" },
 ];
 
+const TEAM_GUIDE_LONG_NAMES: Record<string, string> = {
+  "João Silva": "João Victor Silva de Albuquerque",
+  "Maria Costa": "Maria Eduarda Costa Albuquerque",
+  "Carlos Mendes": "Carlos Henrique Mendes de Carvalho",
+  "Ana Oliveira": "Ana Carolina Oliveira Vasconcelos",
+  "Pedro Santos": "Pedro Augusto Santos de Almeida",
+  "Fernanda Lima": "Fernanda Cristina Lima Montenegro",
+  "Lucas Almeida": "Lucas Gabriel Almeida Nascimento",
+  "Beatriz Rocha": "Beatriz Helena Rocha Figueiredo",
+};
+
+const TEAM_GUIDE_OPTIONS = Object.values(TEAM_GUIDE_LONG_NAMES);
+const TEAM_GUIDE_TIME_CONFLICTS = new Set([
+  TEAM_GUIDE_LONG_NAMES["Carlos Mendes"],
+  TEAM_GUIDE_LONG_NAMES["Fernanda Lima"],
+  TEAM_GUIDE_LONG_NAMES["Beatriz Rocha"],
+]);
+const TEAM_GUIDE_CONFLICT_ACTIVITIES: Record<string, string> = {
+  [TEAM_GUIDE_LONG_NAMES["Carlos Mendes"]]: "Trilha interpretativa na Serra do Curral",
+  [TEAM_GUIDE_LONG_NAMES["Fernanda Lima"]]: "Travessia guiada no Parque Estadual",
+  [TEAM_GUIDE_LONG_NAMES["Beatriz Rocha"]]: "Rapel introdutório no Mirante Norte",
+};
+
+function getTeamGuideDisplayName(name: string): string {
+  return TEAM_GUIDE_LONG_NAMES[name] ?? name;
+}
+
 function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoFocusInput?: boolean }) {
   const [commentText, setCommentText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("observacao");
@@ -6572,7 +6599,7 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
   }
 
   return (
-    <div className="flex flex-col border-r border-[#e9eaeb] bg-white w-[380px] shrink-0 h-full">
+    <div className="flex flex-col border-r border-[#e9eaeb] bg-white w-[400px] shrink-0 h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0 gap-[8px]">
         {searchOpen ? (
@@ -6761,7 +6788,7 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
   );
 }
 
-export default function AgendaAtualizacoes({ initialTab = "participantes", onBackToActivities, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; activityId?: string; initialOverlay?: string }) {
+export default function AgendaAtualizacoes({ initialTab = "participantes", onBackToActivities, onActivityCancelled, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; onActivityCancelled?: (activityDate?: string) => void; activityId?: string; initialOverlay?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [focusActivityInput, setFocusActivityInput] = useState(false);
   const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
@@ -6791,10 +6818,13 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
     return () => document.removeEventListener("mousedown", handleClick);
   }, [teamMemberMenu]);
   const activity = mockActivities.find((a) => a.id === activityId) || mockActivities[0];
-  const [localGuides, setLocalGuides] = useState<string[]>(() => activity.assignedGuides);
+  const [localGuides, setLocalGuides] = useState<string[]>(() =>
+    activity.assignedGuides.map(getTeamGuideDisplayName)
+  );
+  const [teamConflictConfirm, setTeamConflictConfirm] = useState<string | null>(null);
   const [guideInsurance, setGuideInsurance] = useState<Record<string, boolean>>(() => {
     const map: Record<string, boolean> = {};
-    activity.assignedGuides.forEach((g, i) => { map[g] = i === 0; });
+    activity.assignedGuides.forEach((g, i) => { map[getTeamGuideDisplayName(g)] = i === 0; });
     return map;
   });
   const activityHeaderTeam = getActivityHeaderTeam(activity);
@@ -6843,8 +6873,8 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           {/* Nav items — icon only with tooltips */}
           {([
             { id: "resumo-atividade", label: "Resumo da atividade", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M19 13.0052V10.6606C19 9.84276 19 9.43383 18.8478 9.06613C18.6955 8.69843 18.4065 8.40927 17.8284 7.83096L13.0919 3.09236C12.593 2.59325 12.3436 2.3437 12.0345 2.19583C11.9702 2.16508 11.9044 2.13778 11.8372 2.11406C11.5141 2 11.1614 2 10.4558 2C7.21082 2 5.58831 2 4.48933 2.88646C4.26731 3.06554 4.06508 3.26787 3.88607 3.48998C3 4.58943 3 6.21265 3 9.45908V14.0052C3 17.7781 3 19.6645 4.17157 20.8366C5.11466 21.7801 6.52043 21.9641 9 22M12 2.50022V3.00043C12 5.83009 12 7.24492 12.8787 8.12398C13.7574 9.00304 15.1716 9.00304 18 9.00304H18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 22C18.7614 22 21 19 21 19C21 19 18.7614 16 16 16C13.2386 16 11 19 11 19C11 19 13.2386 22 16 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M15.9922 19H16.0012" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-            { id: "atualizacoes", label: "Histórico", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
             { id: "equipe", label: "Equipe responsável", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.5344 7.82853 17.5576 8.63092 17.0204C9.59321 16.3761 10.7524 16 12 16C13.2476 16 14.4068 16.3761 15.3691 17.0204C16.1715 17.5576 16.5 18.5344 16.5 19.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 11C18.6101 11 19.6415 11.3769 20.4974 12.0224C21.2229 12.5696 21.5 13.4951 21.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.5 11C5.38987 11 4.35846 11.3769 3.50256 12.0224C2.77706 12.5696 2.5 13.4951 2.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+            { id: "atualizacoes", label: "Histórico", icon: <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
           ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
             <button
               key={item.id}
@@ -6869,24 +6899,231 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           <div
             className="absolute inset-0 flex transition-transform duration-300 ease-in-out"
             style={{
-              width: "calc(100% + 380px)",
-              transform: (activeTab === "atualizacoes" || activeTab === "equipe" || activeTab === "resumo-atividade") ? "translateX(0)" : "translateX(-380px)",
+              width: "calc(100% + 400px)",
+              transform: (activeTab === "atualizacoes" || activeTab === "equipe" || activeTab === "resumo-atividade") ? "translateX(0)" : "translateX(-400px)",
             }}
           >
-            <div className="w-[380px] shrink-0 h-full">
+            <div className="w-[400px] shrink-0 h-full">
               {activeTab === "resumo-atividade" ? (
-                <div className="flex flex-col bg-white w-[380px] shrink-0 h-full border-r border-[#e9eaeb]">
+                <div className="flex flex-col bg-white w-[400px] shrink-0 h-full border-r border-[#e9eaeb]">
                   {/* Header */}
                   <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0">
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Resumo da atividade</p>
                   </div>
                   {/* Content */}
                   <div className="flex-1 overflow-y-auto px-[16px] py-[16px]">
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Conteúdo do resumo da atividade será exibido aqui.</p>
+                    {(() => {
+                      // Match header logic: totalCount = all participants across all reservations (same as ParticipantesTab)
+                      const allParts = mockReservations.flatMap((r) => r.participants);
+                      const totalOccupancy = allParts.length;
+                      const criancas = allParts.filter((p) => p.tariffType.toLowerCase().includes("criança")).length;
+                      const cortesias = allParts.filter((p) => p.tariffType.toLowerCase().includes("cortesia")).length;
+                      const adultos = totalOccupancy - criancas - cortesias;
+                      const occupiedPct = activity.capacity > 0 ? Math.min(Math.round((totalOccupancy / activity.capacity) * 100), 100) : 0;
+                      const vacantPct = Math.max(100 - occupiedPct, 0);
+
+                      const startParts = activity.startTime.split(":").map(Number);
+                      const endParts = activity.endTime.split(":").map(Number);
+                      const diffMin = (endParts[0] * 60 + endParts[1]) - (startParts[0] * 60 + startParts[1]);
+                      const durationLabel = diffMin >= 60 ? `${Math.floor(diffMin / 60)}h${diffMin % 60 > 0 ? diffMin % 60 : ""}` : `${diffMin}min`;
+
+                      const dateParts = activity.date.split("-");
+                      const dateStr = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+                      const fmt12 = (t: string) => {
+                        const [h, min] = t.split(":").map(Number);
+                        const ampm = h >= 12 ? "PM" : "AM";
+                        const h12 = h % 12 || 12;
+                        return `${String(h12).padStart(2, "0")}:${String(min).padStart(2, "0")} ${ampm}`;
+                      };
+
+                      // Derive weather icon from temperature range
+                      const getWeatherIconType = (high: number, low: number, idx: number): string => {
+                        const diff = high - low;
+                        if (diff >= 13) return "rainy";
+                        if (high >= 29) return "sunny";
+                        if (high <= 24) return "cloudy";
+                        return idx % 2 === 0 ? "partly-cloudy" : "sunny";
+                      };
+
+                      const weather = {
+                        temp: mockWeather.current.tempC,
+                        feelsLike: mockWeather.current.feelsLikeC,
+                        humidity: mockWeather.current.humidityPct,
+                        wind: mockWeather.current.windKmh,
+                        rain: mockWeather.current.rainChancePct,
+                        forecast: mockWeather.forecast.map((d, i) => ({
+                          day: d.dayLabel,
+                          date: d.dayNumber,
+                          icon: getWeatherIconType(d.high, d.low, i),
+                          tempHigh: d.high,
+                          tempLow: d.low,
+                          active: i === 0,
+                        })),
+                      };
+
+                      const renderWeatherIcon = (type: string, size = 30) => {
+                        const s = `${size}px`;
+                        if (type === "sunny") return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z" stroke="#F8A12E" strokeWidth="1.5"/><path d="M12 2V3.5M12 20.5V22M19.0708 19.0713L18.0101 18.0106M5.98926 5.98926L4.9286 4.9286M22 12H20.5M3.5 12H2M19.0713 4.92871L18.0106 5.98937M5.98975 18.0107L4.92909 19.0714" stroke="#F8A12E" strokeLinecap="round"/></svg>;
+                        if (type === "cloudy") return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M17.4776 10.0001C17.485 10 17.4925 10 17.5 10C19.9853 10 22 12.0147 22 14.5C22 16.9853 19.9853 19 17.5 19H7C4.23858 19 2 16.7614 2 14C2 11.4003 3.98398 9.26407 6.52042 9.0227M17.4776 10.0001C17.4924 9.83536 17.5 9.66856 17.5 9.5C17.5 6.46243 15.0376 4 12 4C9.12324 4 6.76233 6.20862 6.52042 9.0227M17.4776 10.0001C17.3753 11.1345 16.9286 12.1696 16.2428 13M6.52042 9.0227C6.67826 9.00768 6.83823 9 7 9C8.12582 9 9.16474 9.37209 10.0005 10" stroke="#45556C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+                        if (type === "rainy") return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M12.0011 13.5V15M9 16.5V18M15 16.5V18M6.5 19.5V21M17.5 19.5V21M12 19.5V21" stroke="#5286C6" strokeWidth="1.5" strokeLinecap="round"/><path d="M17.4776 8.89801L17.5 8.89795C19.9853 8.89795 22 10.8784 22 13.3214C22 14.8551 21.206 16.2065 20 17M17.4776 8.89801C17.4924 8.73611 17.5 8.57216 17.5 8.40646C17.5 5.42055 15.0376 3 12 3C9.12324 3 6.76233 5.17106 6.52042 7.93728M17.4776 8.89801C17.3753 10.0132 16.9286 11.0307 16.2428 11.8469M10.0005 8.89795C9.16474 8.28072 8.12582 7.91496 7 7.91496C6.83823 7.91496 6.67826 7.92251 6.52042 7.93728C3.98398 8.17454 2 10.2745 2 12.8299C2 14.4378 2.78565 15.8652 4 16.7619" stroke="#5286C6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+                        return <svg width={s} height={s} viewBox="0 0 24 24" fill="none"><path d="M17.4776 12.0001C17.485 12 17.4925 12 17.5 12C19.9853 12 22 14.0147 22 16.5C22 18.9853 19.9853 21 17.5 21H7C4.23858 21 2 18.7614 2 16C2 13.4003 3.98398 11.2641 6.52042 11.0227M17.4776 12.0001C17.4924 11.8354 17.5 11.6686 17.5 11.5C17.5 8.46243 15.0376 6 12 6C9.12324 6 6.76233 8.20862 6.52042 11.0227M17.4776 12.0001C17.3753 13.1345 16.9286 14.1696 16.2428 15M6.52042 11.0227C6.67826 11.0077 6.83823 11 7 11C8.12582 11 9.16474 11.3721 10.0005 12" stroke="#F8A12E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.95939 10.1937C2.21865 7.47179 3.85922 4.67397 6.6237 3.94463M2.95939 10.1937L2 10.4468M2.95939 10.1937C3.14359 10.8706 3.4577 11.479 3.86823 12M6.6237 3.94463L6.36663 3M6.6237 3.94463C8.66673 3.40563 10.7518 4.14719 12 5.66961M3.4765 6.32297L2.4644 5.74628M11.1407 3.45725L10.557 4.45494" stroke="#F8A12E" strokeWidth="1.5" strokeLinecap="round"/></svg>;
+                      };
+
+                      const weatherIconBg: Record<string, string> = { "partly-cloudy": "#fff7ed", cloudy: "#f1f5f9", rainy: "#eff6ff", sunny: "#fffbeb" };
+                      const weatherIconBorder: Record<string, string> = { "partly-cloudy": "#fed7aa", cloudy: "#e2e8f0", rainy: "#bfdbfe", sunny: "#fde68a" };
+
+                      return (
+                        <div className="flex flex-col gap-[24px]">
+                          {/* ── Section 1: Ocupação Total ── */}
+                          <div className="flex flex-col gap-[12px]">
+                            <div className="flex items-center gap-[8px]">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Ocupação total</p>
+                              <div className="flex items-center gap-[3px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] py-[3px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#252b37]">{totalOccupancy}</p>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#717680]">/</p>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#535862]">{activity.capacity}</p>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680] ml-[1px]">participantes</p>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-[12px]">
+                              <div className="flex flex-col gap-[6px]">
+                                <div className="flex h-[16px] w-full gap-[4px]">
+                                  <div className="bg-[#2f80ed] h-full rounded-[4px]" style={{ width: `${occupiedPct}%`, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px)" }} />
+                                  {vacantPct > 0 && <div className="bg-[#e4e7ec] h-full rounded-[4px] flex-1" />}
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#252b37]">{occupiedPct}% ocupado</span>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680]">{vacantPct}% vago</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-[8px]">
+                                  <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                                    <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><g clipPath="url(#child-occupancy-icon)"><circle cx="10.0013" cy="9.99935" r="8.33333" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M11.668 4.78094C11.668 4.78094 10.7387 5.19775 10.086 4.87977C9.29 4.492 8.50051 2.87117 10.0775 1.66602" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.67545 7.5H6.66797M13.3346 7.5H13.3272" stroke="#535862" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 12.5C7.42807 13.512 8.63825 14.1667 10.0013 14.1667C11.3644 14.1667 12.5745 13.512 13.3346 12.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></g><defs><clipPath id="child-occupancy-icon"><rect width="20" height="20" fill="white"/></clipPath></defs></svg>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Criança(s)</span>
+                                    <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{criancas}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-[8px]">
+                                  <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                                    <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M10.8346 9.16732C10.8346 7.32637 9.34225 5.83398 7.5013 5.83398C5.66035 5.83398 4.16797 7.32637 4.16797 9.16732C4.16797 11.0083 5.66035 12.5007 7.5013 12.5007C9.34225 12.5007 10.8346 11.0083 10.8346 9.16732Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.20011 6.29811C9.17892 6.14622 9.16797 5.99106 9.16797 5.83333C9.16797 3.99238 10.6604 2.5 12.5013 2.5C14.3423 2.5 15.8346 3.99238 15.8346 5.83333C15.8346 7.67428 14.3423 9.16667 12.5013 9.16667C11.8808 9.16667 11.3 8.99714 10.8025 8.70189" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.5 17.5C12.5 14.7386 10.2614 12.5 7.5 12.5C4.73858 12.5 2.5 14.7386 2.5 17.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 14.166C17.5 11.4046 15.2614 9.16602 12.5 9.16602" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Adulto(s)</span>
+                                    <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{adultos}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-[8px]">
+                                  <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                                    <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M12.5178 7.86112L12.9578 8.7483C13.0178 8.8718 13.1778 8.99026 13.3128 9.01294L14.1102 9.14652C14.6201 9.23221 14.7401 9.60523 14.3726 9.9732L13.7527 10.5983C13.6477 10.7041 13.5902 10.9083 13.6227 11.0544L13.8002 11.8282C13.9402 12.4407 13.6177 12.6776 13.0803 12.3575L12.3329 11.9114C12.1979 11.8307 11.9754 11.8307 11.8379 11.9114L11.0905 12.3575C10.5556 12.6776 10.2306 12.4381 10.3706 11.8282L10.5481 11.0544C10.5806 10.9083 10.5231 10.7041 10.4181 10.5983L9.79815 9.9732C9.43319 9.60523 9.55067 9.23221 10.0606 9.14652L10.858 9.01294C10.9905 8.99026 11.1505 8.8718 11.2105 8.7483L11.6504 7.86112C11.8904 7.37973 12.2804 7.37973 12.5178 7.86112Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 14.166L6.66797 17.0827" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 2.91602V5.83268" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.3359 7.39847C18.2802 6.11341 18.1239 5.27683 17.6862 4.61505C17.4344 4.23432 17.1216 3.90317 16.7619 3.63658C15.7898 2.91602 14.4185 2.91602 11.6757 2.91602H8.33015C5.58742 2.91602 4.21606 2.91602 3.24396 3.63658C2.88431 3.90317 2.5715 4.23432 2.31967 4.61505C1.88198 5.27676 1.72574 6.11322 1.66996 7.39804C1.66042 7.61775 1.84967 7.78581 2.05703 7.78581C3.21185 7.78581 4.14801 8.77684 4.14801 9.99935C4.14801 11.2219 3.21185 12.2129 2.05703 12.2129C1.84967 12.2129 1.66042 12.381 1.66996 12.6007C1.72574 13.8855 1.88198 14.7219 2.31967 15.3837C2.5715 15.7644 2.88431 16.0955 3.24396 16.3621C4.21605 17.0827 5.58742 17.0827 8.33014 17.0827H8.33015H11.6757H11.6757C14.4185 17.0827 15.7898 17.0827 16.7619 16.3621C17.1216 16.0955 17.4344 15.7644 17.6862 15.3837C18.1239 14.7219 18.2802 13.8853 18.3359 12.6002V7.39847Z" stroke="#535862" strokeWidth="1.5" strokeLinejoin="round"/></svg>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Cortesia(s)</span>
+                                    <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{cortesias}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ── Section 2: Especificações de Data e Hora ── */}
+                          <div className="flex flex-col gap-[12px]">
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Especificações de data e hora</p>
+                            <div className="flex items-start gap-[16px]">
+                              <div className="flex items-start gap-[8px] flex-1 min-w-0">
+                                <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                                  <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M13.3346 1.66602V4.99935M6.66797 1.66602L6.66797 4.99935" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 10.0007C17.5 6.85795 17.5 5.28661 16.5237 4.3103C15.5474 3.33398 13.976 3.33398 10.8333 3.33398L9.16667 3.33398C6.02397 3.33398 4.45262 3.33398 3.47631 4.3103C2.5 5.28661 2.5 6.85795 2.5 10.0007L2.5 11.6673C2.5 14.81 2.5 16.3814 3.47631 17.3577C4.45262 18.334 6.02397 18.334 9.16667 18.334" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.5 8.33398L17.5 8.33398" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.2213 15.5836L14.1654 14.9993V13.555M17.4987 14.9993C17.4987 16.8403 16.0063 18.3327 14.1654 18.3327C12.3244 18.3327 10.832 16.8403 10.832 14.9993C10.832 13.1584 12.3244 11.666 14.1654 11.666C16.0063 11.666 17.4987 13.1584 17.4987 14.9993Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                                <div className="flex flex-col gap-[2px]">
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Data / hora da atividade</span>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{dateStr}, {fmt12(activity.startTime)} <span className="text-[#717680]">({activity.timezone})</span></span>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-[8px] flex-1 min-w-0">
+                                <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                                  <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M10.0013 18.3327C14.6037 18.3327 18.3346 14.6017 18.3346 9.99935C18.3346 5.39698 14.6037 1.66602 10.0013 1.66602C5.39893 1.66602 1.66797 5.39698 1.66797 9.99935C1.66797 14.6017 5.39893 18.3327 10.0013 18.3327Z" stroke="#535862" strokeWidth="1.5"/><path d="M10.0078 8.75633C9.31746 8.75633 8.75781 9.31597 8.75781 10.0063C8.75781 10.6967 9.31746 11.2563 10.0078 11.2563C10.6982 11.2563 11.2578 10.6967 11.2578 10.0063C11.2578 9.31597 10.6982 8.75633 10.0078 8.75633ZM10.0078 8.75633V5.83203M12.5136 12.516L10.8897 10.8922" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </div>
+                                <div className="flex flex-col gap-[2px]">
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Duração da atividade</span>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{fmt12(activity.startTime)} - {fmt12(activity.endTime)} ({durationLabel})</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ── Section 3: Previsão Climática ── */}
+                          <div className="flex flex-col gap-[12px]">
+                            <div className="flex items-center gap-[6px]">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Previsão climática</p>
+                              <div className="group/info relative">
+                                <svg className="size-[16px] cursor-default text-[#94a3b8]" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                                <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover/info:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] z-50">
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white">Dados de OpenWeather API</p>
+                                  <div className="absolute top-[calc(100%-1px)] left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-[8px]">
+                              <div className="flex items-center gap-[16px]">
+                                <div className="flex items-center gap-[12px] flex-1">
+                                  <div className="flex items-center justify-center size-[48px] rounded-[12px] shrink-0" style={{ backgroundColor: weatherIconBg["partly-cloudy"], border: `1px solid ${weatherIconBorder["partly-cloudy"]}` }}>
+                                    {renderWeatherIcon("partly-cloudy", 30)}
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <div className="flex items-start">
+                                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[36px] leading-none text-[#252b37]">{weather.temp}</span>
+                                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680] mt-[2px] ml-[2px]">°C</span>
+                                    </div>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Sensação térmica: {weather.feelsLike}°C</span>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col gap-[4px] shrink-0">
+                                  <div className="flex items-center gap-[4px]">
+                                    <span className="text-[14px] leading-none">💧</span>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">Umidade: {weather.humidity}%</span>
+                                  </div>
+                                  <div className="flex items-center gap-[4px]">
+                                    <span className="text-[14px] leading-none">💨</span>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">Vento: {weather.wind} km/h</span>
+                                  </div>
+                                  <div className="flex items-center gap-[4px]">
+                                    <span className="text-[14px] leading-none">🌧️</span>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">Chuva: {weather.rain}%</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-[8px]">
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#45556c]">Próximos 7 dias</span>
+                                <div className="flex gap-[6px]">
+                                  {weather.forecast.map((fc) => (
+                                    <div key={fc.day} className={`flex flex-col items-center gap-[8px] flex-1 py-[10px] rounded-[12px] border ${fc.active ? "bg-[#F6FAFF] border-[#bfdbfe]" : "bg-white border-[#e2e8f0]"}`}>
+                                      <div className="flex flex-col items-center">
+                                        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${fc.active ? "text-[#0b5ed7]" : "text-[#252b37]"}`}>{fc.day}</span>
+                                        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${fc.active ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{fc.date}</span>
+                                      </div>
+                                      <div className="flex items-center justify-center size-[32px] rounded-[8px]" style={{ backgroundColor: weatherIconBg[fc.icon], border: `1px solid ${weatherIconBorder[fc.icon]}` }}>
+                                        {renderWeatherIcon(fc.icon, 18)}
+                                      </div>
+                                      <div className="flex flex-col items-center">
+                                        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${fc.active ? "text-[#0b5ed7]" : "text-[#252b37]"}`}>{fc.tempHigh}°</span>
+                                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#94a3b8]">{fc.tempLow}°</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               ) : activeTab === "equipe" ? (
-                <div className="flex flex-col bg-white w-[380px] shrink-0 h-full border-r border-[#e9eaeb]">
+                <div className="flex flex-col bg-white w-[400px] shrink-0 h-full border-r border-[#e9eaeb]">
                   {/* Header */}
                   <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0">
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Equipe responsável</p>
@@ -6895,7 +7132,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                   <div className="flex-1 overflow-y-auto px-[16px] py-[16px]">
                     {/* Search / Add member dropdown */}
                     {(() => {
-                      const allGuides = ["João Silva", "Maria Costa", "Carlos Mendes", "Ana Oliveira", "Pedro Santos", "Fernanda Lima", "Lucas Almeida", "Beatriz Rocha"];
+                      const allGuides = TEAM_GUIDE_OPTIONS;
                       const available = allGuides.filter((g) => !localGuides.includes(g));
                       const filtered = available.filter((g) => !teamSearch.trim() || g.toLowerCase().includes(teamSearch.toLowerCase()));
                       return (
@@ -6921,18 +7158,29 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                               <div className="max-h-[200px] overflow-y-auto py-[4px]">
                                 {filtered.length > 0 ? filtered.map((g) => {
                                   const gi = g.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                                  const hasTimeConflict = TEAM_GUIDE_TIME_CONFLICTS.has(g);
                                   return (
                                     <button
                                       key={g}
-                                      onClick={() => { setLocalGuides((prev) => [...prev, g]); setGuideInsurance((prev) => ({ ...prev, [g]: false })); setTeamDropdownOpen(false); setTeamSearch(""); }}
+                                      onClick={() => {
+                                        if (hasTimeConflict) {
+                                          setTeamConflictConfirm(g);
+                                          setTeamDropdownOpen(false);
+                                          return;
+                                        }
+                                        setLocalGuides((prev) => [...prev, g]);
+                                        setGuideInsurance((prev) => ({ ...prev, [g]: false }));
+                                        setTeamDropdownOpen(false);
+                                        setTeamSearch("");
+                                      }}
                                       className="flex items-center gap-[10px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors cursor-pointer"
                                     >
-                                      <div className="flex items-center justify-center size-[28px] rounded-full bg-gradient-to-br from-[#0b5ed7] to-[#3b82f6] shrink-0">
-                                        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[9px] text-white">{gi}</p>
+                                      <div className="flex items-center justify-center rounded-full size-[32px] shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
+                                        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{gi}</p>
                                       </div>
                                       <div className="flex-1 min-w-0 text-left">
-                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37]">{g}</p>
-                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">Disponível</p>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{g}</p>
+                                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] truncate ${hasTimeConflict ? "text-[#e17c00]" : "text-[#079455]"}`}>{hasTimeConflict ? "Alocado em outra atividade no mesmo horário" : "Disponível para a atividade"}</p>
                                       </div>
                                       <svg className="size-[14px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
                                     </button>
@@ -6950,10 +7198,12 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                     })()}
 
                     {/* Assigned members */}
+                    {localGuides.length > 0 ? (
                     <div className="flex flex-col gap-[12px]">
                       {localGuides.map((guide, i) => {
                         const initials = guide.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
                         const hasInsurance = guideInsurance[guide] ?? false;
+                        const hasTimeConflict = TEAM_GUIDE_TIME_CONFLICTS.has(guide);
                         return (
                           <div key={guide} className="flex items-center gap-[12px] px-[12px] py-[10px] rounded-[10px] border border-[#f5f5f5] bg-[#fafafa] hover:bg-[#f0f1f3] transition-colors">
                             <div className="flex items-center justify-center rounded-full size-[32px] shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
@@ -6961,7 +7211,15 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{guide}</p>
-                              <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${hasInsurance ? "text-[#079455]" : "text-[#dc6803]"}`}>{hasInsurance ? "Seguro contratado" : "Sem seguro"}</p>
+                              <div className="flex items-center gap-[6px] min-w-0">
+                                <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] shrink-0 ${hasInsurance ? "text-[#0b5ed7]" : "text-[#dc6803]"}`}>{hasInsurance ? "Seguro contratado" : "Sem seguro"}</p>
+                                {hasTimeConflict && (
+                                  <>
+                                    <div className="h-[10px] w-px bg-[#d5d7da] shrink-0" />
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#dc6803] truncate">Conflito de horário</p>
+                                  </>
+                                )}
+                              </div>
                             </div>
                             <div className="relative shrink-0">
                               <button onClick={(e) => { e.stopPropagation(); setTeamMemberMenu(teamMemberMenu === i ? null : i); }} className="cursor-pointer flex items-center justify-center size-[24px] rounded-[6px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors">
@@ -6993,6 +7251,13 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                         );
                       })}
                     </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center flex-1 py-[24px] gap-[8px]">
+                        <svg className="size-[32px] text-[#d0d5dd]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.5344 7.82853 17.5576 8.63092 17.0204C9.59321 16.3761 10.7524 16 12 16C13.2476 16 14.4068 16.3761 15.3691 17.0204C16.1715 17.5576 16.5 18.5344 16.5 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 11C18.6101 11 19.6415 11.3769 20.4974 12.0224C21.2229 12.5696 21.5 13.4951 21.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.5 11C5.38987 11 4.35846 11.3769 3.50256 12.0224C2.77706 12.5696 2.5 13.4951 2.5 14.4038V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Nenhum colaborador escalado</p>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#94a3b8] text-center max-w-[200px] -mt-[4px]">Busque e adicione os colaboradores responsáveis por conduzir a atividade.</p>
+                      </div>
+                    )}
                   </div>
                   {/* Footer */}
                   <div className="border-t border-[#f5f5f5] px-[16px] py-[12px] shrink-0">
@@ -7006,9 +7271,9 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                 <ActivityPanel onClose={() => { setActiveTab("participantes"); setFocusActivityInput(false); }} autoFocusInput={focusActivityInput} />
               )}
             </div>
-            <div className="h-full overflow-y-auto" style={{ width: "calc(100% - 380px)" }}>
+            <div className="h-full overflow-y-auto" style={{ width: "calc(100% - 400px)" }}>
               {(activeTab === "participantes" || activeTab === "atualizacoes" || activeTab === "equipe" || activeTab === "resumo-atividade") && (
-                <ParticipantesTab onBackToActivities={onBackToActivities} activity={activity} initialOverlay={initialOverlay} onOpenUpdates={() => { setActiveTab("atualizacoes"); setFocusActivityInput(true); }} onOpenTeam={() => setActiveTab("equipe")} teamGuides={localGuides} teamInsuredCount={localGuides.filter((g) => guideInsurance[g]).length} />
+                <ParticipantesTab onBackToActivities={onBackToActivities} onActivityCancelled={onActivityCancelled} activity={activity} initialOverlay={initialOverlay} onOpenUpdates={() => { setActiveTab("atualizacoes"); setFocusActivityInput(true); }} onOpenTeam={() => setActiveTab("equipe")} teamGuides={localGuides} teamInsuredCount={localGuides.filter((g) => guideInsurance[g]).length} />
               )}
               {activeTab === "visao-geral" && (
                 <AgendaVisaoGeral onAtualizacoesClick={() => setActiveTab("atualizacoes")} onBackToActivities={onBackToActivities} hideSidebar activityId={activityId} />
@@ -7017,6 +7282,57 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           </div>
         </main>
       </div>
+      {/* Team time conflict confirmation modal */}
+      {teamConflictConfirm && createPortal(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setTeamConflictConfirm(null)} />
+          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            <div className="shrink-0">
+              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
+                <div className="flex flex-col gap-[4px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Enviar solicitação de atribuição</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[20px] not-italic text-[14px] text-[#535862]">
+                    <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[#252b37]">{teamConflictConfirm}</span> já está alocado em outra atividade no mesmo horário.
+                  </p>
+                </div>
+                <button onClick={() => setTeamConflictConfirm(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
+                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                </button>
+              </div>
+              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
+            </div>
+            <div className="flex flex-col gap-[12px] px-[24px] py-[20px]">
+              <div className="flex items-center gap-[12px] px-[12px] py-[10px] rounded-[10px] border border-[#f5f5f5] bg-[#fafafa]">
+                <div className="flex items-center justify-center size-[32px] rounded-full border border-[#bfdbfe] bg-[#eff6ff] shrink-0">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{teamConflictConfirm.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}</p>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{teamConflictConfirm}</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#e17c00] truncate">Alocado em: {TEAM_GUIDE_CONFLICT_ACTIVITIES[teamConflictConfirm]}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-[10px] bg-[#fff7ed] border border-[#fed7aa] rounded-[10px] px-[12px] py-[8px]">
+                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#F79009" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#F79009" /><path d="M12 8v5M12 15h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Caso prossiga, a notificação chegará para esse membro como convite. Ele poderá aceitar ou recusar a atribuição dessa atividade.</p>
+              </div>
+            </div>
+            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <button onClick={() => setTeamConflictConfirm(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar ação</button>
+              <button
+                onClick={() => {
+                  const guide = teamConflictConfirm;
+                  setLocalGuides((prev) => [...prev, guide]);
+                  setGuideInsurance((prev) => ({ ...prev, [guide]: false }));
+                  setTeamConflictConfirm(null);
+                  setTeamSearch("");
+                }}
+                className="flex-1 h-[40px] bg-[#0b5ed7] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#084fb7] not-italic rounded-[8px] text-[14px] text-white transition-colors"
+              >Enviar solicitação</button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
       {/* Remove team member confirmation modal */}
       {removeGuideConfirm && createPortal(
         <div className="fixed inset-0 z-[60] flex items-center justify-center">

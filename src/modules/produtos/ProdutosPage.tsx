@@ -184,23 +184,6 @@ const mockProdutos: Produto[] = [
   },
 ];
 
-const produtoTipos = [
-  "Atividade",
-  "Mercadorias",
-  "Treinamento / aulas",
-  "Aluguel",
-  "Assinatura",
-  "Cartão presente",
-  "Transporte",
-  "Excursão de 1 dia",
-  "Ingresso",
-  "Excursão",
-  "Evento",
-  "Meio de hospedagem",
-  "Tour privado",
-  "Produto personalizado",
-  "Comida e Bebida",
-];
 
 const categorias = ["Aventura", "Aquático", "Ciclismo", "Contemplação", "Hospedagem", "Trilha"];
 
@@ -289,6 +272,20 @@ export function ProdutosPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProdutoFormState>(emptyForm);
   const [formError, setFormError] = useState("");
+  const [step, setStep] = useState<0 | 1>(0);
+  // tabs removed — layout now uses 2-column grid like AgendaNovaAtividade
+  const [tipoCobranca, setTipoCobranca] = useState<"fixo" | "variavel" | "exclusivo">("fixo");
+  const [tarifas, setTarifas] = useState<{ label: string; preco: string; minQty: string; maxQty: string }[]>([
+    { label: "Adulto", preco: "", minQty: "1", maxQty: "10" },
+  ]);
+  const [nivelEstoque, setNivelEstoque] = useState<"produto" | "horario" | "evento" | "tarifario" | "item">("produto");
+  const [qtdVagas, setQtdVagas] = useState("");
+  const [recorrencia, setRecorrencia] = useState<"dias_semana" | "periodo_mes" | "datas_sazonais" | "funcionamento_continuo" | "datas_especificas">("dias_semana");
+  const [diasSemana, setDiasSemana] = useState<boolean[]>([false, false, false, false, false, false, false]);
+  const [opcionais, setOpcionais] = useState<{ nome: string; preco: string }[]>([]);
+  const [recursos, setRecursos] = useState<{ recurso: string; quantidade: string }[]>([]);
+  const [textoCurto, setTextoCurto] = useState("");
+  const [tagCategoria, setTagCategoria] = useState("");
 
   const visibleProdutos = produtos.filter((produto) => produto.status !== "Arquivado");
 
@@ -330,6 +327,18 @@ export function ProdutosPage() {
     setForm(emptyForm);
     setFormError("");
     setOpenMenuId(null);
+    setStep(0);
+    // tab reset removed
+    setTipoCobranca("fixo");
+    setTarifas([{ label: "Adulto", preco: "", minQty: "1", maxQty: "10" }]);
+    setNivelEstoque("produto");
+    setQtdVagas("");
+    setRecorrencia("dias_semana");
+    setDiasSemana([false, false, false, false, false, false, false]);
+    setOpcionais([]);
+    setRecursos([]);
+    setTextoCurto("");
+    setTagCategoria("");
   };
 
   const openEditProduct = (produto: Produto) => {
@@ -338,6 +347,10 @@ export function ProdutosPage() {
     setForm(formFromProduto(produto));
     setFormError("");
     setOpenMenuId(null);
+    setStep(1);
+    // tab reset removed
+    setTextoCurto(produto.descricao);
+    setTagCategoria(produto.categoria);
   };
 
   const closeForm = () => {
@@ -345,6 +358,8 @@ export function ProdutosPage() {
     setEditingId(null);
     setForm(emptyForm);
     setFormError("");
+    setStep(0);
+    // tab reset removed
   };
 
   const saveProduto = (event: FormEvent) => {
@@ -412,214 +427,531 @@ export function ProdutosPage() {
     setSelectedIds([]);
   };
 
-  if (mode !== "list") {
+  /* ── Tipo configuration ── */
+  const tipoDescriptions: Record<string, string> = {
+    "Atividade": "Experiencias com horario, data e vagas",
+    "Treinamento / aulas": "Cursos, workshops e capacitacoes",
+    "Excursao de 1 dia": "Passeios de ida e volta no mesmo dia",
+    "Excursao": "Viagens com pernoite e roteiro completo",
+    "Tour privado": "Experiencias exclusivas sob demanda",
+    "Evento": "Encontros, festivais e acontecimentos",
+    "Ingresso": "Acesso avulso a atracoes e espacos",
+    "Transporte": "Deslocamento terrestre, aereo ou aquatico",
+    "Meio de hospedagem": "Hoteis, pousadas, campings e chalés",
+    "Mercadorias": "Produtos fisicos para venda direta",
+    "Aluguel": "Equipamentos e itens por tempo determinado",
+    "Comida e Bebida": "Refeicoes, lanches e bebidas avulsas",
+    "Assinatura": "Planos recorrentes e mensalidades",
+    "Cartao presente": "Creditos e vouchers para presente",
+    "Produto personalizado": "Tipo livre com todas as secoes disponiveis",
+  };
+
+  const tipoGroups: { title: string; tipos: string[] }[] = [
+    { title: "Experiencias com tempo/vaga", tipos: ["Atividade", "Treinamento / aulas", "Excursao de 1 dia", "Excursao", "Tour privado", "Evento"] },
+    { title: "Acesso e transporte", tipos: ["Ingresso", "Transporte"] },
+    { title: "Hospedagem", tipos: ["Meio de hospedagem"] },
+    { title: "Produtos e recorrencia", tipos: ["Mercadorias", "Aluguel", "Comida e Bebida", "Assinatura", "Cartao presente"] },
+    { title: "Livre", tipos: ["Produto personalizado"] },
+  ];
+
+  const presentialTypes = ["Atividade", "Treinamento / aulas", "Excursao de 1 dia", "Excursao", "Tour privado", "Evento", "Meio de hospedagem"];
+  const timedTypes = ["Atividade", "Treinamento / aulas", "Excursao de 1 dia", "Excursao", "Tour privado", "Evento", "Aluguel"];
+
+  const getTabsForType = (tipo: string): { id: string; label: string }[] => {
+    if (tipo === "Produto personalizado") {
+      return [
+        { id: "conteudo", label: "Conteudo" },
+        { id: "estoque", label: "Estoque" },
+        { id: "preco", label: "Preco" },
+        { id: "disponibilidade", label: "Disponibilidade" },
+        { id: "opcionais", label: "Opcionais" },
+        { id: "recursos", label: "Recursos" },
+        { id: "publicacao", label: "Publicacao" },
+      ];
+    }
+    if (tipo === "Cartao presente") {
+      return [
+        { id: "conteudo", label: "Conteudo" },
+        { id: "preco", label: "Preco" },
+        { id: "publicacao", label: "Publicacao" },
+      ];
+    }
+    if (tipo === "Mercadorias" || tipo === "Comida e Bebida") {
+      return [
+        { id: "conteudo", label: "Conteudo" },
+        { id: "estoque", label: "Estoque" },
+        { id: "preco", label: "Preco" },
+        { id: "opcionais", label: "Opcionais" },
+        { id: "publicacao", label: "Publicacao" },
+      ];
+    }
+    // Experiential types and most others
+    return [
+      { id: "conteudo", label: "Conteudo" },
+      { id: "estoque", label: "Estoque" },
+      { id: "preco", label: "Preco" },
+      { id: "disponibilidade", label: "Disponibilidade" },
+      { id: "opcionais", label: "Opcionais" },
+      { id: "recursos", label: "Recursos" },
+      { id: "publicacao", label: "Publicacao" },
+    ];
+  };
+
+  const getCompletenessIndicator = () => {
+    const missing: string[] = [];
+    if (!form.nome.trim()) missing.push("Nome do produto");
+    if (!form.preco.trim()) missing.push("Valor do anuncio");
+    if (!form.descricao.trim() && !textoCurto.trim()) missing.push("Descricao");
+    return missing;
+  };
+
+  /* ── Screen 1: Passo 0 — tipo selection ── */
+  if (mode === "new" && step === 0) {
+    const canCreate = form.nome.trim().length > 0 && form.tipo.trim().length > 0;
+
     return (
-      <>
-        <div className="absolute left-[var(--shell-offset,248px)] right-[24px] top-[96px] flex items-start justify-between gap-[24px]">
-          <div>
-            <button
-              type="button"
-              onClick={closeForm}
-              className="mb-[16px] flex h-[32px] items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] transition-colors hover:bg-[#f8fafc]"
-            >
-              <svg className="size-[14px]" fill="none" viewBox="0 0 24 24">
-                <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
-              </svg>
-              Voltar
-            </button>
-            <h1 className="font-['Helvetica_Neue:Regular',sans-serif] text-[24px] leading-[normal] text-[#0f172b]">
-              {mode === "new" ? "Novo produto" : "Editar produto"}
-            </h1>
-            <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">
-              Configure o cadastro base do produto. As seções avançadas ficam preparadas para a evolução do CRUD.
-            </p>
+      <div className="fixed inset-0 z-50 flex flex-col bg-[#f8fafc]">
+        {/* Header */}
+        <div className="flex h-[56px] shrink-0 items-center border-b border-[#e9eaeb] bg-white px-[20px]">
+          <div className="flex items-center gap-[16px]">
+            <img src="/src/assets/retrilhar-logo.png" alt="Retrilhar" className="h-[24px]" />
+            <div className="h-[20px] w-px bg-[#e9eaeb]" />
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">Novo produto</p>
           </div>
-          <div className="flex items-center gap-[8px] pt-[48px]">
-            <button
-              type="button"
-              onClick={closeForm}
-              className="h-[40px] rounded-[8px] border border-[#e9eaeb] bg-white px-[16px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] transition-colors hover:bg-[#f8fafc]"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              form="produto-form"
-              className="h-[40px] rounded-[8px] bg-[#0b5ed7] px-[16px] font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white transition-colors hover:bg-[#0a4fb3]"
-            >
-              Salvar produto
-            </button>
+          <button
+            type="button"
+            onClick={closeForm}
+            className="ml-auto flex cursor-pointer items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px] py-[8px] transition-colors hover:bg-[#f8fafc]"
+          >
+            <svg className="size-[14px]" fill="none" viewBox="0 0 18 18">
+              <path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Fechar</p>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-[32px] py-[32px]">
+          <div className="mx-auto max-w-[820px]">
+            <h1 className="font-['Helvetica_Neue:Medium',sans-serif] text-[22px] text-[#181d27]">
+              Que tipo de produto voce quer criar?
+            </h1>
+            <p className="mt-[6px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680]">
+              O tipo define quais secoes de configuracao aparecerao.
+            </p>
+
+            <div className="mt-[28px] flex flex-col gap-[28px]">
+              {tipoGroups.map((group) => (
+                <div key={group.title}>
+                  <p className="mb-[10px] font-['Helvetica_Neue:Medium',sans-serif] text-[13px] uppercase tracking-[0.5px] text-[#717680]">
+                    {group.title}
+                  </p>
+                  <div className="grid grid-cols-2 gap-[10px] sm:grid-cols-3 lg:grid-cols-4">
+                    {group.tipos.map((tipo) => {
+                      const selected = form.tipo === tipo;
+                      return (
+                        <button
+                          key={tipo}
+                          type="button"
+                          onClick={() => updateForm("tipo", tipo)}
+                          className={`cursor-pointer rounded-[12px] border p-[16px] text-left transition-all ${
+                            selected
+                              ? "border-[#0b5ed7] bg-[#eff6ff] ring-1 ring-[#0b5ed7]"
+                              : "border-[#e9eaeb] bg-white hover:border-[#0b5ed7] hover:bg-[#f8fbff]"
+                          }`}
+                        >
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{tipo}</p>
+                          <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[1.4] text-[#717680]">
+                            {tipoDescriptions[tipo] ?? ""}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Nome input */}
+            <div className="mt-[32px] flex flex-col gap-[8px]">
+              <FieldLabel>Nome do produto</FieldLabel>
+              <input
+                className={fieldClass}
+                value={form.nome}
+                onChange={(event) => updateForm("nome", event.target.value)}
+                placeholder="Ex.: Trilha Pico do Itacolomi"
+              />
+            </div>
           </div>
         </div>
 
-        <form
-          id="produto-form"
-          onSubmit={saveProduto}
-          className="absolute left-[var(--shell-offset,248px)] right-[24px] top-[210px] grid grid-cols-1 gap-[20px] pb-[40px] lg:grid-cols-[1fr_360px]"
-        >
-          <div className="flex flex-col gap-[20px]">
-            <section className="rounded-[12px] border border-[#e9eaeb] bg-white p-[20px]">
-              <div className="mb-[18px]">
-                <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Identificação</h2>
-                <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">
-                  Dados básicos usados na listagem e no catálogo.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2">
-                <div className="flex flex-col gap-[8px] sm:col-span-2">
-                  <FieldLabel>Nome do produto</FieldLabel>
-                  <input
-                    className={fieldClass}
-                    value={form.nome}
-                    onChange={(event) => updateForm("nome", event.target.value)}
-                    placeholder="Ex.: Trilha Pico do Itacolomi"
-                  />
-                </div>
-                <div className="flex flex-col gap-[8px]">
-                  <FieldLabel>Tipo de produto</FieldLabel>
-                  <select className={fieldClass} value={form.tipo} onChange={(event) => updateForm("tipo", event.target.value)}>
-                    {produtoTipos.map((tipo) => (
-                      <option key={tipo} value={tipo}>
-                        {tipo}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-col gap-[8px]">
-                  <FieldLabel>Categoria</FieldLabel>
-                  <select
-                    className={fieldClass}
-                    value={form.categoria}
-                    onChange={(event) => updateForm("categoria", event.target.value)}
-                  >
-                    {categorias.map((categoria) => (
-                      <option key={categoria} value={categoria}>
-                        {categoria}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-col gap-[8px] sm:col-span-2">
-                  <FieldLabel>Descrição curta</FieldLabel>
-                  <textarea
-                    className={textAreaClass}
-                    value={form.descricao}
-                    onChange={(event) => updateForm("descricao", event.target.value)}
-                    placeholder="Resumo exibido no cadastro e nos pontos de venda."
-                  />
-                </div>
-              </div>
-            </section>
+        {/* Footer */}
+        <div className="flex shrink-0 items-center justify-end gap-[10px] border-t border-[#e9eaeb] bg-white px-[32px] py-[14px]">
+          <button
+            type="button"
+            onClick={closeForm}
+            className="h-[40px] rounded-[8px] border border-[#e9eaeb] bg-white px-[16px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] transition-colors hover:bg-[#f8fafc]"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            disabled={!canCreate}
+            onClick={() => {
+              updateForm("status", "Rascunho");
+              setStep(1);
+              // tab reset removed
+            }}
+            className="h-[40px] rounded-[8px] bg-[#0b5ed7] px-[16px] font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white transition-colors hover:bg-[#0a4fb3] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Criar rascunho
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-            <section className="rounded-[12px] border border-[#e9eaeb] bg-white p-[20px]">
-              <div className="mb-[18px]">
-                <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Preço, duração e capacidade</h2>
-                <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">
-                  Campos mínimos para operar o produto na listagem.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-3">
-                <div className="flex flex-col gap-[8px]">
-                  <FieldLabel>Valor de referência</FieldLabel>
-                  <input
-                    className={fieldClass}
-                    inputMode="numeric"
-                    value={form.preco}
-                    onChange={(event) => updateForm("preco", event.target.value.replace(/\D/g, ""))}
-                    placeholder="150"
-                  />
-                </div>
-                <div className="flex flex-col gap-[8px]">
-                  <FieldLabel>Duração</FieldLabel>
-                  <input
-                    className={fieldClass}
-                    value={form.duracao}
-                    onChange={(event) => updateForm("duracao", event.target.value)}
-                    placeholder="3h"
-                  />
-                </div>
-                <div className="flex flex-col gap-[8px]">
-                  <FieldLabel>Capacidade</FieldLabel>
-                  <input
-                    className={fieldClass}
-                    inputMode="numeric"
-                    value={form.capacidade}
-                    onChange={(event) => updateForm("capacidade", event.target.value.replace(/\D/g, ""))}
-                    placeholder="30"
-                  />
-                </div>
-              </div>
-            </section>
+  /* ── Screen 2: Editor — layout 2 colunas (igual AgendaNovaAtividade) ── */
+  if (mode !== "list") {
+    const showPontoEncontro = presentialTypes.includes(form.tipo);
+    const showDuracao = timedTypes.includes(form.tipo);
+    const tabs = getTabsForType(form.tipo);
+    const showEstoque = tabs.some((t) => t.id === "estoque");
+    const showDisponibilidade = tabs.some((t) => t.id === "disponibilidade");
+    const showOpcionais = tabs.some((t) => t.id === "opcionais");
+    const showRecursos = tabs.some((t) => t.id === "recursos");
+    const missingFields = getCompletenessIndicator();
 
-            <section className="rounded-[12px] border border-[#e9eaeb] bg-white p-[20px]">
-              <div className="mb-[18px]">
-                <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Logística exibida ao cliente</h2>
-                <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">
-                  Informações iniciais para o cadastro operacional.
-                </p>
-              </div>
-              <div className="flex flex-col gap-[8px]">
-                <FieldLabel>Ponto de encontro</FieldLabel>
-                <input
-                  className={fieldClass}
-                  value={form.pontoEncontro}
-                  onChange={(event) => updateForm("pontoEncontro", event.target.value)}
-                  placeholder="Ex.: Portaria principal do parque"
-                />
-              </div>
-            </section>
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col bg-[#f8fafc]">
+        {/* Header — logo + title + close */}
+        <div className="flex h-[56px] shrink-0 items-center border-b border-[#e9eaeb] bg-white px-[20px]">
+          <div className="flex items-center gap-[16px]">
+            <img src="/src/assets/retrilhar-logo.png" alt="Retrilhar" className="h-[24px]" />
+            <div className="h-[20px] w-px bg-[#e9eaeb]" />
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">
+              {form.nome.trim() || (mode === "new" ? "Novo produto" : "Editar produto")}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={closeForm}
+            className="ml-auto flex cursor-pointer items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px] py-[8px] transition-colors hover:bg-[#f8fafc]"
+          >
+            <svg className="size-[14px]" fill="none" viewBox="0 0 18 18">
+              <path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Fechar</p>
+          </button>
+        </div>
+
+        {/* Content — 2-column grid */}
+        <div className="flex-1 overflow-y-auto px-[32px] py-[24px]">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_400px]">
+            {/* ── Main column ── */}
+            <div className="flex flex-col gap-6">
+              {/* Conteúdo */}
+              <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                <div className="px-4 pt-4 pb-0">
+                  <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Conteúdo do produto</h2>
+                </div>
+                <div className="flex flex-col gap-4 px-4 pb-4 pt-3">
+                  <div className="flex flex-col gap-[8px]">
+                    <FieldLabel>Nome</FieldLabel>
+                    <input className={fieldClass} value={form.nome} onChange={(e) => updateForm("nome", e.target.value)} placeholder="Ex.: Trilha Pico do Itacolomi" />
+                  </div>
+                  <div className="flex flex-col gap-[8px]">
+                    <FieldLabel>Texto curto</FieldLabel>
+                    <textarea className={textAreaClass} value={textoCurto} onChange={(e) => setTextoCurto(e.target.value)} placeholder="Resumo breve exibido na listagem de produtos." />
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-[8px]">
+                      <FieldLabel>Categoria</FieldLabel>
+                      <select className={fieldClass} value={tagCategoria || form.categoria} onChange={(e) => { setTagCategoria(e.target.value); updateForm("categoria", e.target.value); }}>
+                        <option value="">Selecione...</option>
+                        {categorias.map((cat) => (<option key={cat} value={cat}>{cat}</option>))}
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-[8px]">
+                      <FieldLabel>Tipo de produto</FieldLabel>
+                      <input value={form.tipo} readOnly disabled className={`${fieldClass} opacity-60 cursor-not-allowed`} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-[8px]">
+                    <FieldLabel>Descrição</FieldLabel>
+                    <textarea className={textAreaClass} value={form.descricao} onChange={(e) => updateForm("descricao", e.target.value)} placeholder="Descrição completa do produto para o catálogo." />
+                  </div>
+                  {showPontoEncontro && (
+                    <div className="flex flex-col gap-[8px]">
+                      <FieldLabel>Ponto de encontro</FieldLabel>
+                      <input className={fieldClass} value={form.pontoEncontro} onChange={(e) => updateForm("pontoEncontro", e.target.value)} placeholder="Ex.: Portaria principal do parque" />
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {/* Preço e tarifário */}
+              <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                <div className="px-4 pt-4 pb-0">
+                  <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Preço e tarifário</h2>
+                </div>
+                <div className="flex flex-col gap-4 px-4 pb-4 pt-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-[8px]">
+                      <FieldLabel>Valor do anúncio</FieldLabel>
+                      <div className="relative">
+                        <span className="absolute left-[12px] top-1/2 -translate-y-1/2 font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680]">R$</span>
+                        <input className={`${fieldClass} pl-[36px]`} inputMode="numeric" value={form.preco} onChange={(e) => updateForm("preco", e.target.value.replace(/\D/g, ""))} placeholder="0" />
+                      </div>
+                    </div>
+                    {showDuracao && (
+                      <div className="flex flex-col gap-[8px]">
+                        <FieldLabel>Duração</FieldLabel>
+                        <input className={fieldClass} value={form.duracao} onChange={(e) => updateForm("duracao", e.target.value)} placeholder="Ex.: 3h" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-[8px]">
+                    <FieldLabel>Tipo de cobrança</FieldLabel>
+                    <div className="flex gap-[8px]">
+                      {(["fixo", "variavel", "exclusivo"] as const).map((opt) => (
+                        <button key={opt} type="button" onClick={() => setTipoCobranca(opt)} className={`flex-1 cursor-pointer rounded-[8px] border px-[12px] py-[10px] text-center font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-all ${tipoCobranca === opt ? "border-[#0b5ed7] bg-[#eff6ff] text-[#0b5ed7]" : "border-[#e9eaeb] bg-white text-[#414651] hover:bg-[#f8fafc]"}`}>
+                          {opt === "fixo" ? "Fixo" : opt === "variavel" ? "Variável" : "Exclusivo"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {tipoCobranca === "variavel" && (
+                    <div className="flex flex-col gap-[12px]">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Defina as faixas de tarifa para este produto.</p>
+                      <div className="overflow-hidden rounded-[8px] border border-[#e9eaeb]">
+                        <div className="flex h-[36px] items-center border-b border-[#e9eaeb] bg-[#fafafa] px-[12px]">
+                          <p className="w-[160px] font-['Helvetica_Neue:Medium',sans-serif] text-[11px] uppercase tracking-[0.5px] text-[#717680]">Faixa</p>
+                          <p className="w-[100px] font-['Helvetica_Neue:Medium',sans-serif] text-[11px] uppercase tracking-[0.5px] text-[#717680]">Preço</p>
+                          <p className="w-[80px] font-['Helvetica_Neue:Medium',sans-serif] text-[11px] uppercase tracking-[0.5px] text-[#717680]">Min</p>
+                          <p className="w-[80px] font-['Helvetica_Neue:Medium',sans-serif] text-[11px] uppercase tracking-[0.5px] text-[#717680]">Max</p>
+                          <p className="w-[40px]" />
+                        </div>
+                        {tarifas.map((tarifa, idx) => (
+                          <div key={idx} className="flex items-center border-b border-[#f5f5f5] px-[12px] py-[8px] last:border-b-0">
+                            <div className="w-[160px] pr-[8px]"><input className={`${fieldClass} h-[32px] text-[13px]`} value={tarifa.label} onChange={(e) => setTarifas((prev) => prev.map((t, i) => i === idx ? { ...t, label: e.target.value } : t))} placeholder="Ex.: Adulto" /></div>
+                            <div className="w-[100px] pr-[8px]"><input className={`${fieldClass} h-[32px] text-[13px]`} inputMode="numeric" value={tarifa.preco} onChange={(e) => setTarifas((prev) => prev.map((t, i) => i === idx ? { ...t, preco: e.target.value.replace(/\D/g, "") } : t))} placeholder="0" /></div>
+                            <div className="w-[80px] pr-[8px]"><input className={`${fieldClass} h-[32px] text-[13px]`} inputMode="numeric" value={tarifa.minQty} onChange={(e) => setTarifas((prev) => prev.map((t, i) => i === idx ? { ...t, minQty: e.target.value.replace(/\D/g, "") } : t))} placeholder="1" /></div>
+                            <div className="w-[80px] pr-[8px]"><input className={`${fieldClass} h-[32px] text-[13px]`} inputMode="numeric" value={tarifa.maxQty} onChange={(e) => setTarifas((prev) => prev.map((t, i) => i === idx ? { ...t, maxQty: e.target.value.replace(/\D/g, "") } : t))} placeholder="10" /></div>
+                            <div className="flex w-[40px] justify-center"><button type="button" onClick={() => setTarifas((prev) => prev.filter((_, i) => i !== idx))} className="flex size-[24px] cursor-pointer items-center justify-center rounded-[6px] text-[#b42318] transition-colors hover:bg-[#fef3f2]"><svg className="size-[14px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></button></div>
+                          </div>
+                        ))}
+                      </div>
+                      <button type="button" onClick={() => setTarifas((prev) => [...prev, { label: "", preco: "", minQty: "1", maxQty: "10" }])} className="flex h-[36px] cursor-pointer items-center gap-[6px] self-start rounded-[8px] border border-dashed border-[#d5d7da] px-[14px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862] transition-colors hover:bg-[#f8fafc]">
+                        <svg className="size-[14px]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" /></svg>
+                        Adicionar faixa
+                      </button>
+                    </div>
+                  )}
+                  {tipoCobranca === "exclusivo" && (
+                    <div className="rounded-[8px] border border-[#e9eaeb] bg-[#fbfcfd] px-[14px] py-[12px]">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">O preço será definido por item individual. Não há tabela de tarifas.</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {/* Estoque */}
+              {showEstoque && (
+                <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                  <div className="px-4 pt-4 pb-0">
+                    <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Controle de estoque</h2>
+                  </div>
+                  <div className="flex flex-col gap-4 px-4 pb-4 pt-3">
+                    <div className="flex flex-col gap-[6px]">
+                      {([
+                        { value: "produto", label: "Por produto", desc: "Uma única quantidade para todo o produto" },
+                        { value: "horario", label: "Por horário", desc: "Vagas controladas por cada horário agendado" },
+                        { value: "evento", label: "Por evento", desc: "Vagas controladas por cada evento criado" },
+                        { value: "tarifario", label: "Por tarifário", desc: "Quantidade controlada por faixa de tarifa" },
+                        { value: "item", label: "Por item", desc: "Controle individual por unidade" },
+                      ] as const).map((opt) => (
+                        <label key={opt.value} className={`flex cursor-pointer items-start gap-[10px] rounded-[8px] border px-[14px] py-[12px] transition-all ${nivelEstoque === opt.value ? "border-[#0b5ed7] bg-[#eff6ff]" : "border-[#e9eaeb] bg-white hover:bg-[#f8fafc]"}`}>
+                          <input type="radio" name="nivelEstoque" checked={nivelEstoque === opt.value} onChange={() => setNivelEstoque(opt.value)} className="mt-[2px] size-[16px] accent-[#0b5ed7]" />
+                          <div>
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{opt.label}</p>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">{opt.desc}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                    {nivelEstoque === "produto" && (
+                      <div className="flex flex-col gap-[8px]">
+                        <FieldLabel>Quantidade de vagas</FieldLabel>
+                        <input className={fieldClass} inputMode="numeric" value={qtdVagas || form.capacidade} onChange={(e) => { const v = e.target.value.replace(/\D/g, ""); setQtdVagas(v); updateForm("capacidade", v); }} placeholder="Ex.: 30" />
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {/* Disponibilidade */}
+              {showDisponibilidade && (
+                <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                  <div className="px-4 pt-4 pb-0">
+                    <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Disponibilidade</h2>
+                  </div>
+                  <div className="flex flex-col gap-4 px-4 pb-4 pt-3">
+                    <div className="flex flex-col gap-[8px]">
+                      <FieldLabel>Padrão de recorrência</FieldLabel>
+                      <select className={fieldClass} value={recorrencia} onChange={(e) => setRecorrencia(e.target.value as typeof recorrencia)}>
+                        <option value="dias_semana">Dias da semana</option>
+                        <option value="periodo_mes">Período do mês</option>
+                        <option value="datas_sazonais">Datas sazonais</option>
+                        <option value="funcionamento_continuo">Funcionamento contínuo</option>
+                        <option value="datas_especificas">Datas específicas</option>
+                      </select>
+                    </div>
+                    {recorrencia === "dias_semana" && (
+                      <div className="flex flex-col gap-[8px]">
+                        <FieldLabel>Dias ativos</FieldLabel>
+                        <div className="flex gap-[6px]">
+                          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((dia, idx) => (
+                            <button key={dia} type="button" onClick={() => { const next = [...diasSemana]; next[idx] = !next[idx]; setDiasSemana(next); }} className={`flex h-[40px] w-[48px] cursor-pointer items-center justify-center rounded-[8px] border font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-all ${diasSemana[idx] ? "border-[#0b5ed7] bg-[#0b5ed7] text-white" : "border-[#e9eaeb] bg-white text-[#535862] hover:bg-[#f8fafc]"}`}>
+                              {dia}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {recorrencia === "funcionamento_continuo" && (
+                      <div className="rounded-[8px] border border-[#e9eaeb] bg-[#fbfcfd] px-[14px] py-[12px]">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">O produto estará disponível todos os dias sem restrição.</p>
+                      </div>
+                    )}
+                    {(recorrencia === "periodo_mes" || recorrencia === "datas_sazonais" || recorrencia === "datas_especificas") && (
+                      <div className="rounded-[8px] border border-[#e9eaeb] bg-[#fbfcfd] px-[14px] py-[12px]">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">
+                          Configuração de {recorrencia === "periodo_mes" ? "períodos mensais" : recorrencia === "datas_sazonais" ? "datas sazonais" : "datas específicas"} será detalhada na próxima iteração.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {/* Opcionais */}
+              {showOpcionais && (
+                <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                  <div className="px-4 pt-4 pb-0">
+                    <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Opcionais</h2>
+                    <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Itens adicionais que o cliente pode incluir na compra.</p>
+                  </div>
+                  <div className="flex flex-col gap-[10px] px-4 pb-4 pt-3">
+                    {opcionais.map((opt, idx) => (
+                      <div key={idx} className="flex items-center gap-[10px]">
+                        <input className={`${fieldClass} flex-1`} value={opt.nome} onChange={(e) => setOpcionais((prev) => prev.map((o, i) => i === idx ? { nome: e.target.value, preco: o.preco } : o))} placeholder="Nome do opcional" />
+                        <div className="relative w-[120px]">
+                          <span className="absolute left-[12px] top-1/2 -translate-y-1/2 font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680]">R$</span>
+                          <input className={`${fieldClass} pl-[36px]`} inputMode="numeric" value={opt.preco} onChange={(e) => setOpcionais((prev) => prev.map((o, i) => i === idx ? { nome: o.nome, preco: e.target.value.replace(/\D/g, "") } : o))} placeholder="0" />
+                        </div>
+                        <button type="button" onClick={() => setOpcionais((prev) => prev.filter((_, i) => i !== idx))} className="flex size-[32px] cursor-pointer items-center justify-center rounded-[6px] text-[#b42318] transition-colors hover:bg-[#fef3f2]"><svg className="size-[14px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => setOpcionais((prev) => [...prev, { nome: "", preco: "" }])} className="flex h-[36px] cursor-pointer items-center gap-[6px] self-start rounded-[8px] border border-dashed border-[#d5d7da] px-[14px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862] transition-colors hover:bg-[#f8fafc]">
+                      <svg className="size-[14px]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" /></svg>
+                      Adicionar opcional
+                    </button>
+                  </div>
+                </section>
+              )}
+
+              {/* Recursos */}
+              {showRecursos && (
+                <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                  <div className="px-4 pt-4 pb-0">
+                    <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Recursos</h2>
+                    <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Equipamentos e materiais necessários para operar o produto.</p>
+                  </div>
+                  <div className="flex flex-col gap-[10px] px-4 pb-4 pt-3">
+                    {recursos.map((rec, idx) => (
+                      <div key={idx} className="flex items-center gap-[10px]">
+                        <input className={`${fieldClass} flex-1`} value={rec.recurso} onChange={(e) => setRecursos((prev) => prev.map((r, i) => i === idx ? { recurso: e.target.value, quantidade: r.quantidade } : r))} placeholder="Ex.: Capacete, colete, bote" />
+                        <div className="w-[100px]"><input className={fieldClass} inputMode="numeric" value={rec.quantidade} onChange={(e) => setRecursos((prev) => prev.map((r, i) => i === idx ? { recurso: r.recurso, quantidade: e.target.value.replace(/\D/g, "") } : r))} placeholder="Qtd" /></div>
+                        <button type="button" onClick={() => setRecursos((prev) => prev.filter((_, i) => i !== idx))} className="flex size-[32px] cursor-pointer items-center justify-center rounded-[6px] text-[#b42318] transition-colors hover:bg-[#fef3f2]"><svg className="size-[14px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => setRecursos((prev) => [...prev, { recurso: "", quantidade: "" }])} className="flex h-[36px] cursor-pointer items-center gap-[6px] self-start rounded-[8px] border border-dashed border-[#d5d7da] px-[14px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862] transition-colors hover:bg-[#f8fafc]">
+                      <svg className="size-[14px]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" /></svg>
+                      Adicionar recurso
+                    </button>
+                  </div>
+                </section>
+              )}
+            </div>
+
+            {/* ── Sidebar column ── */}
+            <div className="flex flex-col gap-6">
+              {/* Publicação */}
+              <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                <div className="px-4 pt-4 pb-0">
+                  <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Publicação</h2>
+                </div>
+                <div className="flex flex-col gap-4 px-4 pb-4 pt-3">
+                  <div className="flex flex-col gap-[8px]">
+                    <FieldLabel>Status</FieldLabel>
+                    <div className="flex gap-[8px]">
+                      {(["Rascunho", "Ativo", "Inativo"] as Produto["status"][]).map((s) => {
+                        const sc = statusColors[s];
+                        return (
+                          <button key={s} type="button" onClick={() => updateForm("status", s)} className={`flex-1 cursor-pointer rounded-[8px] border px-[12px] py-[10px] text-center font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-all ${form.status === s ? "border-2" : "border-[#e9eaeb] hover:bg-[#f8fafc]"}`} style={form.status === s ? { backgroundColor: sc.bg, borderColor: sc.border, color: sc.text } : { color: "#414651" }}>
+                            {s}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <label className="flex cursor-pointer items-center gap-[10px] rounded-[8px] border border-[#e9eaeb] bg-[#fbfcfd] px-[12px] py-[10px]">
+                    <input type="checkbox" checked={form.destaque} onChange={(e) => updateForm("destaque", e.target.checked)} className="size-[16px] accent-[#0b5ed7]" />
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Produto destaque</span>
+                  </label>
+                </div>
+              </section>
+
+              {/* Completude */}
+              {missingFields.length > 0 && (
+                <div className="rounded-[8px] border border-[#fedf89] bg-[#fffaeb] px-[14px] py-[12px]">
+                  <p className="mb-[6px] font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#dc6803]">Campos obrigatórios pendentes</p>
+                  <ul className="flex flex-col gap-[2px]">
+                    {missingFields.map((field) => (<li key={field} className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#dc6803]">&bull; {field}</li>))}
+                  </ul>
+                </div>
+              )}
+
+              {formError && (
+                <div className="rounded-[10px] border border-[#fecdca] bg-[#fef3f2] px-[14px] py-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#b42318]">{formError}</div>
+              )}
+
+              {/* Próximas seções */}
+              <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                <div className="px-4 pt-4 pb-0">
+                  <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-base text-[#181d27]">Próximas seções</h2>
+                </div>
+                <div className="flex flex-col gap-[8px] px-4 pb-4 pt-3">
+                  {["Políticas e termos", "Formas de pagamento", "Comunicação", "Canais de venda", "Fluxo de reserva", "Formulário de participantes"].map((section) => (
+                    <div key={section} className="flex items-center justify-between rounded-[8px] bg-[#fafafa] px-[12px] py-[9px]">
+                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{section}</span>
+                      <span className="rounded-full border border-[#fedf89] bg-[#fffaeb] px-[8px] py-[2px] font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#dc6803]">Em breve</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
           </div>
 
-          <aside className="flex flex-col gap-[20px]">
-            <section className="rounded-[12px] border border-[#e9eaeb] bg-white p-[20px]">
-              <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Publicação</h2>
-              <div className="mt-[18px] flex flex-col gap-[8px]">
-                <FieldLabel>Status</FieldLabel>
-                <select
-                  className={fieldClass}
-                  value={form.status}
-                  onChange={(event) => updateForm("status", event.target.value as Produto["status"])}
-                >
-                  <option value="Rascunho">Rascunho</option>
-                  <option value="Ativo">Ativo</option>
-                  <option value="Inativo">Inativo</option>
-                </select>
-              </div>
-              <label className="mt-[16px] flex cursor-pointer items-center gap-[10px] rounded-[8px] border border-[#e9eaeb] bg-[#fbfcfd] px-[12px] py-[10px]">
-                <input
-                  type="checkbox"
-                  checked={form.destaque}
-                  onChange={(event) => updateForm("destaque", event.target.checked)}
-                  className="size-[16px] accent-[#0b5ed7]"
-                />
-                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">
-                  Marcar como produto destaque
-                </span>
-              </label>
-            </section>
-
-            <section className="rounded-[12px] border border-[#e9eaeb] bg-white p-[20px]">
-              <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Próximas seções</h2>
-              <div className="mt-[14px] flex flex-col gap-[8px]">
-                {["Estoque", "Tarifário", "Disponibilidade", "Opcionais", "Recursos", "Formulário de participantes"].map((section) => (
-                  <div key={section} className="flex items-center justify-between rounded-[8px] bg-[#fafafa] px-[12px] py-[9px]">
-                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{section}</span>
-                    <span className="rounded-full border border-[#fedf89] bg-[#fffaeb] px-[8px] py-[2px] font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#dc6803]">
-                      Em breve
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {formError ? (
-              <div className="rounded-[10px] border border-[#fecdca] bg-[#fef3f2] px-[14px] py-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#b42318]">
-                {formError}
-              </div>
-            ) : null}
-          </aside>
-        </form>
-      </>
+          {/* Salvar — bottom of scroll */}
+          <div className="flex justify-end pt-[16px] pb-[8px]">
+            <button type="button" onClick={(e) => saveProduto(e as unknown as FormEvent)} className="bg-[#0b5ed7] hover:bg-[#084fb7] text-white text-[13px] font-medium rounded-[8px] px-[16px] py-[8px] transition-colors cursor-pointer">
+              {form.status === "Ativo" ? "Publicar produto" : "Salvar"}
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 

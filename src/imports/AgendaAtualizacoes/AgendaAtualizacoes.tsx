@@ -1765,11 +1765,11 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
             </div>
           </DrawerSection>
 
-          {/* ── 6. HISTORICO DE PAGAMENTO SECTION (collapsible) ── */}
+          {/* ── 6. HISTÓRICO DE USO SECTION (collapsible) ── */}
           {r.history && r.history.length > 0 && (
             <div ref={historyRef}>
               <button onClick={() => { const willOpen = !historyOpen; setHistoryOpen(willOpen); if (willOpen) setTimeout(() => historyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); }} className="w-full flex items-center justify-between bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[24px] h-[32px] cursor-pointer hover:bg-[#f0f1f3] transition-colors">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Histórico de pagamento</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Histórico de uso</p>
                 <svg className={`size-4 text-[#a4a7ae] transition-transform duration-300 ease-in-out ${historyOpen ? "" : "-rotate-90"}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               <div
@@ -1783,7 +1783,8 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
                         {[...r.history].reverse().map((event, index, events) => {
                           const date = new Date(event.timestamp).toLocaleDateString("pt-BR");
                           const time = event.timestamp.slice(11, 16);
-                          const subtitle = [event.actor, event.detail].filter(Boolean).join(" · ");
+                          const mockIps = ["192.168.1.42", "10.0.0.15", "172.16.0.8", "192.168.0.101", "10.0.1.33"];
+                          const ip = mockIps[index % mockIps.length];
 
                           return (
                             <div key={event.id} className="flex gap-3 relative">
@@ -1796,9 +1797,17 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
                                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[16px]">{event.action}</p>
                                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-[#9ca3af] leading-[16px] whitespace-nowrap">{date}, {time}</p>
                                 </div>
-                                {subtitle && (
-                                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-[#9ca3af] leading-[16px] mt-[2px]">{subtitle}</p>
-                                )}
+                                <div className="flex items-center gap-[6px] mt-[2px]">
+                                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-[#9ca3af] leading-[16px]">{event.actor}</p>
+                                  {event.detail && (
+                                    <>
+                                      <div className="h-[8px] w-px bg-[#d5d7da] shrink-0" />
+                                      <p className="font-['Helvetica_Neue:Light',sans-serif] text-[12px] text-[#9ca3af] leading-[16px]">{event.detail}</p>
+                                    </>
+                                  )}
+                                  <div className="h-[8px] w-px bg-[#d5d7da] shrink-0" />
+                                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-[#c0c5cc] leading-[16px]">IP {ip}</p>
+                                </div>
                               </div>
                             </div>
                           );
@@ -5733,228 +5742,347 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
         </div>,
         document.body,
       )}
-      {/* Remarcar reserva modal */}
-      {rescheduleModal && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setRescheduleModal(null)} />
-          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
-            {/* Header */}
-            <div className="shrink-0">
-            <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
-              <div className="flex flex-col gap-[4px]">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Remarcar reserva</p>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Selecione a nova data e horário</p>
-              </div>
-              <button onClick={() => setRescheduleModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
-                <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-              </button>
-            </div>
-            <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
-            </div>
-            {/* Body */}
-            <div className="flex flex-col gap-[20px] px-[24px] py-[20px]">
-              {/* Activity card */}
-              <div className="flex flex-col gap-[8px]">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Atividade</p>
-                <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px]">
-                  <img src="/src/assets/activity-icon.png" alt="" className="size-[24px] shrink-0" />
-                  <div className="flex flex-col gap-[6px] min-w-0 flex-1">
-                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37] leading-[20px]">{activity.name}</p>
-                    <div className="flex items-center gap-[6px] min-w-0 overflow-hidden">
-                      <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><circle cx="8" cy="6.17" r="1.83" stroke="currentColor" strokeWidth="1.2" /><path d="M4.33 12.33a4.33 4.33 0 017.34 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] truncate">{rescheduleModal.p.name}</span>
-                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
-                      <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{formatActivityDate(activity.date)}</span>
-                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
-                      <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{activity.startTime} - {activity.endTime}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {/* Remarcar reserva drawer */}
+      {rescheduleModal && (() => {
+        const dateOptions = [
+          { date: "29/04/2026", time: "08:00 - 16:00", slots: 25, available: true },
+          { date: "30/05/2026", time: "08:00 - 16:00", slots: 30, available: true },
+          { date: "02/05/2026", time: "08:00 - 16:00", slots: 8, available: true },
+          { date: "03/05/2026", time: "08:00 - 16:00", slots: 15, available: true },
+          { date: "04/05/2026", time: "08:00 - 16:00", slots: 0, available: false },
+          { date: "05/05/2026", time: "08:00 - 16:00", slots: 4, available: true },
+        ];
+        const selected = dateOptions.find((d) => d.date === rescheduleSelectedDate);
+        const isNoSlots = rescheduleSelectedDate === "04/05/2026";
+        const canConfirm = !isNoSlots || rescheduleCapacityConfirmed;
+        const capacity = activity.capacity || 200;
 
-              {/* Date/time selector */}
-              {(() => {
-                const dateOptions = [
-                  { date: "29/04/2026", time: "08:00 - 16:00", slots: 25, available: true },
-                  { date: "30/05/2026", time: "08:00 - 16:00", slots: 30, available: true },
-                  { date: "02/05/2026", time: "08:00 - 16:00", slots: 8, available: true },
-                  { date: "03/05/2026", time: "08:00 - 16:00", slots: 15, available: true },
-                  { date: "04/05/2026", time: "08:00 - 16:00", slots: 0, available: false },
-                  { date: "05/05/2026", time: "08:00 - 16:00", slots: 4, available: true },
-                ];
-                const selected = dateOptions.find((d) => d.date === rescheduleSelectedDate);
-                return (
-                  <div className="flex flex-col gap-[8px]">
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Selecionar nova data / horário</p>
-                    <div className="relative">
-                      <button
-                        onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
-                        className={`flex items-center justify-between w-full h-[44px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
-                      >
-                        {selected ? (
-                          <>
-                            <div className="flex items-center gap-[6px]">
-                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.date}</span>
-                              <span className="text-[#d0d5dd]">·</span>
-                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.time}</span>
-                            </div>
-                            <div className="flex items-center gap-[8px] shrink-0">
-                              <div className="flex items-center gap-[5px] bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[10px] h-[24px]">
-                                <div className={`size-[6px] rounded-full ${selected.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
-                                <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] whitespace-nowrap ${selected.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
-                                  {selected.available ? `${selected.slots} vagas disponíveis` : "Sem vagas disponíveis"}
-                                </span>
-                              </div>
-                              <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar</p>
-                            <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          </>
-                        )}
-                      </button>
-                      {rescheduleDropdownOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px] max-h-[220px] overflow-y-auto">
-                          {dateOptions.map((opt) => (
-                            <button
-                              key={opt.date}
-                              onClick={() => { setRescheduleSelectedDate(opt.date); setRescheduleDropdownOpen(false); }}
-                              className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleSelectedDate === opt.date ? "bg-[#f0f5ff]" : ""}`}
-                            >
-                              <div className="flex items-center gap-[6px]">
-                                {rescheduleSelectedDate === opt.date ? (
-                                  <svg className="size-[16px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                ) : (
-                                  <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                                )}
-                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.date}</span>
-                                <span className="text-[#d0d5dd]">·</span>
-                                <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.time}</span>
-                              </div>
-                              <div className="flex items-center gap-[4px] shrink-0">
-                                <div className={`size-[6px] rounded-full ${opt.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
-                                <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${opt.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
-                                  {opt.available ? `${opt.slots} vagas disponíveis` : "Sem vagas disponíveis"}
-                                </span>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+        return createPortal(
+          <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && setRescheduleModal(null)}>
+            <div className="absolute inset-0 bg-black/40 transition-opacity duration-200" onClick={() => setRescheduleModal(null)} />
+            <div className="bg-white border-l border-[#e9eaeb] flex flex-col h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 animate-in slide-in-from-right duration-200">
+              {/* Header */}
+              <div className="px-[24px] pt-[20px] pb-[16px] shrink-0">
+                <div className="flex items-start justify-between">
+                  <div className="flex flex-col gap-[4px]">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27]">Remarcar reserva</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">Escolha a atividade de destino e a data do evento</p>
                   </div>
-                );
-              })()}
-
-              {/* Notification options */}
-              <div className="flex flex-col gap-[8px]">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Notificação ao cliente</p>
-                <div className="grid grid-cols-2 gap-[12px]">
-                  <button
-                    onClick={() => setRescheduleNotify("now")}
-                    className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "now" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}
-                  >
-                    <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "now" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Notificar agora</p>
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">E-mail e WhatsApp serão enviados imediatamente.</p>
-                  </button>
-                  <button
-                    onClick={() => setRescheduleNotify("later")}
-                    className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "later" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}
-                  >
-                    <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "later" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Remarcar sem notificar</p>
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">Você pode notificar manualmente depois.</p>
+                  <button onClick={() => setRescheduleModal(null)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f1f5f9] transition-colors">
+                    <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
                   </button>
                 </div>
               </div>
 
-              {/* Alerts */}
-              {(() => {
-                const dateOptions = [
-                  { date: "29/04/2026", slots: 25 }, { date: "30/05/2026", slots: 30 },
-                  { date: "02/05/2026", slots: 8 }, { date: "03/05/2026", slots: 15 },
-                  { date: "04/05/2026", slots: 0 }, { date: "05/05/2026", slots: 4 },
-                ];
-                const selectedOpt = dateOptions.find((d) => d.date === rescheduleSelectedDate);
-                const isNoSlots = selectedOpt && selectedOpt.slots === 0;
-                const capacity = activity.capacity || 200;
-                const current = capacity;
-                const afterMove = current + 1;
-
-                return (
-                  <>
-                    {isNoSlots ? (
-                      <>
-                        {/* Capacity warning */}
-                        <div className="flex items-center gap-[10px] bg-[#fef9ec] border border-[#fef0c7] rounded-[10px] px-[12px] py-[10px]">
-                          <img src="/src/assets/alerta.png" alt="" className="size-[24px] shrink-0" />
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Essa atividade tem a capacidade para {capacity} participantes e ficará com {afterMove} (1 movido + {current} já existentes). Confirme se a operação suporta o excedente.</p>
+              {/* Body */}
+              <div className="flex-1 overflow-y-auto flex flex-col gap-[20px] px-[24px] py-[20px] border-t border-[#e9eaeb]">
+                {/* Reserva atual */}
+                <div className="flex flex-col gap-[10px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Reserva atual de:</p>
+                  <div className="rounded-[12px]">
+                    <div className="pt-0 pb-0">
+                      {/* Avatar + name + tariff */}
+                      <div className="flex items-start gap-4">
+                        <div className="flex items-center justify-center rounded-full size-12 shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#0b5ed7]">{rescheduleModal.p.name.split(" ").filter((_: string, i: number, a: string[]) => i === 0 || i === a.length - 1).map((n: string) => n[0]).join("")}</p>
                         </div>
-                        {/* Capacity confirmation checkbox */}
-                        <button
-                          onClick={() => setRescheduleCapacityConfirmed(!rescheduleCapacityConfirmed)}
-                          className="flex items-center gap-[10px] cursor-pointer text-left"
-                        >
-                          <div className={`flex items-center justify-center shrink-0 size-[20px] rounded-[4px] border transition-colors ${rescheduleCapacityConfirmed ? "bg-[#0b5ed7] border-[#0b5ed7]" : "bg-white border-[#d5d7da]"}`}>
-                            {rescheduleCapacityConfirmed && (
-                              <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[15px] text-[#181d27]">{rescheduleModal.p.name}</p>
+                            {rescheduleModal.r.participants[0]?.id === rescheduleModal.p.id && (
+                              <span className="inline-flex items-center gap-[6px] p-[2px]">
+                                <div className="size-[8px] rounded-full bg-[#0b5ed7] shrink-0" />
+                                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#0b5ed7]">Comprador</p>
+                              </span>
                             )}
                           </div>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">Confirmo que a operação suporta o excedente de capacidade nesta atividade.</p>
-                        </button>
-                      </>
-                    ) : rescheduleModal.r.type === "group" ? (
-                      <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
-                        <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
-                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">Esse participante pertence à reserva em grupo {rescheduleModal.r.orderId}. Os demais {rescheduleModal.r.participants.length - 1} membros do grupo permanecerão na atividade original.</p>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M19.7085 7.65038C19.8657 7.49323 20.1365 7.47721 20.2957 7.65093C21.2284 8.66824 21.7446 9.42151 21.9146 10.2557C22.0124 10.7357 22.0263 11.2242 21.9557 11.6994C21.7649 12.9836 20.7244 14.0241 18.6434 16.1051L16.1051 18.6434C14.0241 20.7244 12.9836 21.7649 11.6994 21.9557C11.2242 22.0263 10.7357 22.0124 10.2557 21.9146C9.4216 21.7446 8.66841 21.2285 7.65127 20.296C7.47734 20.1366 7.49342 19.8655 7.65074 19.7082C8.52693 18.832 8.48529 17.3698 7.55776 16.4422C6.63022 15.5147 5.16802 15.4731 4.29183 16.3493C4.13451 16.5066 3.86341 16.5227 3.70395 16.3487C2.77146 15.3316 2.25536 14.5784 2.08539 13.7443C1.98759 13.2643 1.97368 12.7758 2.04429 12.3006C2.23513 11.0164 3.27561 9.97588 5.35657 7.89492L7.89492 5.35657C9.97588 3.27561 11.0164 2.23513 12.3006 2.04428C12.7758 1.97368 13.2643 1.98759 13.7443 2.08539C14.5785 2.25538 15.3318 2.77157 16.3491 3.70427C16.5228 3.86355 16.5068 4.13432 16.3496 4.29147C15.4734 5.16765 15.5151 6.62985 16.4426 7.55739C17.3701 8.48493 18.8324 8.52656 19.7085 7.65038Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/><path d="M19 15L9 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-[#535862]">{rescheduleModal.p.tariffType}</p>
+                          </div>
+                        </div>
                       </div>
-                    ) : null}
-                  </>
-                );
-              })()}
-            </div>
-            {/* Footer */}
-            {(() => {
-              const dateOptions = [
-                { date: "04/05/2026", slots: 0 },
-              ];
-              const selectedOpt = rescheduleSelectedDate === "04/05/2026";
-              const isNoSlots = selectedOpt;
-              const canConfirm = !isNoSlots || rescheduleCapacityConfirmed;
-
-              return (
-                <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
-                  <button onClick={() => setRescheduleModal(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
-                  <button
-                    onClick={() => {
-                      if (!canConfirm) return;
-                      const pId = rescheduleModal.p.id;
-                      const name = rescheduleModal.p.name.split(" ")[0];
-                      dispatch({ type: "RESCHEDULE_PARTICIPANT", participantId: pId });
-                      setRescheduleModal(null);
-                      setToast({
-                        message: "Reserva remarcada com sucesso",
-                        description: `A reserva de ${name} foi remarcada. O participante será notificado.`,
-                        type: "success",
-                        actions: [{ label: "Entendido", onClick: () => setToast(null) }],
-                      });
-                    }}
-                    disabled={!canConfirm}
-                    className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${canConfirm ? "bg-[#0b5ed7] hover:bg-[#084fb7] cursor-pointer" : "bg-[#93b4ed] cursor-not-allowed"}`}
-                  >Remarcar reserva</button>
+                      {/* Activity + date/time + age */}
+                      <div className="flex items-center justify-between mt-5 pb-4">
+                        <div className="flex items-center gap-[10px]">
+                          <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                            <svg className="size-[20px]" fill="none" viewBox="0 0 16 16"><circle cx="8.00001" cy="4.66667" r="2.66667" stroke="#535862" strokeWidth="1.2"/><path d="M8 7.33398L8 12.0007" stroke="#535862" strokeWidth="1.2" strokeLinecap="round"/><path d="M10.5647 10.666C11.6629 12.0747 12.212 12.779 11.9243 13.3367C11.8977 13.3882 11.8666 13.4379 11.8313 13.4853C11.4482 13.9993 10.4583 13.9993 8.47852 13.9993H7.52149C5.54167 13.9993 4.55177 13.9993 4.16874 13.4853C4.13337 13.4379 4.10226 13.3882 4.0757 13.3367C3.78804 12.779 4.33714 12.0747 5.43534 10.666" stroke="#535862" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </div>
+                          <div>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">Atividade atual</p>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">{activity.name}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-[10px]">
+                          <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                            <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M16 2V6M8 2V6" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 10H21" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </div>
+                          <div>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">Data atual</p>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">{formatActivityDate(activity.date)}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-[10px]">
+                          <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                            <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#141B34" strokeWidth="1.5"/><path d="M12.0078 10.5083C11.1794 10.5083 10.5078 11.1799 10.5078 12.0083C10.5078 12.8367 11.1794 13.5083 12.0078 13.5083C12.8362 13.5083 13.5078 12.8367 13.5078 12.0083C13.5078 11.1799 12.8362 10.5083 12.0078 10.5083ZM12.0078 10.5083V6.99915M15.0147 15.0199L13.0661 13.0713" stroke="#141B34" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </div>
+                          <div>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">Hora atual</p>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">{activity.startTime} - {activity.endTime}</p>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Status badges */}
+                      <div className="flex items-start gap-4 pt-[8px] pb-0">
+                        <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
+                          <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M20.1765 12.5113C19.8261 9.50898 19.3142 7.25784 18.8394 5.65851C18.4501 4.34711 18.2554 3.69141 17.4572 3.0957C16.659 2.5 15.8431 2.5 14.2113 2.5H8.78876C7.15697 2.5 6.34107 2.5 5.54283 3.0957C4.74459 3.69141 4.54994 4.34711 4.16063 5.65851C3.68586 7.25784 3.1739 9.50898 2.82352 12.5113C2.41058 16.0497 2.20411 17.8189 3.39731 19.1594C4.59052 20.5 6.52422 20.5 10.3916 20.5H12.6084" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.5 6.5C8.5 8.15685 9.84315 9.5 11.5 9.5C13.1569 9.5 14.5 8.15685 14.5 6.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.5 18.5H21.5M18.5 21.5V15.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] mb-[2px]">Pedidos opcionais</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Transporte, 1x lanche</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              );
-            })()}
-          </div>
-        </div>,
-        document.body,
-      )}
+
+                {/* Para qual atividade? */}
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Para qual atividade?</p>
+                  <div className="relative">
+                    <button className="flex items-center justify-between w-full h-[40px] rounded-[8px] px-[14px] cursor-pointer transition-colors border border-[#e9eaeb] hover:border-[#d0d5dd]">
+                      <div className="flex items-center gap-[8px]">
+                        <svg className="size-[16px] text-[#717680] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M10.67 1.33V4M5.33 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M1.33 6h13.34" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{activity.name}</span>
+                      </div>
+                      <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </button>
+                  </div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">As datas disponíveis carregam de acordo com a atividade escolhida.</p>
+                </div>
+
+                {/* Selecionar nova data / horário */}
+                <div className="flex flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Selecionar nova data / horário</p>
+                  <div className="relative">
+                    <button
+                      onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
+                      className={`flex items-center justify-between w-full h-[40px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                    >
+                      {selected ? (
+                        <>
+                          <div className="flex items-center gap-[6px]">
+                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.date}</span>
+                            <span className="text-[#d0d5dd]">·</span>
+                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.time}</span>
+                          </div>
+                          <div className="flex items-center gap-[8px] shrink-0">
+                            <div className="flex items-center gap-[5px] bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[10px] h-[24px]">
+                              <div className={`size-[6px] rounded-full ${selected.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] whitespace-nowrap ${selected.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
+                                {selected.available ? `${selected.slots} vagas` : "Sem vagas"}
+                              </span>
+                            </div>
+                            <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-[8px]">
+                            <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar data</p>
+                          </div>
+                          <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </>
+                      )}
+                    </button>
+                    {rescheduleDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px] max-h-[220px] overflow-y-auto">
+                        {dateOptions.map((opt) => (
+                          <button
+                            key={opt.date}
+                            onClick={() => { setRescheduleSelectedDate(opt.date); setRescheduleDropdownOpen(false); }}
+                            className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleSelectedDate === opt.date ? "bg-[#f0f5ff]" : ""}`}
+                          >
+                            <div className="flex items-center gap-[6px]">
+                              {rescheduleSelectedDate === opt.date ? (
+                                <svg className="size-[16px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              ) : (
+                                <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                              )}
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.date}</span>
+                              <span className="text-[#d0d5dd]">·</span>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.time}</span>
+                            </div>
+                            <div className="flex items-center gap-[4px] shrink-0">
+                              <div className={`size-[6px] rounded-full ${opt.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${opt.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
+                                {opt.available ? `${opt.slots} vagas` : "Sem vagas"}
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {/* Empty state when no date selected */}
+                  {!selected && (
+                    <div className="flex flex-col items-center justify-center py-[24px] gap-[8px] rounded-[8px] border border-[#f5f5f5]">
+                      <svg className="size-[32px] text-[#d0d5dd]" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Nenhuma data selecionada</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#94a3b8] text-center max-w-[260px] -mt-[4px]">Escolha a nova data para ver os itens transferidos e o valor.</p>
+                    </div>
+                  )}
+
+                  {/* Itens que serão transferidos — shown when date selected */}
+                  {selected && (() => {
+                    const lancheAvailable = selected.date !== "02/05/2026" && selected.date !== "04/05/2026";
+                    const basePrice = 150;
+                    const transportePrice = 30;
+                    const lanchePrice = 25;
+                    const removedItems: string[] = [];
+                    if (!lancheAvailable && !rescheduleCapacityConfirmed) removedItems.push("Lanche");
+                    const totalPrice = basePrice + transportePrice + (lancheAvailable ? lanchePrice : 0);
+                    const discount = lancheAvailable ? 0 : lanchePrice;
+
+                    return (
+                      <div className="flex flex-col gap-[12px] mt-[8px]">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Itens que serão transferidos</p>
+                        <div className="border border-[#f5f5f5] rounded-[12px] flex flex-col">
+                          {/* Tarifa */}
+                          <div className="flex items-center justify-between px-[16px] py-[12px]">
+                            <div>
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">Tarifa {rescheduleModal.p.tariffType.split(" ")[0]}</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Mantida na nova data</p>
+                            </div>
+                            <span className="bg-[#eff6ff] text-[#0b5ed7] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">Mantida</span>
+                          </div>
+                          {/* Transporte */}
+                          <div className="flex items-center justify-between px-[16px] py-[12px] border-t border-[#f5f5f5]">
+                            <div>
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">Transporte</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">+ R$ {transportePrice},00</p>
+                            </div>
+                            <span className="flex items-center gap-[4px] bg-[#ecfdf3] text-[#079455] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">
+                              <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              Disponível
+                            </span>
+                          </div>
+                          {/* Lanche */}
+                          <div className="flex items-center justify-between px-[16px] py-[12px] border-t border-[#f5f5f5]">
+                            <div>
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">Lanche</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">+ R$ {lanchePrice},00</p>
+                            </div>
+                            {lancheAvailable ? (
+                              <span className="flex items-center gap-[4px] bg-[#ecfdf3] text-[#079455] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">
+                                <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                Disponível
+                              </span>
+                            ) : (
+                              <span className="bg-[#fef3f2] text-[#d92d20] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">Indisponível</span>
+                            )}
+                          </div>
+                          {/* Warning if lanche unavailable */}
+                          {!lancheAvailable && (
+                            <>
+                              <div className="border-t border-[#f5f5f5] px-[16px] py-[12px]">
+                                <div className="flex items-start gap-[8px] bg-[#fffaeb] border border-[#fedf89] rounded-[8px] px-[12px] py-[10px]">
+                                  <svg className="size-[16px] text-[#dc6803] shrink-0 mt-[1px]" fill="none" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">O opcional Lanche não é oferecido na data escolhida. Decida o que fazer antes de remarcar.</p>
+                                </div>
+                              </div>
+                              <div className="border-t border-[#f5f5f5] flex items-center justify-between px-[16px] py-[12px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Levar este opcional?</p>
+                                <div className="flex items-center gap-[8px]">
+                                  <button type="button" className="h-[32px] px-[14px] rounded-[6px] border border-[#e9eaeb] bg-white font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#414651] cursor-pointer hover:bg-[#f8fafc] transition-colors">Remover</button>
+                                  <button type="button" className="h-[32px] px-[14px] rounded-[6px] border border-[#e9eaeb] bg-white font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#414651] cursor-pointer hover:bg-[#f8fafc] transition-colors">Levar mesmo assim</button>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Novo valor da reserva */}
+                        <div className="flex items-center justify-between pt-[4px]">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Novo valor da reserva</p>
+                          <div className="text-right">
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27]">R$ {(totalPrice - discount)},00</p>
+                            {discount > 0 && (
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#d92d20]">- R$ {discount},00 (Lanche removido)</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Notification options */}
+                <div className="hidden flex-col gap-[8px]">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#414651]">Notificação ao cliente</p>
+                  <div className="grid grid-cols-2 gap-[12px]">
+                    <button onClick={() => setRescheduleNotify("now")} className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "now" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}>
+                      <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "now" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Notificar agora</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">E-mail e WhatsApp serão enviados imediatamente.</p>
+                    </button>
+                    <button onClick={() => setRescheduleNotify("later")} className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "later" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}>
+                      <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "later" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Remarcar sem notificar</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">Você pode notificar manualmente depois.</p>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Alerts */}
+                {isNoSlots ? (
+                  <>
+                    <div className="flex items-center gap-[10px] bg-[#fef9ec] border border-[#fef0c7] rounded-[10px] px-[12px] py-[10px]">
+                      <svg className="size-[24px] shrink-0 text-[#dc6803]" fill="none" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Essa atividade tem a capacidade para {capacity} participantes e ficará com {capacity + 1} (1 movido + {capacity} já existentes). Confirme se a operação suporta o excedente.</p>
+                    </div>
+                    <button onClick={() => setRescheduleCapacityConfirmed(!rescheduleCapacityConfirmed)} className="flex items-center gap-[10px] cursor-pointer text-left">
+                      <div className={`flex items-center justify-center shrink-0 size-[20px] rounded-[4px] border transition-colors ${rescheduleCapacityConfirmed ? "bg-[#0b5ed7] border-[#0b5ed7]" : "bg-white border-[#d5d7da]"}`}>
+                        {rescheduleCapacityConfirmed && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                      </div>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">Confirmo que a operação suporta o excedente de capacidade nesta atividade.</p>
+                    </button>
+                  </>
+                ) : rescheduleModal.r.type === "group" ? (
+                  <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                    <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">Esse participante pertence à reserva em grupo {rescheduleModal.r.orderId}. Os demais {rescheduleModal.r.participants.length - 1} membros do grupo permanecerão na atividade original.</p>
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Footer */}
+              <div className="border-t border-[#e9eaeb] flex gap-[12px] items-center justify-end px-[24px] py-[16px] shrink-0">
+                <button onClick={() => setRescheduleModal(null)} className="h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] rounded-[8px] px-[24px] text-[14px] text-[#414651] transition-colors">Fechar</button>
+                <button
+                  onClick={() => {
+                    if (!canConfirm) return;
+                    const pId = rescheduleModal.p.id;
+                    const name = rescheduleModal.p.name.split(" ")[0];
+                    dispatch({ type: "RESCHEDULE_PARTICIPANT", participantId: pId });
+                    setRescheduleModal(null);
+                    setToast({
+                      message: "Reserva remarcada com sucesso",
+                      description: `A reserva de ${name} foi remarcada. O participante será notificado.`,
+                      type: "success",
+                      actions: [{ label: "Entendido", onClick: () => setToast(null) }],
+                    });
+                  }}
+                  disabled={!canConfirm}
+                  className={`h-[40px] font-['Helvetica_Neue:Medium',sans-serif] rounded-[8px] px-[24px] text-[14px] text-white transition-colors ${canConfirm ? "bg-[#0b5ed7] hover:bg-[#084fb7] cursor-pointer" : "bg-[#93b4ed] cursor-not-allowed"}`}
+                >Remarcar reserva</button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        );
+      })()}
       {/* Bulk Cancel modal */}
       {bulkCancelModal && (() => {
         const allSelected = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && !bulkCancelExcluded.has(p.id));
@@ -6298,7 +6426,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               <div className="flex flex-col gap-[20px] px-[24px] py-[20px]">
                 {/* Activity card */}
                 <div className="flex flex-col gap-[8px]">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Atividade</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Reserva atual de:</p>
                   <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px]">
                     <img src="/src/assets/activity-icon.png" alt="" className="size-[24px] shrink-0" />
                     <div className="flex flex-col gap-[6px] min-w-0 flex-1">
@@ -6377,7 +6505,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
 
                 {/* Notification options */}
-                <div className="flex flex-col gap-[8px]">
+                <div className="hidden flex-col gap-[8px]">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Notificação ao cliente</p>
                   <div className="grid grid-cols-2 gap-[12px]">
                     <button onClick={() => setRescheduleNotify("now")} className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "now" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}>

@@ -3019,6 +3019,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<ParticipantesFilter>("todos");
   const [showFilters, setShowFilters] = useState(false);
+  const [showQuickFilters, setShowQuickFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [isTeamClosing, setIsTeamClosing] = useState(false);
@@ -3154,6 +3155,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
   useEffect(() => {
     if (!showHeaderMoreActions) return;
     const handleMouseDown = (e: MouseEvent) => {
+      if ((e.target as Element | null)?.closest("[data-header-actions-sheet]")) return;
       if (headerMoreActionsRef.current && !headerMoreActionsRef.current.contains(e.target as Node)) {
         setShowHeaderMoreActions(false);
       }
@@ -4361,24 +4363,24 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           style={{ animationFillMode: "both" }}
         >
           {/* Search + QR row */}
-          <div className="content-stretch flex gap-[16px] items-center relative w-full" style={{ padding: "16px 32px" }}>
+          <div className="content-stretch flex gap-[16px] items-center relative w-full px-[16px] py-[16px] md:px-[32px]">
             <div className="bg-white flex-1 min-w-0 relative rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]">
-              <div className="content-stretch flex gap-[12px] items-center px-[18px] py-[14px] relative size-full">
+              <div className="content-stretch flex gap-[12px] items-center px-[16px] py-[14px] md:px-[18px] relative size-full overflow-hidden">
                 <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#9ca3af" strokeWidth="1.5"/><path d="M13.5 13.5l3.5 3.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Buscar por nome, ID do pedido, etc..."
-                  className="flex-1 font-['Helvetica_Neue:Light',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[15px] text-[#1f2937] placeholder:text-[#9ca3af] bg-transparent"
+                  className="flex-1 font-['Helvetica_Neue:Light',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[15px] text-[#1f2937] placeholder:text-[#9ca3af] bg-transparent truncate"
                 />
               </div>
             </div>
             {activity.lifecycleStatus === "EmAndamento" && (
               <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
-                <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
+                <div className="content-stretch flex gap-[8px] items-center justify-center px-[14px] py-[14px] md:px-[16px] relative size-full">
                   <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
+                  <p className="hidden md:block font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
                 </div>
               </button>
             )}
@@ -4411,7 +4413,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           </svg>
         </div>
 
-        <div className="flex flex-col gap-[12px] relative z-[1]" style={{ padding: "24px 16px 32px" }}>
+        <div className="flex flex-col gap-[12px] relative z-[1] px-[16px] pb-[28px] pt-[24px] md:px-[32px] md:pb-[32px]">
             {/* Row 1: Breadcrumb */}
             <div className="flex items-center justify-between">
             <div className="flex items-center gap-[8px]">
@@ -4423,9 +4425,14 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
             </div>
             </div>
             {/* Title + capacity badge */}
-            <div className="flex items-center gap-[12px]">
-              <h1 className="font-['Helvetica_Neue:Medium',sans-serif] leading-[1.2] not-italic text-[24px] text-white">{activity.name}</h1>
-              <div className="flex items-center gap-[4px] bg-white/15 backdrop-blur-sm border border-white/20 rounded-[6px] px-[8px] py-[4px]">
+            <div className="flex items-start gap-[12px] md:items-center">
+              <div className="flex min-w-0 flex-col gap-[4px] md:flex-row md:items-center md:gap-[12px]">
+                <h1 className="font-['Helvetica_Neue:Medium',sans-serif] leading-[1.2] not-italic text-[24px] text-white">{activity.name}</h1>
+                <p className="pb-[6px] font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-none text-white/70 md:hidden md:pb-0">
+                  {totalCount} de {activity.capacity} participantes
+                </p>
+              </div>
+              <div className="hidden items-center gap-[4px] bg-white/15 backdrop-blur-sm border border-white/20 rounded-[6px] px-[8px] py-[4px] md:flex">
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-none text-white">{totalCount}</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-white/50">/</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-white/70">{activity.capacity}</p>
@@ -4434,11 +4441,11 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
             </div>
 
             {/* Enhanced metadata row + Concluir atividade */}
-            <div className="flex items-center justify-between gap-[16px]">
-            <div className="flex items-center gap-[16px] flex-wrap">
+            <div className="flex flex-col items-stretch gap-[20px] md:flex-row md:items-center md:justify-between">
+            <div className="flex w-full items-center gap-[16px] flex-wrap md:w-auto">
               {/* Info card - Date | Time | Location | Guide */}
-              <div className="relative z-20 hover:z-40 flex items-center gap-[14px] bg-white/10 backdrop-blur-sm border border-white/15 rounded-[12px] px-[14px] py-[10px]">
-                <div className="flex flex-col">
+              <div className="relative z-20 hover:z-40 grid w-full flex-1 basis-full grid-cols-3 justify-items-stretch gap-x-[16px] gap-y-[10px] bg-white/10 backdrop-blur-sm border border-white/15 rounded-[12px] px-[14px] py-[12px] md:w-auto md:flex md:flex-none md:basis-auto md:items-center md:gap-[14px]">
+                <div className="flex min-w-0 flex-col">
                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Hoje</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{(() => {
                     const [y, m, d] = activity.date.split("-");
@@ -4446,18 +4453,22 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                     return `${parseInt(d)} de ${months[parseInt(m) - 1]}`;
                   })()}</p>
                 </div>
-                <div className="w-[1px] h-[28px] bg-white/20" />
-                <div className="flex flex-col">
+                <div className="hidden w-[1px] h-[28px] bg-white/20 md:block" />
+                <div className="flex min-w-0 flex-col">
                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Horário</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{activity.startTime} <span className="text-white/40">→</span> {activity.endTime}</p>
                 </div>
-                <div className="w-[1px] h-[28px] bg-white/20" />
-                <div className="flex flex-col">
+                <div className="hidden w-[1px] h-[28px] bg-white/20 md:block" />
+                <div className="order-4 col-span-3 flex min-w-0 flex-col md:order-none md:col-span-1">
                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Local de início</p>
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">Portaria · Parque do Itacolomi</p>
                 </div>
-                <div className="w-[1px] h-[28px] bg-white/20" />
-                <button onClick={() => onOpenTeam?.()} className="flex flex-col items-start cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="hidden w-[1px] h-[28px] bg-white/20 md:block" />
+                <div className="order-3 flex min-w-0 flex-col md:hidden">
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Previsão</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{mockWeather.current.tempC}°C</p>
+                </div>
+                <button onClick={() => onOpenTeam?.()} className="hidden min-w-0 flex-col items-start cursor-pointer hover:opacity-80 transition-opacity md:flex">
                   <p className="font-['Helvetica_Neue:Light',sans-serif] text-[10px] text-white/50 uppercase tracking-[0.5px]">Equipe responsável</p>
                   <div className="flex items-center gap-[6px]">
                     <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-white">{(teamGuides ?? activity.assignedGuides).length} atribuído(s)</p>
@@ -4486,7 +4497,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 const temp = mockWeather.current.tempC;
 
                 return (
-                  <div className="relative z-20 hover:z-40 flex items-center gap-[10px] bg-gradient-to-r from-amber-400/15 to-orange-400/10 backdrop-blur-sm border border-amber-300/20 rounded-[12px] px-[14px] py-[10px]">
+                  <div className="relative z-20 hover:z-40 hidden items-center gap-[10px] bg-gradient-to-r from-amber-400/15 to-orange-400/10 backdrop-blur-sm border border-amber-300/20 rounded-[12px] px-[14px] py-[10px] md:flex">
                     <div className="group relative">
                       <svg className="size-[28px] cursor-default" viewBox="0 0 32 32" fill="none">
                         <circle cx="16" cy="16" r="6" fill="#fbbf24" />
@@ -4510,19 +4521,71 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 );
               })()}
             </div>
-            <div className="flex gap-[16px] items-end shrink-0 self-end">
-              <div className="relative z-[20]" ref={headerMoreActionsRef}>
+            <div className="flex w-full gap-[16px] items-end shrink-0 self-stretch md:w-auto md:self-end">
+              <div className="relative z-[20] flex-1 md:flex-none" ref={headerMoreActionsRef}>
                 <button
                   onClick={() => setShowHeaderMoreActions(!showHeaderMoreActions)}
-                  className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 h-[40px] relative rounded-[8px] shrink-0 transition-all duration-200 cursor-pointer"
+                  className="bg-white/10 backdrop-blur-sm hover:bg-white/15 border border-white/20 h-[40px] w-full relative rounded-[8px] shrink-0 transition-all duration-200 cursor-pointer md:w-auto"
                 >
                   <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[10px] relative size-full">
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white whitespace-nowrap">Mais ações</p>
                     <svg className={`size-[14px] text-white transition-transform duration-200 ${showHeaderMoreActions ? "rotate-180" : ""}`} fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </div>
                 </button>
+                {showHeaderMoreActions && createPortal(
+                  <div className="fixed inset-0 z-[9999] flex flex-col justify-end md:hidden" data-header-actions-sheet>
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setShowHeaderMoreActions(false)} />
+                    <div className="relative z-10 flex max-h-[calc(100svh-24px)] w-full flex-col overflow-hidden rounded-t-[16px] bg-white shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.12)]">
+                      <div className="flex justify-center pb-[4px] pt-[8px]">
+                        <div className="h-[4px] w-[36px] rounded-full bg-[#d0d5dd]" />
+                      </div>
+                      <div className="flex shrink-0 items-center justify-between px-[16px] py-[12px]">
+                        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Mais ações</p>
+                        <button onClick={() => setShowHeaderMoreActions(false)} className="flex size-8 items-center justify-center rounded-lg border border-[#e9eaeb] bg-[#f8fafc] transition-colors hover:bg-[#f1f5f9]">
+                          <svg className="size-[14px] text-[#717680]" fill="none" viewBox="0 0 24 24">
+                            <path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="flex min-h-0 flex-1 flex-col gap-[4px] overflow-y-auto px-[16px] pb-[calc(16px+env(safe-area-inset-bottom))]">
+                        {[
+                          { label: "Editar atividade", hasExtIcon: true, action: null, separator: false },
+                          { label: "Enviar comunicado", hasExtIcon: false, action: "open-updates", separator: false },
+                          { label: "Atribuir equipe", hasExtIcon: false, action: "open-team", separator: false },
+                          { label: "Listas e manifestos", hasExtIcon: false, action: "open-manifesto", separator: true },
+                          { label: "Ficha de operação", hasExtIcon: false, action: "open-ficha", separator: false },
+                        ].map((item) => (
+                          <React.Fragment key={item.label}>
+                            {item.separator && <div className="my-[4px] h-px w-full bg-[#f5f5f5]" />}
+                            <button
+                              onClick={() => { setShowHeaderMoreActions(false); if (item.action === "open-updates") onOpenUpdates?.(); if (item.action === "open-team") onOpenTeam?.(); if (item.action === "open-manifesto") setShowManifestoDrawer(true); if (item.action === "open-ficha") setShowFichaDrawer(true); }}
+                              className="flex h-[44px] w-full cursor-pointer items-center justify-between rounded-[8px] px-[12px] transition-colors hover:bg-[#f8fafc]"
+                            >
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651]">{item.label}</p>
+                              {item.hasExtIcon && (
+                                <svg className="size-[16px] shrink-0 text-[#a4a7ae]" fill="none" viewBox="0 0 24 24"><path d="M17 7L6 18M11 6.13151C11 6.13151 16.6335 5.65662 17.4885 6.51153C18.3434 7.36645 17.8684 13 17.8684 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              )}
+                            </button>
+                          </React.Fragment>
+                        ))}
+                        <div className="my-[4px] h-px w-full bg-[#f5f5f5]" />
+                        <button
+                          onClick={() => {
+                            setShowHeaderMoreActions(false);
+                            setCancelActivityConfirmText("");
+                            setCancelActivityModal(true);
+                          }}
+                          className="flex h-[44px] w-full cursor-pointer items-center rounded-[8px] px-[12px] text-[#d92d20] transition-colors hover:bg-[#fef3f2]"
+                        >
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#d92d20]">Cancelar atividade</p>
+                        </button>
+                      </div>
+                    </div>
+                  </div>,
+                  document.body
+                )}
                 {showHeaderMoreActions && (
-                  <div className="absolute bg-white border border-[#f5f5f5] border-solid mt-[4px] right-0 rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-max min-w-[220px] p-[6px] flex flex-col gap-[4px]" style={{ zIndex: 9999 }}>
+                  <div className="absolute left-0 mt-[4px] hidden w-[calc(200%+16px)] max-w-[calc(100vw-32px)] flex-col gap-[4px] rounded-[8px] border border-[#f5f5f5] border-solid bg-white p-[6px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] md:left-auto md:right-0 md:flex md:w-max md:min-w-[220px]" style={{ zIndex: 9999 }}>
                     {[
                       { label: "Editar atividade", hasExtIcon: true, action: null, separator: false },
                       { label: "Enviar comunicado", hasExtIcon: false, action: "open-updates", separator: false },
@@ -4563,11 +4626,11 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 const disabledReason = ls === "NaoIniciada" ? "A atividade ainda não foi iniciada" : ls === "Realizada" ? "A atividade já foi concluída" : ls === "Cancelada" ? "A atividade foi cancelada" : null;
                 const disabledLabel = ls === "NaoIniciada" ? "Não iniciada" : ls === "Realizada" ? "Já realizada" : ls === "Cancelada" ? "Cancelada" : null;
                 return (
-                  <div className="relative group/concluir">
+                  <div className="relative group/concluir flex-1 md:flex-none">
                     <button
                       onClick={() => canConclude && setShowConcluirModal(true)}
                       disabled={!canConclude}
-                      className={`h-[40px] relative rounded-[8px] shrink-0 transition-all duration-200 ${canConclude ? "bg-white hover:bg-white/95 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] cursor-pointer" : "bg-white/20 border border-white/30 cursor-not-allowed"}`}
+                      className={`h-[40px] w-full relative rounded-[8px] shrink-0 transition-all duration-200 md:w-auto ${canConclude ? "bg-white hover:bg-white/95 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] cursor-pointer" : "bg-white/20 border border-white/30 cursor-not-allowed"}`}
                     >
                       <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] relative size-full">
                         {canConclude ? (
@@ -4592,32 +4655,37 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       </div>
 
       {/* Search bar */}
-      <div ref={searchBarRef} className="content-stretch flex gap-[16px] items-center mt-[24px] relative w-full" style={{ padding: "0 16px" }}>
+      <div ref={searchBarRef} className="content-stretch flex gap-[16px] items-center mt-[24px] relative w-full px-[16px] md:px-[32px]">
         <div className="bg-white flex-1 min-w-0 relative rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]">
-          <div className="content-stretch flex gap-[12px] items-center px-[18px] py-[14px] relative size-full">
+          <div className="content-stretch flex gap-[12px] items-center px-[16px] py-[14px] md:px-[18px] relative size-full overflow-hidden">
             <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#9ca3af" strokeWidth="1.5"/><path d="M13.5 13.5l3.5 3.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/></svg>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome, ID do pedido, etc..."
-              className="flex-1 font-['Helvetica_Neue:Light',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[15px] text-[#1f2937] placeholder:text-[#9ca3af] bg-transparent"
+              className="flex-1 font-['Helvetica_Neue:Light',sans-serif] leading-[normal] min-w-0 not-italic outline-none text-[15px] text-[#1f2937] placeholder:text-[#9ca3af] bg-transparent truncate"
             />
           </div>
         </div>
         {activity.lifecycleStatus === "EmAndamento" && (
           <button onClick={() => setShowQrScanner(true)} className="bg-white hover:bg-[#f8fafc] border border-[#e5e7eb] relative rounded-[12px] shrink-0 shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer">
-            <div className="content-stretch flex gap-[8px] items-center justify-center px-[16px] py-[14px] relative size-full">
+            <div className="content-stretch flex gap-[8px] items-center justify-center px-[14px] py-[14px] md:px-[16px] relative size-full">
               <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z"/><path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z"/><path d="M6 24L18 24" strokeLinejoin="round"/><path d="M24 6V16" strokeLinejoin="round"/><path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z"/><path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42"/></svg>
-              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
+              <p className="hidden md:block font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#0b5ed7] whitespace-nowrap">Check-in via QR Code</p>
             </div>
           </button>
         )}
       </div>
 
       {/* Filter tabs OR Bulk actions bar */}
-      <div className={`${hasSelection ? "sticky z-[10]" : "relative"}`} style={{ padding: `${hasSelection && stickyTopBarHeight > 0 ? "0px" : "16px"} 16px 0 16px`, ...(hasSelection ? { top: stickyTopBarHeight > 0 ? `${stickyTopBarHeight + 16}px` : "0px" } : {}) }}>
-      <div ref={bulkBarRef} className={`w-full rounded-[12px] h-[52px] flex items-center transition-colors ${hasSelection ? "bg-[#181d27] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.15)]" : "bg-white"}`} style={{ padding: "0 16px" }}>
+      <div
+        className={`${hasSelection ? "sticky z-[10]" : "relative"} px-[16px] pb-0 md:px-[32px] ${
+          hasSelection && stickyTopBarHeight > 0 ? "pt-0" : "pt-[16px]"
+        }`}
+        style={hasSelection ? { top: stickyTopBarHeight > 0 ? `${stickyTopBarHeight + 16}px` : "0px" } : undefined}
+      >
+      <div ref={bulkBarRef} className={`w-full rounded-[12px] h-[56px] flex items-center transition-colors ${hasSelection ? "bg-[#181d27] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.15)]" : "bg-white"}`} style={{ padding: "0 16px" }}>
         {!hasSelection && <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />}
         {hasSelection ? (
           /* ── Bulk actions bar — dark style ── */
@@ -4741,9 +4809,72 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           </div>
         ) : (
           /* ── Filter tabs + Sort/Filters ── */
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-[12px] w-full md:justify-between">
             {/* Left: Tabs */}
-            <div className="content-stretch flex gap-[3px] items-center relative transition-all duration-200">
+            <div className="flex min-w-0 flex-1 items-center gap-[16px] md:hidden">
+              <button onClick={toggleSelectAll} className="flex size-[28px] shrink-0 cursor-pointer items-center justify-center">
+                <div className="flex size-[28px] items-center justify-center rounded-[6px] border border-[#dfe3e8] bg-white transition-colors hover:border-[#b8bcc4]" />
+              </button>
+              <div className="relative flex min-w-0 flex-1">
+              {(() => {
+                const currentFilter = filters.find((f) => f.key === activeFilter) ?? filters[0];
+                return (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowQuickFilters(!showQuickFilters);
+                        setShowSort(false);
+                        setShowFilters(false);
+                      }}
+                      className="flex h-[40px] min-w-0 flex-1 items-center justify-between gap-[8px] rounded-[8px] border border-[#e9eaeb] bg-white px-[12px] transition-colors hover:bg-[#f8fafc]"
+                    >
+                      <span className="flex min-w-0 items-center gap-[6px]">
+                        <span className="min-w-0 truncate font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37]">
+                          {currentFilter.label}
+                        </span>
+                        <span className="rounded-[4px] bg-[#e2e8f0] px-[5px] py-[1px] font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[normal] text-[#475569]">
+                          {currentFilter.count}
+                        </span>
+                      </span>
+                      <svg className={`size-[12px] shrink-0 text-[#94a3b8] transition-transform ${showQuickFilters ? "rotate-180" : ""}`} fill="none" viewBox="0 0 12 12">
+                          <path d="M3 4.5l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                    {showQuickFilters && (
+                      <div className="absolute left-0 top-[40px] z-30 w-[min(260px,calc(100vw-64px))] overflow-hidden rounded-[10px] border border-[#e9eaeb] bg-white shadow-[0px_8px_24px_rgba(15,23,43,0.12)]">
+                        {filters.map(({ key, label, count }) => (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => {
+                              setActiveFilter(key);
+                              setShowQuickFilters(false);
+                            }}
+                            className={`flex w-full items-center justify-between gap-[12px] px-[12px] py-[10px] transition-colors ${
+                              activeFilter === key ? "bg-[#f8fafc]" : "hover:bg-[#fafbfc]"
+                            }`}
+                          >
+                            <span className={`min-w-0 truncate font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${
+                              activeFilter === key ? "text-[#1a202c]" : "text-[#64748b]"
+                            }`}>
+                              {label}
+                            </span>
+                            <span className={`rounded-[4px] px-[5px] py-[1px] font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[normal] ${
+                              activeFilter === key ? "bg-[#e2e8f0] text-[#475569]" : "bg-[#f1f5f9] text-[#94a3b8]"
+                            }`}>
+                              {count}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+              </div>
+            </div>
+            <div className="content-stretch hidden gap-[3px] items-center relative transition-all duration-200 md:flex">
               {/* Select-all checkbox (unchecked) */}
               <button onClick={toggleSelectAll} className="cursor-pointer flex items-center justify-center shrink-0 mr-[10px]" style={{ padding: "1px 0", width: "18px" }}>
                 <div className="flex items-center justify-center rounded-[4px] size-[18px] border border-[#dfe3e8] bg-white hover:border-[#b8bcc4] transition-colors" />
@@ -4762,9 +4893,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               ))}
             </div>
             {/* Right: Ordenar + Filtros */}
-            <div className="flex items-center gap-[8px]">
+            <div className="flex shrink-0 items-center gap-[8px]">
               {/* Ordenar */}
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <button
                   onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
                   className="flex gap-[6px] items-center px-[12px] py-[6px] rounded-[6px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-all"
@@ -4785,11 +4916,11 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               {/* Filtros */}
               <div className="relative">
                 <button
-                  onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
-                  className="flex gap-[6px] items-center px-[12px] py-[6px] rounded-[6px] shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-all"
+                  onClick={() => { setShowFilters(!showFilters); setShowSort(false); setShowQuickFilters(false); }}
+                  className="flex size-[40px] items-center justify-center rounded-[8px] border border-[#e9eaeb] bg-white shrink-0 cursor-pointer hover:bg-[#f8fafc] transition-all md:size-auto md:gap-[6px] md:border-0 md:bg-transparent md:px-[12px] md:py-[6px] md:rounded-[6px]"
                 >
                   <svg className="shrink-0 size-[14px]" fill="none" viewBox="0 0 14 14"><path d="M1.75 2.625h10.5M3.5 7h7M4.9 11.375h4.2" stroke="#94a3b8" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                  <p className="font-['Helvetica_Neue:Light',sans-serif] leading-[normal] not-italic text-[13px] text-[#64748b] whitespace-nowrap">Filtros</p>
+                  <p className="hidden font-['Helvetica_Neue:Light',sans-serif] leading-[normal] not-italic text-[13px] text-[#64748b] whitespace-nowrap md:block">Filtros</p>
                 </button>
                 {showFilters && <FiltersDrawer onClose={() => setShowFilters(false)} />}
               </div>
@@ -4800,7 +4931,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       </div>
 
       {/* Reservation list — Figma-faithful layout */}
-      <div className="content-stretch flex flex-col items-start mt-[20px] relative w-full" style={{ minHeight: "calc(100vh - 320px)", padding: "0 32px" }}>
+      <div className="content-stretch flex flex-col items-start mt-[20px] relative w-full px-[16px] md:px-[32px]" style={{ minHeight: "calc(100vh - 320px)" }}>
         {filteredReservations.map((r, idx) => {
           const isGroup = r.type === "group";
           const expanded = expandedGroups.has(r.id);
@@ -7418,25 +7549,62 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
       </div>
 
       {/* Bottom navigation — mobile only */}
-      <nav className="flex md:hidden shrink-0 border-t border-[#e9eaeb] bg-white px-[16px] py-[8px] gap-[4px]">
-        {([
-          { id: "resumo-atividade", label: "Resumo", icon: <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M19 13V10.66C19 9.84 19 9.43 18.85 9.07C18.7 8.7 18.41 8.41 17.83 7.83L13.09 3.09C12.59 2.59 12.34 2.34 12.03 2.2C11.97 2.17 11.9 2.14 11.84 2.11C11.51 2 11.16 2 10.46 2C7.21 2 5.59 2 4.49 2.89C4.27 3.07 4.07 3.27 3.89 3.49C3 4.59 3 6.21 3 9.46V14.01C3 17.78 3 19.66 4.17 20.84C5.11 21.78 6.52 21.96 9 22M12 2.5V3C12 5.83 12 7.24 12.88 8.12C13.76 9 15.17 9 18 9H18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 22C18.76 22 21 19 21 19C21 19 18.76 16 16 16C13.24 16 11 19 11 19C11 19 13.24 22 16 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M15.99 19H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-          { id: "equipe", label: "Equipe", icon: <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.53 7.83 17.56 8.63 17.02C9.59 16.38 10.75 16 12 16C13.25 16 14.41 16.38 15.37 17.02C16.17 17.56 16.5 18.53 16.5 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.5"/><path d="M17.5 11C18.61 11 19.64 11.38 20.5 12.02C21.22 12.57 21.5 13.5 21.5 14.4V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5"/><path d="M6.5 11C5.39 11 4.36 11.38 3.5 12.02C2.78 12.57 2.5 13.5 2.5 14.4V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5"/></svg> },
-          { id: "atualizacoes", label: "Histórico", icon: <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.1 19C4.8 18.87 3.82 18.48 3.17 17.83C2 16.66 2 14.77 2 11V10.5C2 6.73 2 4.84 3.17 3.67C4.34 2.5 6.23 2.5 10 2.5H14C17.77 2.5 19.66 2.5 20.83 3.67C22 4.84 22 6.73 22 10.5V11C22 14.77 22 16.66 20.83 17.83C19.66 19 17.77 19 14 19C13.44 19.01 12.99 19.06 12.55 19.16C11.36 19.43 10.25 20.03 9.14 20.63C7.7 21.41 6.26 22.18 4.63 22C4.18 21.95 3.78 21.7 3.59 21.32C3.41 20.94 3.48 20.53 3.62 20.14C3.99 19.16 4.69 18.34 5.07 17.85" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-        ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setMobileSheet(mobileSheet === item.id ? null : item.id)}
-            className={`flex-1 flex flex-col items-center gap-[4px] py-[6px] rounded-[8px] transition-colors cursor-pointer ${
-              mobileSheet === item.id
-                ? "text-[#0b5ed7]"
-                : "text-[#717680]"
-            }`}
-          >
-            <div className="shrink-0">{item.icon}</div>
-            <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none ${mobileSheet === item.id ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{item.label}</p>
-          </button>
-        ))}
+      <nav className="md:hidden shrink-0 z-50">
+        <div className="relative w-full">
+          <div className="relative z-50 w-full bg-background border-t border-sidebar-border transition-[border-radius] duration-200 rounded-tl-[0.75em] rounded-tr-[0.75em]">
+            <div className="flex items-stretch gap-[0.25em] p-[0.75em]">
+              {([
+                {
+                  id: "resumo-atividade",
+                  label: "Resumo",
+                  onClick: () => setMobileSheet(mobileSheet === "resumo-atividade" ? null : "resumo-atividade"),
+                  icon: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" color="currentColor" className="shrink-0 transition-colors text-muted-foreground">
+                      <path d="M19 13V10.66C19 9.84 19 9.43 18.85 9.07C18.7 8.7 18.41 8.41 17.83 7.83L13.09 3.09C12.59 2.59 12.34 2.34 12.03 2.2C11.97 2.17 11.9 2.14 11.84 2.11C11.51 2 11.16 2 10.46 2C7.21 2 5.59 2 4.49 2.89C4.27 3.07 4.07 3.27 3.89 3.49C3 4.59 3 6.21 3 9.46V14.01C3 17.78 3 19.66 4.17 20.84C5.11 21.78 6.52 21.96 9 22M12 2.5V3C12 5.83 12 7.24 12.88 8.12C13.76 9 15.17 9 18 9H18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M16 22C18.76 22 21 19 21 19C21 19 18.76 16 16 16C13.24 16 11 19 11 19C11 19 13.24 22 16 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                      <path d="M15.99 19H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ),
+                },
+                {
+                  id: "equipe",
+                  label: "Equipe",
+                  onClick: () => setMobileSheet(mobileSheet === "equipe" ? null : "equipe"),
+                  icon: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" color="currentColor" className="shrink-0 transition-colors text-muted-foreground">
+                      <path d="M7.5 19.5C7.5 18.53 7.83 17.56 8.63 17.02C9.59 16.38 10.75 16 12 16C13.25 16 14.41 16.38 15.37 17.02C16.17 17.56 16.5 18.53 16.5 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M17.5 11C18.61 11 19.64 11.38 20.5 12.02C21.22 12.57 21.5 13.5 21.5 14.4V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M6.5 11C5.39 11 4.36 11.38 3.5 12.02C2.78 12.57 2.5 13.5 2.5 14.4V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  ),
+                },
+                {
+                  id: "atualizacoes",
+                  label: "Histórico",
+                  onClick: () => setMobileSheet(mobileSheet === "atualizacoes" ? null : "atualizacoes"),
+                  icon: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" color="currentColor" className="shrink-0 text-muted-foreground">
+                      <path d="M8 13.5H16M8 8.5H12M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.1551C11.3562 19.4268 10.2465 20.0271 9.13662 20.6274C7.69867 21.4052 6.26073 22.183 4.63288 22.0026C4.18484 21.9533 3.78303 21.7007 3.59368 21.3199C3.4055 20.9413 3.47709 20.5306 3.62424 20.1408C3.99424 19.1617 4.68838 18.3413 5.06587 17.8469" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  ),
+                },
+              ] as { id: string; label: string; icon: React.ReactNode; onClick?: () => void }[]).map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={item.onClick}
+                  className="group/button items-center justify-center border border-transparent bg-clip-padding text-sm font-normal whitespace-nowrap outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 flex flex-1 min-w-0 flex-col gap-[0.25em] h-auto pt-[0.625em] pb-[0.875em] px-[0.5em] rounded-xl transition-colors duration-200 active:scale-95 hover:bg-muted"
+                >
+                  {item.icon}
+                  <span className="text-xs font-normal truncate w-full text-center text-muted-foreground">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </nav>
 
       {/* Mobile bottom sheet */}

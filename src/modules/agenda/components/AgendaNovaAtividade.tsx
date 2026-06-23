@@ -192,7 +192,7 @@ export function AgendaNovaAtividade({ onBack }: AgendaNovaAtividadeProps) {
       </div>
 
       {/* ── Content ── */}
-      <div className="flex-1 overflow-y-auto px-[32px] py-[24px]">
+      <div className="flex-1 overflow-y-auto px-[16px] py-[24px] md:px-[32px]">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_400px]">
         {/* ---- Main column ---- */}
         <div className="flex flex-col gap-6">

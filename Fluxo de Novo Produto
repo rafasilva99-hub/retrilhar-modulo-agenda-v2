@@ -1,0 +1,453 @@
+# 0. Legenda de procedência
+
+- **[FATO]** está no RFP_001 (rev 02, Katiely). Fonte ao lado.
+- **[INFERÊNCIA]** proposta de design/implementação a partir dos fatos.
+- **[?]** falta confirmar. Vira item da seção 11.
+- **convenção do projeto** padrão de UI já adotado em sessões anteriores.
+
+O ponto sensível deste documento: o RFP confirma que a configuração varia por tipo de produto, mas só detalha o Day use por completo e descreve Produto personalizado como o que tem todas as opções. Toda a lógica condicional tipo a tipo abaixo é, portanto, [INFERÊNCIA] que precisa de validação de Cati e Cristiano. Está marcada como tal.
+
+---
+
+## 1. Régua: princípios que governam o fluxo
+
+| Princípio | Como vira regra no front | Procedência |
+|---|---|---|
+| Progressive disclosure por tipo | O tipo escolhido no Passo 0 define quais seções e campos renderizam. Nada de mostrar campo de pernoite para uma camiseta | [INFERÊNCIA], ancorada no RFP (Day use, personalizado) |
+| Edição não-linear | Após criar, o produto abre num editor por abas com salvar por seção. Não é wizard linear | [INFERÊNCIA] |
+| Rascunho-first | Criar gera imediatamente um produto em Rascunho. O usuário nunca perde trabalho por não ter terminado tudo | [INFERÊNCIA] |
+| Validação de coerência não-destrutiva | Quando uma config invalida outra (ex.: exclusivo por carrinho x tarifário), avisar sem apagar | [INFERÊNCIA] ancorada em regra do RFP |
+| Herança de template visível | Seção herdada de template padrão da empresa aparece sinalizada, não em branco | [INFERÊNCIA] ancorada na regra do asterisco |
+| Separar requisito de salvar vs requisito de publicar | Quase tudo salva incompleto (rascunho); só publicar exige o conjunto mínimo válido | [INFERÊNCIA] / convenção do projeto |
+| Célula/campo vazio neutro | Atributos que o tipo não usa não aparecem (não viram zero nem campo desabilitado solto) | [INFERÊNCIA] |
+
+[?] Se for desejável fundamentação externa citável (padrão de formulário longo, abas vs wizard), pesquiso e adiciono. Não citei NN/g de memória.
+
+---
+
+## 2. Premissas e decisões de partida
+
+- **[FATO]** Existem 15 tipos de produto. O tipo molda a configuração.
+- **[FATO]** As sessões de configuração são: Conteúdo/CMS, Estoque, Tarifário, Periodicidade, Canais de venda, Termos e contratos, Integração, Formas de pagamento, Opcionais, Comunicação, Tipo de fluxo de reserva, e a aba Formulário de participantes.
+- **[FATO]** Sete dessas seções seguem a regra do asterisco: só são pedidas no produto se a empresa não tiver template padrão.
+- **[INFERÊNCIA]** O fluxo recomendado é: Passo 0 (tipo + identificação mínima) gera Rascunho, e o usuário cai num editor por abas. Publicar é uma ação explícita ao final.
+- **[?]** Abas vs wizard no primeiro cadastro, e autosave vs salvar explícito, ainda são decisão de produto (seção 11).
+
+---
+
+## 3. Mapa macro do fluxo
+
+```
+[Listagem de Produtos]
+        │  clica "Novo Produto"
+        ▼
+┌─────────────────────────────┐
+│ PASSO 0: Tipo + identificação│  modal ou tela curta
+│  - escolhe 1 dos 15 tipos    │
+│  - nome do produto           │
+└─────────────────────────────┘
+        │  confirma  →  cria produto em RASCUNHO
+        ▼
+┌──────────────────────────────────────────────┐
+│ EDITOR DE PRODUTO (abas, não-linear)         │
+│  Abas renderizadas conforme TIPO + TEMPLATE  │
+│  ┌────────┬─────────┬─────────┬────────────┐ │
+│  │Conteúdo│ Preço   │Disponib.│ ...demais  │ │
+│  └────────┴─────────┴─────────┴────────────┘ │
+│  Cada aba: salva por seção, valida no salvar │
+│  Indicador de completude por aba             │
+└──────────────────────────────────────────────┘
+        │  ação "Publicar" (exige conjunto mínimo válido)
+        ▼
+   [Produto ATIVO]  ───►  volta à listagem
+```
+
+Estados de saída possíveis: permanece Rascunho (saiu sem publicar), Ativo (publicou), ou Inativo (publicou e depois despublicou pela listagem). Ver ciclo de vida em produtos-spec.md seção 3.5.
+
+---
+
+## 4. As variações de cenário (núcleo deste documento)
+
+São os eixos que disparam renderização condicional. O front precisa tratar cada um.
+
+| ID | Variação | O que muda na tela | Gatilho | Procedência |
+|---|---|---|---|---|
+| V1 | Criar vs Editar | Criar passa pelo Passo 0; editar entra direto no editor com dados carregados | rota/ação | [INFERÊNCIA] |
+| V2 | **Tipo de produto** | Quais abas e campos aparecem (ver matriz, seção 6) | seleção no Passo 0 | [INFERÊNCIA] ancorada no RFP |
+| V3 | **Template da empresa** | Seção com asterisco vem herdada (sinalizada/só leitura) ou é pedida no produto | empresa tem template? | [FATO] regra do asterisco |
+| V4 | **Tipo de cobrança** | A aba Preço muda totalmente entre Variável, Fixo e Exclusivo | campo na aba Preço | [FATO] |
+| V5 | Controlador de estoque | A aba Estoque distribui vagas por nível (produto, horário, evento, tarifário, item) | config de estoque | [FATO] níveis / [?] simultaneidade |
+| V6 | Quantidade de eventos | 0, 1 ou vários eventos muda o preço de referência e a disponibilidade | cadastro de eventos | [FATO] regra "a partir de" |
+| V7 | Conflito entre abas | Config que invalida outra dispara aviso não-destrutivo | combinação de campos | [FATO] (caso carrinho) + [INFERÊNCIA] (generalização) |
+| V8 | Coleta de participante | A aba Formulário pede dados de cada participante ou de um por compra | escolha na aba Formulário | [FATO] |
+
+As três variações que mais pesam no front são **V2 (tipo)**, **V3 (template)** e **V4 (cobrança)**, porque reorganizam blocos inteiros, não só um campo.
+
+---
+
+## 5. Passo 0: seleção de tipo e identificação
+
+[INFERÊNCIA] É um passo de bifurcação, não um campo qualquer: a escolha define o resto do formulário.
+
+Tela curta (modal `Dialog` ou rota dedicada) com:
+
+| Campo | Input | Obr | Componente | Observação |
+|---|---|---|---|---|
+| Tipo de produto | Seleção visual (cards) | Sim | Grid de `Card` selecionáveis | 15 opções com nome + descrição curta, agrupadas por afinidade |
+| Nome do produto | Texto | Sim | `Input` | Mínimo para criar o rascunho |
+
+[INFERÊNCIA] Agrupamento sugerido dos 15 tipos para o seletor:
+
+- **Experiências com tempo/vaga:** Atividade, Treinamento/aulas, Excursão de 1 dia, Excursão, Tour privado, Evento.
+- **Acesso e transporte:** Ingresso, Transporte.
+- **Hospedagem:** Meio de hospedagem (inclui camping).
+- **Produtos e recorrência:** Mercadorias, Aluguel, Comida e Bebida, Assinatura, Cartão presente.
+- **Livre:** Produto personalizado (liga todas as opções).
+
+[FATO] Comida e Bebida não tem descrição no RFP. [?] Confirmar com Cati antes de expor o card.
+
+Ao confirmar: cria produto em Rascunho, redireciona ao editor com as abas já filtradas pelo tipo.
+
+---
+
+## 6. Matriz Tipo x Seções (proposta) [INFERÊNCIA]
+
+Esta matriz é a tradução de V2. O RFP só confirma o Day use por completo e o personalizado como todas as opções; o resto é proposta para validar. Legenda: S = seção visível, "-" = oculta por padrão, T = depende de ter template (regra do asterisco).
+
+| Tipo | Conteúdo | Estoque | Preço/Tarifário | Disponib./Period. | Opcionais | Recursos | Políticas/Termos | Formas pgto | Comunic. | Canais | Fluxo reserva | Formulário |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Atividade | S | S | S | S | S | S | T | T | T | T | T | S |
+| Treinamento/aulas | S | S | S | S | S | S | T | T | T | T | T | S |
+| Excursão de 1 dia | S | S | S | S | S | S | T | T | T | T | T | S |
+| Excursão | S | S | S | S | S | S | T | T | T | T | T | S |
+| Tour privado | S | S | S | S | S | S | T | T | T | T | T | S |
+| Evento | S | S | S | S | S | S | T | T | T | T | T | S |
+| Ingresso | S | S | S | S | S | - | T | T | T | T | T | S |
+| Transporte | S | S | S | S | S | S | T | T | T | T | T | S |
+| Meio de hospedagem | S | S | S | S | S | S | T | T | T | T | T | S |
+| Mercadorias | S | S | S | - | S | - | T | T | T | T | - | - |
+| Aluguel | S | S | S | S | S | S | T | T | T | T | T | S |
+| Comida e Bebida | S | S | S | S | S | - | T | T | T | T | T | S |
+| Assinatura | S | S | S | S | - | - | T | T | T | T | - | - |
+| Cartão presente | S | - | S | - | - | - | T | T | T | T | - | - |
+| Produto personalizado | S | S | S | S | S | S | S | S | S | S | S | S |
+
+[FATO] confirmado pelo RFP: Day use (configuração específica de Atividade/uso diário) adiciona mesas, pessoas por mesa e antecedência de venda. Produto personalizado liga tudo.
+
+[?] Cada linha que não seja personalizado precisa de validação de Cati. Em especial: Mercadoria precisa de Disponibilidade e Fluxo de reserva? Cartão presente controla estoque? Assinatura tem Opcionais?
+
+---
+
+## 7. Detalhamento por seção (campo a campo, front)
+
+Cada seção é uma aba do editor. Tabelas com tipo de input, obrigatoriedade, condição de renderização e componente shadcn sugerido.
+
+### 7.1 Conteúdo (CMS) [FATO RFP_001]
+
+| Campo | Input | Obr | Renderização | Componente |
+|---|---|---|---|---|
+| Nome | texto | publicar | sempre | `Input` |
+| Texto curto (resumo/card) | texto curto | publicar | sempre | `Textarea` curto |
+| Tags de categoria | multi-seleção | não | sempre | `Combobox` multi |
+| Breve descrição | rich text | publicar | sempre | editor rich |
+| O que está incluso | rich text/lista | não | sempre | editor lista |
+| O que não está incluso | rich text/lista | não | sempre | editor lista |
+| Roteiro/Itinerário | rich text | não | tipos com tempo (V2) | editor rich |
+| Regras e orientações | rich text | não | sempre | editor rich |
+| Ponto de encontro | texto | não | tipos presenciais (V2) | `Input` |
+| Duração | número + unidade | não | tipos com tempo (V2) | `Input` + `Select` |
+| Acessibilidade | texto/seleção | não | sempre | `Textarea` |
+| Link Google Maps | url | não | tipos presenciais (V2) | `Input` |
+| Imagens | upload múltiplo ordenável | publicar | sempre | uploader + reorder |
+| Locais onde aparece | multi-seleção | não | sempre | `Combobox` multi |
+| Produto destaque | toggle | não | sempre | `Switch` |
+| Ordem de exibição | número | não | sempre | `Input` número |
+| SEO e pixels | grupo de campos | não | sempre (avançado) | seção colapsável |
+
+[FATO] O RFP traz duas listas de campos descritivos e pede para mesclá-las. A tabela acima é a mescla proposta. [?] Validar com Cati.
+
+### 7.2 Estoque [FATO RFP_001]
+
+[FATO] Controle em cinco níveis: produto, horário, evento, tarifário, item. Controladores: Produto, Evento, Item, Horário, Tarifário.
+
+| Campo | Input | Obr | Renderização | Componente |
+|---|---|---|---|---|
+| Nível de controle de estoque | seleção | sim (quando há estoque) | sempre que tipo controla estoque (V2) | `RadioGroup` ou `Select` |
+| Quantidade de vagas | número | depende do nível | quando nível = produto | `Input` número |
+| Vagas por horário | tabela | depende | quando nível = horário | tabela editável |
+| Vagas por evento | herdado do evento | depende | quando nível = evento | leitura, vincula a eventos |
+| Vagas por tarifa | tabela | depende | quando nível = tarifário | tabela editável (liga ao tarifário) |
+| Vagas por item | herdado do item | depende | quando nível = item | leitura |
+
+[?] Pode haver mais de um controlador simultâneo (ex.: evento E tarifário)? Muda de `RadioGroup` (exclusivo) para multi. Confirmar com Cristiano.
+
+### 7.3 Preço / Tarifário [FATO RFP_001] (a seção com mais variação, V4)
+
+Estrutura de topo, sempre visível:
+
+| Campo | Input | Obr | Componente |
+|---|---|---|---|
+| Valor do anúncio (vitrine) | moeda | publicar | `Input` moeda |
+| Tipo de cobrança | seleção | sim | `Select`: Variável / Fixo / Exclusivo (por item) |
+| Proxy de pagamento | seleção (de Integrações) | sim | `Select` (lista vinda de Integrações) |
+| Parcelas no cartão | número | não | `Input` número |
+| Possui entrada | sim/não | não | `Switch` |
+| > Tipo da entrada | %/valor | quando entrada = sim | `RadioGroup` |
+| > Valor da entrada | número | quando entrada = sim | `Input` |
+
+Bloco condicional por **Tipo de cobrança** (V4):
+
+**Se Variável (tarifário):** abre o construtor de tarifas. Sub-seleção de modelo:
+
+- Por tipo:
+  - Faixa etária (criança/idoso/adulto): linhas com preço, idade inicial, idade final, quantidade mínima, quantidade máxima.
+  - Especiais (estudante/professor): preço, quantidade mínima, quantidade máxima.
+  - Unidade habitacional (single/duplo/triplo): preço, quantidade mínima, quantidade máxima.
+  - Personalizável: rótulo, preço, quantidade mínima, quantidade máxima.
+- Por lotes/grupo: rótulo, faixa de x a y, preço (ex.: 1 a 10 = R$ 100; 11 a 20 = R$ 150).
+- Por tipo de dia: regras por seg a sex / sáb a dom / feriados ou dias personalizados.
+
+**Se Fixo:** um único campo de valor (R$), sem tabela.
+
+**Se Exclusivo (por item):** cobrança vinculada a item. Liga à regra de conflito (V7): se exclusivo por carrinho, o tarifário é ignorado e o valor vem do financeiro (valor cheio do grupo).
+
+[?] A opção "unidade habitacional" deve aparecer apenas quando o tipo é Meio de hospedagem, ou fica sempre no select? O RFP a lista como opção genérica. Confirmar com Cati.
+
+Regras desta aba [FATO]:
+
+- Excluir um tarifário com reservas não apaga: arquiva, some da tela, mensagem "há reservas com esse tarifário, ele não será excluído, mas sim arquivado", e grava no histórico. No front: `AlertDialog` informativo + ação "arquivar" em vez de "excluir".
+- "Há uma Regra: o lote" citada no RFP, porém com texto cortado. [?] Recuperar com Cati.
+
+### 7.4 Disponibilidade e periodicidade [FATO RFP_001]
+
+[FATO] Padrões: dias específicos da semana, período fixo do mês, datas sazonais, feriados e datas comemorativas, funcionamento contínuo, datas específicas.
+
+| Campo | Input | Renderização | Componente |
+|---|---|---|---|
+| Padrão de recorrência | seleção | sempre (tipos com agenda, V2) | `Select` |
+| Dias da semana | multi-toggle | quando padrão = dias da semana | grupo de `Toggle` |
+| Janela do mês | intervalo | quando padrão = período do mês | inputs de data |
+| Datas sazonais | intervalos | quando padrão = sazonal | repetidor de intervalos |
+| Feriados/datas comemorativas | seleção | quando padrão = feriados | `Combobox` |
+| Datas específicas | datas | quando padrão = específicas | date picker múltiplo |
+
+[?] Os campos de cada padrão (janelas de horário, antecedência, exceções) e a seção "Horários e duração" não estão detalhados no RFP. A tabela acima é estrutura proposta. Detalhar com Cati.
+
+### 7.5 Opcionais [FATO RFP_001]
+
+Produtos ou recursos adicionados ao anúncio.
+
+| Campo | Input | Componente |
+|---|---|---|
+| Item opcional | busca/seleção (produto ou recurso) | `Combobox` |
+| Preço do opcional | moeda | `Input` moeda |
+| Estoque do opcional | número (ou herdado, se recurso) | `Input`/leitura |
+
+### 7.6 Recursos (vínculo) [FATO RFP_001]
+
+[FATO] Recursos têm cadastro próprio (estoque, SKU, tarifas). Aqui só o vínculo.
+
+| Campo | Input | Componente |
+|---|---|---|
+| Recurso necessário | seleção | `Combobox` (lista de recursos) |
+| Quantidade | número | `Input` número |
+
+[INFERÊNCIA] O vínculo conecta o produto à regra operacional (recurso não pode estar em dois produtos no mesmo horário). Validação de conflito é da Agenda, não desta tela.
+
+### 7.7 Políticas, termos e contratos [FATO RFP_001] (asterisco, V3)
+
+| Campo | Input | Componente |
+|---|---|---|
+| Política de cancelamento | template ou texto | `Select` (template) + editor |
+| Termo de responsabilidade | template | `Select` |
+| Informações de saúde obrigatórias | toggle | `Switch` |
+
+Se a empresa tem template padrão (V3): vem herdado e sinalizado. [?] Sobrescrita por produto é permitida?
+
+### 7.8 Formas de pagamento [FATO RFP_001] (asterisco, V3)
+
+| Campo | Input | Componente |
+|---|---|---|
+| Proxy de pagamento | seleção (de Integrações) | `Select` |
+| Formas aceitas | multi-seleção | `Combobox` multi |
+| Parcelas aceitas no cartão | número | `Input` número |
+
+Só pedida no produto se não houver template padrão da empresa (V3).
+
+### 7.9 Comunicação [FATO RFP_001] (asterisco, V3)
+
+| Campo | Input | Componente |
+|---|---|---|
+| Modelo de e-mail | template/editor | `Select` + editor |
+| Modelo de push | template/editor | `Select` + editor |
+| Modelo de WhatsApp | template/editor | `Select` + editor |
+
+### 7.10 Canais de venda [FATO RFP_001] (asterisco, V3)
+
+[FATO] Canais: loja on-line, balcão, afiliados, marketplaces, parceiros comerciais, redes sociais.
+
+| Campo | Input | Componente |
+|---|---|---|
+| Canais habilitados | multi-toggle | grupo de `Switch` ou `Combobox` multi |
+
+### 7.11 Fluxo de reserva [FATO RFP_001] (asterisco, V3)
+
+[FATO] A seção existe. [?] O RFP não enumera os tipos de fluxo de reserva. Bloquear o detalhamento até Cristiano confirmar os valores.
+
+### 7.12 Formulário de participantes [FATO RFP_001, seção 1.2] (V8)
+
+[FATO] Referência visual no estilo Sympla (não é o desenho final). Estrutura:
+
+- **Campos predefinidos** (botões que adicionam ao formulário): Endereço, Telefone, Data/Hora, CPF/CNPJ, RG, Termo de Responsabilidade.
+- **Campos customizáveis:** Texto, Parágrafo, Lista, Múltipla escolha, Vários valores.
+- **Definir de quem coletar dados (V8):** de cada participante (dados por ingresso) ou de apenas um participante por compra (recomendado).
+
+[INFERÊNCIA] Layout: paleta de campos à esquerda, preview do formulário à direita (padrão da referência), reskinado no design system UXNAUT. A escolha de V8 impacta checkout e Agenda. [?] Coleta é por produto ou global?
+
+---
+
+## 8. Lógica condicional consolidada (regras para o front)
+
+Tradução das variações em regras de renderização. Em pseudo-lógica, para os devs.
+
+**Por tipo (V2):**
+```
+ao selecionar tipo no Passo 0:
+  abas_visiveis = matriz_tipo_secoes[tipo]   // seção 6
+  campos_da_aba_conteudo = filtra por tipo   // ex.: esconde Roteiro/Ponto de encontro em Mercadoria
+  se tipo == "Produto personalizado": abas_visiveis = TODAS
+  se tipo permite Day use: adiciona campos (mesas, pessoas por mesa, antecedência)
+```
+
+**Por template da empresa (V3):**
+```
+para cada seção com asterisco (Tarifário, Periodicidade, Canais, Termos, Formas de pgto, Comunicação, Fluxo de reserva):
+  se empresa.tem_template(secao):
+    secao.estado = "herdada"        // badge "herdado de template", pré-preenchida
+    secao.editavel = (template permite sobrescrita?)   // [?]
+  senao:
+    secao.estado = "pedida no produto"   // campos solicitados normalmente
+```
+
+**Por tipo de cobrança (V4):**
+```
+ao mudar "tipo de cobrança":
+  se "Variável":  mostra construtor de tarifas (por tipo / lotes / tipo de dia)
+  se "Fixo":      mostra apenas valor único
+  se "Exclusivo": vincula a item; se exclusivo-por-carrinho, desativa tarifário
+```
+
+**Conflito de coerência (V7):**
+```
+se cobranca == "exclusivo por carrinho" E existe tarifario:
+  mostra aviso NÃO destrutivo:
+  "Este produto está com a cobrança por tipo de carrinho, o tarifário
+   não será válido até alterar o tipo de cobrança para por pessoa."
+  // não apaga o tarifário; só sinaliza
+```
+
+**Preço de referência com eventos (V6):**
+```
+se produto.eventos.length > 1:
+  valor_vitrine = min(eventos.map(e => e.valor))   // regra "a partir de"
+  exibe "a partir de R$ X"
+```
+
+**Estoque (V5):**
+```
+aba_estoque renderiza inputs conforme nivel_de_controle:
+  produto   -> campo único de vagas
+  horario   -> tabela por horário
+  evento    -> herda dos eventos (leitura)
+  tarifario -> tabela por tarifa
+  item      -> herda dos itens (leitura)
+// [?] permitir múltiplos níveis simultâneos muda RadioGroup -> multi
+```
+
+---
+
+## 9. Salvamento, validação e publicação
+
+[INFERÊNCIA] Modelo recomendado:
+
+- **Criar** gera Rascunho imediato (após Passo 0). O produto existe mesmo incompleto.
+- **Salvar por seção:** cada aba salva o seu bloco. [?] Autosave no blur ou botão "salvar" por seção, a decidir.
+- **Validação no salvar/sair do campo**, não no foco vazio (convenção do projeto: erro não-agressivo).
+- **Dois níveis de obrigatoriedade:**
+  - Requisito de salvar rascunho: mínimo (tipo + nome).
+  - Requisito de publicar: conjunto válido (nome, texto curto, breve descrição, imagens, valor do anúncio ou tarifa válida, e os campos obrigatórios das abas ativas do tipo).
+- **Ação Publicar:** valida o conjunto mínimo, lista pendências se faltar, e só então move Rascunho para Ativo.
+- **Indicador de completude por aba:** badge na aba (ex.: ponto/contador) mostrando o que falta para publicar. Mostra exceções, não confirmações (convenção do projeto).
+
+[FATO] Toda ação no produto é registrada no histórico (data, horário, ação, usuário). No front, isso é um painel/aba de histórico (somente leitura), não um campo.
+
+---
+
+## 10. Estados e exceções (transversal)
+
+| Caso | Tratamento | Procedência |
+|---|---|---|
+| Editar produto com reservas | Não permitir exclusão; alterações sensíveis (preço/tarifa) seguem a regra de arquivamento, não sobrescrita destrutiva | [FATO] (tarifário) / [?] (demais campos) |
+| Excluir tarifário em uso | `AlertDialog` informa arquivamento, não exclusão | [FATO] |
+| Conflito entre abas | Aviso inline não-destrutivo (V7) | [FATO] (carrinho) |
+| Seção herdada de template | Badge "herdado", campos pré-preenchidos, edição conforme regra (V3) | [FATO] regra do asterisco / [?] sobrescrita |
+| Carregando (editar) | Skeleton do editor por abas, não spinner solto | [INFERÊNCIA] |
+| Erro ao salvar seção | Mantém o que foi digitado; toast de erro com retry | [INFERÊNCIA] / convenção do projeto |
+| Sair com mudanças não salvas | Confirmar saída (ou autosave silencioso, se essa for a decisão) | [INFERÊNCIA] / [?] |
+| Edição concorrente (dois usuários) | [?] Não tratado no RFP | [?] backend |
+
+---
+
+## 11. Pendências que travam a implementação
+
+Consolidação dos [?] específicos do fluxo, por destinatário.
+
+**Para Cristiano (estrutura/backend):**
+
+1. Tipos de fluxo de reserva: quais são os valores? (7.11)
+2. Estoque permite múltiplos controladores simultâneos no mesmo produto? (7.2)
+3. Quando há template da empresa, o produto pode sobrescrever a seção, ou o template trava? (V3)
+4. Edição concorrente de produto: existe lock ou last-write-wins? (10)
+5. Alterações destrutivas em produto com reservas (além do tarifário): regra geral? (10)
+
+**Para Cati / Katiely (regra de negócio):**
+
+6. Validar a matriz Tipo x Seções da seção 6 (linha a linha, exceto personalizado).
+7. Especificação de Comida e Bebida (tipo sem descrição). (5)
+8. "Unidade habitacional" no tarifário: só para Hospedagem ou opção genérica? (7.3)
+9. Recuperar a "regra do lote" (texto cortado no RFP). (7.3)
+10. Campos de cada padrão de disponibilidade e a seção "Horários e duração". (7.4)
+11. Revisar e mesclar as duas listas de campos do Conteúdo/CMS. (7.1)
+12. Coleta de dados de participante: por produto ou global? (7.12)
+
+**Decisão de produto/design (Luana + UXNAUT):**
+
+13. Passo 0 como modal ou tela dedicada. (5)
+14. Abas vs wizard no primeiro cadastro. (2, 9)
+15. Autosave no blur vs salvar explícito por seção. (9)
+16. Conjunto exato de campos exigidos para publicar. (9)
+
+---
+
+## 12. Inventário de componentes (referência de implementação)
+
+[INFERÊNCIA] Mapeamento dos inputs do fluxo para shadcn/ui, com tokens UXNAUT.
+
+| Necessidade | Componente shadcn | Token/nota |
+|---|---|---|
+| Navegação por seção | `Tabs` (ou nav lateral) | primário `#1E40AF` na aba ativa |
+| Texto curto | `Input` | Helvetica Neue |
+| Texto longo/descritivo | `Textarea` / editor rich | |
+| Seleção única | `Select` / `RadioGroup` | |
+| Seleção múltipla / busca | `Combobox` (multi) | |
+| Liga/desliga | `Switch` | |
+| Datas | date picker | |
+| Tabelas editáveis (tarifas, estoque) | tabela custom + `Input` por célula | |
+| Avisos não-destrutivos | inline + `Alert` | fills semânticos (âmbar/azul) |
+| Confirmação de arquivamento/saída | `AlertDialog` | |
+| Passo 0 | `Dialog` ou rota | |
+| Upload de imagens | uploader + reorder | |
+| Badge de completude por aba | `Badge` | fills semânticos |
+| Estado de carregamento | skeleton | |
+
+Ícones: HugeIcons (traços arredondados). Cores semânticas de fill: verde `#dcfce7`, vermelho `#fee2e2`, âmbar `#fef3c7`, azul `#dbeafe`, laranja `#ffedd5`.

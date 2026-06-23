@@ -118,6 +118,9 @@ function reservationsReducer(state: Reservation[], action: ResAction): Reservati
     const hasTarget = r.participants.some((p) => p.id === action.participantId);
     if (!hasTarget) return r;
     const newParticipants = r.participants.map((p) => {
+      if (action.type === "UNDO_CANCEL_PARTICIPANT" && r.status === "Cancelled" && p.id !== action.participantId) {
+        return p.checkInStatus === "Cancelled" ? p : { ...p, checkInStatus: "Cancelled" as CheckInStatus };
+      }
       if (p.id !== action.participantId) return p;
       if (action.type === "CHECK_IN") return { ...p, checkInStatus: "Done" as CheckInStatus };
       if (action.type === "UNDO_CHECK_IN") return { ...p, checkInStatus: "Pending" as CheckInStatus };
@@ -4408,7 +4411,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           </svg>
         </div>
 
-        <div className="flex flex-col gap-[12px] relative z-[1]" style={{ padding: "24px 32px 32px" }}>
+        <div className="flex flex-col gap-[12px] relative z-[1]" style={{ padding: "24px 16px 32px" }}>
             {/* Row 1: Breadcrumb */}
             <div className="flex items-center justify-between">
             <div className="flex items-center gap-[8px]">
@@ -4589,7 +4592,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       </div>
 
       {/* Search bar */}
-      <div ref={searchBarRef} className="content-stretch flex gap-[16px] items-center mt-[24px] relative w-full" style={{ padding: "0 32px" }}>
+      <div ref={searchBarRef} className="content-stretch flex gap-[16px] items-center mt-[24px] relative w-full" style={{ padding: "0 16px" }}>
         <div className="bg-white flex-1 min-w-0 relative rounded-[12px] border border-[#e5e7eb] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]">
           <div className="content-stretch flex gap-[12px] items-center px-[18px] py-[14px] relative size-full">
             <svg className="shrink-0 size-[20px]" fill="none" viewBox="0 0 20 20"><circle cx="9" cy="9" r="6" stroke="#9ca3af" strokeWidth="1.5"/><path d="M13.5 13.5l3.5 3.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round"/></svg>
@@ -4613,7 +4616,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       </div>
 
       {/* Filter tabs OR Bulk actions bar */}
-      <div className={`${hasSelection ? "sticky z-[10]" : "relative"}`} style={{ padding: `${hasSelection && stickyTopBarHeight > 0 ? "0px" : "16px"} 32px 0 32px`, ...(hasSelection ? { top: stickyTopBarHeight > 0 ? `${stickyTopBarHeight + 16}px` : "0px" } : {}) }}>
+      <div className={`${hasSelection ? "sticky z-[10]" : "relative"}`} style={{ padding: `${hasSelection && stickyTopBarHeight > 0 ? "0px" : "16px"} 16px 0 16px`, ...(hasSelection ? { top: stickyTopBarHeight > 0 ? `${stickyTopBarHeight + 16}px` : "0px" } : {}) }}>
       <div ref={bulkBarRef} className={`w-full rounded-[12px] h-[52px] flex items-center transition-colors ${hasSelection ? "bg-[#181d27] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.15)]" : "bg-white"}`} style={{ padding: "0 16px" }}>
         {!hasSelection && <div aria-hidden="true" className="absolute border border-[#f5f5f5] border-solid inset-0 pointer-events-none rounded-[12px]" />}
         {hasSelection ? (
@@ -6918,6 +6921,7 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
 
 export default function AgendaAtualizacoes({ initialTab = "participantes", onBackToActivities, onActivityCancelled, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; onActivityCancelled?: (activityDate?: string) => void; activityId?: string; initialOverlay?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [mobileSheet, setMobileSheet] = useState<string | null>(null);
   const [focusActivityInput, setFocusActivityInput] = useState(false);
   const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
   const [teamSearch, setTeamSearch] = useState("");
@@ -6964,25 +6968,26 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
         <div className="flex h-[56px] items-center px-[20px]">
           {/* Left: logo + title */}
           <div className="flex items-center gap-[16px]">
-            <img src="/src/assets/retrilhar-logo.png" alt="Retrilhar" className="h-[24px]" />
+            <img src="/src/assets/retrilhar-logo.png" alt="Retrilhar" className="h-[24px] hidden md:block" />
+            <img src="/src/assets/retrilhar-mobile-icon.png" alt="Retrilhar" className="size-[24px] md:hidden shrink-0 object-contain" />
             <div className="w-px h-[20px] bg-[#e9eaeb]" />
             <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">Detalhes da atividade</p>
           </div>
           {/* Right: close */}
           <button
             onClick={onBackToActivities}
-            className="ml-auto flex gap-[6px] items-center px-[14px] py-[8px] rounded-[8px] border border-[#e9eaeb] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+            className="group/button ml-auto inline-flex h-8 shrink-0 items-center justify-center gap-[0.375em] rounded-lg border border-[#e9eaeb] bg-white bg-clip-padding px-3 text-sm font-normal whitespace-nowrap text-[#535862] outline-none select-none transition-all hover:bg-[#f8fafc] hover:text-[#414651] focus-visible:border-[#0b5ed7] focus-visible:ring-3 focus-visible:ring-[#0b5ed7]/30 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
           >
-            <svg className="size-[14px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Fechar</p>
+            <svg className="size-[14px]" fill="none" viewBox="0 0 24 24"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px]">Fechar</span>
           </button>
         </div>
       </header>
 
       {/* ── Body: sidebar + content ── */}
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar — icon-only, chevron toggles activity panel */}
-        <nav className="flex flex-col shrink-0 border-r border-[#e9eaeb] bg-white py-[16px] gap-[4px] w-[56px] px-[8px] overflow-visible">
+        {/* Sidebar — icon-only, chevron toggles activity panel (hidden on mobile) */}
+        <nav className="hidden md:flex flex-col shrink-0 border-r border-[#e9eaeb] bg-white py-[16px] gap-[4px] w-[56px] px-[8px] overflow-visible">
           {/* Chevron toggle — opens/closes activity panel */}
           <div className="flex items-center justify-center mb-[4px]">
             <button
@@ -7022,7 +7027,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
           ))}
         </nav>
 
-        {/* Content — push-drawer: panel on LEFT, content pushes right off-screen */}
+        {/* Content — push-drawer on desktop, fullscreen panels on mobile */}
         <main className="flex-1 min-h-0 overflow-hidden relative">
           <div
             className="absolute inset-0 flex transition-transform duration-300 ease-in-out"
@@ -7257,7 +7262,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Equipe responsável</p>
                   </div>
                   {/* Content */}
-                  <div className="flex-1 overflow-y-auto px-[16px] py-[16px]">
+                  <div className="flex-1 overflow-y-auto px-[16px] py-[16px] flex flex-col">
                     {/* Search / Add member dropdown */}
                     {(() => {
                       const allGuides = TEAM_GUIDE_OPTIONS;
@@ -7409,7 +7414,195 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
             </div>
           </div>
         </main>
+
       </div>
+
+      {/* Bottom navigation — mobile only */}
+      <nav className="flex md:hidden shrink-0 border-t border-[#e9eaeb] bg-white px-[16px] py-[8px] gap-[4px]">
+        {([
+          { id: "resumo-atividade", label: "Resumo", icon: <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M19 13V10.66C19 9.84 19 9.43 18.85 9.07C18.7 8.7 18.41 8.41 17.83 7.83L13.09 3.09C12.59 2.59 12.34 2.34 12.03 2.2C11.97 2.17 11.9 2.14 11.84 2.11C11.51 2 11.16 2 10.46 2C7.21 2 5.59 2 4.49 2.89C4.27 3.07 4.07 3.27 3.89 3.49C3 4.59 3 6.21 3 9.46V14.01C3 17.78 3 19.66 4.17 20.84C5.11 21.78 6.52 21.96 9 22M12 2.5V3C12 5.83 12 7.24 12.88 8.12C13.76 9 15.17 9 18 9H18.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M16 22C18.76 22 21 19 21 19C21 19 18.76 16 16 16C13.24 16 11 19 11 19C11 19 13.24 22 16 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M15.99 19H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+          { id: "equipe", label: "Equipe", icon: <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.53 7.83 17.56 8.63 17.02C9.59 16.38 10.75 16 12 16C13.25 16 14.41 16.38 15.37 17.02C16.17 17.56 16.5 18.53 16.5 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.5"/><path d="M17.5 11C18.61 11 19.64 11.38 20.5 12.02C21.22 12.57 21.5 13.5 21.5 14.4V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5"/><path d="M6.5 11C5.39 11 4.36 11.38 3.5 12.02C2.78 12.57 2.5 13.5 2.5 14.4V14.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.5"/></svg> },
+          { id: "atualizacoes", label: "Histórico", icon: <svg className="size-[20px]" fill="none" viewBox="0 0 24 24"><path d="M8 13.5H16M8 8.5H12M6.1 19C4.8 18.87 3.82 18.48 3.17 17.83C2 16.66 2 14.77 2 11V10.5C2 6.73 2 4.84 3.17 3.67C4.34 2.5 6.23 2.5 10 2.5H14C17.77 2.5 19.66 2.5 20.83 3.67C22 4.84 22 6.73 22 10.5V11C22 14.77 22 16.66 20.83 17.83C19.66 19 17.77 19 14 19C13.44 19.01 12.99 19.06 12.55 19.16C11.36 19.43 10.25 20.03 9.14 20.63C7.7 21.41 6.26 22.18 4.63 22C4.18 21.95 3.78 21.7 3.59 21.32C3.41 20.94 3.48 20.53 3.62 20.14C3.99 19.16 4.69 18.34 5.07 17.85" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+        ] as { id: string; label: string; icon: React.ReactNode }[]).map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setMobileSheet(mobileSheet === item.id ? null : item.id)}
+            className={`flex-1 flex flex-col items-center gap-[4px] py-[6px] rounded-[8px] transition-colors cursor-pointer ${
+              mobileSheet === item.id
+                ? "text-[#0b5ed7]"
+                : "text-[#717680]"
+            }`}
+          >
+            <div className="shrink-0">{item.icon}</div>
+            <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none ${mobileSheet === item.id ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{item.label}</p>
+          </button>
+        ))}
+      </nav>
+
+      {/* Mobile bottom sheet */}
+      {mobileSheet && createPortal(
+        <div className="fixed inset-0 z-[55] flex flex-col justify-end md:hidden pt-[46px]">
+          <div className="absolute inset-0 bg-black/40 transition-opacity duration-200" onClick={() => setMobileSheet(null)} />
+          <div className="relative z-10 bg-white rounded-t-[16px] shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.12)] h-full flex flex-col animate-in slide-in-from-bottom duration-200">
+            {/* Handle */}
+            <div className="flex justify-center pt-[8px] pb-[4px] shrink-0">
+              <div className="w-[36px] h-[4px] rounded-full bg-[#d0d5dd]" />
+            </div>
+            {/* Header */}
+            <div className="flex items-center justify-between px-[16px] py-[12px] shrink-0">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">
+                {mobileSheet === "resumo-atividade" ? "Resumo da atividade" : mobileSheet === "equipe" ? "Equipe responsável" : "Histórico"}
+              </p>
+              <button onClick={() => setMobileSheet(null)} className="group/button inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-[#e9eaeb] bg-[#f8fafc] bg-clip-padding text-sm font-normal whitespace-nowrap outline-none select-none transition-all hover:bg-[#f1f5f9] hover:text-[#414651] focus-visible:border-[#0b5ed7] focus-visible:ring-3 focus-visible:ring-[#0b5ed7]/30 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0">
+                <svg className="size-[14px] text-[#717680]" fill="none" viewBox="0 0 24 24">
+                  <path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+            {/* Content */}
+            <div className={`flex-1 min-h-0 ${mobileSheet === "equipe" ? "flex flex-col" : "overflow-y-auto"}`}>
+              {mobileSheet === "resumo-atividade" && (
+                <div className="px-[16px] py-[16px]">
+                  {(() => {
+                    const allParts = mockReservations.flatMap((r) => r.participants);
+                    const totalOccupancy = allParts.length;
+                    const criancas = allParts.filter((p) => p.tariffType.toLowerCase().includes("criança")).length;
+                    const cortesias = allParts.filter((p) => p.tariffType.toLowerCase().includes("cortesia")).length;
+                    const adultos = totalOccupancy - criancas - cortesias;
+                    const occupiedPct = activity.capacity > 0 ? Math.min(Math.round((totalOccupancy / activity.capacity) * 100), 100) : 0;
+                    const vacantPct = Math.max(100 - occupiedPct, 0);
+                    const startP = activity.startTime.split(":").map(Number);
+                    const endP = activity.endTime.split(":").map(Number);
+                    const diffM = (endP[0] * 60 + endP[1]) - (startP[0] * 60 + startP[1]);
+                    const durLabel = diffM >= 60 ? `${Math.floor(diffM / 60)}h${diffM % 60 > 0 ? diffM % 60 : ""}` : `${diffM}min`;
+                    const dp = activity.date.split("-");
+                    const dateS = `${dp[2]}/${dp[1]}/${dp[0]}`;
+                    const f12 = (t: string) => { const [h, mi] = t.split(":").map(Number); return `${String(h % 12 || 12).padStart(2, "0")}:${String(mi).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`; };
+                    return (
+                      <div className="flex flex-col gap-[24px]">
+                        <div className="flex flex-col gap-[12px]">
+                          <div className="flex items-center gap-[8px]">
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#61738d] uppercase tracking-[0.5px]">Ocupação total</p>
+                            <div className="flex items-center gap-[4px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[6px] px-[8px] py-[4px]">
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-none text-[#252b37]">{totalOccupancy}</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680]">/</p>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#535862]">{activity.capacity}</p>
+                            </div>
+                          </div>
+                          <div className="flex h-[16px] w-full gap-[4px]">
+                            <div className="bg-[#17b26a] h-full rounded-[4px]" style={{ width: `${occupiedPct}%`, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px)" }} />
+                            {vacantPct > 0 && <div className="bg-[#e4e7ec] h-full rounded-[4px] flex-1" />}
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#252b37]">{occupiedPct}% ocupado</span>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680]">{vacantPct}% vago</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col items-center"><span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{criancas}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Crianças</span></div>
+                            <div className="flex flex-col items-center"><span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{adultos}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Adultos</span></div>
+                            <div className="flex flex-col items-center"><span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{cortesias}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Cortesias</span></div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-[12px]">
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#61738d] uppercase tracking-[0.5px]">Data e hora</p>
+                          <div className="flex items-center gap-[8px]">
+                            <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{dateS}, {f12(activity.startTime)} <span className="text-[#717680]">({activity.timezone})</span></span>
+                          </div>
+                          <div className="flex items-center gap-[8px]">
+                            <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/><path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{f12(activity.startTime)} - {f12(activity.endTime)} ({durLabel})</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-[12px]">
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#61738d] uppercase tracking-[0.5px]">Previsão climática</p>
+                          <div className="flex items-center gap-[12px]">
+                            <div className="flex items-start"><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[36px] leading-none text-[#252b37]">{mockWeather.current.tempC}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680] mt-[2px] ml-[2px]">°C</span></div>
+                            <div className="flex flex-col gap-[4px] ml-auto">
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">💧 {mockWeather.current.humidityPct}%</span>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">💨 {mockWeather.current.windKmh} km/h</span>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">🌧️ {mockWeather.current.rainChancePct}%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+              {mobileSheet === "equipe" && (
+                <div className="flex flex-col flex-1 min-h-0">
+                  {/* Search input */}
+                  <div className="px-[16px] pt-[8px] pb-[12px] shrink-0">
+                    <div className="flex items-center gap-[8px] w-full h-[40px] rounded-[8px] px-[12px] border border-[#e9eaeb]">
+                      <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                      <input type="text" placeholder="Buscar ou adicionar membro..." className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae]" readOnly />
+                      <svg className="size-[14px] text-[#a4a7ae]" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </div>
+                  </div>
+                  {/* Members list — scrollable */}
+                  <div className="flex-1 overflow-y-auto px-[16px] pb-[16px]">
+                    {localGuides.length > 0 ? (
+                      <div className="flex flex-col gap-[12px]">
+                        {localGuides.map((guide) => {
+                          const ini = guide.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                          const ins = guideInsurance[guide] ?? false;
+                          return (
+                            <div key={guide} className="flex items-center gap-[12px] px-[12px] py-[10px] rounded-[10px] border border-[#f5f5f5] bg-[#fafafa]">
+                              <div className="flex items-center justify-center rounded-full size-[32px] shrink-0 border border-[#bfdbfe] bg-[#eff6ff]"><p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{ini}</p></div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{guide}</p>
+                                <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${ins ? "text-[#0b5ed7]" : "text-[#dc6803]"}`}>{ins ? "Seguro contratado" : "Sem seguro"}</p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-[32px] gap-[8px]">
+                        <svg className="size-[32px] text-[#d0d5dd]" fill="none" viewBox="0 0 24 24"><path d="M7.5 19.5C7.5 18.53 7.83 17.56 8.63 17.02C9.59 16.38 10.75 16 12 16C13.25 16 14.41 16.38 15.37 17.02C16.17 17.56 16.5 18.53 16.5 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="11" r="2.5" stroke="currentColor" strokeWidth="1.5"/></svg>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Nenhum colaborador escalado</p>
+                      </div>
+                    )}
+                  </div>
+                  {/* Footer — fixed at bottom */}
+                  {localGuides.length > 0 && (
+                    <div className="border-t border-[#f5f5f5] px-[16px] py-[12px] shrink-0">
+                      <div className="flex items-center gap-[6px]">
+                        <svg className="size-[14px] text-[#17b26a]" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z M9 12l2 2 4-4"/></svg>
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">{localGuides.length} membro(s) · {localGuides.filter((g) => guideInsurance[g]).length} seguro(s)</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {mobileSheet === "atualizacoes" && (
+                <div className="px-[16px] py-[16px]">
+                  <div className="flex flex-col gap-[16px]">
+                    {[
+                      { action: "Check-in realizado para Fernanda Alves", time: "Há 5 min", actor: "Sistema" },
+                      { action: "Equipe atualizada — João Silva adicionado", time: "Há 15 min", actor: "Pedro Lima" },
+                      { action: "Reserva #RE-0005 confirmada", time: "Há 30 min", actor: "Sistema" },
+                      { action: "Seguro contratado para participante", time: "Há 1h", actor: "Sistema" },
+                      { action: "Atividade criada", time: "Há 2 dias", actor: "Admin" },
+                    ].map((event, idx, arr) => (
+                      <div key={idx} className="flex gap-[10px] relative">
+                        {idx < arr.length - 1 && <div className="absolute left-[4px] top-[16px] bottom-[-12px] w-px bg-[#e9eaeb]" />}
+                        <div className="size-[9px] rounded-full bg-[#3b82f6] shrink-0 mt-[5px] z-10" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">{event.action}</p>
+                          <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-[#9ca3af] mt-[2px]">{event.actor} · {event.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
       {/* Team time conflict confirmation modal */}
       {teamConflictConfirm && createPortal(
         <div className="fixed inset-0 z-[60] flex items-center justify-center">

@@ -2237,6 +2237,7 @@ function getParticipantOverrideStatus(participant: Participant, reservation: Res
   if (reservation.status === "Cancelled" || reservation.status === "Performed") return null;
   if (participant.checkInStatus === "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
   if (participant.checkInStatus === "Absent") return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
+  if (participant.checkInStatus === "Done") return { title: "Check-in realizado", subtitle: "Status da reserva", variant: "blue" };
   if (participant.checkInStatus === "Scheduled") return { title: "Agendada", subtitle: "Status da reserva", variant: "amber" };
   return null;
 }
@@ -2449,7 +2450,7 @@ function CheckInButton({ isDone, disabled, selected, onCheckIn, onUndo }: { isDo
               ? "cursor-pointer bg-emerald-50 border border-emerald-200 hover:bg-emerald-100"
               : "cursor-pointer bg-[#0b5ed7] border border-[#0b5ed7] hover:bg-[#0a4fb3]"
         }`}
-        style={{ padding: "6px 14px" }}
+        style={{ padding: "6px 14px", minWidth: 95 }}
       >
         {isDone && !disabled ? (
           <>
@@ -3768,7 +3769,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
             <div
               className="absolute left-1/2 flex w-[300px] items-center justify-center gap-[12px] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden"
               style={{
-                top: "max(16px, calc(50% - 303px))",
+                top: "max(16px, calc(50% - 279px))",
                 opacity: isQrInstructionEntering ? 0 : 1,
                 transform: isQrInstructionEntering ? "translate(-50%, 12px)" : "translate(-50%, 0)",
               }}
@@ -3817,8 +3818,11 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
               <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
               <div
-                className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 size-[420px] rounded-[8px] transition-[left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                style={{ left: isQrDrawerClosing ? "50%" : "calc(50% - 240px)" }}
+                className="absolute left-[var(--qr-scan-left)] top-[calc(50%+24px)] size-[300px] -translate-x-1/2 -translate-y-1/2 rounded-[8px] transition-[left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:left-[var(--qr-scan-left-desktop)] md:top-1/2 md:size-[420px]"
+                style={{
+                  "--qr-scan-left": "50%",
+                  "--qr-scan-left-desktop": isQrDrawerClosing ? "50%" : "calc(50% - 240px)",
+                } as React.CSSProperties}
               >
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-none mix-blend-difference rounded-[8px]" style={{ backdropFilter: "none" }} />
                 <svg className="absolute inset-[-8px]" style={{ width: "calc(100% + 16px)", height: "calc(100% + 16px)" }} viewBox="0 0 1080 1080" fill="none">
@@ -3831,14 +3835,19 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
             </div>
 
-            {/* Right panel - reservation details */}
-            <div className={`absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isQrDrawerClosing ? "translate-x-full" : "translate-x-0"}`}>
+            <div className="pointer-events-none absolute inset-0 z-[5] bg-black/35 md:hidden" />
+
+            {/* Reservation details panel */}
+            <div className={`absolute inset-x-0 bottom-0 top-auto z-20 flex max-h-[calc(72vh+88px)] w-full flex-col rounded-t-[20px] bg-white shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-x-auto md:right-0 md:top-[64px] md:bottom-0 md:max-h-none md:w-[576px] md:rounded-tl-[16px] md:rounded-tr-none md:shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] ${isQrDrawerClosing ? "translate-y-full md:translate-x-full md:translate-y-0" : "translate-y-0 md:translate-x-0"}`}>
+              <div className="flex shrink-0 justify-center pt-[8px] md:hidden">
+                <div className="h-[4px] w-[40px] rounded-full bg-[#d0d5dd]" />
+              </div>
               {/* Scrollable content */}
-              <div className="flex-1 overflow-y-auto px-[20px] pt-[24px] pb-[32px] flex flex-col gap-[24px]">
+              <div className="flex min-h-0 flex-1 flex-col gap-[20px] overflow-y-auto px-[16px] pb-[20px] pt-[20px] md:gap-[24px] md:px-[20px] md:pb-[32px] md:pt-[24px]">
                 {/* Title - hidden */}
 
                 {/* Participant card */}
-                <div className="border border-[#f5f5f5] rounded-[16px] p-[16px] flex flex-col gap-[16px]">
+                <div className="flex flex-col gap-[16px]">
                   {/* Participant header */}
                   <div className="flex items-center gap-[12px]">
                     <div className="relative size-[40px] shrink-0">
@@ -3922,8 +3931,10 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
 
                 {/* Activity card */}
-                <div className="border border-[#f5f5f5] rounded-[16px] p-[16px] flex flex-col gap-[12px]">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#717680] uppercase tracking-[0.5px]">DADOS DA ATIVIDADE</p>
+                <div className="flex flex-col gap-[16px]">
+                  <div className="mb-[4px] flex h-[32px] w-[calc(100%+32px)] items-center border-y border-[#f0f1f3] bg-[#f9fafb] px-[16px] -mx-[16px] md:w-[calc(100%+40px)] md:px-[20px] md:-mx-[20px]">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Dados da atividade</p>
+                  </div>
 
                   {/* Activity name + location */}
                   <div className="flex items-start gap-[10px]">
@@ -3976,32 +3987,34 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
 
               {/* Footer actions */}
-              <div className="shrink-0 h-[88px] flex items-center justify-between px-[24px] border-t border-[#eaecf0] bg-[#fafbfc]">
-                <button onClick={handleQrDrawerCancel} disabled={isQrDrawerClosing} className={`flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors mr-[12px] ${isQrDrawerClosing ? "cursor-default" : "cursor-pointer"}`}>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Cancelar</p>
-                </button>
-                <button
-                  onClick={() => {
-                    if (isConfirmingCheckIn) return;
-                    setIsConfirmingCheckIn(true);
-                    setTimeout(() => {
-                      setIsConfirmingCheckIn(false);
-                      setQrScenario(4);
-                    }, 2000);
-                  }}
-                  disabled={isConfirmingCheckIn || isQrDrawerClosing}
-                  className={`flex-1 h-[48px] flex items-center justify-center gap-[8px] rounded-[8px] bg-[#0b5ed7] transition-colors ${isConfirmingCheckIn || isQrDrawerClosing ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-[#0a4fb3]"}`}
-                >
-                  {isConfirmingCheckIn && (
-                    <svg className="animate-spin shrink-0 size-[20px] text-white" fill="none" viewBox="0 0 20 20">
-                      <circle className="opacity-25" cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" />
-                      <path className="opacity-75" fill="currentColor" d="M10 2a8 8 0 018 8h-2a6 6 0 00-6-6V2z" />
-                    </svg>
-                  )}
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">
-                    {isConfirmingCheckIn ? "Carregando" : "Confirmar check-in"}
-                  </p>
-                </button>
+              <div className="shrink-0 border-t border-[#eaecf0] bg-[#fafbfc] px-[16px] pb-[calc(12px+env(safe-area-inset-bottom))] pt-[12px] md:flex md:h-[88px] md:items-center md:justify-between md:px-[24px] md:py-0">
+                <div className="flex w-full gap-[12px]">
+                  <button onClick={handleQrDrawerCancel} disabled={isQrDrawerClosing} className={`flex-1 h-[44px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors md:h-[48px] ${isQrDrawerClosing ? "cursor-default" : "cursor-pointer"}`}>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] md:text-[16px]">Cancelar</p>
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (isConfirmingCheckIn) return;
+                      setIsConfirmingCheckIn(true);
+                      setTimeout(() => {
+                        setIsConfirmingCheckIn(false);
+                        setQrScenario(4);
+                      }, 2000);
+                    }}
+                    disabled={isConfirmingCheckIn || isQrDrawerClosing}
+                    className={`flex-1 h-[44px] flex items-center justify-center gap-[8px] rounded-[8px] bg-[#0b5ed7] transition-colors md:h-[48px] ${isConfirmingCheckIn || isQrDrawerClosing ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-[#0a4fb3]"}`}
+                  >
+                    {isConfirmingCheckIn && (
+                      <svg className="animate-spin shrink-0 size-[20px] text-white" fill="none" viewBox="0 0 20 20">
+                        <circle className="opacity-25" cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" />
+                        <path className="opacity-75" fill="currentColor" d="M10 2a8 8 0 018 8h-2a6 6 0 00-6-6V2z" />
+                      </svg>
+                    )}
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white md:text-[16px]">
+                      {isConfirmingCheckIn ? "Carregando" : "Confirmar check-in"}
+                    </p>
+                  </button>
+                </div>
               </div>
             </div>
           </>
@@ -4016,14 +4029,19 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
             </div>
 
-            {/* Right panel - success */}
-            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
+            <div className="pointer-events-none absolute inset-0 z-[5] bg-black/35 md:hidden" />
+
+            {/* Success panel */}
+            <div className="absolute inset-x-0 bottom-0 top-auto z-20 flex h-[calc(72vh+88px)] max-h-[calc(72vh+88px)] w-full flex-col rounded-t-[20px] bg-white shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.18)] md:inset-x-auto md:right-0 md:top-[64px] md:bottom-0 md:h-auto md:max-h-none md:w-[576px] md:rounded-tl-[16px] md:rounded-tr-none md:shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)]">
+              <div className="flex shrink-0 justify-center pt-[8px] md:hidden">
+                <div className="h-[4px] w-[40px] rounded-full bg-[#d0d5dd]" />
+              </div>
               {/* Content */}
-              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-[16px] py-[24px] md:px-[24px]">
                 {/* Success icon with halo */}
-                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                <div className="relative flex items-center justify-center mb-[24px] size-[88px] md:size-[96px]">
                   <div className="absolute inset-0 rounded-full bg-[#ecfdf3] border border-[#abf0c1]" />
-                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="absolute left-1/2 top-1/2 size-[80px] -translate-x-1/2 -translate-y-1/2 rounded-full md:size-[88px]" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
                   <div className="relative size-[62px] rounded-full bg-[#079455] flex items-center justify-center">
                     <svg className="size-[34px]" fill="none" viewBox="0 0 20 20">
                       <circle cx="10" cy="10" r="8.5" stroke="white" strokeWidth="1.875" />
@@ -4033,7 +4051,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
 
                 {/* Text */}
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">Check-in realizado com sucesso</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] text-center leading-[normal]">Check-in realizado com sucesso</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">O check-in de João Silva foi feito hoje, as 07:42.</p>
 
                 {/* Participant card */}
@@ -4068,18 +4086,18 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
 
               {/* Footer actions */}
-              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+              <div className="shrink-0 flex flex-col gap-[12px] border-t border-[#eaecf0] bg-[#fafbfc] px-[16px] pb-[calc(12px+env(safe-area-inset-bottom))] pt-[12px] md:px-[24px] md:py-[24px]">
                 <button
                   onClick={() => setShowQrScanner(false)}
-                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                  className="w-full h-[44px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors md:h-[48px]"
                 >
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] md:text-[16px]">Voltar aos participantes</p>
                 </button>
                 <button
                   onClick={() => setQrScenario(1)}
-                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                  className="w-full h-[44px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors md:h-[48px]"
                 >
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Realizar novo check-in</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white md:text-[16px]">Realizar novo check-in</p>
                 </button>
               </div>
             </div>
@@ -4094,12 +4112,17 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
             </div>
 
-            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
-              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+            <div className="pointer-events-none absolute inset-0 z-[5] bg-black/35 md:hidden" />
+
+            <div className="absolute inset-x-0 bottom-0 top-auto z-20 flex h-[calc(72vh+88px)] max-h-[calc(72vh+88px)] w-full flex-col rounded-t-[20px] bg-white shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.18)] md:inset-x-auto md:right-0 md:top-[64px] md:bottom-0 md:h-auto md:max-h-none md:w-[576px] md:rounded-tl-[16px] md:rounded-tr-none md:shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)]">
+              <div className="flex shrink-0 justify-center pt-[8px] md:hidden">
+                <div className="h-[4px] w-[40px] rounded-full bg-[#d0d5dd]" />
+              </div>
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-[16px] py-[24px] md:px-[24px]">
                 {/* Error icon with halo */}
-                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                <div className="relative flex items-center justify-center mb-[24px] size-[88px] md:size-[96px]">
                   <div className="absolute inset-0 rounded-full bg-[#fef3f2] border border-[#fecdca]" />
-                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="absolute left-1/2 top-1/2 size-[80px] -translate-x-1/2 -translate-y-1/2 rounded-full md:size-[88px]" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
                   <div className="relative size-[62px] rounded-full bg-[#d92d20] flex items-center justify-center">
                     <svg className="size-[34px]" fill="none" viewBox="0 0 20 20">
                       <path d="M6 6l8 8M14 6l-8 8" stroke="white" strokeWidth="1.875" strokeLinecap="round" strokeLinejoin="round" />
@@ -4107,22 +4130,22 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   </div>
                 </div>
 
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">Reserva cancelada</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] text-center leading-[normal]">Reserva cancelada</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">Esta reserva foi cancelada em 22/02. o Check-in não pode ser efetuado.</p>
               </div>
 
-              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+              <div className="shrink-0 flex flex-col gap-[12px] border-t border-[#eaecf0] bg-[#fafbfc] px-[16px] pb-[calc(12px+env(safe-area-inset-bottom))] pt-[12px] md:px-[24px] md:py-[24px]">
                 <button
                   onClick={() => setShowQrScanner(false)}
-                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                  className="w-full h-[44px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors md:h-[48px]"
                 >
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] md:text-[16px]">Voltar aos participantes</p>
                 </button>
                 <button
                   onClick={() => setQrScenario(1)}
-                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                  className="w-full h-[44px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors md:h-[48px]"
                 >
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Realizar novo check-in</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white md:text-[16px]">Realizar novo check-in</p>
                 </button>
               </div>
             </div>
@@ -4137,12 +4160,17 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
             </div>
 
-            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
-              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+            <div className="pointer-events-none absolute inset-0 z-[5] bg-black/35 md:hidden" />
+
+            <div className="absolute inset-x-0 bottom-0 top-auto z-20 flex h-[calc(72vh+88px)] max-h-[calc(72vh+88px)] w-full flex-col rounded-t-[20px] bg-white shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.18)] md:inset-x-auto md:right-0 md:top-[64px] md:bottom-0 md:h-auto md:max-h-none md:w-[576px] md:rounded-tl-[16px] md:rounded-tr-none md:shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)]">
+              <div className="flex shrink-0 justify-center pt-[8px] md:hidden">
+                <div className="h-[4px] w-[40px] rounded-full bg-[#d0d5dd]" />
+              </div>
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-[16px] py-[24px] md:px-[24px]">
                 {/* Gray icon with halo */}
-                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                <div className="relative flex items-center justify-center mb-[24px] size-[88px] md:size-[96px]">
                   <div className="absolute inset-0 rounded-full bg-[#f9fafb] border border-[#eaecf0]" />
-                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="absolute left-1/2 top-1/2 size-[80px] -translate-x-1/2 -translate-y-1/2 rounded-full md:size-[88px]" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
                   <div className="relative size-[62px] rounded-full bg-[#535862] flex items-center justify-center">
                     <svg className="size-[34px]" fill="none" viewBox="0 0 48 48">
                       <path d="M16 8H18C18.5304 8 19.0391 8.21071 19.4142 8.58579C19.7893 8.96086 20 9.46957 20 10V12M19.406 19.422C19.0317 19.7922 18.5265 19.9999 18 20H10C9.46957 20 8.96086 19.7893 8.58579 19.4142C8.21071 19.0391 8 18.5304 8 18V10C8 9.45 8.22 8.952 8.58 8.59M14 34V34.02M14 14V14.02M34 14V14.02M40 28V28.02M28 28V34M28 40H34M6 6L42 42M28 10C28 9.46957 28.2107 8.96086 28.5858 8.58579C28.9609 8.21071 29.4696 8 30 8H38C38.5304 8 39.0391 8.21071 39.4142 8.58579C39.7893 8.96086 40 9.46957 40 10V18C40 18.5304 39.7893 19.0391 39.4142 19.4142C39.0391 19.7893 38.5304 20 38 20H30C29.4696 20 28.9609 19.7893 28.5858 19.4142C28.2107 19.0391 28 18.5304 28 18V10ZM8 30C8 29.4696 8.21071 28.9609 8.58579 28.5858C8.96086 28.2107 9.46957 28 10 28H18C18.5304 28 19.0391 28.2107 19.4142 28.5858C19.7893 28.9609 20 29.4696 20 30V38C20 38.5304 19.7893 39.0391 19.4142 39.4142C19.0391 39.7893 18.5304 40 18 40H10C9.46957 40 8.96086 39.7893 8.58579 39.4142C8.21071 39.0391 8 38.5304 8 38V30Z" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -4150,22 +4178,22 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   </div>
                 </div>
 
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">QR code não reconhecido</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] text-center leading-[normal]">QR code não reconhecido</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">Este código não pertence a Retrilhar ou está corrompido.</p>
               </div>
 
-              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+              <div className="shrink-0 flex flex-col gap-[12px] border-t border-[#eaecf0] bg-[#fafbfc] px-[16px] pb-[calc(12px+env(safe-area-inset-bottom))] pt-[12px] md:px-[24px] md:py-[24px]">
                 <button
                   onClick={() => setShowQrScanner(false)}
-                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                  className="w-full h-[44px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors md:h-[48px]"
                 >
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] md:text-[16px]">Voltar aos participantes</p>
                 </button>
                 <button
                   onClick={() => setQrScenario(1)}
-                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                  className="w-full h-[44px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors md:h-[48px]"
                 >
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Tentar novamente</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white md:text-[16px]">Tentar novamente</p>
                 </button>
               </div>
             </div>
@@ -4180,12 +4208,17 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
             </div>
 
-            <div className="absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20">
-              <div className="flex-1 flex flex-col items-center justify-center px-[24px]">
+            <div className="pointer-events-none absolute inset-0 z-[5] bg-black/35 md:hidden" />
+
+            <div className="absolute inset-x-0 bottom-0 top-auto z-20 flex h-[calc(72vh+88px)] max-h-[calc(72vh+88px)] w-full flex-col rounded-t-[20px] bg-white shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.18)] md:inset-x-auto md:right-0 md:top-[64px] md:bottom-0 md:h-auto md:max-h-none md:w-[576px] md:rounded-tl-[16px] md:rounded-tr-none md:shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)]">
+              <div className="flex shrink-0 justify-center pt-[8px] md:hidden">
+                <div className="h-[4px] w-[40px] rounded-full bg-[#d0d5dd]" />
+              </div>
+              <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-[16px] py-[24px] md:px-[24px]">
                 {/* Warning icon with halo */}
-                <div className="relative flex items-center justify-center mb-[24px] size-[96px]">
+                <div className="relative flex items-center justify-center mb-[24px] size-[88px] md:size-[96px]">
                   <div className="absolute inset-0 rounded-full bg-[#fefdf0] border border-[#fedf89]" />
-                  <div className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
+                  <div className="absolute left-1/2 top-1/2 size-[80px] -translate-x-1/2 -translate-y-1/2 rounded-full md:size-[88px]" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 100%)" }} />
                   <div className="relative size-[62px] rounded-full bg-[#dc6803] flex items-center justify-center">
                     <svg className="size-[34px]" fill="none" viewBox="0 0 24 24">
                       <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="1.875" />
@@ -4194,7 +4227,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   </div>
                 </div>
 
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27] text-center leading-[normal]">Reserva confirmada para outra data</p>
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] text-center leading-[normal]">Reserva confirmada para outra data</p>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#717680] text-center leading-[normal] mt-[8px]">O participante João Silva está reservado para a atividade do dia 26/02. A atividade de hoje é 24/02.</p>
 
                 {/* Participant card */}
@@ -4229,23 +4262,23 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
 
               {/* Footer actions - 2 outline side by side + 1 primary full width */}
-              <div className="shrink-0 flex flex-col gap-[12px] px-[24px] py-[24px]">
+              <div className="shrink-0 flex flex-col gap-[12px] border-t border-[#eaecf0] bg-[#fafbfc] px-[16px] pb-[calc(12px+env(safe-area-inset-bottom))] pt-[12px] md:px-[24px] md:py-[24px]">
                 <div className="flex gap-[12px]">
                   <button
                     onClick={() => setShowQrScanner(false)}
-                    className="flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors"
+                    className="flex-1 h-[44px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors md:h-[48px]"
                   >
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Voltar aos participantes</p>
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] md:text-[16px]">Voltar aos participantes</p>
                   </button>
-                  <button className="flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors">
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Visualizar reserva</p>
+                  <button className="flex-1 h-[44px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white cursor-pointer hover:bg-[#f8fafc] transition-colors md:h-[48px]">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] md:text-[16px]">Visualizar reserva</p>
                   </button>
                 </div>
                 <button
                   onClick={() => setQrScenario(1)}
-                  className="w-full h-[48px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors"
+                  className="w-full h-[44px] flex items-center justify-center rounded-[8px] bg-[#0b5ed7] cursor-pointer hover:bg-[#0a4fb3] transition-colors md:h-[48px]"
                 >
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">Realizar novo check-in</p>
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white md:text-[16px]">Realizar novo check-in</p>
                 </button>
               </div>
             </div>
@@ -4268,7 +4301,13 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               <div className="flex-1 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#8b9dc3] via-[#a8b5cc] to-[#6b7d99]" />
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
-                <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 size-[420px] rounded-[8px] transition-[left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ left: isQrDrawerClosing ? "50%" : "calc(50% - 240px)" }}>
+                <div
+                  className="absolute left-[var(--qr-scan-left)] top-[calc(50%+24px)] size-[300px] -translate-x-1/2 -translate-y-1/2 rounded-[8px] transition-[left] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:left-[var(--qr-scan-left-desktop)] md:top-1/2 md:size-[420px]"
+                  style={{
+                    "--qr-scan-left": "50%",
+                    "--qr-scan-left-desktop": isQrDrawerClosing ? "50%" : "calc(50% - 240px)",
+                  } as React.CSSProperties}
+                >
                   <div className="absolute inset-0 bg-black/50 backdrop-blur-none mix-blend-difference rounded-[8px]" style={{ backdropFilter: "none" }} />
                   <svg className="absolute inset-[-8px]" style={{ width: "calc(100% + 16px)", height: "calc(100% + 16px)" }} viewBox="0 0 1080 1080" fill="none">
                     <path d="M0 33.75C0 24.7989 3.55579 16.2145 9.88515 9.88515C16.2145 3.55579 24.7989 0 33.75 0L236.25 0C245.201 0 253.786 3.55579 260.115 9.88515C266.444 16.2145 270 24.7989 270 33.75C270 42.7011 266.444 51.2855 260.115 57.6149C253.786 63.9442 245.201 67.5 236.25 67.5H109.5C86.304 67.5 67.5 86.304 67.5 109.5V236.25C67.5 245.201 63.9442 253.786 57.6149 260.115C51.2855 266.444 42.7011 270 33.75 270C24.7989 270 16.2145 266.444 9.88515 260.115C3.55579 253.786 0 245.201 0 236.25V33.75ZM810 33.75C810 24.7989 813.556 16.2145 819.885 9.88515C826.215 3.55579 834.799 0 843.75 0L1046.25 0C1055.2 0 1063.79 3.55579 1070.11 9.88515C1076.44 16.2145 1080 24.7989 1080 33.75V236.25C1080 245.201 1076.44 253.786 1070.11 260.115C1063.79 266.444 1055.2 270 1046.25 270C1037.3 270 1028.71 266.444 1022.39 260.115C1016.06 253.786 1012.5 245.201 1012.5 236.25V109.5C1012.5 86.304 993.696 67.5 970.5 67.5H843.75C834.799 67.5 826.215 63.9442 819.885 57.6149C813.556 51.2855 810 42.7011 810 33.75ZM33.75 810C42.7011 810 51.2855 813.556 57.6149 819.885C63.9442 826.214 67.5 834.799 67.5 843.75V970.5C67.5 993.696 86.304 1012.5 109.5 1012.5H236.25C245.201 1012.5 253.786 1016.06 260.115 1022.39C266.444 1028.71 270 1037.3 270 1046.25C270 1055.2 266.444 1063.79 260.115 1070.11C253.786 1076.44 245.201 1080 236.25 1080H33.75C24.7989 1080 16.2145 1076.44 9.88515 1070.11C3.55579 1063.79 0 1055.2 0 1046.25V843.75C0 834.799 3.55579 826.214 9.88515 819.885C16.2145 813.556 24.7989 810 33.75 810ZM1046.25 810C1055.2 810 1063.79 813.556 1070.11 819.885C1076.44 826.214 1080 834.799 1080 843.75V1046.25C1080 1055.2 1076.44 1063.79 1070.11 1070.11C1063.79 1076.44 1055.2 1080 1046.25 1080H843.75C834.799 1080 826.215 1076.44 819.885 1070.11C813.556 1063.79 810 1055.2 810 1046.25C810 1037.3 813.556 1028.71 819.885 1022.39C826.215 1016.06 834.799 1012.5 843.75 1012.5H970.5C993.696 1012.5 1012.5 993.696 1012.5 970.5V843.75C1012.5 834.799 1016.06 826.214 1022.39 819.885C1028.71 813.556 1037.3 810 1046.25 810Z" fill="#FAC515" />
@@ -4280,10 +4319,15 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
               </div>
 
-              <div className={`absolute right-0 top-[64px] bottom-0 w-[576px] bg-white rounded-tl-[16px] shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] flex flex-col z-20 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isQrDrawerClosing ? "translate-x-full" : "translate-x-0"}`}>
-                <div className="flex-1 overflow-y-auto px-[20px] pt-[24px] pb-[32px] flex flex-col gap-[20px]">
+              <div className="pointer-events-none absolute inset-0 z-[5] bg-black/35 md:hidden" />
+
+              <div className={`absolute inset-x-0 bottom-0 top-auto z-20 flex max-h-[calc(72vh+88px)] w-full flex-col rounded-t-[20px] bg-white shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.18)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:inset-x-auto md:right-0 md:top-[64px] md:bottom-0 md:max-h-none md:w-[576px] md:rounded-tl-[16px] md:rounded-tr-none md:shadow-[0_4px_8px_rgba(113,128,150,0.08),0_0_1px_rgba(113,128,150,0.04)] ${isQrDrawerClosing ? "translate-y-full md:translate-x-full md:translate-y-0" : "translate-y-0 md:translate-x-0"}`}>
+                <div className="flex shrink-0 justify-center pt-[8px] md:hidden">
+                  <div className="h-[4px] w-[40px] rounded-full bg-[#d0d5dd]" />
+                </div>
+                <div className="flex min-h-0 flex-1 flex-col gap-0 overflow-y-auto px-[16px] pb-[20px] pt-[20px] md:px-[20px] md:pb-[32px] md:pt-[24px]">
                   {/* Group header */}
-                  <div className="pb-[16px] border-b border-[#f5f5f5]">
+                  <div className="pb-[16px]">
                     <div className="flex items-center gap-[12px]">
                       <div className="flex-1 min-w-0">
                         <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27] leading-[normal]">Reserva em grupo</p>
@@ -4292,9 +4336,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   </div>
 
                   {/* Participants list */}
-                  <div>
-                    <div className="flex items-center justify-between mb-[16px]">
-                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#717680] uppercase tracking-[0.8px]">Participantes do voucher ({groupMembers.length})</p>
+                  <div className="pb-[20px]">
+                    <div className="mb-[16px] flex h-[32px] w-[calc(100%+32px)] items-center justify-between border-y border-[#f0f1f3] bg-[#f9fafb] px-[16px] -mx-[16px] md:w-[calc(100%+40px)] md:px-[20px] md:-mx-[20px]">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Participantes do voucher ({groupMembers.length})</p>
                       <button onClick={() => { if (allSelected) setQrGroupSelected(new Set()); else setQrGroupSelected(new Set(selectableMembers.map((m) => m.id))); }} className="flex items-center gap-[6px] cursor-pointer">
                         <div className={`flex items-center justify-center rounded-[6px] size-[20px] ${allSelected ? "bg-[#0b5ed7]" : "bg-white border border-[#d5d7da]"}`}>
                           {allSelected && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
@@ -4345,12 +4389,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                                 </div>
                               </div>
                             </div>
-                            {member.checkedIn && (
-                              <div className="flex items-center gap-[6px] shrink-0 rounded-full border border-[#e4e4e7] px-[8px] h-[24px] bg-white">
-                                <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#0b5ed7]">Check-in realizado</span>
-                              </div>
-                            )}
                           </div>
                         );
                       })}
@@ -4358,8 +4396,10 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   </div>
 
                   {/* Activity data */}
-                  <div className="border border-[#f5f5f5] rounded-[16px] p-[16px] flex flex-col gap-[12px]">
-                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#717680] uppercase tracking-[0.5px]">DADOS DA ATIVIDADE</p>
+                  <div className="flex flex-col gap-[16px]">
+                    <div className="mb-[4px] flex h-[32px] w-[calc(100%+32px)] items-center border-y border-[#f0f1f3] bg-[#f9fafb] px-[16px] -mx-[16px] md:w-[calc(100%+40px)] md:px-[20px] md:-mx-[20px]">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Dados da atividade</p>
+                    </div>
                     <div className="flex items-start gap-[10px]">
                       <div className="size-[32px] bg-white border border-[#f5f5f5] rounded-[8px] flex items-center justify-center shrink-0"><svg className="size-[20px] text-[#535862]" fill="none" viewBox="0 0 48 48"><path d="M37.437 21.4303C37.0516 21.7957 36.5364 22 36.0002 22C35.464 22 34.9488 21.7957 34.5633 21.4303C31.0335 18.0634 26.3031 14.3022 28.61 8.8417C29.8573 5.88924 32.8514 4 36.0002 4C39.149 4 42.1431 5.88924 43.3904 8.8417C45.6944 14.2953 40.9756 18.075 37.437 21.4303Z" stroke="currentColor" strokeWidth="3"/><path d="M36 12H36.018" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><circle cx="10" cy="38" r="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 14H19C15.134 14 12 16.6863 12 20C12 23.3137 15.134 26 19 26H25C28.866 26 32 28.6863 32 32C32 35.3137 28.866 38 25 38H22" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
                       <div>
@@ -4404,20 +4444,22 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   </div>
                 </div>
 
-                <div className="shrink-0 h-[88px] flex items-center justify-between px-[24px] border-t border-[#eaecf0] bg-[#fafbfc]">
-                  <button onClick={handleQrDrawerCancel} disabled={isQrDrawerClosing} className={`flex-1 h-[48px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors mr-[12px] ${isQrDrawerClosing ? "cursor-default" : "cursor-pointer"}`}>
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#414651]">Cancelar</p>
-                  </button>
-                  <button
-                    onClick={() => { if (isConfirmingCheckIn || selectedCount === 0) return; setIsConfirmingCheckIn(true); setTimeout(() => { setIsConfirmingCheckIn(false); setQrScenario(4); }, 2000); }}
-                    disabled={isConfirmingCheckIn || isQrDrawerClosing || selectedCount === 0}
-                    className={`flex-1 h-[48px] flex items-center justify-center gap-[8px] rounded-[8px] bg-[#0b5ed7] transition-colors ${isConfirmingCheckIn || isQrDrawerClosing || selectedCount === 0 ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-[#0a4fb3]"}`}
-                  >
-                    {isConfirmingCheckIn ? (
-                      <svg className="animate-spin shrink-0 size-[20px] text-white" fill="none" viewBox="0 0 20 20"><circle className="opacity-25" cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" /><path className="opacity-75" fill="currentColor" d="M10 2a8 8 0 018 8h-2a6 6 0 00-6-6V2z" /></svg>
-                    ) : null}
-                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-white">{isConfirmingCheckIn ? "Carregando" : `Confirmar check-in (${selectedCount})`}</p>
-                  </button>
+                <div className="shrink-0 border-t border-[#eaecf0] bg-[#fafbfc] px-[16px] pb-[calc(12px+env(safe-area-inset-bottom))] pt-[12px] md:flex md:h-[88px] md:items-center md:justify-between md:px-[24px] md:py-0">
+                  <div className="flex w-full gap-[12px]">
+                    <button onClick={handleQrDrawerCancel} disabled={isQrDrawerClosing} className={`flex-1 h-[44px] flex items-center justify-center rounded-[8px] border border-[#e2e8f0] bg-white hover:bg-[#f8fafc] transition-colors md:h-[48px] ${isQrDrawerClosing ? "cursor-default" : "cursor-pointer"}`}>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] md:text-[16px]">Cancelar</p>
+                    </button>
+                    <button
+                      onClick={() => { if (isConfirmingCheckIn || selectedCount === 0) return; setIsConfirmingCheckIn(true); setTimeout(() => { setIsConfirmingCheckIn(false); setQrScenario(4); }, 2000); }}
+                      disabled={isConfirmingCheckIn || isQrDrawerClosing || selectedCount === 0}
+                      className={`flex-1 h-[44px] flex items-center justify-center gap-[8px] rounded-[8px] bg-[#0b5ed7] transition-colors md:h-[48px] ${isConfirmingCheckIn || isQrDrawerClosing || selectedCount === 0 ? "opacity-80 cursor-not-allowed" : "cursor-pointer hover:bg-[#0a4fb3]"}`}
+                    >
+                      {isConfirmingCheckIn ? (
+                        <svg className="animate-spin shrink-0 size-[20px] text-white" fill="none" viewBox="0 0 20 20"><circle className="opacity-25" cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" /><path className="opacity-75" fill="currentColor" d="M10 2a8 8 0 018 8h-2a6 6 0 00-6-6V2z" /></svg>
+                      ) : null}
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white md:text-[16px]">{isConfirmingCheckIn ? "Carregando" : `Confirmar check-in (${selectedCount})`}</p>
+                    </button>
+                  </div>
                 </div>
               </div>
             </>
@@ -5533,19 +5575,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                             </div>
                           </div>
                         )}
-                        {minors > 0 && (
-                          <div className="group relative">
-                            <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
-                              <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 5.73791C14 5.73791 12.8849 6.23808 12.1017 5.85651C11.1464 5.39118 10.1991 3.44619 12.0914 2" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.00897 9H8M16 9H15.991" stroke="#d92d20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 15C8.91212 16.2144 10.3643 17 12 17C13.6357 17 15.0879 16.2144 16 15" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#d92d20]">{minors} menores de idade</span>
-                            </div>
-                            <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Menores de idade</p>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">{minorsWithAuth} com autorização / {minors - minorsWithAuth} pendente{minors - minorsWithAuth !== 1 ? "s" : ""}</p>
-                              <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -5881,8 +5910,18 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
             </div>
             <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
             </div>
+            {/* Participant info */}
+            <div className="flex items-center gap-[12px] px-[24px] py-[16px]">
+              <div className="flex items-center justify-center rounded-full size-[40px] shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0b5ed7]">{cancelModal.p.name ? cancelModal.p.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() : "?"}</p>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27] truncate">{cancelModal.p.name || "Participante"}</p>
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">{cancelModal.p.tariffType}</p>
+              </div>
+            </div>
             {/* Body */}
-            <div className="flex flex-col gap-[16px] px-[24px] py-[20px]">
+            <div className="flex flex-col gap-[16px] px-[24px] pb-[20px]">
               <div className="flex flex-col gap-[8px]">
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">Motivo do cancelamento</p>
                 <textarea
@@ -6005,7 +6044,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
         return createPortal(
           <div className="fixed inset-0 z-[60] flex justify-end" onKeyDown={(e) => e.key === "Escape" && setRescheduleModal(null)}>
             <div className="absolute inset-0 bg-black/40 transition-opacity duration-200" onClick={() => setRescheduleModal(null)} />
-            <div className="bg-white border-l border-[#e9eaeb] flex flex-col h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 animate-in slide-in-from-right duration-200">
+            <div className="bg-white flex flex-col h-full relative rounded-tl-[16px] rounded-bl-[16px] shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] w-[720px] z-10 animate-in slide-in-from-right duration-200">
               {/* Header */}
               <div className="px-[24px] pt-[20px] pb-[16px] shrink-0">
                 <div className="flex items-start justify-between">
@@ -6020,10 +6059,12 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto flex flex-col gap-[20px] px-[24px] py-[20px] border-t border-[#e9eaeb]">
+              <div className="flex-1 overflow-y-auto flex flex-col gap-[20px] px-[24px] pb-[20px]">
                 {/* Reserva atual */}
-                <div className="flex flex-col gap-[10px]">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Reserva atual de:</p>
+                <div className="flex flex-col gap-[16px]">
+                  <div className="w-full flex items-center bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[24px] h-[32px] -mx-[24px]" style={{ width: "calc(100% + 48px)" }}>
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Reserva atual</p>
+                  </div>
                   <div className="rounded-[12px]">
                     <div className="pt-0 pb-0">
                       {/* Avatar + name + tariff */}
@@ -6100,20 +6141,10 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                       className={`flex items-center justify-between w-full h-[44px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleActivityDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
                     >
                       <div className="flex items-center gap-[8px]">
-                        <svg className="size-[16px] text-[#717680] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 2L8.5 8.5 2 9.27l4.5 4.73L5.5 21 12 17.77 18.5 21l-1-7L22 9.27 15.5 8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
                         <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{currentRescheduleAct.name}</span>
                       </div>
                       <div className="flex items-center gap-[8px]">
                         <span className="inline-flex items-center gap-[4px] bg-[#f5f5f5] rounded-full px-[8px] h-[22px]">
-                          <svg className="size-[12px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24">
-                            {rescheduleActivityType === "evento" ? (
-                              <><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></>
-                            ) : rescheduleActivityType === "hospedagem" ? (
-                              <><path d="M2 17L12 7l10 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 15v5a1 1 0 001 1h14a1 1 0 001-1v-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></>
-                            ) : (
-                              <><path d="M12 2L8.5 8.5 2 9.27l4.5 4.73L5.5 21 12 17.77 18.5 21l-1-7L22 9.27 15.5 8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></>
-                            )}
-                          </svg>
                           <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#535862]">{currentRescheduleAct.typeLabel}</span>
                         </span>
                         <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleActivityDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -6136,7 +6167,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                             className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleActivityType === act.type ? "bg-[#f0f5ff]" : ""}`}
                           >
                             <div className="flex items-center gap-[8px]">
-                              <svg className="size-[16px] text-[#717680] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 2L8.5 8.5 2 9.27l4.5 4.73L5.5 21 12 17.77 18.5 21l-1-7L22 9.27 15.5 8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
                               <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{act.name}</span>
                             </div>
                             <span className="inline-flex items-center gap-[4px] bg-[#f5f5f5] rounded-full px-[8px] h-[22px]">
@@ -6152,20 +6182,12 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
 
                 {/* Selecionar nova data — conditional by activity type */}
                 <div className="flex flex-col gap-[8px]">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center">
                     <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">
                       {rescheduleActivityType === "sob_demanda" && "Selecionar nova data"}
                       {rescheduleActivityType === "evento" && "Selecionar data do evento"}
                       {rescheduleActivityType === "hospedagem" && "Selecionar novo período"}
                     </p>
-                    <span className="inline-flex items-center gap-[5px] bg-white border border-[#e9eaeb] rounded-full px-[10px] h-[28px]">
-                      <svg className="size-[13px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">
-                        {rescheduleActivityType === "sob_demanda" && "Seleção por calendário"}
-                        {rescheduleActivityType === "evento" && "Datas do evento"}
-                        {rescheduleActivityType === "hospedagem" && "Seleção por período"}
-                      </span>
-                    </span>
                   </div>
 
                   {/* EVENTO — date dropdown */}
@@ -6591,8 +6613,8 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                         const copiedKey = `${p.id}:${orderId}`;
                         return (
                           <div key={p.id} className={`flex items-center gap-[10px] px-[12px] py-[10px] ${isIneligible ? "bg-[#fef9ec]" : ""} ${i < filteredAll.length - 1 ? "border-b border-[#f9fafb]" : ""}`}>
-                            <div className="bg-gradient-to-br from-[#0b5ed7] to-[#3b82f6] flex items-center justify-center size-[28px] rounded-full shrink-0">
-                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-white">{getInitials(p.name)}</p>
+                            <div className="flex items-center justify-center size-[28px] rounded-full shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-[#0b5ed7]">{getInitials(p.name)}</p>
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] truncate ${isIneligible ? "text-[#dc6803]" : "text-[#252b37]"}`}>{p.name || `Participante nº ${i + 1}`}</p>
@@ -7460,11 +7482,11 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
               {activeTab === "resumo-atividade" ? (
                 <div className="flex flex-col bg-white w-[400px] shrink-0 h-full border-r border-[#e9eaeb]">
                   {/* Header */}
-                  <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0">
+                  <div className="flex items-center justify-between px-[20px] h-[52px] shrink-0">
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Resumo da atividade</p>
                   </div>
                   {/* Content */}
-                  <div className="flex-1 overflow-y-auto px-[16px] py-[16px]">
+                  <div className="flex-1 overflow-y-auto px-[16px] pb-[16px]">
                     {(() => {
                       // Match header logic: totalCount = all participants across all reservations (same as ParticipantesTab)
                       const allParts = mockReservations.flatMap((r) => r.participants);
@@ -7527,10 +7549,10 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                       const weatherIconBorder: Record<string, string> = { "partly-cloudy": "#fed7aa", cloudy: "#e2e8f0", rainy: "#bfdbfe", sunny: "#fde68a" };
 
                       return (
-                        <div className="flex flex-col gap-[24px]">
+                        <div className="flex flex-col gap-[20px]">
                           {/* ── Section 1: Ocupação Total ── */}
-                          <div className="flex flex-col gap-[12px]">
-                            <div className="flex items-center gap-[8px]">
+                          <div className="flex flex-col gap-[16px]">
+                            <div className="flex items-center gap-[8px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
                               <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Ocupação total</p>
                               <div className="flex items-center gap-[3px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] py-[3px]">
                                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#252b37]">{totalOccupancy}</p>
@@ -7582,34 +7604,82 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                             </div>
                           </div>
 
-                          {/* ── Section 2: Especificações de Data e Hora ── */}
-                          <div className="flex flex-col gap-[12px]">
-                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Especificações de data e hora</p>
-                            <div className="flex items-start gap-[16px]">
-                              <div className="flex items-start gap-[8px] flex-1 min-w-0">
-                                <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                                  <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M13.3346 1.66602V4.99935M6.66797 1.66602L6.66797 4.99935" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 10.0007C17.5 6.85795 17.5 5.28661 16.5237 4.3103C15.5474 3.33398 13.976 3.33398 10.8333 3.33398L9.16667 3.33398C6.02397 3.33398 4.45262 3.33398 3.47631 4.3103C2.5 5.28661 2.5 6.85795 2.5 10.0007L2.5 11.6673C2.5 14.81 2.5 16.3814 3.47631 17.3577C4.45262 18.334 6.02397 18.334 9.16667 18.334" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.5 8.33398L17.5 8.33398" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.2213 15.5836L14.1654 14.9993V13.555M17.4987 14.9993C17.4987 16.8403 16.0063 18.3327 14.1654 18.3327C12.3244 18.3327 10.832 16.8403 10.832 14.9993C10.832 13.1584 12.3244 11.666 14.1654 11.666C16.0063 11.666 17.4987 13.1584 17.4987 14.9993Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          {/* ── Section 2: Resumo dos participantes ── */}
+                          {(() => {
+                            const healthCount = allParts.filter((p) => p.hasHealthIssue).length;
+                            const additionalCount = allParts.filter((p) => p.hasAdditionalItems).length;
+                            const minorCount = allParts.filter((p) => p.isMinor).length;
+                            const minorAuthCount = allParts.filter((p) => p.isMinor && p.guardian).length;
+                            const specialNeedsCount = allParts.filter((p) => p.hasSpecialNeeds).length;
+                            const dietaryCount = allParts.filter((p) => p.hasDietaryRestriction).length;
+                            const hasBadges = healthCount > 0 || additionalCount > 0 || minorCount > 0 || specialNeedsCount > 0 || dietaryCount > 0;
+                            if (!hasBadges) return null;
+                            return (
+                              <div className="flex flex-col gap-[16px]">
+                                <div className="w-full flex items-center bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
+                                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Resumo dos participantes</p>
                                 </div>
-                                <div className="flex flex-col gap-[2px]">
-                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Data / hora da atividade</span>
-                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{dateStr}, {fmt12(activity.startTime)} <span className="text-[#717680]">({activity.timezone})</span></span>
+                                <div className="flex gap-[6px] items-center flex-wrap">
+                                  {healthCount > 0 && (
+                                    <div className="group relative">
+                                      <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                        <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M13.0014 2C14.1053 2 15.0003 2.93126 15.0003 4.08003C15.0003 5.02915 15.0362 5.87375 14.2692 6.57196C11.7587 8.85732 10.5034 10 9.00027 10C7.49714 10 6.24187 8.85732 3.73133 6.57196C2.96426 5.87369 3.00027 5.029 3.00027 4.07981C3.00027 2.93116 3.8951 2 4.99893 2" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 14V17.4998C9 19.9852 11.0149 22.0001 13.5003 22.0001C15.9858 22.0001 18.0007 19.9852 18.0007 17.4998V16" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 7L12.6978 10.2556C12.3516 11.121 12.1785 11.5537 11.8887 11.9092C11.5988 12.2648 11.2098 12.5215 10.4319 13.0349L8.9696 14L7.53283 13.0323C6.77221 12.5201 6.39189 12.2639 6.10821 11.9126C5.82452 11.5613 5.65423 11.1356 5.31365 10.2841L4 7" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M21 13C21 14.6569 19.6569 16 18 16C16.3431 16 15 14.6569 15 13C15 11.3431 16.3431 10 18 10C19.6569 10 21 11.3431 21 13Z" stroke="#d92d20" strokeWidth="1.5"/><path d="M18.008 13L17.999 13" stroke="#d92d20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#d92d20]">{healthCount} {healthCount === 1 ? "alerta" : "alertas"} de saúde</span>
+                                      </div>
+                                      <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Atenção à saúde</p>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">Participantes com restrições médicas</p>
+                                        <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                                      </div>
+                                    </div>
+                                  )}
+                                  {additionalCount > 0 && (
+                                    <div className="group relative">
+                                      <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                        <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M20.1765 12.5113C19.8261 9.50898 19.3142 7.25784 18.8394 5.65851C18.4501 4.34711 18.2554 3.69141 17.4572 3.0957C16.659 2.5 15.8431 2.5 14.2113 2.5H8.78876C7.15697 2.5 6.34107 2.5 5.54283 3.0957C4.74459 3.69141 4.54994 4.34711 4.16063 5.65851C3.68586 7.25784 3.1739 9.50898 2.82352 12.5113C2.41058 16.0497 2.20411 17.8189 3.39731 19.1594C4.59052 20.5 6.52422 20.5 10.3916 20.5H12.6084" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.5 6.5C8.5 8.15685 9.84315 9.5 11.5 9.5C13.1569 9.5 14.5 8.15685 14.5 6.5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.5 18.5H21.5M18.5 21.5V15.5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#0b5ed7]">{additionalCount} com adicionais</span>
+                                      </div>
+                                      <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Itens adicionais</p>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">Participantes com opcionais adquiridos</p>
+                                        <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                                      </div>
+                                    </div>
+                                  )}
+                                  {specialNeedsCount > 0 && (
+                                    <div className="group relative">
+                                      <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                        <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke="#dc6803" strokeWidth="1.5"/><path d="M19 8.5C17.227 7.462 15.06 7 12 7C8.94 7 6.773 7.462 5 8.5" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 7V12M12 12L9.5 17.5M12 12L14.5 17.5" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 22C8 19.239 9.791 17 12 17C14.209 17 16 19.239 16 22" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#dc6803]">{specialNeedsCount} com acessibilidade</span>
+                                      </div>
+                                      <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Necessidades especiais</p>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">Participantes com necessidades de acessibilidade</p>
+                                        <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                                      </div>
+                                    </div>
+                                  )}
+                                  {dietaryCount > 0 && (
+                                    <div className="group relative">
+                                      <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                        <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M4 12C4 7.582 7.582 4 12 4C16.418 4 20 7.582 20 12C20 16.418 16.418 20 12 20C7.582 20 4 16.418 4 12Z" stroke="#dc6803" strokeWidth="1.5"/><path d="M15 9L9 15M15 15L9 9" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#dc6803]">{dietaryCount} com restrição alimentar</span>
+                                      </div>
+                                      <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Restrições alimentares</p>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-[14px] text-white/60 not-italic">Participantes com dieta especial</p>
+                                        <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
-                              <div className="flex items-start gap-[8px] flex-1 min-w-0">
-                                <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                                  <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M10.0013 18.3327C14.6037 18.3327 18.3346 14.6017 18.3346 9.99935C18.3346 5.39698 14.6037 1.66602 10.0013 1.66602C5.39893 1.66602 1.66797 5.39698 1.66797 9.99935C1.66797 14.6017 5.39893 18.3327 10.0013 18.3327Z" stroke="#535862" strokeWidth="1.5"/><path d="M10.0078 8.75633C9.31746 8.75633 8.75781 9.31597 8.75781 10.0063C8.75781 10.6967 9.31746 11.2563 10.0078 11.2563C10.6982 11.2563 11.2578 10.6967 11.2578 10.0063C11.2578 9.31597 10.6982 8.75633 10.0078 8.75633ZM10.0078 8.75633V5.83203M12.5136 12.516L10.8897 10.8922" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                </div>
-                                <div className="flex flex-col gap-[2px]">
-                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Duração da atividade</span>
-                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{fmt12(activity.startTime)} - {fmt12(activity.endTime)} ({durationLabel})</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                            );
+                          })()}
 
                           {/* ── Section 3: Previsão Climática ── */}
-                          <div className="flex flex-col gap-[12px]">
-                            <div className="flex items-center gap-[6px]">
+                          <div className="flex flex-col gap-[16px]">
+                            <div className="flex items-center gap-[6px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
                               <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Previsão climática</p>
                               <div className="group/info relative">
                                 <svg className="size-[16px] cursor-default text-[#94a3b8]" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>

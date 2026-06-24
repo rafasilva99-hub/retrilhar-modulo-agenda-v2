@@ -875,7 +875,7 @@ function Frame63() {
   return (
     <div className="content-stretch flex flex-col gap-[16px] items-start relative w-full">
       <Frame59 />
-      <Container7 />
+      {/* Container7 (Próximos 7 dias) — hidden */}
     </div>
   );
 }

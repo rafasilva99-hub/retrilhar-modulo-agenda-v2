@@ -128,12 +128,22 @@ function reservationsReducer(state: Reservation[], action: ResAction): Reservati
       if (action.type === "UNDO_NO_SHOW") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       if (action.type === "CANCEL_PARTICIPANT") return { ...p, checkInStatus: "Cancelled" as CheckInStatus };
       if (action.type === "UNDO_CANCEL_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
-      if (action.type === "RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Rescheduled" as CheckInStatus };
+      if (action.type === "RESCHEDULE_PARTICIPANT") return p; // rescheduled is tracked via reservation.isRescheduled, not checkInStatus
       if (action.type === "UNDO_RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       if (action.type === "UNDO_CONFIRM_PARTICIPANT") return { ...p, checkInStatus: "Scheduled" as CheckInStatus };
       return p;
     });
-    return { ...r, participants: newParticipants };
+    // Auto-update reservation status based on participant states
+    let newStatus = r.status;
+    const activeParticipants = newParticipants.filter((p) => p.checkInStatus !== "Cancelled");
+    const allDone = activeParticipants.length > 0 && activeParticipants.every((p) => p.checkInStatus === "Done");
+    if (action.type === "CHECK_IN" && allDone && r.status === "Confirmed") {
+      newStatus = "CheckedIn";
+    }
+    if (action.type === "UNDO_CHECK_IN" && r.status === "CheckedIn" && !allDone) {
+      newStatus = "Confirmed";
+    }
+    return { ...r, status: newStatus, participants: newParticipants };
   });
 }
 
@@ -1450,9 +1460,8 @@ function DrawerStatusChip({ label, variant }: { label: string; variant: "green" 
 
 function getOperationalStatus(r: Reservation, p: Participant): { label: string; variant: "green" | "amber" | "red" | "blue" | "gray" } {
   if (r.status === "Cancelled") return { label: "Cancelada", variant: "gray" };
-  if (r.status === "Performed") return { label: "Realizada", variant: "gray" };
   if (p.checkInStatus === "Absent") return { label: "Não compareceu", variant: "amber" };
-  if (p.checkInStatus === "Done") return { label: "Check-in realizado", variant: "green" };
+  if (r.status === "Performed" || p.checkInStatus === "Done") return { label: "Check-in realizado", variant: "green" };
   if (r.status === "Confirmed") return { label: "Aguardando check-in", variant: "blue" };
   if (r.status === "Scheduled") return { label: "Agendada", variant: "amber" };
   return { label: "Agendada", variant: "blue" };
@@ -1570,7 +1579,7 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
               <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
           </div>
-          <div className="mx-6 h-px bg-[#e9eaeb]" />
+          <div className="mx-6 h-px bg-[#f0f1f3]" />
         </div>
 
         {/* ── Content ── */}
@@ -1891,7 +1900,7 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
             </button>
           ) : isTerminal ? (
             <p className="font-['Helvetica_Neue:Light',sans-serif] text-[13px] text-[#9ca3af] flex-1 text-center">
-              {isCancelled ? "Reserva cancelada" : isPerformed ? "Atividade realizada" : "Reserva expirada"}
+              {isCancelled ? "Reserva cancelada" : isPerformed ? "Check-in realizado" : "Reserva expirada"}
             </p>
           ) : isCheckedIn ? (
             <>
@@ -1930,12 +1939,12 @@ const STATUS_BADGE_MAP: Record<string, { label: string; color: string; bg: strin
   Confirmed:       { label: "Check-in pendente",    color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
   Scheduled:       { label: "Agendada",             color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
   Draft:           { label: "Pré-reservada",        color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M7 3.5v4M5 5.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/></svg> },
-  Performed:       { label: "Atividade realizada",  color: "#079455", bg: "#ecfdf3", border: "#abefc6", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
   Cancelled:       { label: "Reserva cancelada",    color: "#d92d20", bg: "#fef3f2", border: "#fecdca", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
 };
 
 function ReservationStatusBadge({ status, tooltip }: { status: string; tooltip?: string }) {
-  const cfg = STATUS_BADGE_MAP[status] || STATUS_BADGE_MAP.Confirmed;
+  // Performed maps to CheckedIn for the status badge — the "Realizou a atividade" info lives in the attribute badges area
+  const cfg = STATUS_BADGE_MAP[status === "Performed" ? "CheckedIn" : status] || STATUS_BADGE_MAP.Confirmed;
   return (
     <div className="flex gap-[5px] items-center px-[6px] py-[2px] rounded-[4px] shrink-0" style={{ backgroundColor: cfg.bg, borderWidth: "0.5px", borderStyle: "solid", borderColor: cfg.border, color: cfg.color }} title={tooltip}>
       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap">{cfg.label}</p>
@@ -2079,9 +2088,9 @@ function LabeledBadge({ icon, label, color, tooltipTitle, tooltipSub, onClick }:
   );
 }
 
-function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance, reservationStatus, paymentStatus, onPaymentClick, isBuyer }: {
+function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance, reservationStatus, paymentStatus, onPaymentClick, isBuyer, performed }: {
   participant: Participant; insuranceStatus: string; requiresInsurance: boolean; reservationStatus: string;
-  paymentStatus: string; onPaymentClick: () => void; isBuyer: boolean;
+  paymentStatus: string; onPaymentClick: () => void; isBuyer: boolean; performed?: boolean;
 }) {
   // Map old hasImageAuth boolean to new imageTermStatus enum if needed
   const imageStatus: ImageTermStatus = participant.imageTermStatus || (participant.hasImageAuth ? "Authorized" : "Pending");
@@ -2115,6 +2124,24 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
       insuranceVariant = "insurance-pending";
       insuranceLabel = "Seguro pendente — aguardando confirmação";
     }
+  }
+
+  // When participant performed the activity, show single badge
+  if (performed) {
+    return (
+      <div className="flex gap-[6px] items-center flex-wrap" style={{ padding: "10px 6px" }}>
+        <div className="group relative">
+          <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+            <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="#079455" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 18.5L18.278 17.114C18.424 16.381 18.816 15.705 18.956 14.97C18.985 14.818 19 14.661 19 14.5C19 13.119 17.881 12 16.5 12C15.12 12 14 13.119 14 14.5C14 14.661 14.016 14.818 14.045 14.97C14.184 15.705 14.576 16.381 14.723 17.114L15 18.5M18 18.5H15M18 18.5L20.497 19.166C21.375 19.361 22 20.14 22 21.04C22 21.57 21.57 22 21.04 22H12.5H11.96C11.43 22 11 21.57 11 21.04C11 20.14 11.625 19.361 12.503 19.166L15 18.5"/><path d="M17 9V8C17 5.172 17 3.757 16.121 2.879C15.243 2 13.828 2 11 2H8C5.172 2 3.757 2 2.879 2.879C2 3.757 2 5.172 2 8V16C2 18.828 2 20.243 2.879 21.121C3.757 22 5.172 22 8 22"/><path d="M7 8.667C7 8.667 7.625 8.667 8.25 10C8.25 10 10.235 6.667 12 6"/><path d="M6 14H10"/><path d="M6 17H10"/></svg>
+            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#079455]">Realizou a atividade</span>
+          </div>
+          <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Realizou a atividade</p>
+            <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -2182,8 +2209,7 @@ function getReservationStatusText(
   reservation: Reservation,
 ): { title: string; subtitle: string; variant: StatusVariant } {
   if (reservation.status === "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
-  if (reservation.status === "Performed") return { title: "Atividade realizada", subtitle: "Status da reserva", variant: "green" };
-  if (reservation.status === "CheckedIn") return { title: "Check-in", subtitle: "Status da reserva", variant: "blue" };
+  if (reservation.status === "Performed" || reservation.status === "CheckedIn") return { title: "Check-in realizado", subtitle: "Status da reserva", variant: "blue" };
   if (reservation.status === "Scheduled") return { title: "Agendada", subtitle: "Status da reserva", variant: "amber" };
   if (reservation.status === "Draft") return { title: "Rascunho", subtitle: "Status da reserva", variant: "gray" };
   return { title: "Confirmada", subtitle: "Status da reserva", variant: "green" };
@@ -2192,7 +2218,6 @@ function getReservationStatusText(
 function getParticipantBadge(
   participant: Participant,
 ): { label: string; variant: StatusVariant } | null {
-  if (participant.checkInStatus === "Rescheduled") return { label: "Reagendada", variant: "purple" };
   if (participant.checkInStatus === "Absent") return { label: "Não compareceu", variant: "red" };
   if (participant.checkInStatus === "Cancelled") return { label: "Cancelada", variant: "red" };
   return null;
@@ -2564,7 +2589,7 @@ type ParticipantesFilter = "todos" | "a-fazer-checkin" | "checkin-realizado" | "
 
 interface MenuSlot { id: string; label: string; icon: React.ReactNode; enabled: boolean; tooltip: string | null; destructive?: boolean; separator?: boolean; hasExtIcon?: boolean }
 
-function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant): MenuSlot[] {
+function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant, participantPerformed?: boolean): MenuSlot[] {
   const s = r.status;
   const sm = reservationStateMachine;
   const canTo = (target: ReservationStatus) => (sm[s] || []).includes(target);
@@ -2592,18 +2617,18 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
     ? { id: "undo-confirm", label: "Desfazer confirmação de reserva", icon: iconUndoConfirm, enabled: s === "Confirmed" && canTo("Scheduled"), tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de desfazer a confirmação" : s === "Performed" ? "A atividade já foi realizada" : null }
     : { id: "confirm", label: "Confirmar reserva", icon: iconConfirm, enabled: isParticipantScheduled || canTo("Confirmed"), tooltip: !isParticipantScheduled && s === "Draft" ? "Carrinho ainda não finalizado" : !isParticipantScheduled && inactive ? "Reserva cancelada não pode ser confirmada" : null };
 
-  // Slot 2 — Definir realizado ↔ Desfazer
-  const slot2 = s === "Performed"
-    ? { id: "undo-performed", label: "Desfazer definição de realização", icon: iconUndoPerformed, enabled: canTo("Confirmed"), tooltip: null }
-    : { id: "mark-performed", label: "Definir como realizado", icon: iconPerformed, enabled: s === "CheckedIn" && canTo("Performed") && (insuranceStatus === "Contracted" || insuranceStatus === "NotRequired"), tooltip: s === "CheckedIn" && insuranceStatus !== "Contracted" && insuranceStatus !== "NotRequired" ? "É necessário contratar o seguro do participante antes de realizar essa ação" : s !== "CheckedIn" ? "É necessário realizar o check-in antes de definir como realizado" : null };
+  // Slot 2 — Definir realizado ↔ Desfazer (per participant, not reservation status)
+  const slot2 = participantPerformed
+    ? { id: "undo-performed", label: "Desfazer definição de realização", icon: iconUndoPerformed, enabled: true, tooltip: null }
+    : { id: "mark-performed", label: "Definir como realizado", icon: iconPerformed, enabled: p?.checkInStatus === "Done", tooltip: p?.checkInStatus !== "Done" ? "É necessário realizar o check-in antes de definir como realizado" : null };
 
   // Slot 3 — Registrar pagamento ↔ Desfazer
   const slot3 = (s === "Confirmed" || s === "CheckedIn" || s === "Performed")
-    ? { id: "undo-payment", label: "Desfazer registro de pagamento", icon: iconUndoPayment, enabled: canTo("Scheduled"), tooltip: null }
+    ? { id: "undo-payment", label: "Desfazer registro de pagamento", icon: iconUndoPayment, enabled: s !== "CheckedIn" && canTo("Scheduled"), tooltip: s === "CheckedIn" ? "Desfaça o check-in antes de alterar o pagamento" : null }
     : { id: "register-payment", label: "Registrar pagamento", icon: iconPayment, enabled: s === "Scheduled" && canTo("Confirmed"), tooltip: s === "Draft" ? "Finalize o carrinho antes de registrar pagamento" : inactive ? "Reserva inativa não permite registro de pagamento" : null };
 
   // Slot 4 — Remarcar ↔ Desfazer remarcação
-  const isRescheduled = p?.checkInStatus === "Rescheduled";
+  const isRescheduled = !!r.isRescheduled;
   const isAbsentForReschedule = p?.checkInStatus === "Absent";
   const slot4: MenuSlot = isRescheduled
     ? { id: "undo-reschedule", label: "Desfazer remarcação de reserva", icon: iconCal, enabled: true, tooltip: null }
@@ -2632,16 +2657,17 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant):
   return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8];
 }
 
-function ParticipantMenu({ reservation, participant, onAction, participantInsured, activityLocked }: {
+function ParticipantMenu({ reservation, participant, onAction, participantInsured, participantPerformed, activityLocked }: {
   reservation: Reservation;
   participant: Participant;
   onAction: (actionId: string, r: Reservation, p: Participant) => void;
   participantInsured: boolean;
+  participantPerformed?: boolean;
   activityLocked?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [hoveredDisabled, setHoveredDisabled] = useState<string | null>(null);
-  const baseSlots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required", participant), [reservation, participantInsured, participant]);
+  const baseSlots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required", participant, participantPerformed), [reservation, participantInsured, participant, participantPerformed]);
   const slots = useMemo(() => {
     if (!activityLocked) return baseSlots;
     return baseSlots.map((slot) => {
@@ -3366,6 +3392,26 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       return;
     }
 
+    // Special handling for mark-performed bulk — per participant
+    if (action === "mark-performed") {
+      let performed = 0;
+      for (const r of selectedReservations) {
+        for (const p of r.participants) {
+          if (selectedIds.has(p.id) && p.checkInStatus === "Done" && !isParticipantPerformed(p.id)) {
+            markPerformed(p.id);
+            performed++;
+          }
+        }
+      }
+      if (performed === 0) {
+        showToast("Nenhum participante elegível. É necessário realizar o check-in antes.", "error");
+      } else {
+        showToast(`${performed} participante(s) definido(s) como realizado(s).`);
+      }
+      setShowMoreActions(false);
+      return;
+    }
+
     const e = bulkEligibility[action];
     if (!e || e.eligible === 0) {
       showToast(`Nenhuma das reservas selecionadas pode receber esta ação. ${e?.reason || ""}`, "error");
@@ -3415,6 +3461,12 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
   const [rescheduleSelectedDate, setRescheduleSelectedDate] = useState<string | null>(null);
   const [rescheduleCapacityConfirmed, setRescheduleCapacityConfirmed] = useState(false);
   const [rescheduleNotify, setRescheduleNotify] = useState<"now" | "later">("now");
+  const [rescheduleActivityType, setRescheduleActivityType] = useState<"sob_demanda" | "evento" | "hospedagem">("sob_demanda");
+  const [rescheduleActivityDropdownOpen, setRescheduleActivityDropdownOpen] = useState(false);
+  const [rescheduleCalendarMonth, setRescheduleCalendarMonth] = useState(() => new Date(2026, 4, 1));
+  const [rescheduleCalendarDate, setRescheduleCalendarDate] = useState<string | null>(null);
+  const [rescheduleRangeStart, setRescheduleRangeStart] = useState<string | null>(null);
+  const [rescheduleRangeEnd, setRescheduleRangeEnd] = useState<string | null>(null);
   const [checkInModal, setCheckInModal] = useState<Participant[] | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
@@ -3431,6 +3483,11 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
   const isParticipantInsured = (pid: string) => insuredParticipants.has(pid);
   const contractInsurance = (pid: string) => setInsuredParticipants((prev) => new Set([...prev, pid]));
   const undoInsurance = (pid: string) => setInsuredParticipants((prev) => { const next = new Set(prev); next.delete(pid); return next; });
+
+  const [performedParticipants, setPerformedParticipants] = useState<Set<string>>(new Set());
+  const isParticipantPerformed = (pid: string) => performedParticipants.has(pid);
+  const markPerformed = (pid: string) => setPerformedParticipants((prev) => new Set([...prev, pid]));
+  const undoPerformed = (pid: string) => setPerformedParticipants((prev) => { const next = new Set(prev); next.delete(pid); return next; });
 
   // Count selected participants who have insurance for bulk eligibility
   const selectedInsuredCount = useMemo(() => {
@@ -3489,13 +3546,13 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       return;
     }
     if (actionId === "mark-performed") {
-      if (r.participants.length === 1) dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Performed" });
-      showToast(`Reserva de ${name} marcada como realizada.`);
+      markPerformed(p.id);
+      showToast(`${name} definido como realizado.`);
       return;
     }
     if (actionId === "undo-performed") {
-      if (r.participants.length === 1) dispatch({ type: "SET_RESERVATION_STATUS", reservationId: r.id, status: "Confirmed" });
-      showToast(`Definição de realização de ${name} desfeita.`);
+      undoPerformed(p.id);
+      showToast(`Realização de ${name} desfeita.`);
       return;
     }
     if (actionId === "undo-payment") {
@@ -3617,7 +3674,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
     return createPortal(
       <div className="fixed inset-0 z-[100] flex flex-col" style={{ backgroundColor: "#212121" }}>
         {/* Header bar */}
-        <header className="relative z-10 shrink-0 flex items-center h-[64px] px-[32px]" style={{ backgroundColor: "rgba(62, 62, 66, 0.6)" }}>
+        <header className="relative z-10 shrink-0 flex items-center h-[64px] px-[16px] md:px-[32px]" style={{ backgroundColor: "rgba(62, 62, 66, 0.6)" }}>
           <button
             onClick={() => setShowQrScanner(false)}
             className="flex items-center gap-[10px] px-[12px] py-[8px] rounded-[8px] cursor-pointer hover:bg-white/10 transition-colors"
@@ -3655,7 +3712,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
             <div className="flex flex-col items-center gap-[24px] max-w-[442px]">
               <div className="flex flex-col items-center gap-[16px]">
                 <div className="relative flex items-center justify-center">
-                  {[420, 360, 300, 240, 180, 120].map((size) => (
+                  {[360, 300, 240, 180, 120].map((size) => (
                     <div
                       key={size}
                       className="absolute rounded-full border border-white/[0.06]"
@@ -3673,7 +3730,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
                 <div className="flex flex-col items-center gap-[8px]">
                   <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-white text-center leading-[normal]">Câmera bloqueada</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#FAFAFA] text-center leading-[19px]">Para usar o scanner, permita o acesso à câmera nas configurações do navegador.</p>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#FAFAFA] text-center leading-[19px] px-[24px]">Para usar o scanner, permita o acesso à câmera nas configurações do navegador.</p>
                 </div>
               </div>
               <button className="bg-white border border-[#e2e8f0] rounded-[6px] px-[16px] h-[48px] flex items-center justify-center cursor-pointer hover:bg-[#f8fafc] transition-colors">
@@ -3691,7 +3748,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
             {/* Dark overlay with cutout */}
             <div className="absolute inset-0 bg-black/50 backdrop-blur-[16px]" />
             {/* Transparent scan area cutout */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[420px] rounded-[8px]">
+            <div className="absolute left-1/2 top-[calc(50%+24px)] size-[300px] -translate-x-1/2 -translate-y-1/2 rounded-[8px] md:top-1/2 md:size-[420px]">
               {/* Clear cutout background */}
               <div className="absolute inset-0 bg-black/50 backdrop-blur-none mix-blend-difference rounded-[8px]" style={{ backdropFilter: "none" }} />
               {/* Corner brackets from Figma */}
@@ -3707,9 +3764,27 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
             </div>
 
+            {/* Mobile instruction panel - above scan area */}
+            <div
+              className="absolute left-1/2 flex w-[300px] items-center justify-center gap-[12px] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden"
+              style={{
+                top: "max(16px, calc(50% - 303px))",
+                opacity: isQrInstructionEntering ? 0 : 1,
+                transform: isQrInstructionEntering ? "translate(-50%, 12px)" : "translate(-50%, 0)",
+              }}
+            >
+              <div className="flex size-[64px] shrink-0 items-center justify-center rounded-[8px] bg-white p-[8px]">
+                <svg className="size-[48px]" viewBox="0 0 153 153" fill="none">
+                  <path d="M0 4.78122C0 3.51316 0.503734 2.29704 1.40039 1.40039C2.29704 0.503734 3.51316 0 4.78122 0L33.4685 0C34.7366 0 35.9527 0.503734 36.8493 1.40039C37.746 2.29704 38.2497 3.51316 38.2497 4.78122C38.2497 6.04927 37.746 7.26539 36.8493 8.16205C35.9527 9.0587 34.7366 9.56243 33.4685 9.56243H16.6787C12.7485 9.56243 9.56243 12.7485 9.56243 16.6787V33.4685C9.56243 34.7366 9.0587 35.9527 8.16205 36.8493C7.26539 37.746 6.04927 38.2497 4.78122 38.2497C3.51316 38.2497 2.29704 37.746 1.40039 36.8493C0.503734 35.9527 0 34.7366 0 33.4685V4.78122ZM114.749 4.78122C114.749 3.51316 115.253 2.29704 116.15 1.40039C117.046 0.503734 118.262 0 119.53 0L148.218 0C149.486 0 150.702 0.503734 151.599 1.40039C152.495 2.29704 152.999 3.51316 152.999 4.78122V33.4685C152.999 34.7366 152.495 35.9527 151.599 36.8493C150.702 37.746 149.486 38.2497 148.218 38.2497C146.95 38.2497 145.734 37.746 144.837 36.8493C143.94 35.9527 143.436 34.7366 143.436 33.4685V16.6787C143.436 12.7485 140.25 9.56243 136.32 9.56243H119.53C118.262 9.56243 117.046 9.0587 116.15 8.16205C115.253 7.26539 114.749 6.04927 114.749 4.78122ZM4.78122 114.749C6.04927 114.749 7.26539 115.253 8.16205 116.15C9.0587 117.046 9.56243 118.262 9.56243 119.53V136.32C9.56243 140.25 12.7485 143.436 16.6787 143.436H33.4685C34.7366 143.436 35.9527 143.94 36.8493 144.837C37.746 145.734 38.2497 146.95 38.2497 148.218C38.2497 149.486 37.746 150.702 36.8493 151.599C35.9527 152.495 34.7366 152.999 33.4685 152.999H4.78122C3.51316 152.999 2.29704 152.495 1.40039 151.599C0.503734 150.702 0 149.486 0 148.218V119.53C0 118.262 0.503734 117.046 1.40039 116.15C2.29704 115.253 3.51316 114.749 4.78122 114.749ZM148.218 114.749C149.486 114.749 150.702 115.253 151.599 116.15C152.495 117.046 152.999 118.262 152.999 119.53V148.218C152.999 149.486 152.495 150.702 151.599 151.599C150.702 152.495 149.486 152.999 148.218 152.999H119.53C118.262 152.999 117.046 152.495 116.15 151.599C115.253 150.702 114.749 149.486 114.749 148.218C114.749 146.95 115.253 145.734 116.15 144.837C117.046 143.94 118.262 143.436 119.53 143.436H136.32C140.25 143.436 143.436 140.25 143.436 136.32V119.53C143.436 118.262 143.94 117.046 144.837 116.15C145.734 115.253 146.95 114.749 148.218 114.749Z" fill="#252B37" />
+                  <path d="M19.5703 19.5663V58.9793H58.9832V19.5663H19.5703ZM67.7417 19.5663V28.3248H76.5001V19.5663H67.7417ZM76.5001 28.3248V37.0832H67.7417V54.6001H76.5001V45.8417H85.2585V28.3248H76.5001ZM76.5001 54.6001V67.7377H37.0871V76.4962H28.3287V85.2546H45.8456V76.4962H54.604V85.2546H76.5001V76.4962H85.2585V85.2546H98.3962V76.4962H107.155V67.7377H85.2585V54.6001H76.5001ZM107.155 76.4962V85.2546H133.43V76.4962H124.671V67.7377H115.913V76.4962H107.155ZM28.3287 76.4962V67.7377H19.5703V76.4962H28.3287ZM94.017 19.5663V58.9793H133.43V19.5663H94.017ZM28.3287 28.3248H50.2248V50.2209H28.3287V28.3248ZM102.775 28.3248H124.671V50.2209H102.775V28.3248ZM32.7079 32.704V45.8417H45.8456V32.704H32.7079ZM107.155 32.704V45.8417H120.292V32.704H107.155ZM67.7417 89.6338V98.3923H76.5001V89.6338H67.7417ZM76.5001 98.3923V107.151H67.7417V124.668H76.5001V115.909H94.017V107.151H102.775V98.3923H111.534V107.151H102.775V115.909H94.017V133.426H102.775V124.668H111.534V115.909H115.913V124.668H111.534V133.426H120.292V124.668H124.671V115.909H133.43V98.3923H124.671V89.6338H94.017V98.3923H76.5001ZM124.671 124.668V133.426H133.43V124.668H124.671ZM76.5001 124.668V133.426H85.2585V124.668H76.5001ZM19.5703 94.013V133.426H58.9832V94.013H19.5703ZM28.3287 102.771H50.2248V124.668H28.3287V102.771ZM32.7079 107.151V120.288H45.8456V107.151H32.7079Z" fill="#252B37" />
+                </svg>
+              </div>
+              <p className="w-fit shrink-0 font-['Helvetica_Neue:Regular',sans-serif] text-[16px] leading-[19px] text-white">Escaneie o QR code para<br />realizar o check-in.</p>
+            </div>
+
             {/* Instruction panel - right of scan area */}
             <div
-              className="absolute top-1/2 flex items-center gap-[24px] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+              className="absolute top-1/2 hidden items-center gap-[24px] transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex"
               style={{
                 left: "calc(50% + 240px)",
                 opacity: isQrInstructionEntering ? 0 : 1,
@@ -4549,22 +4624,20 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                       </div>
                       <div className="flex min-h-0 flex-1 flex-col gap-[4px] overflow-y-auto px-[16px] pb-[calc(16px+env(safe-area-inset-bottom))]">
                         {[
-                          { label: "Editar atividade", hasExtIcon: true, action: null, separator: false },
-                          { label: "Enviar comunicado", hasExtIcon: false, action: "open-updates", separator: false },
-                          { label: "Atribuir equipe", hasExtIcon: false, action: "open-team", separator: false },
-                          { label: "Listas e manifestos", hasExtIcon: false, action: "open-manifesto", separator: true },
-                          { label: "Ficha de operação", hasExtIcon: false, action: "open-ficha", separator: false },
+                          { label: "Editar atividade", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.0737 3.88545C14.8189 3.07808 15.1915 2.6744 15.5874 2.43893C16.5427 1.87076 17.7191 1.85309 18.6904 2.39232C19.0929 2.6158 19.4769 3.00812 20.245 3.79276C21.0131 4.5774 21.3972 4.96972 21.6159 5.38093C22.1438 6.37312 22.1265 7.57479 21.5703 8.5507C21.3398 8.95516 20.9446 9.33578 20.1543 10.097L10.7506 19.1543C9.25288 20.5969 8.504 21.3182 7.56806 21.6837C6.63212 22.0493 5.6032 22.0224 3.54536 21.9686L3.26538 21.9613C2.63891 21.9449 2.32567 21.9367 2.14359 21.73C1.9615 21.5234 1.98636 21.2043 2.03608 20.5662L2.06308 20.2197C2.20301 18.4235 2.27297 17.5255 2.62371 16.7182C2.97444 15.9109 3.57944 15.2555 4.78943 13.9445L14.0737 3.88545Z" strokeLinejoin="round"/><path d="M13 4L20 11" strokeLinejoin="round"/><path d="M14 22L22 22"/></svg>, action: null, separator: false },
+                          { label: "Enviar comunicado", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12.5 3.00372C11.6049 2.99039 10.7047 3.01289 9.8294 3.07107C5.64639 3.34913 2.31441 6.72838 2.04024 10.9707C1.98659 11.8009 1.98659 12.6607 2.04024 13.4909C2.1401 15.036 2.82343 16.4666 3.62791 17.6746C4.09501 18.5203 3.78674 19.5758 3.30021 20.4978C2.94941 21.1626 2.77401 21.495 2.91484 21.7351C3.05568 21.9752 3.37026 21.9829 3.99943 21.9982C5.24367 22.0285 6.08268 21.6757 6.74868 21.1846C7.1264 20.9061 7.31527 20.7668 7.44544 20.7508C7.5756 20.7348 7.83177 20.8403 8.34401 21.0513C8.8044 21.2409 9.33896 21.3579 9.8294 21.3905C11.2536 21.4852 12.7435 21.4854 14.1706 21.3905C18.3536 21.1125 21.6856 17.7332 21.9598 13.4909C22.0021 12.836 22.011 12.1627 21.9866 11.5"/><path d="M15 5.5H22M18.5 2L18.5 9"/><path d="M11.9955 12.5H12.0045M15.991 12.5H16M8 12.5H8.00897" strokeWidth="2"/></svg>, action: "open-updates", separator: false },
+                          { label: "Atribuir equipe", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20V17.9704C3 16.7281 3.55927 15.5099 4.68968 14.9946C6.0685 14.3661 7.72212 14 9.5 14C10.7448 14 11.9287 14.1795 13 14.5028"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M14.5 4.14453C15.9457 4.57481 17 5.91408 17 7.49959C17 9.0851 15.9457 10.4244 14.5 10.8547"/><path d="M18 14V20M15 17H21"/></svg>, action: "open-team", separator: false },
+                          { label: "Listas e manifestos", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 17H16"/><path d="M8 13H12"/><path d="M13 2.5V3C13 5.82843 13 7.24264 13.8787 8.12132C14.7574 9 16.1716 9 19 9H19.5M20 10.6569V14C20 17.7712 20 19.6569 18.8284 20.8284C17.6569 22 15.7712 22 12 22C8.22876 22 6.34315 22 5.17157 20.8284C4 19.6569 4 17.7712 4 14V9.45584C4 6.21082 4 4.58831 4.88607 3.48933C5.06508 3.26731 5.26731 3.06508 5.48933 2.88607C6.58831 2 8.21082 2 11.4558 2C12.1614 2 12.5141 2 12.8372 2.11401C12.9044 2.13772 12.9702 2.165 13.0345 2.19575C13.3436 2.34355 13.593 2.593 14.0919 3.09188L18.8284 7.82843C19.4065 8.40649 19.6955 8.69552 19.8478 9.06306C20 9.4306 20 9.83935 20 10.6569Z"/></svg>, action: "open-manifesto", separator: true },
+                          { label: "Ficha de operação", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088Z"/><path d="M2.5 9L21.5 9" strokeLinecap="butt"/><path d="M2.5 13L21.5 13" strokeLinecap="butt"/><path d="M2.5 17L21.5 17" strokeLinecap="butt"/><path d="M12 21.5L12 9"/></svg>, action: "open-ficha", separator: false },
                         ].map((item) => (
                           <React.Fragment key={item.label}>
                             {item.separator && <div className="my-[4px] h-px w-full bg-[#f5f5f5]" />}
                             <button
                               onClick={() => { setShowHeaderMoreActions(false); if (item.action === "open-updates") onOpenUpdates?.(); if (item.action === "open-team") onOpenTeam?.(); if (item.action === "open-manifesto") setShowManifestoDrawer(true); if (item.action === "open-ficha") setShowFichaDrawer(true); }}
-                              className="flex h-[44px] w-full cursor-pointer items-center justify-between rounded-[8px] px-[12px] transition-colors hover:bg-[#f8fafc]"
+                              className="flex h-[44px] w-full cursor-pointer items-center gap-[10px] rounded-[8px] px-[12px] transition-colors hover:bg-[#f8fafc]"
                             >
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651]">{item.label}</p>
-                              {item.hasExtIcon && (
-                                <svg className="size-[16px] shrink-0 text-[#a4a7ae]" fill="none" viewBox="0 0 24 24"><path d="M17 7L6 18M11 6.13151C11 6.13151 16.6335 5.65662 17.4885 6.51153C18.3434 7.36645 17.8684 13 17.8684 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              )}
+                              {item.icon}
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] flex-1 text-left">{item.label}</p>
                             </button>
                           </React.Fragment>
                         ))}
@@ -4575,8 +4648,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                             setCancelActivityConfirmText("");
                             setCancelActivityModal(true);
                           }}
-                          className="flex h-[44px] w-full cursor-pointer items-center rounded-[8px] px-[12px] text-[#d92d20] transition-colors hover:bg-[#fef3f2]"
+                          className="flex h-[44px] w-full cursor-pointer items-center gap-[10px] rounded-[8px] px-[12px] text-[#d92d20] transition-colors hover:bg-[#fef3f2]"
                         >
+                          <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 9l-6 6M9 9l6 6"/><circle cx="12" cy="12" r="10"/></svg>
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#d92d20]">Cancelar atividade</p>
                         </button>
                       </div>
@@ -4587,22 +4661,20 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 {showHeaderMoreActions && (
                   <div className="absolute left-0 mt-[4px] hidden w-[calc(200%+16px)] max-w-[calc(100vw-32px)] flex-col gap-[4px] rounded-[8px] border border-[#f5f5f5] border-solid bg-white p-[6px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] md:left-auto md:right-0 md:flex md:w-max md:min-w-[220px]" style={{ zIndex: 9999 }}>
                     {[
-                      { label: "Editar atividade", hasExtIcon: true, action: null, separator: false },
-                      { label: "Enviar comunicado", hasExtIcon: false, action: "open-updates", separator: false },
-                      { label: "Atribuir equipe", hasExtIcon: false, action: "open-team", separator: false },
-                      { label: "Listas e manifestos", hasExtIcon: false, action: "open-manifesto", separator: true },
-                      { label: "Ficha de operação", hasExtIcon: false, action: "open-ficha", separator: false },
+                      { label: "Editar atividade", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.0737 3.88545C14.8189 3.07808 15.1915 2.6744 15.5874 2.43893C16.5427 1.87076 17.7191 1.85309 18.6904 2.39232C19.0929 2.6158 19.4769 3.00812 20.245 3.79276C21.0131 4.5774 21.3972 4.96972 21.6159 5.38093C22.1438 6.37312 22.1265 7.57479 21.5703 8.5507C21.3398 8.95516 20.9446 9.33578 20.1543 10.097L10.7506 19.1543C9.25288 20.5969 8.504 21.3182 7.56806 21.6837C6.63212 22.0493 5.6032 22.0224 3.54536 21.9686L3.26538 21.9613C2.63891 21.9449 2.32567 21.9367 2.14359 21.73C1.9615 21.5234 1.98636 21.2043 2.03608 20.5662L2.06308 20.2197C2.20301 18.4235 2.27297 17.5255 2.62371 16.7182C2.97444 15.9109 3.57944 15.2555 4.78943 13.9445L14.0737 3.88545Z" strokeLinejoin="round"/><path d="M13 4L20 11" strokeLinejoin="round"/><path d="M14 22L22 22"/></svg>, hasExtIcon: true, action: null, separator: false },
+                      { label: "Enviar comunicado", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12.5 3.00372C11.6049 2.99039 10.7047 3.01289 9.8294 3.07107C5.64639 3.34913 2.31441 6.72838 2.04024 10.9707C1.98659 11.8009 1.98659 12.6607 2.04024 13.4909C2.1401 15.036 2.82343 16.4666 3.62791 17.6746C4.09501 18.5203 3.78674 19.5758 3.30021 20.4978C2.94941 21.1626 2.77401 21.495 2.91484 21.7351C3.05568 21.9752 3.37026 21.9829 3.99943 21.9982C5.24367 22.0285 6.08268 21.6757 6.74868 21.1846C7.1264 20.9061 7.31527 20.7668 7.44544 20.7508C7.5756 20.7348 7.83177 20.8403 8.34401 21.0513C8.8044 21.2409 9.33896 21.3579 9.8294 21.3905C11.2536 21.4852 12.7435 21.4854 14.1706 21.3905C18.3536 21.1125 21.6856 17.7332 21.9598 13.4909C22.0021 12.836 22.011 12.1627 21.9866 11.5"/><path d="M15 5.5H22M18.5 2L18.5 9"/><path d="M11.9955 12.5H12.0045M15.991 12.5H16M8 12.5H8.00897" strokeWidth="2"/></svg>, hasExtIcon: false, action: "open-updates", separator: false },
+                      { label: "Atribuir equipe", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20V17.9704C3 16.7281 3.55927 15.5099 4.68968 14.9946C6.0685 14.3661 7.72212 14 9.5 14C10.7448 14 11.9287 14.1795 13 14.5028"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M14.5 4.14453C15.9457 4.57481 17 5.91408 17 7.49959C17 9.0851 15.9457 10.4244 14.5 10.8547"/><path d="M18 14V20M15 17H21"/></svg>, hasExtIcon: false, action: "open-team", separator: false },
+                      { label: "Listas e manifestos", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 17H16"/><path d="M8 13H12"/><path d="M13 2.5V3C13 5.82843 13 7.24264 13.8787 8.12132C14.7574 9 16.1716 9 19 9H19.5M20 10.6569V14C20 17.7712 20 19.6569 18.8284 20.8284C17.6569 22 15.7712 22 12 22C8.22876 22 6.34315 22 5.17157 20.8284C4 19.6569 4 17.7712 4 14V9.45584C4 6.21082 4 4.58831 4.88607 3.48933C5.06508 3.26731 5.26731 3.06508 5.48933 2.88607C6.58831 2 8.21082 2 11.4558 2C12.1614 2 12.5141 2 12.8372 2.11401C12.9044 2.13772 12.9702 2.165 13.0345 2.19575C13.3436 2.34355 13.593 2.593 14.0919 3.09188L18.8284 7.82843C19.4065 8.40649 19.6955 8.69552 19.8478 9.06306C20 9.4306 20 9.83935 20 10.6569Z"/></svg>, hasExtIcon: false, action: "open-manifesto", separator: true },
+                      { label: "Ficha de operação", icon: <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3.89124 20.1088C2.5 18.7175 2.5 16.4783 2.5 12C2.5 7.52166 2.5 5.28249 3.89124 3.89124C5.28249 2.5 7.52166 2.5 12 2.5C16.4783 2.5 18.7175 2.5 20.1088 3.89124C21.5 5.28249 21.5 7.52166 21.5 12C21.5 16.4783 21.5 18.7175 20.1088 20.1088C18.7175 21.5 16.4783 21.5 12 21.5C7.52166 21.5 5.28249 21.5 3.89124 20.1088Z"/><path d="M2.5 9L21.5 9" strokeLinecap="butt"/><path d="M2.5 13L21.5 13" strokeLinecap="butt"/><path d="M2.5 17L21.5 17" strokeLinecap="butt"/><path d="M12 21.5L12 9"/></svg>, hasExtIcon: false, action: "open-ficha", separator: false },
                     ].map((item) => (
                       <React.Fragment key={item.label}>
                         {item.separator && <div className="bg-[#f5f5f5] h-px w-full" />}
                         <button
                           onClick={() => { setShowHeaderMoreActions(false); if (item.action === "open-updates") onOpenUpdates?.(); if (item.action === "open-team") onOpenTeam?.(); if (item.action === "open-manifesto") setShowManifestoDrawer(true); if (item.action === "open-ficha") setShowFichaDrawer(true); }}
-                          className="cursor-pointer flex items-center justify-between h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#f8fafc] text-[#414651]"
+                          className="cursor-pointer flex items-center gap-[10px] h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#f8fafc] text-[#414651]"
                         >
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#414651]">{item.label}</p>
-                          {item.hasExtIcon && (
-                            <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M17 7L6 18M11 6.13151C11 6.13151 16.6335 5.65662 17.4885 6.51153C18.3434 7.36645 17.8684 13 17.8684 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          )}
+                          {item.icon}
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#414651] flex-1 text-left">{item.label}</p>
                         </button>
                       </React.Fragment>
                     ))}
@@ -4613,8 +4685,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                         setCancelActivityConfirmText("");
                         setCancelActivityModal(true);
                       }}
-                      className="cursor-pointer flex gap-[12px] items-center h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#fef3f2] text-[#d92d20]"
+                      className="cursor-pointer flex gap-[10px] items-center h-[40px] px-[12px] rounded-[6px] transition-colors w-full hover:bg-[#fef3f2] text-[#d92d20]"
                     >
+                      <svg className="size-[20px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 9l-6 6M9 9l6 6"/><circle cx="12" cy="12" r="10"/></svg>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] whitespace-nowrap text-[#d92d20]">Cancelar atividade</p>
                     </button>
                   </div>
@@ -4988,7 +5061,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   {/* Participant-level badges (only for active reservations) */}
                   {r.status !== "Cancelled" && r.status !== "Performed" && (() => {
                     const absentParts = r.participants.filter((p) => p.checkInStatus === "Absent");
-                    const rescheduledParts = r.participants.filter((p) => p.checkInStatus === "Rescheduled");
+                    const rescheduledParts = r.isRescheduled ? r.participants : [];
                     const cancelledParts = r.participants.filter((p) => p.checkInStatus === "Cancelled");
                     const scheduledParts = r.participants.filter((p) => p.checkInStatus === "Scheduled");
                     const BadgeWithTooltip = ({ parts, label, labelPlural, bg, color }: { parts: Participant[]; label: string; labelPlural: string; bg: string; color: string }) => (
@@ -5101,12 +5174,12 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                     {/* Badges — atributos do participante */}
                     <div className="flex flex-1 items-center min-w-0" style={{ padding: "10px 12px" }}>
-                      <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} />
+                      <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} performed={isParticipantPerformed(p.id)} />
                     </div>
                     {/* Actions cell */}
                     <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
                       {/* Three-dot menu */}
-                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} activityLocked={isActivityLocked} />
+                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} participantPerformed={isParticipantPerformed(p.id)} activityLocked={isActivityLocked} />
                       <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                     </div>
                   </div>
@@ -5154,10 +5227,10 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                                 <ParticipantReservationStatusCell reservation={r} participant={p} />
                                 <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
                                 <div className="flex flex-1 items-center min-w-0" style={{ padding: "8px 12px" }}>
-                                  <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} />
+                                  <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} performed={isParticipantPerformed(p.id)} />
                                 </div>
                                 <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
-                                  <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} activityLocked={isActivityLocked} />
+                                  <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} participantPerformed={isParticipantPerformed(p.id)} activityLocked={isActivityLocked} />
                                   <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                                 </div>
                               </div>
@@ -5430,7 +5503,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                             <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#414651]">{performed} realizada</span>
                           </div>
                           <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Atividade realizada</p>
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[16px] text-white not-italic">Realizou a atividade</p>
                             <div className="absolute size-0 top-full left-1/2 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
                           </div>
                         </div>
@@ -5878,6 +5951,15 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       )}
       {/* Remarcar reserva drawer */}
       {rescheduleModal && (() => {
+        // Mock activities for the reschedule selector
+        const rescheduleActivities = [
+          { id: "ra-1", name: "Trilha Pico do Itacolomi", type: "sob_demanda" as const, typeLabel: "Sob demanda" },
+          { id: "ra-2", name: "Festival de Trilhas Inverno 2026", type: "evento" as const, typeLabel: "Evento" },
+          { id: "ra-3", name: "Camping Vale das Cachoeiras", type: "hospedagem" as const, typeLabel: "Hospedagem" },
+        ];
+        const currentRescheduleAct = rescheduleActivities.find((a) => a.type === rescheduleActivityType) || rescheduleActivities[0];
+
+        // Event date options (used only for "evento" type)
         const dateOptions = [
           { date: "29/04/2026", time: "08:00 - 16:00", slots: 25, available: true },
           { date: "30/05/2026", time: "08:00 - 16:00", slots: 30, available: true },
@@ -5887,8 +5969,37 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           { date: "05/05/2026", time: "08:00 - 16:00", slots: 4, available: true },
         ];
         const selected = dateOptions.find((d) => d.date === rescheduleSelectedDate);
-        const isNoSlots = rescheduleSelectedDate === "04/05/2026";
-        const canConfirm = !isNoSlots || rescheduleCapacityConfirmed;
+
+        // Calendar availability dots (used for sob_demanda / hospedagem)
+        const calendarAvailability: Record<number, "green" | "red"> = {
+          1: "green", 2: "green", 3: "green", 4: "red", 5: "green",
+          6: "green", 7: "green", 8: "red", 9: "green", 10: "green",
+          11: "green", 12: "green", 13: "green", 14: "green", 15: "green",
+          16: "red", 17: "green", 18: "green", 19: "green", 20: "red",
+          21: "green", 22: "green", 23: "green", 24: "red", 25: "green",
+          26: "green", 27: "green", 28: "red", 29: "green", 30: "green",
+          31: "green",
+        };
+        const calMonthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const calDayLabels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+        const calYear = rescheduleCalendarMonth.getFullYear();
+        const calMonth = rescheduleCalendarMonth.getMonth();
+        const calFirstDay = new Date(calYear, calMonth, 1).getDay();
+        const calDaysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+        const calDays: (number | null)[] = [];
+        for (let i = 0; i < calFirstDay; i++) calDays.push(null);
+        for (let d = 1; d <= calDaysInMonth; d++) calDays.push(d);
+        const makeDate = (day: number) => `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const formatShort = (ds: string) => { const [, m, d] = ds.split("-"); return `${d}/${m}`; };
+
+        // Selection state across all types
+        const hasSelection = rescheduleActivityType === "evento"
+          ? !!selected
+          : rescheduleActivityType === "sob_demanda"
+            ? !!rescheduleCalendarDate
+            : !!(rescheduleRangeStart && rescheduleRangeEnd);
+        const isNoSlots = rescheduleActivityType === "evento" && rescheduleSelectedDate === "04/05/2026";
+        const canConfirm = hasSelection && (!isNoSlots || rescheduleCapacityConfirmed);
         const capacity = activity.capacity || 200;
 
         return createPortal(
@@ -5984,85 +6095,263 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 <div className="flex flex-col gap-[8px]">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Para qual atividade?</p>
                   <div className="relative">
-                    <button className="flex items-center justify-between w-full h-[40px] rounded-[8px] px-[14px] cursor-pointer transition-colors border border-[#e9eaeb] hover:border-[#d0d5dd]">
-                      <div className="flex items-center gap-[8px]">
-                        <svg className="size-[16px] text-[#717680] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M10.67 1.33V4M5.33 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M1.33 6h13.34" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{activity.name}</span>
-                      </div>
-                      <svg className="size-[16px] text-[#717680]" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
-                  </div>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">As datas disponíveis carregam de acordo com a atividade escolhida.</p>
-                </div>
-
-                {/* Selecionar nova data / horário */}
-                <div className="flex flex-col gap-[8px]">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Selecionar nova data / horário</p>
-                  <div className="relative">
                     <button
-                      onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
-                      className={`flex items-center justify-between w-full h-[40px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                      onClick={() => setRescheduleActivityDropdownOpen(!rescheduleActivityDropdownOpen)}
+                      className={`flex items-center justify-between w-full h-[44px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleActivityDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
                     >
-                      {selected ? (
-                        <>
-                          <div className="flex items-center gap-[6px]">
-                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.date}</span>
-                            <span className="text-[#d0d5dd]">·</span>
-                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.time}</span>
-                          </div>
-                          <div className="flex items-center gap-[8px] shrink-0">
-                            <div className="flex items-center gap-[5px] bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[10px] h-[24px]">
-                              <div className={`size-[6px] rounded-full ${selected.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
-                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] whitespace-nowrap ${selected.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
-                                {selected.available ? `${selected.slots} vagas` : "Sem vagas"}
-                              </span>
-                            </div>
-                            <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-[8px]">
-                            <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar data</p>
-                          </div>
-                          <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </>
-                      )}
+                      <div className="flex items-center gap-[8px]">
+                        <svg className="size-[16px] text-[#717680] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 2L8.5 8.5 2 9.27l4.5 4.73L5.5 21 12 17.77 18.5 21l-1-7L22 9.27 15.5 8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{currentRescheduleAct.name}</span>
+                      </div>
+                      <div className="flex items-center gap-[8px]">
+                        <span className="inline-flex items-center gap-[4px] bg-[#f5f5f5] rounded-full px-[8px] h-[22px]">
+                          <svg className="size-[12px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24">
+                            {rescheduleActivityType === "evento" ? (
+                              <><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></>
+                            ) : rescheduleActivityType === "hospedagem" ? (
+                              <><path d="M2 17L12 7l10 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 15v5a1 1 0 001 1h14a1 1 0 001-1v-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></>
+                            ) : (
+                              <><path d="M12 2L8.5 8.5 2 9.27l4.5 4.73L5.5 21 12 17.77 18.5 21l-1-7L22 9.27 15.5 8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></>
+                            )}
+                          </svg>
+                          <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#535862]">{currentRescheduleAct.typeLabel}</span>
+                        </span>
+                        <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleActivityDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </div>
                     </button>
-                    {rescheduleDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px] max-h-[220px] overflow-y-auto">
-                        {dateOptions.map((opt) => (
+                    {rescheduleActivityDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px]">
+                        {rescheduleActivities.map((act) => (
                           <button
-                            key={opt.date}
-                            onClick={() => { setRescheduleSelectedDate(opt.date); setRescheduleDropdownOpen(false); }}
-                            className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleSelectedDate === opt.date ? "bg-[#f0f5ff]" : ""}`}
+                            key={act.id}
+                            onClick={() => {
+                              setRescheduleActivityType(act.type);
+                              setRescheduleActivityDropdownOpen(false);
+                              setRescheduleSelectedDate(null);
+                              setRescheduleDropdownOpen(false);
+                              setRescheduleCalendarDate(null);
+                              setRescheduleRangeStart(null);
+                              setRescheduleRangeEnd(null);
+                            }}
+                            className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleActivityType === act.type ? "bg-[#f0f5ff]" : ""}`}
                           >
-                            <div className="flex items-center gap-[6px]">
-                              {rescheduleSelectedDate === opt.date ? (
-                                <svg className="size-[16px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              ) : (
-                                <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                              )}
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.date}</span>
-                              <span className="text-[#d0d5dd]">·</span>
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.time}</span>
+                            <div className="flex items-center gap-[8px]">
+                              <svg className="size-[16px] text-[#717680] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 2L8.5 8.5 2 9.27l4.5 4.73L5.5 21 12 17.77 18.5 21l-1-7L22 9.27 15.5 8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{act.name}</span>
                             </div>
-                            <div className="flex items-center gap-[4px] shrink-0">
-                              <div className={`size-[6px] rounded-full ${opt.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
-                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${opt.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
-                                {opt.available ? `${opt.slots} vagas` : "Sem vagas"}
-                              </span>
-                            </div>
+                            <span className="inline-flex items-center gap-[4px] bg-[#f5f5f5] rounded-full px-[8px] h-[22px]">
+                              <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#535862]">{act.typeLabel}</span>
+                            </span>
                           </button>
                         ))}
                       </div>
                     )}
                   </div>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Trocar a atividade recarrega as datas disponíveis conforme o tipo do produto.</p>
+                </div>
+
+                {/* Selecionar nova data — conditional by activity type */}
+                <div className="flex flex-col gap-[8px]">
+                  <div className="flex items-center justify-between">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">
+                      {rescheduleActivityType === "sob_demanda" && "Selecionar nova data"}
+                      {rescheduleActivityType === "evento" && "Selecionar data do evento"}
+                      {rescheduleActivityType === "hospedagem" && "Selecionar novo período"}
+                    </p>
+                    <span className="inline-flex items-center gap-[5px] bg-white border border-[#e9eaeb] rounded-full px-[10px] h-[28px]">
+                      <svg className="size-[13px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">
+                        {rescheduleActivityType === "sob_demanda" && "Seleção por calendário"}
+                        {rescheduleActivityType === "evento" && "Datas do evento"}
+                        {rescheduleActivityType === "hospedagem" && "Seleção por período"}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* EVENTO — date dropdown */}
+                  {rescheduleActivityType === "evento" && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
+                        className={`flex items-center justify-between w-full h-[40px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                      >
+                        {selected ? (
+                          <>
+                            <div className="flex items-center gap-[6px]">
+                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.date}</span>
+                              <span className="text-[#d0d5dd]">·</span>
+                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.time}</span>
+                            </div>
+                            <div className="flex items-center gap-[8px] shrink-0">
+                              <div className="flex items-center gap-[5px] bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[10px] h-[24px]">
+                                <div className={`size-[6px] rounded-full ${selected.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                                <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] whitespace-nowrap ${selected.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
+                                  {selected.available ? `${selected.slots} vagas disponíveis` : "Sem vagas disponíveis"}
+                                </span>
+                              </div>
+                              <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-[8px]">
+                              <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar data do evento</p>
+                            </div>
+                            <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          </>
+                        )}
+                      </button>
+                      {rescheduleDropdownOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[12px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px] max-h-[320px] overflow-y-auto">
+                          {dateOptions.map((opt) => (
+                            <button
+                              key={opt.date}
+                              onClick={() => { setRescheduleSelectedDate(opt.date); setRescheduleDropdownOpen(false); }}
+                              className={`flex items-center justify-between w-full px-[14px] py-[12px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleSelectedDate === opt.date ? "bg-[#f0f5ff]" : ""} border-b border-[#f5f5f5] last:border-b-0`}
+                            >
+                              <div className="flex items-center gap-[6px]">
+                                <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.date}</span>
+                                <span className="text-[#d0d5dd]">·</span>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.time}</span>
+                              </div>
+                              <div className="flex items-center gap-[4px] shrink-0">
+                                <div className={`size-[6px] rounded-full ${opt.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
+                                <span className={`font-['Helvetica_Neue:Medium',sans-serif] text-[12px] ${opt.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
+                                  {opt.available ? `${opt.slots} vagas disponíveis` : "Sem vagas disponíveis"}
+                                </span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* SOB DEMANDA / HOSPEDAGEM — calendar picker */}
+                  {(rescheduleActivityType === "sob_demanda" || rescheduleActivityType === "hospedagem") && (() => {
+                    const isRange = rescheduleActivityType === "hospedagem";
+                    const isInRange = (day: number) => {
+                      if (!isRange || !rescheduleRangeStart || !rescheduleRangeEnd) return false;
+                      const ds = makeDate(day);
+                      return ds >= rescheduleRangeStart && ds <= rescheduleRangeEnd;
+                    };
+                    const isRangeEdge = (day: number) => {
+                      if (!isRange) return false;
+                      const ds = makeDate(day);
+                      return ds === rescheduleRangeStart || ds === rescheduleRangeEnd;
+                    };
+                    const isSelectedSingle = (day: number) => {
+                      if (isRange) return false;
+                      return makeDate(day) === rescheduleCalendarDate;
+                    };
+                    const handleDayClick = (day: number) => {
+                      const ds = makeDate(day);
+                      if (!isRange) {
+                        setRescheduleCalendarDate(ds === rescheduleCalendarDate ? null : ds);
+                      } else {
+                        if (!rescheduleRangeStart || (rescheduleRangeStart && rescheduleRangeEnd)) {
+                          setRescheduleRangeStart(ds);
+                          setRescheduleRangeEnd(null);
+                        } else {
+                          if (ds < rescheduleRangeStart) {
+                            setRescheduleRangeEnd(rescheduleRangeStart);
+                            setRescheduleRangeStart(ds);
+                          } else if (ds === rescheduleRangeStart) {
+                            setRescheduleRangeStart(null);
+                          } else {
+                            setRescheduleRangeEnd(ds);
+                          }
+                        }
+                      }
+                    };
+                    const getNights = () => {
+                      if (!rescheduleRangeStart || !rescheduleRangeEnd) return 0;
+                      return Math.round((new Date(rescheduleRangeEnd).getTime() - new Date(rescheduleRangeStart).getTime()) / (1000 * 60 * 60 * 24));
+                    };
+
+                    return (
+                      <div className="flex flex-col gap-[8px] border border-[#e9eaeb] rounded-[12px] px-[16px] py-[14px]">
+                        {/* Month navigation */}
+                        <div className="flex items-center justify-between">
+                          <button onClick={() => setRescheduleCalendarMonth(new Date(calYear, calMonth - 1, 1))} className="flex items-center justify-center size-[32px] rounded-[6px] cursor-pointer hover:bg-[#f5f5f5] transition-colors">
+                            <svg className="size-[16px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </button>
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">{calMonthNames[calMonth]} {calYear}</p>
+                          <button onClick={() => setRescheduleCalendarMonth(new Date(calYear, calMonth + 1, 1))} className="flex items-center justify-center size-[32px] rounded-[6px] cursor-pointer hover:bg-[#f5f5f5] transition-colors">
+                            <svg className="size-[16px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          </button>
+                        </div>
+                        {/* Day headers */}
+                        <div className="grid grid-cols-7">
+                          {calDayLabels.map((d) => (
+                            <div key={d} className="flex items-center justify-center py-[6px]">
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680]">{d}</p>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Days grid */}
+                        <div className="grid grid-cols-7">
+                          {calDays.map((day, i) => {
+                            if (day === null) return <div key={`e-${i}`} />;
+                            const avail = calendarAvailability[day];
+                            const inRange = isInRange(day);
+                            const edge = isRangeEdge(day);
+                            const single = isSelectedSingle(day);
+                            const active = single || edge;
+                            return (
+                              <div key={day} className="flex items-center justify-center py-[2px]">
+                                <button
+                                  onClick={() => handleDayClick(day)}
+                                  className={`flex flex-col items-center justify-center size-[36px] rounded-[8px] cursor-pointer transition-colors ${
+                                    active
+                                      ? "bg-[#0b5ed7] text-white"
+                                      : inRange
+                                        ? "bg-[#eff6ff] text-[#0b5ed7]"
+                                        : "hover:bg-[#f5f5f5] text-[#252b37]"
+                                  }`}
+                                >
+                                  <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] leading-none ${active ? "text-white" : ""}`}>{day}</span>
+                                  {avail && (
+                                    <div className={`size-[5px] rounded-full mt-[3px] ${
+                                      avail === "green"
+                                        ? active ? "bg-white/80" : "bg-[#17b26a]"
+                                        : active ? "bg-white/80" : "bg-[#d92d20]"
+                                    }`} />
+                                  )}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* Calendar footer */}
+                        {!isRange && (
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680] pt-[4px]">
+                            {rescheduleCalendarDate ? `Selecionado: ${formatShort(rescheduleCalendarDate)}` : "Selecione um dia"}
+                          </p>
+                        )}
+                        {isRange && (
+                          <div className="flex flex-col gap-[4px] pt-[4px]">
+                            {rescheduleRangeStart && rescheduleRangeEnd ? (
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#0b5ed7]">
+                                {getNights()} diária{getNights() !== 1 ? "s" : ""} {formatShort(rescheduleRangeStart)} a {formatShort(rescheduleRangeEnd)}
+                              </p>
+                            ) : rescheduleRangeStart ? (
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Selecione a data de saída</p>
+                            ) : (
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Selecione as datas de entrada e saída</p>
+                            )}
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">Toque em um novo dia para recomeçar a seleção</p>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {/* Empty state when no date selected */}
-                  {!selected && (
+                  {!hasSelection && (
                     <div className="flex flex-col items-center justify-center py-[24px] gap-[8px] rounded-[8px] border border-[#f5f5f5]">
                       <svg className="size-[32px] text-[#d0d5dd]" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
                       <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Nenhuma data selecionada</p>
@@ -6071,8 +6360,8 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   )}
 
                   {/* Itens que serão transferidos — shown when date selected */}
-                  {selected && (() => {
-                    const lancheAvailable = selected.date !== "02/05/2026" && selected.date !== "04/05/2026";
+                  {hasSelection && (() => {
+                    const lancheAvailable = rescheduleActivityType !== "evento" || (selected ? selected.date !== "02/05/2026" && selected.date !== "04/05/2026" : true);
                     const basePrice = 150;
                     const transportePrice = 30;
                     const lanchePrice = 25;
@@ -6220,8 +6509,8 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       {/* Bulk Cancel modal */}
       {bulkCancelModal && (() => {
         const allSelected = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && !bulkCancelExcluded.has(p.id));
-        const eligible = allSelected.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent" && p.checkInStatus !== "Rescheduled");
-        const ineligible = allSelected.filter((p) => p.checkInStatus === "Cancelled" || p.checkInStatus === "Absent" || p.checkInStatus === "Rescheduled");
+        const eligible = allSelected.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent");
+        const ineligible = allSelected.filter((p) => p.checkInStatus === "Cancelled" || p.checkInStatus === "Absent");
         const alreadyCancelled = allSelected.filter((p) => p.checkInStatus === "Cancelled").length;
         const alreadyPerformed = allSelected.filter((p) => p.checkInStatus === "Done").length;
         const eligibleCount = eligible.length;
@@ -7359,26 +7648,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex flex-col gap-[8px]">
-                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#45556c]">Próximos 7 dias</span>
-                                <div className="flex gap-[6px]">
-                                  {weather.forecast.map((fc) => (
-                                    <div key={fc.day} className={`flex flex-col items-center gap-[8px] flex-1 py-[10px] rounded-[12px] border ${fc.active ? "bg-[#F6FAFF] border-[#bfdbfe]" : "bg-white border-[#e2e8f0]"}`}>
-                                      <div className="flex flex-col items-center">
-                                        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${fc.active ? "text-[#0b5ed7]" : "text-[#252b37]"}`}>{fc.day}</span>
-                                        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${fc.active ? "text-[#0b5ed7]" : "text-[#717680]"}`}>{fc.date}</span>
-                                      </div>
-                                      <div className="flex items-center justify-center size-[32px] rounded-[8px]" style={{ backgroundColor: weatherIconBg[fc.icon], border: `1px solid ${weatherIconBorder[fc.icon]}` }}>
-                                        {renderWeatherIcon(fc.icon, 18)}
-                                      </div>
-                                      <div className="flex flex-col items-center">
-                                        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${fc.active ? "text-[#0b5ed7]" : "text-[#252b37]"}`}>{fc.tempHigh}°</span>
-                                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#94a3b8]">{fc.tempLow}°</span>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
+                              {/* Próximos 7 dias — hidden */}
                             </div>
                           </div>
                         </div>
@@ -7800,13 +8070,13 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#e17c00] truncate">Alocado em: {TEAM_GUIDE_CONFLICT_ACTIVITIES[teamConflictConfirm]}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-[10px] bg-[#fff7ed] border border-[#fed7aa] rounded-[10px] px-[12px] py-[8px]">
-                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#F79009" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#F79009" /><path d="M12 8v5M12 15h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+              <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 8v5M12 15h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Caso prossiga, a notificação chegará para esse membro como convite. Ele poderá aceitar ou recusar a atribuição dessa atividade.</p>
               </div>
             </div>
             <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
-              <button onClick={() => setTeamConflictConfirm(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar ação</button>
+                  <button onClick={() => setTeamConflictConfirm(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar</button>
               <button
                 onClick={() => {
                   const guide = teamConflictConfirm;

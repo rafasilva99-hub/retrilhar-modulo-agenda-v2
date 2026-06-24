@@ -54,7 +54,7 @@ const ELIGIBILITY_RULES: Record<BulkAction, EligibilityRule> = {
     reason: "Somente reservas confirmadas podem ter a confirmação desfeita.",
   },
   "mark-performed": {
-    test: (r) => r.status === "CheckedIn",
+    test: (r) => r.status === "CheckedIn" || (r.status === "Confirmed" && r.participants.some((p) => p.checkInStatus === "Done")),
     reason: "Somente reservas com check-in realizado podem ser marcadas como realizadas.",
   },
   "add-insurance": {

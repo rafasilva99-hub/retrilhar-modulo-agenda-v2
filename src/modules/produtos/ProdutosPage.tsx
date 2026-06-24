@@ -268,6 +268,7 @@ export function ProdutosPage() {
   const [statusFilter, setStatusFilter] = useState<"todos" | Produto["status"]>("todos");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
   const [mode, setMode] = useState<ProdutoMode>("list");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProdutoFormState>(emptyForm);
@@ -965,84 +966,70 @@ export function ProdutosPage() {
       </div>
 
       <div className="absolute left-[var(--shell-offset,248px)] right-[24px] top-[178px] flex flex-col gap-[24px] pb-[40px]">
-      <div className="flex gap-[16px] items-start">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[1em]">
         {[
           { label: "Total de produtos", subtitle: "Catálogo completo", value: totalProdutos.toString(), icon: <svg className="block size-full" fill="none" viewBox="0 0 16 16"><path d="M11.333 0.667V2.667M4.667 0.667V2.667" stroke="#0B5ED7" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 12.667H7.333C5.152 12.667 4.062 12.667 3.448 12.052C2.833 11.438 2.833 10.348 2.833 8.167V7.167C2.833 4.986 2.833 3.895 3.448 3.281C4.062 2.667 5.152 2.667 7.333 2.667H8.667C10.848 2.667 11.938 2.667 12.552 3.281C13.167 3.895 13.167 4.986 13.167 7.167V7.833" stroke="#0B5ED7" strokeLinecap="round" strokeLinejoin="round"/><path d="M2.833 5.333H13.167" stroke="#0B5ED7" strokeLinecap="round" strokeLinejoin="round"/><path d="M10.333 12.667C10.333 12.667 12.333 11.681 12.333 10.083C12.333 9.455 11.886 8.947 11.273 8.947C10.77 8.947 10.435 9.166 10.211 9.603C9.988 9.166 9.653 8.947 9.15 8.947C8.537 8.947 8.09 9.455 8.09 10.083C8.09 11.681 10.333 12.667 10.333 12.667Z" stroke="#0B5ED7" strokeLinecap="round" strokeLinejoin="round"/></svg> },
           { label: "Ativos", subtitle: "Produtos disponíveis", value: ativos.toString(), icon: <svg className="block size-full" fill="none" viewBox="0 0 16 16"><path d="M4 8l3 3 5-5" stroke="#0B5ED7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="8" cy="8" r="6.5" stroke="#0B5ED7" strokeWidth="1.2"/></svg> },
           { label: "Inativos", subtitle: "Produtos desativados", value: inativos.toString(), icon: <svg className="block size-full" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#0B5ED7" strokeWidth="1.2" strokeLinecap="round"/><circle cx="8" cy="8" r="6.5" stroke="#0B5ED7" strokeWidth="1.2"/></svg> },
           { label: "Ticket médio", subtitle: "Valor médio por produto", value: formatCurrency(ticketMedio), icon: <svg className="block size-full" fill="none" viewBox="0 0 16 16"><path d="M2.333 10.264V5.358C2.333 3.842 2.333 3.084 2.8 2.612C3.267 2.14 4.017 2.14 5.517 2.14H7.633C9.133 2.14 9.883 2.14 10.35 2.612C10.817 3.084 10.817 3.842 10.817 5.358V10.264C10.817 11.068 10.817 11.47 10.572 11.628C10.172 11.886 9.553 11.345 9.241 11.148C8.984 10.986 8.855 10.905 8.712 10.9C8.558 10.895 8.427 10.974 8.149 11.148L7.136 11.789C6.863 11.962 6.726 12.048 6.574 12.048C6.422 12.048 6.285 11.962 6.012 11.789L4.999 11.148C4.742 10.986 4.613 10.905 4.47 10.9C4.316 10.895 4.185 10.974 3.907 11.148C3.596 11.345 2.976 11.886 2.576 11.628C2.333 11.47 2.333 11.068 2.333 10.264Z" stroke="#0B5ED7" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.683 4.333H5.183" stroke="#0B5ED7" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.85 6.333H5.183" stroke="#0B5ED7" strokeLinecap="round" strokeLinejoin="round"/></svg> },
         ].map((card) => (
-          <div key={card.label} className="bg-white drop-shadow-[0px_1px_1.5px_rgba(10,13,18,0.08),0px_1px_1px_rgba(10,13,18,0.06)] flex-[1_0_0] min-w-px relative rounded-[24px]">
-            <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[24px]" />
-            <div className="flex flex-col gap-[10px] items-start pb-[20px] pt-[20px] px-[20px] size-full">
-              <div className="flex flex-1 gap-[10px] items-center w-full">
-                <div className="bg-[rgba(239,246,255,0.4)] relative rounded-[10px] shrink-0 size-[32px]">
-                  <div aria-hidden="true" className="absolute border border-[rgba(190,219,255,0.5)] border-solid inset-0 pointer-events-none rounded-[10px]" />
-                  <div className="flex items-center justify-center size-full">
-                    <div className="size-[16px]">{card.icon}</div>
-                  </div>
+          <div key={card.label} data-slot="card" data-size="default" className="group/card flex flex-col overflow-hidden rounded-4xl bg-card text-sm text-card-foreground ring-1 ring-foreground/5 shadow-none py-0 gap-0">
+            <div data-slot="card-content" className="p-[1.25em] h-full">
+              <div className="flex items-start justify-between gap-[0.75em] h-full">
+                <div className="flex flex-col justify-between h-full min-w-0">
+                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-xs text-muted-foreground leading-tight">{card.label}</span>
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-2xl tracking-tight leading-none mt-[0.25em] text-[#0f172b]">{card.value}</p>
+                  <span className="block font-['Helvetica_Neue:Regular',sans-serif] text-xs text-muted-foreground mt-[0.25em]">{card.subtitle}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#314158] whitespace-nowrap">{card.label}</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#62748e]">{card.subtitle}</p>
+                <div className="size-[2.5em] rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <div className="size-[20px] text-primary">{card.icon}</div>
                 </div>
-              </div>
-              <div className="flex flex-col gap-[8px] w-full">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[24px] leading-[1] text-[#0f172b]">{card.value}</p>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center gap-[12px]">
-        <div className="min-w-0 flex-1">
-          <div className="flex h-[40px] items-center gap-[10px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px]">
-            <svg className="size-[16px] shrink-0 text-[#a4a7ae]" fill="none" viewBox="0 0 20 20">
-              <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M13.5 13.5l3.5 3.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+      <div className="flex items-center gap-[0.75em]">
+        <div className="relative flex-1 md:max-w-[20em]">
+          <svg className="absolute left-[0.75em] top-1/2 size-[16px] -translate-y-1/2 text-muted-foreground" fill="none" viewBox="0 0 24 24">
+            <path d="M17 17L21 21" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+            <path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Pesquisar..."
+            className="h-9 w-full min-w-0 rounded-md border border-border bg-input/50 px-3 py-1 pl-[2.25em] font-['Helvetica_Neue:Regular',sans-serif] text-base text-[#252b37] outline-none transition-[color,box-shadow,background-color] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 md:text-sm"
+          />
+        </div>
+        <div className="relative hidden md:block">
+          <button
+            type="button"
+            onClick={() => setFiltersDrawerOpen(true)}
+            className="group/button inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 font-['Helvetica_Neue:Regular',sans-serif] text-sm text-[#414651] transition-all hover:bg-muted hover:text-foreground"
+          >
+            <svg className="size-[16px]" fill="none" viewBox="0 0 24 24">
+              <path d="M3 7H6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+              <path d="M3 17H9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+              <path d="M18 17L21 17" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+              <path d="M15 7L21 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+              <path d="M6 7C6 6.06812 6 5.60218 6.15224 5.23463C6.35523 4.74458 6.74458 4.35523 7.23463 4.15224C7.60218 4 8.06812 4 9 4C9.93188 4 10.3978 4 10.7654 4.15224C11.2554 4.35523 11.6448 4.74458 11.8478 5.23463C12 5.60218 12 6.06812 12 7C12 7.93188 12 8.39782 11.8478 8.76537C11.6448 9.25542 11.2554 9.64477 10.7654 9.84776C10.3978 10 9.93188 10 9 10C8.06812 10 7.60218 10 7.23463 9.84776C6.74458 9.64477 6.35523 9.25542 6.15224 8.76537C6 8.39782 6 7.93188 6 7Z" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M12 17C12 16.0681 12 15.6022 12.1522 15.2346C12.3552 14.7446 12.7446 14.3552 13.2346 14.1522C13.6022 14 14.0681 14 15 14C15.9319 14 16.3978 14 16.7654 14.1522C17.2554 14.3552 17.6448 14.7446 17.8478 15.2346C18 15.6022 18 16.0681 18 17C18 17.9319 18 18.3978 17.8478 18.7654C17.6448 19.2554 17.2554 19.6448 16.7654 19.8478C16.3978 20 15.9319 20 15 20C14.0681 20 13.6022 20 13.2346 19.8478C12.7446 19.6448 12.3552 19.2554 12.1522 18.7654C12 18.3978 12 17.9319 12 17Z" stroke="currentColor" strokeWidth="1.5" />
             </svg>
-            <input
-              type="text"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Pesquisar"
-              className="flex-1 bg-transparent font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] outline-none placeholder:text-[#a4a7ae]"
-            />
-          </div>
+            Filtros
+          </button>
         </div>
-        <div className="flex h-[40px] items-center rounded-[8px] border border-[#e9eaeb] bg-white p-[3px]">
-          {[
-            { label: "Todos", value: "todos" },
-            { label: "Ativos", value: "Ativo" },
-            { label: "Inativos", value: "Inativo" },
-            { label: `Rascunhos (${rascunhos})`, value: "Rascunho" },
-          ].map((filter) => (
-            <button
-              key={filter.value}
-              type="button"
-              onClick={() => setStatusFilter(filter.value as "todos" | Produto["status"])}
-              className={`h-[32px] rounded-[6px] px-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-colors ${
-                statusFilter === filter.value ? "bg-[#eff6ff] text-[#0b5ed7]" : "text-[#535862] hover:bg-[#f8fafc]"
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
+        <div className="ml-auto hidden items-center gap-[0.75em] md:flex">
         <div className="relative">
           <button
             type="button"
             disabled={selectedIds.length === 0}
             onClick={() => setOpenMenuId(openMenuId === "bulk" ? null : "bulk")}
-            className="flex h-[40px] cursor-pointer items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[16px] transition-colors hover:bg-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-50"
+            className="group/button inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 font-['Helvetica_Neue:Regular',sans-serif] text-sm text-[#414651] transition-all hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
           >
-            <svg className="size-[16px] text-[#414651]" fill="none" viewBox="0 0 24 24">
-              <circle cx="5" cy="12" r="1.5" fill="currentColor" />
-              <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-              <circle cx="19" cy="12" r="1.5" fill="currentColor" />
-            </svg>
-            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651]">Ações em lote</span>
+            Ações em lote
           </button>
           {openMenuId === "bulk" ? (
             <div className="absolute right-0 top-[44px] z-20 w-[180px] overflow-hidden rounded-[8px] border border-[#e9eaeb] bg-white shadow-[0_8px_24px_rgba(15,23,43,0.12)]">
@@ -1066,13 +1053,14 @@ export function ProdutosPage() {
         <button
           type="button"
           onClick={openNewProduct}
-          className="flex h-[40px] cursor-pointer items-center gap-[6px] rounded-[8px] bg-[#0b5ed7] px-[16px] transition-colors hover:bg-[#0a4fb3]"
+          className="group/button inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-transparent bg-primary px-3 font-['Helvetica_Neue:Medium',sans-serif] text-sm text-primary-foreground transition-all hover:bg-primary/80"
         >
-          <svg className="size-[16px] text-white" fill="none" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+          <svg className="size-[16px]" fill="none" viewBox="0 0 24 24">
+            <path d="M12 4V20M20 12H4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
           </svg>
-          <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white">Novo produto</span>
+          Novo produto
         </button>
+        </div>
       </div>
 
       <div>
@@ -1231,6 +1219,55 @@ export function ProdutosPage() {
         </div>
       </div>
       </div>
+      {filtersDrawerOpen ? (
+        <div className="fixed inset-0 z-[60] flex justify-end">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setFiltersDrawerOpen(false)} />
+          <div className="relative z-10 flex h-full w-[360px] max-w-[calc(100vw-24px)] flex-col overflow-hidden rounded-l-[16px] border border-[#e9eaeb] bg-white shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)]">
+            <div className="shrink-0">
+              <div className="flex items-center justify-between px-6 pb-[16px] pt-5">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">Filtros</p>
+                <button type="button" onClick={() => setFiltersDrawerOpen(false)} className="flex size-[32px] shrink-0 cursor-pointer items-center justify-center rounded-[6px] transition-colors hover:bg-[#f5f5f5]">
+                  <svg className="size-[18px]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="#717680" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                </button>
+              </div>
+              <div className="mx-6 h-px bg-[#f0f1f3]" />
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              <div className="flex flex-col gap-[10px]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">Status</p>
+                {[
+                  { label: "Todos", value: "todos" },
+                  { label: "Ativos", value: "Ativo" },
+                  { label: "Inativos", value: "Inativo" },
+                  { label: `Rascunhos (${rascunhos})`, value: "Rascunho" },
+                ].map((filter) => (
+                  <button
+                    key={filter.value}
+                    type="button"
+                    onClick={() => setStatusFilter(filter.value as "todos" | Produto["status"])}
+                    className={`flex h-[40px] w-full items-center justify-between rounded-[8px] border px-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-colors ${
+                      statusFilter === filter.value
+                        ? "border-[#0b5ed7] bg-[#f0f5ff] text-[#0b5ed7]"
+                        : "border-[#e9eaeb] bg-white text-[#414651] hover:bg-[#f8fafc]"
+                    }`}
+                  >
+                    <span>{filter.label}</span>
+                    {statusFilter === filter.value ? (
+                      <svg className="size-[14px] shrink-0" viewBox="0 0 14 14" fill="none">
+                        <path d="M3 7l2.5 2.5L11 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    ) : null}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex shrink-0 gap-[12px] border-t border-[#e9eaeb] px-6 py-4">
+              <button type="button" onClick={() => setStatusFilter("todos")} className="h-[40px] flex-1 cursor-pointer rounded-[8px] border border-[#e9eaeb] bg-white font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#414651] transition-colors hover:bg-[#f8fafc]">Limpar</button>
+              <button type="button" onClick={() => setFiltersDrawerOpen(false)} className="h-[40px] flex-1 cursor-pointer rounded-[8px] bg-[#0b5ed7] font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-white transition-colors hover:bg-[#084fb7]">Aplicar filtros</button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

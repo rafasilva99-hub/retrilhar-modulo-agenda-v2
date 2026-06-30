@@ -43,6 +43,7 @@ interface ParticipantAttributeBadgeProps {
   variant: AttributeBadgeVariant;
   tooltipLabel: string;
   showLabel?: boolean;
+  onClick?: () => void;
 }
 
 // Simple, clean icon paths
@@ -323,6 +324,7 @@ export function ParticipantAttributeBadge({
   variant,
   tooltipLabel,
   showLabel = false,
+  onClick,
 }: ParticipantAttributeBadgeProps) {
   const { color, bgColor, textColor, iconPath, iconPaths_multi, customViewBox } = getIconConfig(
     category,
@@ -334,11 +336,12 @@ export function ParticipantAttributeBadge({
 
   if (showLabel) {
     return (
-      <div className="group relative">
+      <div className="group relative min-w-0 max-w-full" onClick={onClick}>
         <div
           className={cn(
-            "flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap",
-            bgColor
+            "flex max-w-full items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap",
+            bgColor,
+            onClick && "cursor-pointer active:opacity-80"
           )}
         >
           <svg
@@ -358,14 +361,14 @@ export function ParticipantAttributeBadge({
           </svg>
           <span
             className={cn(
-              "font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none",
+              "min-w-0 truncate font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none",
               textColor
             )}
           >
             {shortLabel}
           </span>
         </div>
-        <BadgeTooltip {...parseBadgeTooltip(tooltipLabel)} />
+        {!onClick && <BadgeTooltip {...parseBadgeTooltip(tooltipLabel)} />}
       </div>
     );
   }

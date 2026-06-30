@@ -9,6 +9,7 @@ import type { Activity, Reservation, Participant, CheckInStatus, BulkAction, Res
 import { ParticipantCountBadge } from "../../components/ui/participant-count-badge";
 import { ParticipantAttributeBadge } from "../../components/ui/participant-attribute-badge";
 import type { ImageTermStatus } from "../../types/agenda";
+import { useIsMobile } from "../../hooks/use-mobile";
 
 // ─── Reservation state management ───────────────────────────────────────────
 
@@ -128,14 +129,14 @@ function reservationsReducer(state: Reservation[], action: ResAction): Reservati
       if (action.type === "UNDO_NO_SHOW") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       if (action.type === "CANCEL_PARTICIPANT") return { ...p, checkInStatus: "Cancelled" as CheckInStatus };
       if (action.type === "UNDO_CANCEL_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
-      if (action.type === "RESCHEDULE_PARTICIPANT") return p; // rescheduled is tracked via reservation.isRescheduled, not checkInStatus
+      if (action.type === "RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Rescheduled" as CheckInStatus };
       if (action.type === "UNDO_RESCHEDULE_PARTICIPANT") return { ...p, checkInStatus: "Pending" as CheckInStatus };
       if (action.type === "UNDO_CONFIRM_PARTICIPANT") return { ...p, checkInStatus: "Scheduled" as CheckInStatus };
       return p;
     });
     // Auto-update reservation status based on participant states
     let newStatus = r.status;
-    const activeParticipants = newParticipants.filter((p) => p.checkInStatus !== "Cancelled");
+    const activeParticipants = newParticipants.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Rescheduled");
     const allDone = activeParticipants.length > 0 && activeParticipants.every((p) => p.checkInStatus === "Done");
     if (action.type === "CHECK_IN" && allDone && r.status === "Confirmed") {
       newStatus = "CheckedIn";
@@ -1460,6 +1461,7 @@ function DrawerStatusChip({ label, variant }: { label: string; variant: "green" 
 
 function getOperationalStatus(r: Reservation, p: Participant): { label: string; variant: "green" | "amber" | "red" | "blue" | "gray" } {
   if (r.status === "Cancelled") return { label: "Cancelada", variant: "gray" };
+  if (r.status === "Expired") return { label: "Expirada", variant: "gray" };
   if (p.checkInStatus === "Absent") return { label: "Não compareceu", variant: "amber" };
   if (r.status === "Performed" || p.checkInStatus === "Done") return { label: "Check-in realizado", variant: "green" };
   if (r.status === "Confirmed") return { label: "Aguardando check-in", variant: "blue" };
@@ -1535,9 +1537,10 @@ function ParticipantDrawer({ participant, reservation, onClose, activity, isInsu
   // Determine primary + secondary actions based on state
   const isCheckedIn = p.checkInStatus === "Done";
   const isCancelled = r.status === "Cancelled";
+  const isExpired = r.status === "Expired";
   const isNoShow = p.checkInStatus === "Absent";
   const isPerformed = r.status === "Performed";
-  const isTerminal = isCancelled || isPerformed;
+  const isTerminal = isCancelled || isPerformed || isExpired;
 
   // Birth date mock (derived from age)
   const birthYear = new Date().getFullYear() - (p.age || 26);
@@ -1940,6 +1943,7 @@ const STATUS_BADGE_MAP: Record<string, { label: string; color: string; bg: strin
   Scheduled:       { label: "Agendada",             color: "#dc6803", bg: "#fffaeb", border: "#fedf89", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
   Draft:           { label: "Pré-reservada",        color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M7 3.5v4M5 5.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><rect x="2" y="2" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/></svg> },
   Cancelled:       { label: "Reserva cancelada",    color: "#d92d20", bg: "#fef3f2", border: "#fecdca", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14"><path d="M4 4l6 6M10 4l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+  Expired:         { label: "Expirada",             color: "#535862", bg: "#f5f5f5", border: "#e9eaeb", icon: <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 24 24"><path d="M7 3H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 21V18.9696C5.5 17.7277 6.07682 16.5563 7.06116 15.7991L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 21H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 2L22 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.5008 3V5.03039C18.5008 6.27227 17.924 7.4437 16.9397 8.20089L14.2617 10.2609" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
 };
 
 function ReservationStatusBadge({ status, tooltip }: { status: string; tooltip?: string }) {
@@ -2088,9 +2092,10 @@ function LabeledBadge({ icon, label, color, tooltipTitle, tooltipSub, onClick }:
   );
 }
 
-function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance, reservationStatus, paymentStatus, onPaymentClick, isBuyer, performed }: {
+function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance, reservationStatus, paymentStatus, onPaymentClick, isBuyer, performed, onBadgeClick }: {
   participant: Participant; insuranceStatus: string; requiresInsurance: boolean; reservationStatus: string;
   paymentStatus: string; onPaymentClick: () => void; isBuyer: boolean; performed?: boolean;
+  onBadgeClick?: (info: { title: string; subtitle?: string }) => void;
 }) {
   // Map old hasImageAuth boolean to new imageTermStatus enum if needed
   const imageStatus: ImageTermStatus = participant.imageTermStatus || (participant.hasImageAuth ? "Authorized" : "Pending");
@@ -2129,7 +2134,7 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
   // When participant performed the activity, show single badge
   if (performed) {
     return (
-      <div className="flex gap-[6px] items-center flex-wrap" style={{ padding: "10px 6px" }}>
+      <div className="flex gap-[6px] items-center flex-wrap" style={{ padding: "10px 0" }}>
         <div className="group relative">
           <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
             <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="#079455" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 18.5L18.278 17.114C18.424 16.381 18.816 15.705 18.956 14.97C18.985 14.818 19 14.661 19 14.5C19 13.119 17.881 12 16.5 12C15.12 12 14 13.119 14 14.5C14 14.661 14.016 14.818 14.045 14.97C14.184 15.705 14.576 16.381 14.723 17.114L15 18.5M18 18.5H15M18 18.5L20.497 19.166C21.375 19.361 22 20.14 22 21.04C22 21.57 21.57 22 21.04 22H12.5H11.96C11.43 22 11 21.57 11 21.04C11 20.14 11.625 19.361 12.503 19.166L15 18.5"/><path d="M17 9V8C17 5.172 17 3.757 16.121 2.879C15.243 2 13.828 2 11 2H8C5.172 2 3.757 2 2.879 2.879C2 3.757 2 5.172 2 8V16C2 18.828 2 20.243 2.879 21.121C3.757 22 5.172 22 8 22"/><path d="M7 8.667C7 8.667 7.625 8.667 8.25 10C8.25 10 10.235 6.667 12 6"/><path d="M6 14H10"/><path d="M6 17H10"/></svg>
@@ -2145,48 +2150,62 @@ function ParticipantBadgesRow({ participant, insuranceStatus, requiresInsurance,
   }
 
   return (
-    <div className="flex gap-[6px] items-center flex-wrap" style={{ padding: "10px 6px" }}>
+    <div className="flex gap-[6px] items-center flex-wrap min-w-0 max-w-full" style={{ padding: 0 }}>
       {/* 1. Pagamento — sempre presente */}
-      <ParticipantAttributeBadge
-        category="payment"
-        variant={
-          paymentStatus === "Paid" ? "paid"
-          : paymentStatus === "Partial" ? "partial-payment"
-          : paymentStatus === "Refunded" ? "refunded"
-          : paymentStatus === "Failed" ? "alert"
-          : "awaiting-payment"
-        }
-        tooltipLabel={
-          paymentStatus === "Paid" ? "Pago — Pagamento confirmado"
+      {(() => {
+        const label = paymentStatus === "Paid" ? "Pago — Pagamento confirmado"
           : paymentStatus === "Partial" ? "Pagamento parcial — Saldo em aberto"
           : paymentStatus === "Refunded" ? "Reembolso — Valor em processo"
           : paymentStatus === "Failed" ? "Falha no pagamento — Cartão recusado"
-          : "Aguardando pagamento — Pendente de confirmação"
-        }
-        showLabel
-      />
+          : "Aguardando pagamento — Pendente de confirmação";
+        const parts = label.split(" — ");
+        return (
+          <ParticipantAttributeBadge
+            category="payment"
+            variant={
+              paymentStatus === "Paid" ? "paid"
+              : paymentStatus === "Partial" ? "partial-payment"
+              : paymentStatus === "Refunded" ? "refunded"
+              : paymentStatus === "Failed" ? "alert"
+              : "awaiting-payment"
+            }
+            tooltipLabel={label}
+            showLabel
+            onClick={onBadgeClick ? () => onBadgeClick({ title: parts[0], subtitle: parts[1] }) : undefined}
+          />
+        );
+      })()}
 
       {/* 2. Seguro — oculto quando NotRequired */}
-      {!isNotRequired && (
-        <ParticipantAttributeBadge
-          category="insurance"
-          variant={insuranceVariant}
-          tooltipLabel={insuranceLabel}
-          showLabel
-        />
-      )}
+      {!isNotRequired && (() => {
+        const parts = insuranceLabel.split(" — ");
+        return (
+          <ParticipantAttributeBadge
+            category="insurance"
+            variant={insuranceVariant}
+            tooltipLabel={insuranceLabel}
+            showLabel
+            onClick={onBadgeClick ? () => onBadgeClick({ title: parts[0], subtitle: parts[1] }) : undefined}
+          />
+        );
+      })()}
 
       {/* 3. Uso de imagem — sempre presente */}
-      <ParticipantAttributeBadge
-        category="image-term"
-        variant={imageStatus === "Authorized" ? "authorized" : imageStatus === "Refused" ? "refused" : "pending"}
-        tooltipLabel={
-          imageStatus === "Authorized" ? "Uso de Imagem — Autorizado"
+      {(() => {
+        const label = imageStatus === "Authorized" ? "Uso de Imagem — Autorizado"
           : imageStatus === "Refused" ? "Uso de Imagem — Recusado"
-          : "Uso de Imagem — Pendente de autorização"
-        }
-        showLabel
-      />
+          : "Uso de Imagem — Pendente de autorização";
+        const parts = label.split(" — ");
+        return (
+          <ParticipantAttributeBadge
+            category="image-term"
+            variant={imageStatus === "Authorized" ? "authorized" : imageStatus === "Refused" ? "refused" : "pending"}
+            tooltipLabel={label}
+            showLabel
+            onClick={onBadgeClick ? () => onBadgeClick({ title: parts[0], subtitle: parts[1] }) : undefined}
+          />
+        );
+      })()}
 
     </div>
   );
@@ -2209,6 +2228,7 @@ function getReservationStatusText(
   reservation: Reservation,
 ): { title: string; subtitle: string; variant: StatusVariant } {
   if (reservation.status === "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
+  if (reservation.status === "Expired") return { title: "Expirada", subtitle: "Status da reserva", variant: "gray" };
   if (reservation.status === "Performed" || reservation.status === "CheckedIn") return { title: "Check-in realizado", subtitle: "Status da reserva", variant: "blue" };
   if (reservation.status === "Scheduled") return { title: "Agendada", subtitle: "Status da reserva", variant: "amber" };
   if (reservation.status === "Draft") return { title: "Rascunho", subtitle: "Status da reserva", variant: "gray" };
@@ -2234,7 +2254,7 @@ const STATUS_VARIANT_STYLES: Record<StatusVariant, { color: string; bg: string; 
 
 function getParticipantOverrideStatus(participant: Participant, reservation: Reservation): { title: string; subtitle: string; variant: StatusVariant } | null {
   // Reservation-level terminal states take precedence over participant-level overrides
-  if (reservation.status === "Cancelled" || reservation.status === "Performed") return null;
+  if (reservation.status === "Cancelled" || reservation.status === "Performed" || reservation.status === "Expired") return null;
   if (participant.checkInStatus === "Cancelled") return { title: "Cancelada", subtitle: "Status da reserva", variant: "red" };
   if (participant.checkInStatus === "Absent") return { title: "Não compareceu", subtitle: "Status da reserva", variant: "red" };
   if (participant.checkInStatus === "Done") return { title: "Check-in realizado", subtitle: "Status da reserva", variant: "blue" };
@@ -2242,7 +2262,7 @@ function getParticipantOverrideStatus(participant: Participant, reservation: Res
   return null;
 }
 
-function ParticipantReservationStatusCell({ reservation, participant }: { reservation: Reservation; participant: Participant }) {
+function ParticipantReservationStatusCell({ reservation, participant, hideSubtitle }: { reservation: Reservation; participant: Participant; hideSubtitle?: boolean }) {
   const override = getParticipantOverrideStatus(participant, reservation);
   const status = override
     ? override
@@ -2257,6 +2277,15 @@ function ParticipantReservationStatusCell({ reservation, participant }: { reserv
       </svg>
     )
     : vs.icon;
+
+  if (hideSubtitle) {
+    return (
+      <div className="flex w-fit items-center gap-[4px]" style={{ color: vs.color }}>
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] truncate">{status.title}</p>
+        {icon}
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center shrink-0 min-w-0" style={{ width: "160px", padding: "8px 12px" }}>
@@ -2437,34 +2466,40 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function CheckInButton({ isDone, disabled, selected, onCheckIn, onUndo }: { isDone: boolean; disabled?: boolean; insured?: boolean; selected?: boolean; onCheckIn: () => void; onUndo: () => void }) {
+function CheckInButton({ isDone, disabled, selected, mobile = false, onCheckIn, onUndo }: { isDone: boolean; disabled?: boolean; insured?: boolean; selected?: boolean; mobile?: boolean; onCheckIn: () => void; onUndo: () => void }) {
+  const iconSizeClass = mobile ? "size-[20px]" : "size-[14px]";
+  const textSizeClass = mobile ? "text-[16px]" : "text-[12px]";
+  const buttonStyle = mobile
+    ? { padding: "6px 14px", minWidth: 95, minHeight: 44 }
+    : { padding: "4px 10px", minWidth: 84, height: 32 };
+
   return (
-    <div className="relative" onClick={(e) => e.stopPropagation()}>
+    <div className="relative w-full min-w-0" onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => disabled ? undefined : isDone ? onUndo() : onCheckIn()}
         disabled={disabled}
-        className={`group flex items-center justify-center rounded-[8px] shrink-0 transition-all duration-200 ease-out ${
+        className={`group flex w-full min-w-0 items-center justify-center rounded-[8px] transition-all duration-200 ease-out ${
           disabled
             ? "cursor-not-allowed bg-[#f5f5f5] border border-[#e5e5e5]"
             : isDone
               ? "cursor-pointer bg-emerald-50 border border-emerald-200 hover:bg-emerald-100"
               : "cursor-pointer bg-[#0b5ed7] border border-[#0b5ed7] hover:bg-[#0a4fb3]"
         }`}
-        style={{ padding: "6px 14px", minWidth: 95 }}
+        style={buttonStyle}
       >
         {isDone && !disabled ? (
           <>
-            <svg className="shrink-0 size-[14px] mr-[6px]" fill="none" viewBox="0 0 16 16">
+            <svg className={`shrink-0 ${iconSizeClass} mr-[6px]`} fill="none" viewBox="0 0 16 16">
               <path d="M4.5 8l2.5 2.5 4.5-5" stroke="#059669" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-emerald-700">Feito</span>
+            <span className={`font-['Helvetica_Neue:Regular',sans-serif] ${textSizeClass} text-emerald-700`}>Feito</span>
           </>
         ) : (
           <>
-            <svg className="shrink-0 size-[14px] mr-[6px]" fill="none" viewBox="0 0 16 16">
+            <svg className={`shrink-0 ${iconSizeClass} mr-[6px]`} fill="none" viewBox="0 0 16 16">
               <path d="M4.5 8l2.5 2.5 4.5-5" stroke={disabled ? "#a1a1aa" : "white"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${disabled ? "text-zinc-400" : "text-white"}`}>Check-in</span>
+            <span className={`font-['Helvetica_Neue:Regular',sans-serif] ${textSizeClass} ${disabled ? "text-zinc-400" : "text-white"}`}>Check-in</span>
           </>
         )}
       </button>
@@ -2629,7 +2664,7 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant, 
     : { id: "register-payment", label: "Registrar pagamento", icon: iconPayment, enabled: s === "Scheduled" && canTo("Confirmed"), tooltip: s === "Draft" ? "Finalize o carrinho antes de registrar pagamento" : inactive ? "Reserva inativa não permite registro de pagamento" : null };
 
   // Slot 4 — Remarcar ↔ Desfazer remarcação
-  const isRescheduled = !!r.isRescheduled;
+  const isRescheduled = !!r.isRescheduled || p?.checkInStatus === "Rescheduled";
   const isAbsentForReschedule = p?.checkInStatus === "Absent";
   const slot4: MenuSlot = isRescheduled
     ? { id: "undo-reschedule", label: "Desfazer remarcação de reserva", icon: iconCal, enabled: true, tooltip: null }
@@ -2658,16 +2693,18 @@ function getMenuSlots(r: Reservation, insuranceStatus: string, p?: Participant, 
   return [slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8];
 }
 
-function ParticipantMenu({ reservation, participant, onAction, participantInsured, participantPerformed, activityLocked }: {
+function ParticipantMenu({ reservation, participant, onAction, participantInsured, participantPerformed, activityLocked, mobile = false }: {
   reservation: Reservation;
   participant: Participant;
   onAction: (actionId: string, r: Reservation, p: Participant) => void;
   participantInsured: boolean;
   participantPerformed?: boolean;
   activityLocked?: boolean;
+  mobile?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [hoveredDisabled, setHoveredDisabled] = useState<string | null>(null);
+  const iconSizeClass = mobile ? "size-[20px]" : "size-[16px]";
   const baseSlots = useMemo(() => getMenuSlots(reservation, participantInsured ? "Contracted" : "Required", participant, participantPerformed), [reservation, participantInsured, participant, participantPerformed]);
   const slots = useMemo(() => {
     if (!activityLocked) return baseSlots;
@@ -2694,9 +2731,9 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
     <div className="relative" ref={menuRef} onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => setOpen(!open)}
-        className="bg-white border border-[#e4e4e7] cursor-pointer flex items-center justify-center rounded-[8px] shrink-0 size-[32px] hover:bg-[#f8fafc] transition-colors"
+        className={`bg-white border border-[#e4e4e7] cursor-pointer flex items-center justify-center rounded-[8px] shrink-0 ${mobile ? "size-[44px]" : "size-[32px]"} hover:bg-[#f8fafc] transition-colors`}
       >
-        <svg className="size-[14px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="12.5" r="1" fill="#717680"/></svg>
+        <svg className={iconSizeClass} fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="12.5" r="1" fill="#717680"/></svg>
       </button>
       {open && (
         <>
@@ -3062,6 +3099,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
   const [manifestoNow, setManifestoNow] = useState(() => new Date());
   const [reservations, dispatch] = useReducer(reservationsReducer, mockReservations);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(mockReservations.filter((r) => r.type === "group").map((r) => r.id)));
+  const isMobile = useIsMobile();
+  const [expandedMobileParticipants, setExpandedMobileParticipants] = useState<Set<string>>(new Set());
+  const [badgeSheet, setBadgeSheet] = useState<{ title: string; subtitle?: string } | null>(null);
   const [animatingGroups, setAnimatingGroups] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{ message: string; type: "success" | "error"; description?: string; actions?: { label: string; onClick: () => void }[] } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -3464,10 +3504,13 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
   const [rescheduleNotify, setRescheduleNotify] = useState<"now" | "later">("now");
   const [rescheduleActivityType, setRescheduleActivityType] = useState<"sob_demanda" | "evento" | "hospedagem">("sob_demanda");
   const [rescheduleActivityDropdownOpen, setRescheduleActivityDropdownOpen] = useState(false);
-  const [rescheduleCalendarMonth, setRescheduleCalendarMonth] = useState(() => new Date(2026, 4, 1));
+  const [rescheduleCalendarMonth, setRescheduleCalendarMonth] = useState(() => { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), 1); });
   const [rescheduleCalendarDate, setRescheduleCalendarDate] = useState<string | null>(null);
   const [rescheduleRangeStart, setRescheduleRangeStart] = useState<string | null>(null);
   const [rescheduleRangeEnd, setRescheduleRangeEnd] = useState<string | null>(null);
+  const [rescheduleHoveredDay, setRescheduleHoveredDay] = useState<number | null>(null);
+  const [rescheduleOptionals, setRescheduleOptionals] = useState<Record<string, number>>({ "Transporte": 1, "Lanche": 1 });
+  const [rescheduleOptionalsOpen, setRescheduleOptionalsOpen] = useState(false);
   const [checkInModal, setCheckInModal] = useState<Participant[] | null>(null);
   const [drawerData, setDrawerData] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [paymentDrawerRes, setPaymentDrawerRes] = useState<Reservation | null>(null);
@@ -4883,7 +4926,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   "resend-voucher": total,
                   "reschedule": selParts.filter((p) => p.checkInStatus === "Pending").length,
                   "no-show": selParts.filter((p) => p.checkInStatus === "Pending").length,
-                  "cancel": selParts.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent").length,
+                  "cancel": selParts.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent" && p.checkInStatus !== "Rescheduled").length,
                 };
                 return (
                 <div className="absolute mt-[4px] bg-white border border-[#e9eaeb] right-0 rounded-[10px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[280px] z-40 py-[4px]">
@@ -5057,9 +5100,8 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           return (
             <div key={r.id} className={`relative rounded-[12px] shrink-0 w-full mb-[20px] border border-solid shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] transition-all duration-150 hover:shadow-[0px_2px_4px_0px_rgba(10,13,18,0.08)] overflow-visible ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff] border-[#c7d4f4]" : "bg-white border-[#EEF0F4]"}`}>
               {/* ── Reservation header ── */}
-              <div className={`flex h-[40px] items-center relative w-full rounded-t-[12px] transition-colors ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff]" : ""}`}>
-                {/* Left bar removed per design update */}
-                <div className="flex gap-[8px] items-center size-full" style={{ padding: "0 16px 0 16px" }}>
+              <div className={`flex flex-col md:flex-row md:h-[40px] items-start md:items-center relative w-full rounded-t-[12px] transition-colors ${r.participants.some((p) => selectedIds.has(p.id)) ? "bg-[#f0f5ff]" : ""}`}>
+                <div className="flex gap-[8px] items-center w-full px-[12px] py-[8px] md:px-[16px] md:py-0 md:h-[40px] flex-wrap md:flex-nowrap border-b border-[#f0f1f3] md:border-b-0">
                   {/* Type chip — icon + count */}
                   <div className="flex items-center gap-[4px] rounded-[6px] shrink-0 px-[6px] py-[3px] border bg-[#f8fafc] border-[#e2e8f0]">
                     <svg className="size-[12px]" fill="none" viewBox="0 0 24 24">
@@ -5082,7 +5124,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#252b37] whitespace-nowrap">{isGroup ? "Reserva em grupo" : "Reserva individual"}</p>
                   {/* Large group chip (10+) */}
                   {isGroup && r.participants.length >= 10 && (
-                    <span className="bg-[#eff6ff] text-[#0b5ed7] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Grupo grande</span>
+                    <span className="hidden md:inline bg-[#eff6ff] text-[#0b5ed7] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Grupo grande</span>
                   )}
                   <div className="relative group flex items-center gap-[4px]">
                     <button onClick={() => handleCopyId(r.orderId)} className="cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680] whitespace-nowrap hover:text-[#0b5ed7] transition-colors">{r.orderId}</button>
@@ -5094,20 +5136,15 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                       <div className="absolute left-1/2 -translate-x-1/2 top-[calc(100%-1px)] size-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-[#181d27]" />
                     </div>
                   </div>
-                  {/* Rescheduled reservation badge */}
-                  {r.isRescheduled && (
-                    <span className="bg-[#f5f3ff] text-[#7c3aed] text-[10px] leading-none font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Reagendada</span>
-                  )}
                   {/* Spacer */}
-                  <div className="flex-1" />
-                  {/* Participant-level badges (only for active reservations) */}
-                  {r.status !== "Cancelled" && r.status !== "Performed" && (() => {
+                  <div className="hidden md:block flex-1" />
+                  {/* Participant-level badges — hidden on mobile */}
+                  {r.status !== "Cancelled" && r.status !== "Performed" && r.status !== "Expired" && (() => {
                     const absentParts = r.participants.filter((p) => p.checkInStatus === "Absent");
-                    const rescheduledParts = r.isRescheduled ? r.participants : [];
                     const cancelledParts = r.participants.filter((p) => p.checkInStatus === "Cancelled");
                     const scheduledParts = r.participants.filter((p) => p.checkInStatus === "Scheduled");
                     const BadgeWithTooltip = ({ parts, label, labelPlural, bg, color }: { parts: Participant[]; label: string; labelPlural: string; bg: string; color: string }) => (
-                      <div className="group/badge relative">
+                      <div className="hidden md:block group/badge relative">
                         <span className={`${bg} ${color} text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px] cursor-default`}>{parts.length > 1 ? `${parts.length} ${labelPlural}` : label}</span>
                         <div className="pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] opacity-0 transition-opacity duration-150 group-hover/badge:opacity-100 max-w-[200px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] bottom-full left-1/2 -translate-x-1/2 mb-[8px]">
                           {parts.map((pp) => (
@@ -5120,24 +5157,26 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                     return (
                       <>
                         {absentParts.length > 0 && <BadgeWithTooltip parts={absentParts} label="Não compareceu" labelPlural="não compareceram" bg="bg-[#fef3f2]" color="text-[#d92d20]" />}
-                        {rescheduledParts.length > 0 && <BadgeWithTooltip parts={rescheduledParts} label="1 reserva reagendada" labelPlural="reservas reagendadas" bg="bg-[#f5f3ff]" color="text-[#7c3aed]" />}
                         {cancelledParts.length > 0 && <BadgeWithTooltip parts={cancelledParts} label="Cancelada" labelPlural="canceladas" bg="bg-[#f3f4f6]" color="text-[#6b7280]" />}
                         {scheduledParts.length > 0 && <BadgeWithTooltip parts={scheduledParts} label="Agendada" labelPlural="agendadas" bg="bg-[#fffaeb]" color="text-[#dc6803]" />}
                       </>
                     );
                   })()}
-                  {/* Payment status chip (right edge) */}
-                  {r.status !== "Cancelled" && r.paymentStatus === "Paid" && (
+                  {/* Payment status chip */}
+                  {r.status !== "Cancelled" && r.status !== "Expired" && r.paymentStatus === "Paid" && (
                     <span className="bg-[#ecfdf3] text-[#079455] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Pedido pago</span>
                   )}
-                  {r.status !== "Cancelled" && r.paymentStatus === "Partial" && (
+                  {r.status !== "Cancelled" && r.status !== "Expired" && r.paymentStatus === "Partial" && (
                     <span className="bg-[#fef3c7] text-[#d97706] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Pagamento parcial</span>
                   )}
-                  {r.status !== "Cancelled" && r.paymentStatus === "Pending" && (
+                  {r.status !== "Cancelled" && r.status !== "Expired" && r.paymentStatus === "Pending" && (
                     <span className="bg-[#fef3c7] text-[#d97706] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Aguardando pagamento</span>
                   )}
                   {r.status === "Cancelled" && (
                     <span className="bg-[#f3f4f6] text-[#6b7280] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Cancelada</span>
+                  )}
+                  {r.status === "Expired" && (
+                    <span className="bg-[#f3f4f6] text-[#6b7280] text-[10px] font-['Helvetica_Neue:Medium',sans-serif] px-[6px] py-[2px] rounded-[4px]">Expirada</span>
                   )}
                 </div>
               </div>
@@ -5160,13 +5199,68 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 const checkInDisabled = isActivityLocked || isCancelled || r.status === "Scheduled" || isPerformed;
                 const isLastRow = pIdx === visibleParticipants.length - 1;
                 const hasExpandButton = isGroup && r.participants.length > 1;
+                // ── MOBILE participant card ──
+                if (isMobile) {
+                  return (
+                    <div key={p.id} className={`mx-[12px] w-[calc(100%-24px)] max-w-[calc(100%-24px)] min-w-0 ${pIdx === 0 ? "mt-[16px]" : "mt-[8px]"} ${isLastRow && !hasExpandButton ? "mb-[12px]" : ""} rounded-[12px] border border-[#EEF0F4] bg-white shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] overflow-visible`}>
+                      {/* Header: checkbox + name */}
+                      <div className="flex items-center gap-[12px] px-[14px] pt-[12px] pb-[8px]">
+                        <button onClick={(e) => { e.stopPropagation(); (isGroup && !expanded) ? toggleSelectReservation(r) : toggleSelectParticipant(p.id); }} className="cursor-pointer shrink-0">
+                          {selectedIds.has(p.id) ? (
+                            <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] size-[22px]"><svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                          ) : (
+                            <div className="bg-white border border-[#d5d7da] rounded-[6px] size-[22px]" />
+                          )}
+                        </button>
+                        <div className="flex-1 min-w-0" onClick={() => setDrawerData({ r, p })}>
+                          <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name || `Participante nº ${pIdx + 1}`}</p>
+                          <div className="flex gap-[4px] items-center mt-[1px] min-w-0">
+                            {isGroup && r.participants[0].id === p.id && (
+                              <>
+                                <span className="size-[5px] rounded-full bg-[#0b5ed7] shrink-0" />
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#0b5ed7] shrink-0">Comprador</span>
+                              </>
+                            )}
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#a1a1aa] truncate min-w-0">{getParticipantReservationId(p.id)}{p.age > 0 ? ` · ${p.age} anos` : ""}</p>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Tariff + Status side by side */}
+                      <div className="flex gap-[12px] px-[14px] pb-[8px] min-w-0">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-[#a4a7ae] uppercase tracking-[0.5px]">Tipo de tarifa</p>
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] mt-[2px] truncate w-full">{p.tariffType}</p>
+                        </div>
+                        <div className="shrink-0">
+                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-[#a4a7ae] uppercase tracking-[0.5px] text-right">Status da reserva</p>
+                          <div className="mt-[2px] flex justify-end">
+                            <ParticipantReservationStatusCell reservation={r} participant={p} hideSubtitle />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Badges */}
+                      <div className="flex flex-wrap gap-[6px] px-[14px] pt-[4px] pb-[16px] min-w-0 max-w-full">
+                        <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} performed={isParticipantPerformed(p.id)} onBadgeClick={setBadgeSheet} />
+                      </div>
+                      {/* Check-in button + three-dot menu */}
+                      <div className="flex gap-[12px] items-center px-[14px] pb-[12px] min-w-0">
+                        <div className="flex-1 min-w-0">
+                          <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} mobile onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
+                        </div>
+                        <div className="shrink-0">
+                          <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} participantPerformed={isParticipantPerformed(p.id)} activityLocked={isActivityLocked} mobile />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // ── DESKTOP row layout ──
                 return (
                   <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"} ${isLastRow && !hasExpandButton ? "rounded-b-[12px]" : ""}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
-                    {/* Blue left bar — only when selected */}
                     {selectedIds.has(p.id) && (
                       <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
                     )}
-                    {/* Checkbox cell */}
                     <button onClick={(e) => { e.stopPropagation(); (isGroup && !expanded) ? toggleSelectReservation(r) : toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "24px" }}>
                       {(isGroup && !expanded) ? (
                         r.participants.every((pp) => selectedIds.has(pp.id)) ? (
@@ -5188,7 +5282,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                         <div className="bg-white border border-[#d5d7da] border-solid rounded-[6px] shrink-0 size-[22px]" />
                       )}
                     </button>
-                    {/* Name cell */}
                     <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
                       <div className="flex flex-col gap-0 items-start min-w-0 flex-1 overflow-hidden">
                         <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name || `Participante nº ${pIdx + 1}`}</p>
@@ -5204,23 +5297,15 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                         </div>
                       </div>
                     </div>
-                    {/* Vertical divider */}
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                    {/* Tariff type */}
                     <ParticipantTariffCell tariffType={p.tariffType} />
-                    {/* Vertical divider */}
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                    {/* Reservation status */}
                     <ParticipantReservationStatusCell reservation={r} participant={p} />
-                    {/* Vertical divider */}
                     <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                    {/* Badges — atributos do participante */}
                     <div className="flex flex-1 items-center min-w-0" style={{ padding: "10px 12px" }}>
                       <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={r.participants[0].id === p.id} performed={isParticipantPerformed(p.id)} />
                     </div>
-                    {/* Actions cell */}
                     <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "14px 16px 14px 12px" }}>
-                      {/* Three-dot menu */}
                       <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} participantPerformed={isParticipantPerformed(p.id)} activityLocked={isActivityLocked} />
                       <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                     </div>
@@ -5240,43 +5325,87 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                             const isIndividualAbsent = !isCancelled && p.checkInStatus === "Absent";
                             const isDone = p.checkInStatus === "Done";
                             const checkInDisabled = isActivityLocked || isCancelled || r.status === "Scheduled" || isPerformed;
-                            return (
-                              <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
-                                {selectedIds.has(p.id) && (
-                                  <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
-                                )}
-                                <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "24px" }}>
-                                  {selectedIds.has(p.id) ? (
-                                    <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] shrink-0 size-[22px]">
-                                      <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            return (() => {
+                                if (isMobile) {
+                                  return (
+                                    <div key={p.id} className={`mx-[12px] w-[calc(100%-24px)] max-w-[calc(100%-24px)] min-w-0 mt-[8px] ${rpIdx === restParticipants.length - 1 ? "mb-[12px]" : ""} rounded-[12px] border border-[#EEF0F4] bg-white shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)] overflow-visible`}>
+                                      <div className="flex items-center gap-[12px] px-[14px] pt-[12px] pb-[8px]">
+                                        <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer shrink-0">
+                                          {selectedIds.has(p.id) ? (
+                                            <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] size-[22px]"><svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+                                          ) : (
+                                            <div className="bg-white border border-[#d5d7da] rounded-[6px] size-[22px]" />
+                                          )}
+                                        </button>
+                                        <div className="flex-1 min-w-0" onClick={() => setDrawerData({ r, p })}>
+                                          <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name || `Participante nº ${rpIdx + 2}`}</p>
+                                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#a1a1aa] truncate mt-[1px]">{getParticipantReservationId(p.id)}{p.age > 0 ? ` · ${p.age} anos` : ""}</p>
+                                        </div>
+                                      </div>
+                                      <div className="flex gap-[12px] px-[14px] pb-[8px] min-w-0">
+                                        <div className="flex-1 min-w-0">
+                                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-[#a4a7ae] uppercase tracking-[0.5px]">Tipo de tarifa</p>
+                                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] mt-[2px] truncate w-full">{p.tariffType}</p>
+                                        </div>
+                                        <div className="shrink-0">
+                                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[10px] text-[#a4a7ae] uppercase tracking-[0.5px] text-right">Status da reserva</p>
+                                          <div className="mt-[2px] flex justify-end">
+                                            <ParticipantReservationStatusCell reservation={r} participant={p} hideSubtitle />
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex flex-wrap gap-[6px] px-[14px] pt-[4px] pb-[16px] min-w-0 max-w-full">
+                                        <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} performed={isParticipantPerformed(p.id)} onBadgeClick={setBadgeSheet} />
+                                      </div>
+                                      <div className="flex gap-[12px] items-center px-[14px] pb-[12px] min-w-0">
+                                        <div className="flex-1 min-w-0">
+                                          <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} mobile onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
+                                        </div>
+                                        <div className="shrink-0">
+                                          <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} participantPerformed={isParticipantPerformed(p.id)} activityLocked={isActivityLocked} mobile />
+                                        </div>
+                                      </div>
                                     </div>
-                                  ) : (
-                                    <div className="bg-white border border-[#d5d7da] border-solid rounded-[6px] shrink-0 size-[22px]" />
-                                  )}
-                                </button>
-                                <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
-                                  <div className="flex flex-col gap-0 items-start min-w-0 flex-1 overflow-hidden">
-                                    <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name || `Participante nº ${rpIdx + 2}`}</p>
-                                    <div className="flex gap-[4px] items-center">
-                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)}{p.age > 0 ? ` · ${p.age} anos` : ""}</p>
+                                  );
+                                }
+
+                                return (
+                                  <div key={p.id} className={`border-t border-[#f5f5f5] flex min-h-[52px] items-center relative w-full cursor-pointer transition-colors ${selectedIds.has(p.id) ? "bg-[#f0f5ff] hover:bg-[#e8eeff]" : "hover:bg-[#f8fafc]"}`} style={{ paddingLeft: "16px" }} onClick={() => setDrawerData({ r, p })}>
+                                    {selectedIds.has(p.id) && (
+                                      <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0b5ed7]" />
+                                    )}
+                                    <button onClick={(e) => { e.stopPropagation(); toggleSelectParticipant(p.id); }} className="cursor-pointer flex items-center justify-center shrink-0" style={{ padding: "1px 0", width: "24px" }}>
+                                      {selectedIds.has(p.id) ? (
+                                        <div className="bg-[#0b5ed7] flex items-center justify-center rounded-[6px] shrink-0 size-[22px]">
+                                          <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        </div>
+                                      ) : (
+                                        <div className="bg-white border border-[#d5d7da] border-solid rounded-[6px] shrink-0 size-[22px]" />
+                                      )}
+                                    </button>
+                                    <div className="flex gap-[12px] items-center shrink-0 overflow-hidden" style={{ width: "240px", padding: "8px 16px" }}>
+                                      <div className="flex flex-col gap-0 items-start min-w-0 flex-1 overflow-hidden">
+                                        <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#0a0a0a] truncate w-full ${isCancelled || isIndividualAbsent ? "line-through" : ""}`}>{p.name || `Participante nº ${rpIdx + 2}`}</p>
+                                        <div className="flex gap-[4px] items-center">
+                                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#a1a1aa] whitespace-nowrap">{getParticipantReservationId(p.id)}{p.age > 0 ? ` · ${p.age} anos` : ""}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                                    <ParticipantTariffCell tariffType={p.tariffType} />
+                                    <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                                    <ParticipantReservationStatusCell reservation={r} participant={p} />
+                                    <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
+                                    <div className="flex flex-1 items-center min-w-0" style={{ padding: "8px 12px" }}>
+                                      <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} performed={isParticipantPerformed(p.id)} />
+                                    </div>
+                                    <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
+                                      <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} participantPerformed={isParticipantPerformed(p.id)} activityLocked={isActivityLocked} />
+                                      <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
                                     </div>
                                   </div>
-                                </div>
-                                <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                                <ParticipantTariffCell tariffType={p.tariffType} />
-                                <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                                {/* Reservation status */}
-                                <ParticipantReservationStatusCell reservation={r} participant={p} />
-                                <div className="w-[1px] h-[32px] bg-[#e9eaeb] shrink-0" />
-                                <div className="flex flex-1 items-center min-w-0" style={{ padding: "8px 12px" }}>
-                                  <ParticipantBadgesRow participant={p} insuranceStatus={isParticipantInsured(p.id) ? "Contracted" : "Required"} requiresInsurance={true} reservationStatus={r.status} paymentStatus={p.checkInStatus === "Cancelled" ? "Refunded" : r.paymentStatus} onPaymentClick={() => setPaymentDrawerRes(r)} isBuyer={false} performed={isParticipantPerformed(p.id)} />
-                                </div>
-                                <div className="flex gap-[10px] items-center shrink-0" style={{ padding: "10px 16px 10px 12px" }}>
-                                  <ParticipantMenu reservation={r} participant={p} onAction={handleMenuAction} participantInsured={isParticipantInsured(p.id)} participantPerformed={isParticipantPerformed(p.id)} activityLocked={isActivityLocked} />
-                                  <CheckInButton isDone={isDone} disabled={checkInDisabled} selected={hasSelection} onCheckIn={() => handleCheckIn(p)} onUndo={() => handleUndoCheckIn(p)} />
-                                </div>
-                              </div>
-                            );
+                                );
+                              })();
                           })}
                         </div>
                       </div>
@@ -5430,7 +5559,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                           </div>
                           <div className="relative shrink-0 group/teamMenu">
                             <button className="cursor-pointer flex items-center justify-center size-[28px] rounded-[6px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors">
-                              <svg className="size-[14px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="12.5" r="1" fill="#717680"/></svg>
+                              <svg className="size-[20px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="12.5" r="1" fill="#717680"/></svg>
                             </button>
                             <div className="absolute right-0 top-full mt-[4px] bg-white border border-[#f5f5f5] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[200px] z-10 py-[4px] hidden group-focus-within/teamMenu:block">
                               {!hasInsurance && (
@@ -6025,11 +6154,18 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
         const calMonth = rescheduleCalendarMonth.getMonth();
         const calFirstDay = new Date(calYear, calMonth, 1).getDay();
         const calDaysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-        const calDays: (number | null)[] = [];
-        for (let i = 0; i < calFirstDay; i++) calDays.push(null);
-        for (let d = 1; d <= calDaysInMonth; d++) calDays.push(d);
+        const calPrevMonthDays = new Date(calYear, calMonth, 0).getDate();
+        const calDays: { day: number; type: "prev" | "current" | "next" }[] = [];
+        for (let i = calFirstDay - 1; i >= 0; i--) calDays.push({ day: calPrevMonthDays - i, type: "prev" });
+        for (let d = 1; d <= calDaysInMonth; d++) calDays.push({ day: d, type: "current" });
+        const remaining = 7 - (calDays.length % 7);
+        if (remaining < 7) { for (let d = 1; d <= remaining; d++) calDays.push({ day: d, type: "next" }); }
         const makeDate = (day: number) => `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
         const formatShort = (ds: string) => { const [, m, d] = ds.split("-"); return `${d}/${m}`; };
+
+        // Hospedagem — booked nights from participant's reservation
+        const bookedNights = 3;
+        const pricePerNight = 150;
 
         // Selection state across all types
         const hasSelection = rescheduleActivityType === "evento"
@@ -6169,7 +6305,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                             <div className="flex items-center gap-[8px]">
                               <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{act.name}</span>
                             </div>
-                            <span className="inline-flex items-center gap-[4px] bg-[#f5f5f5] rounded-full px-[8px] h-[22px]">
+                            <span className={`inline-flex items-center gap-[4px] rounded-full px-[8px] h-[22px] ${rescheduleActivityType === act.type ? "bg-white" : "bg-[#f5f5f5]"}`}>
                               <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#535862]">{act.typeLabel}</span>
                             </span>
                           </button>
@@ -6253,7 +6389,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                     </div>
                   )}
 
-                  {/* SOB DEMANDA / HOSPEDAGEM — calendar picker */}
+                  {/* SOB DEMANDA / HOSPEDAGEM — calendar picker + date inputs side by side */}
                   {(rescheduleActivityType === "sob_demanda" || rescheduleActivityType === "hospedagem") && (() => {
                     const isRange = rescheduleActivityType === "hospedagem";
                     const isInRange = (day: number) => {
@@ -6292,105 +6428,351 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                     };
                     const getNights = () => {
                       if (!rescheduleRangeStart || !rescheduleRangeEnd) return 0;
-                      return Math.round((new Date(rescheduleRangeEnd).getTime() - new Date(rescheduleRangeStart).getTime()) / (1000 * 60 * 60 * 24));
+                      return Math.round((new Date(rescheduleRangeEnd).getTime() - new Date(rescheduleRangeStart).getTime()) / (1000 * 60 * 60 * 24)) + 1;
                     };
 
+                    // Derive start/end date values for the inputs
+                    const formatDateBR = (ds: string | null) => {
+                      if (!ds) return null;
+                      const [y, m, d] = ds.split("-");
+                      return `${d}/${m}/${y}`;
+                    };
+                    const startDateValue = formatDateBR(isRange ? rescheduleRangeStart : rescheduleCalendarDate);
+                    const endDateValue = formatDateBR(isRange ? rescheduleRangeEnd : rescheduleCalendarDate);
+
                     return (
-                      <div className="flex flex-col gap-[8px] border border-[#e9eaeb] rounded-[12px] px-[16px] py-[14px]">
-                        {/* Month navigation */}
-                        <div className="flex items-center justify-between">
-                          <button onClick={() => setRescheduleCalendarMonth(new Date(calYear, calMonth - 1, 1))} className="flex items-center justify-center size-[32px] rounded-[6px] cursor-pointer hover:bg-[#f5f5f5] transition-colors">
-                            <svg className="size-[16px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          </button>
-                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">{calMonthNames[calMonth]} {calYear}</p>
-                          <button onClick={() => setRescheduleCalendarMonth(new Date(calYear, calMonth + 1, 1))} className="flex items-center justify-center size-[32px] rounded-[6px] cursor-pointer hover:bg-[#f5f5f5] transition-colors">
-                            <svg className="size-[16px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                          </button>
-                        </div>
-                        {/* Day headers */}
-                        <div className="grid grid-cols-7">
-                          {calDayLabels.map((d) => (
-                            <div key={d} className="flex items-center justify-center py-[6px]">
-                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680]">{d}</p>
-                            </div>
-                          ))}
-                        </div>
-                        {/* Days grid */}
-                        <div className="grid grid-cols-7">
-                          {calDays.map((day, i) => {
-                            if (day === null) return <div key={`e-${i}`} />;
-                            const avail = calendarAvailability[day];
-                            const inRange = isInRange(day);
-                            const edge = isRangeEdge(day);
-                            const single = isSelectedSingle(day);
-                            const active = single || edge;
-                            return (
-                              <div key={day} className="flex items-center justify-center py-[2px]">
+                      <div className="flex gap-[16px] border border-[#e9eaeb] rounded-[12px] px-[16px] py-[14px]">
+                        {/* LEFT — Calendar */}
+                        <div className="flex flex-col gap-[8px] flex-1 min-w-0">
+                          {/* Month navigation */}
+                          <div className="flex items-center justify-between">
+                            {(() => {
+                              const now = new Date();
+                              const isCurrentOrPast = calYear < now.getFullYear() || (calYear === now.getFullYear() && calMonth <= now.getMonth());
+                              return (
                                 <button
-                                  onClick={() => handleDayClick(day)}
-                                  className={`flex flex-col items-center justify-center size-[36px] rounded-[8px] cursor-pointer transition-colors ${
-                                    active
-                                      ? "bg-[#0b5ed7] text-white"
-                                      : inRange
-                                        ? "bg-[#eff6ff] text-[#0b5ed7]"
-                                        : "hover:bg-[#f5f5f5] text-[#252b37]"
-                                  }`}
+                                  onClick={() => !isCurrentOrPast && setRescheduleCalendarMonth(new Date(calYear, calMonth - 1, 1))}
+                                  disabled={isCurrentOrPast}
+                                  className={`flex items-center justify-center size-[32px] rounded-[6px] transition-colors ${isCurrentOrPast ? "cursor-not-allowed opacity-30" : "cursor-pointer hover:bg-[#f5f5f5]"}`}
                                 >
-                                  <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] leading-none ${active ? "text-white" : ""}`}>{day}</span>
-                                  {avail && (
-                                    <div className={`size-[5px] rounded-full mt-[3px] ${
-                                      avail === "green"
-                                        ? active ? "bg-white/80" : "bg-[#17b26a]"
-                                        : active ? "bg-white/80" : "bg-[#d92d20]"
-                                    }`} />
-                                  )}
+                                  <svg className="size-[16px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                                 </button>
+                              );
+                            })()}
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">{calMonthNames[calMonth]} {calYear}</p>
+                            <button onClick={() => setRescheduleCalendarMonth(new Date(calYear, calMonth + 1, 1))} className="flex items-center justify-center size-[32px] rounded-[6px] cursor-pointer hover:bg-[#f5f5f5] transition-colors">
+                              <svg className="size-[16px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                            </button>
+                          </div>
+                          {/* Day headers */}
+                          <div className="grid grid-cols-7">
+                            {calDayLabels.map((d) => (
+                              <div key={d} className="flex items-center justify-center py-[6px]">
+                                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#717680]">{d}</p>
+                              </div>
+                            ))}
+                          </div>
+                          {/* Days grid */}
+                          <div className="grid grid-cols-7" onMouseLeave={() => setRescheduleHoveredDay(null)}>
+                            {calDays.map((entry, i) => {
+                              const { day, type: dayType } = entry;
+                              const isOtherMonth = dayType !== "current";
+                              if (isOtherMonth) {
+                                return (
+                                  <div key={`${dayType}-${day}`} className="flex items-center justify-center py-[2px]">
+                                    <div className="flex flex-col items-center justify-center size-[36px]">
+                                      <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] leading-none text-[#d0d5dd]">{day}</span>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              const avail = calendarAvailability[day];
+                              const ds = makeDate(day);
+                              const today = new Date(); today.setHours(0,0,0,0);
+                              const dayDate = new Date(calYear, calMonth, day);
+                              const isPast = dayDate < today;
+                              const inRange = isInRange(day);
+                              const edge = isRangeEdge(day);
+                              const single = isSelectedSingle(day);
+                              const active = single || edge;
+
+                              // Hover preview range (only when start selected but no end yet)
+                              const isPreviewMode = isRange && rescheduleRangeStart && !rescheduleRangeEnd && rescheduleHoveredDay !== null;
+                              const previewEnd = isPreviewMode ? makeDate(rescheduleHoveredDay!) : null;
+                              const inPreview = (() => {
+                                if (!isPreviewMode || !previewEnd) return false;
+                                const lo = previewEnd < rescheduleRangeStart! ? previewEnd : rescheduleRangeStart!;
+                                const hi = previewEnd < rescheduleRangeStart! ? rescheduleRangeStart! : previewEnd;
+                                return ds > lo && ds < hi;
+                              })();
+                              const isPreviewEdge = isPreviewMode && previewEnd === ds;
+
+                              // Check if this day exceeds booked nights (hospedagem only)
+                              const getDayIndex = (dateStr: string, startStr: string) =>
+                                Math.round((new Date(dateStr).getTime() - new Date(startStr).getTime()) / (1000 * 60 * 60 * 24));
+
+                              const isExceeded = (() => {
+                                if (!isRange || !rescheduleRangeStart) return false;
+                                if (ds < rescheduleRangeStart) return false;
+                                return getDayIndex(ds, rescheduleRangeStart) >= bookedNights;
+                              })();
+
+                              // Preview exceeded: for hover preview days beyond booked nights
+                              const isPreviewExceeded = (() => {
+                                if (!isPreviewMode || !rescheduleRangeStart) return false;
+                                if (ds < rescheduleRangeStart) return false;
+                                if (!inPreview && !isPreviewEdge && ds !== rescheduleRangeStart) return false;
+                                return getDayIndex(ds, rescheduleRangeStart) >= bookedNights;
+                              })();
+
+                              const exceededEdge = active && isExceeded;
+                              const exceededInRange = inRange && isExceeded && !active;
+
+                              // Is start or end edge for background strip
+                              const isStart = isRange && ds === rescheduleRangeStart;
+                              const isEnd = isRange && ds === rescheduleRangeEnd;
+                              const showStripBg = inRange && !active;
+                              const showPreviewStripBg = inPreview && !active;
+
+                              // Is this the last day within booked nights in a confirmed range?
+                              const isLastBooked = (() => {
+                                if (!isRange || !rescheduleRangeStart || !rescheduleRangeEnd) return false;
+                                const totalNights = getDayIndex(rescheduleRangeEnd, rescheduleRangeStart);
+                                if (totalNights <= bookedNights) return isEnd; // no excess — end is last booked
+                                // excess exists — last booked is bookedNights days after start
+                                const dayIdx = getDayIndex(ds, rescheduleRangeStart);
+                                return dayIdx === bookedNights - 1;
+                              })();
+                              // Is this the first exceeded day in confirmed range?
+                              const isFirstExceeded = (() => {
+                                if (!isRange || !rescheduleRangeStart || !rescheduleRangeEnd) return false;
+                                return getDayIndex(ds, rescheduleRangeStart) === bookedNights;
+                              })();
+
+                              // Background strip classes for continuous range visual
+                              const stripBg = (() => {
+                                // Confirmed range
+                                if (isStart && rescheduleRangeEnd) return "bg-[#eff6ff] rounded-l-full";
+                                if (isEnd && !isExceeded) return "bg-[#eff6ff] rounded-r-full";
+                                if (isEnd && isExceeded) return "bg-[#fffaeb] rounded-r-full";
+                                if (isLastBooked && !isEnd) return "bg-[#eff6ff] rounded-r-full";
+                                if (isFirstExceeded && inRange) return "bg-[#fffaeb] rounded-l-full";
+                                if (exceededInRange) return "bg-[#fffaeb]";
+                                if (showStripBg) return "bg-[#eff6ff]";
+                                // Preview hover
+                                if (isPreviewExceeded && isPreviewEdge) return "bg-[#fff7ed] rounded-r-full";
+                                if (isPreviewExceeded && inPreview) return "bg-[#fff7ed]";
+                                if (showPreviewStripBg) return "bg-[#f0f5ff]/50";
+                                if (isPreviewEdge) return "bg-[#f0f5ff]/50 rounded-r-full";
+                                if (isStart && isPreviewMode) return "bg-[#f0f5ff]/50 rounded-l-full";
+                                return "";
+                              })();
+
+                              return (
+                                <div
+                                  key={`d-${day}`}
+                                  className={`flex items-center justify-center py-[2px] ${stripBg}`}
+                                  onMouseEnter={() => isRange && !isPast && setRescheduleHoveredDay(day)}
+                                >
+                                  <button
+                                    onClick={() => !isPast && handleDayClick(day)}
+                                    disabled={isPast}
+                                    className={`flex flex-col items-center justify-center size-[36px] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#0b5ed7]/30 rounded-full ${
+                                      isPast
+                                        ? "text-[#d0d5dd] cursor-not-allowed"
+                                        : exceededEdge
+                                          ? "bg-[#dc6803] text-white cursor-pointer"
+                                          : active
+                                            ? "bg-[#0b5ed7] text-white cursor-pointer"
+                                            : isPreviewExceeded && (inPreview || isPreviewEdge)
+                                              ? "text-[#dc6803] cursor-pointer"
+                                              : isPreviewEdge
+                                                ? "bg-[#d0d5ff]/40 text-[#0b5ed7] cursor-pointer"
+                                                : exceededInRange
+                                                  ? "text-[#dc6803] cursor-pointer"
+                                                  : inRange
+                                                    ? "text-[#0b5ed7] cursor-pointer"
+                                                    : inPreview
+                                                      ? "text-[#0b5ed7] cursor-pointer"
+                                                      : "hover:bg-[#f5f5f5] text-[#252b37] cursor-pointer"
+                                    }`}
+                                  >
+                                    <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] leading-none ${active ? "text-white" : isPast ? "text-[#d0d5dd]" : ""}`}>{day}</span>
+                                    {avail && !isPast && (
+                                      <div className={`size-[5px] rounded-full mt-[3px] ${
+                                        avail === "green"
+                                          ? active ? "bg-white/80" : "bg-[#17b26a]"
+                                          : active ? "bg-white/80" : "bg-[#d92d20]"
+                                      }`} />
+                                    )}
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* RIGHT — Date/Time inputs */}
+                        <div className="flex flex-col gap-[16px] w-[280px] shrink-0 pt-[6px] border-l border-[#e9eaeb] pl-[20px]">
+                          {isRange ? (
+                            <>
+                              {/* Start date — hospedagem */}
+                              <div className="flex flex-col gap-[6px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#181d27]">
+                                  Data de entrada<span className="text-[#d92d20]">*</span>
+                                </p>
+                                <div className="flex gap-[8px]">
+                                  <div className="flex items-center h-[40px] flex-1 rounded-[8px] border border-[#e9eaeb] px-[12px] bg-[#fafafa]">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] truncate">
+                                      {startDateValue || <span className="text-[#a4a7ae]">--/--/----</span>}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center h-[40px] w-[90px] shrink-0 rounded-[8px] border border-[#e9eaeb] px-[12px] bg-[#fafafa]">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">09:00</p>
+                                  </div>
+                                </div>
+                              </div>
+                              {/* End date — hospedagem */}
+                              <div className="flex flex-col gap-[6px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#181d27]">
+                                  Data de saída<span className="text-[#d92d20]">*</span>
+                                </p>
+                                <div className="flex gap-[8px]">
+                                  <div className="flex items-center h-[40px] flex-1 rounded-[8px] border border-[#e9eaeb] px-[12px] bg-[#fafafa]">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] truncate">
+                                      {endDateValue || <span className="text-[#a4a7ae]">--/--/----</span>}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center h-[40px] w-[90px] shrink-0 rounded-[8px] border border-[#e9eaeb] px-[12px] bg-[#fafafa]">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">09:00</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              {/* Horário de início — sob demanda */}
+                              <div className="flex flex-col gap-[6px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#181d27]">
+                                  Horário de início<span className="text-[#d92d20]">*</span>
+                                </p>
+                                <div className="flex items-center h-[40px] rounded-[8px] border border-[#e9eaeb] px-[12px] bg-[#fafafa]">
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">09:00</p>
+                                </div>
+                              </div>
+                              {/* Horário de fim — sob demanda */}
+                              <div className="flex flex-col gap-[6px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#181d27]">
+                                  Horário de fim<span className="text-[#d92d20]">*</span>
+                                </p>
+                                <div className="flex items-center h-[40px] rounded-[8px] border border-[#e9eaeb] px-[12px] bg-[#fafafa]">
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">17:00</p>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                          {/* Selecionado / Range indicator */}
+                          {!isRange ? (
+                            <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">
+                                {rescheduleCalendarDate ? `Selecionado: ${formatShort(rescheduleCalendarDate)}` : "Selecione um dia no calendário"}
+                              </p>
+                            </div>
+                          ) : (() => {
+                            const selectedNights = getNights();
+                            const extraNights = Math.max(0, selectedNights - bookedNights);
+                            const hasExceeded = extraNights > 0;
+                            return (
+                              <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">
+                                  {rescheduleRangeStart && rescheduleRangeEnd
+                                    ? hasExceeded
+                                      ? `${selectedNights} diária${selectedNights !== 1 ? "s" : ""} selecionada${selectedNights !== 1 ? "s" : ""} — ${extraNights} diária${extraNights !== 1 ? "s" : ""} além da reserva original`
+                                      : `${selectedNights} diária${selectedNights !== 1 ? "s" : ""} · ${formatShort(rescheduleRangeStart)} a ${formatShort(rescheduleRangeEnd)}`
+                                    : rescheduleRangeStart
+                                      ? "Selecione a data de saída"
+                                      : "Selecione as datas de entrada e saída"}
+                                </p>
                               </div>
                             );
-                          })}
+                          })()}
                         </div>
-                        {/* Calendar footer */}
-                        {!isRange && (
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680] pt-[4px]">
-                            {rescheduleCalendarDate ? `Selecionado: ${formatShort(rescheduleCalendarDate)}` : "Selecione um dia"}
-                          </p>
-                        )}
-                        {isRange && (
-                          <div className="flex flex-col gap-[4px] pt-[4px]">
-                            {rescheduleRangeStart && rescheduleRangeEnd ? (
-                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#0b5ed7]">
-                                {getNights()} diária{getNights() !== 1 ? "s" : ""} {formatShort(rescheduleRangeStart)} a {formatShort(rescheduleRangeEnd)}
-                              </p>
-                            ) : rescheduleRangeStart ? (
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Selecione a data de saída</p>
-                            ) : (
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Selecione as datas de entrada e saída</p>
-                            )}
-                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">Toque em um novo dia para recomeçar a seleção</p>
-                          </div>
-                        )}
                       </div>
                     );
                   })()}
-                  {/* Empty state when no date selected */}
-                  {!hasSelection && (
-                    <div className="flex flex-col items-center justify-center py-[24px] gap-[8px] rounded-[8px] border border-[#f5f5f5]">
-                      <svg className="size-[32px] text-[#d0d5dd]" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Nenhuma data selecionada</p>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#94a3b8] text-center max-w-[260px] -mt-[4px]">Escolha a nova data para ver os itens transferidos e o valor.</p>
+                  {/* Opcionais multi-select */}
+                  <div className="flex flex-col gap-[8px]">
+                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Opcionais da reserva</p>
+                    <div className="relative">
+                      <button
+                        onClick={() => setRescheduleOptionalsOpen(!rescheduleOptionalsOpen)}
+                        className={`flex items-center justify-between w-full min-h-[44px] rounded-[8px] px-[14px] py-[8px] cursor-pointer transition-colors border ${rescheduleOptionalsOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
+                      >
+                        <div className="flex items-center gap-[6px] flex-wrap flex-1 min-w-0">
+                          {Object.keys(rescheduleOptionals).length > 0 ? Object.keys(rescheduleOptionals).map((item) => (
+                            <span key={item} className="inline-flex items-center bg-[#f0f5ff] text-[#0b5ed7] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] h-[26px] rounded-full">
+                              {item}
+                            </span>
+                          )) : (
+                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar opcionais</span>
+                          )}
+                        </div>
+                        <svg className={`size-[16px] text-[#717680] shrink-0 ml-[8px] transition-transform ${rescheduleOptionalsOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </button>
+                      {rescheduleOptionalsOpen && <div className="fixed inset-0 z-[5]" onClick={() => setRescheduleOptionalsOpen(false)} />}
+                      {rescheduleOptionalsOpen && (() => {
+                        const allOptionals = [
+                          { id: "Transporte", label: "Transporte", price: 30 },
+                          { id: "Lanche", label: "Lanche", price: 25 },
+                          { id: "Foto profissional", label: "Foto profissional", price: 40 },
+                          { id: "Seguro aventura", label: "Seguro aventura", price: 35 },
+                          { id: "Kit trilha", label: "Kit trilha", price: 50 },
+                        ];
+                        return (
+                          <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px]">
+                            {allOptionals.map((opt) => {
+                              const isSelected = opt.id in rescheduleOptionals;
+                              return (
+                                <button
+                                  key={opt.id}
+                                  onClick={() => {
+                                    const next = { ...rescheduleOptionals };
+                                    if (isSelected) { delete next[opt.id]; } else { next[opt.id] = 1; }
+                                    setRescheduleOptionals(next);
+                                  }}
+                                  className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${isSelected ? "bg-[#f0f5ff]" : ""}`}
+                                >
+                                  <div className="flex items-center gap-[10px]">
+                                    <div className={`flex items-center justify-center size-[18px] rounded-[4px] border transition-colors ${isSelected ? "bg-[#0b5ed7] border-[#0b5ed7]" : "bg-white border-[#d5d7da]"}`}>
+                                      {isSelected && <svg className="size-[10px]" fill="none" viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                    </div>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.label}</span>
+                                  </div>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">R$ {opt.price},00</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
                     </div>
-                  )}
+                  </div>
 
-                  {/* Itens que serão transferidos — shown when date selected */}
-                  {hasSelection && (() => {
-                    const lancheAvailable = rescheduleActivityType !== "evento" || (selected ? selected.date !== "02/05/2026" && selected.date !== "04/05/2026" : true);
+                  {/* Itens que serão transferidos */}
+                  {(() => {
                     const basePrice = 150;
-                    const transportePrice = 30;
-                    const lanchePrice = 25;
-                    const removedItems: string[] = [];
-                    if (!lancheAvailable && !rescheduleCapacityConfirmed) removedItems.push("Lanche");
-                    const totalPrice = basePrice + transportePrice + (lancheAvailable ? lanchePrice : 0);
-                    const discount = lancheAvailable ? 0 : lanchePrice;
+                    const optionalPrices: Record<string, number> = {
+                      "Transporte": 30, "Lanche": 25, "Foto profissional": 40,
+                      "Seguro aventura": 35, "Kit trilha": 50,
+                    };
+                    // Extra nights for hospedagem
+                    const selectedNights = (rescheduleActivityType === "hospedagem" && rescheduleRangeStart && rescheduleRangeEnd)
+                      ? Math.round((new Date(rescheduleRangeEnd).getTime() - new Date(rescheduleRangeStart).getTime()) / (1000 * 60 * 60 * 24)) + 1
+                      : 0;
+                    const extraNights = rescheduleActivityType === "hospedagem" ? Math.max(0, selectedNights - bookedNights) : 0;
+                    const extraNightsPrice = extraNights * pricePerNight;
+                    const optionalsTotal = Object.entries(rescheduleOptionals).reduce((sum, [id, qty]) => sum + (optionalPrices[id] || 0) * qty, 0);
+                    const totalPrice = basePrice + optionalsTotal + extraNightsPrice;
 
                     return (
                       <div className="flex flex-col gap-[12px] mt-[8px]">
@@ -6404,59 +6786,76 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                             </div>
                             <span className="bg-[#eff6ff] text-[#0b5ed7] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">Mantida</span>
                           </div>
-                          {/* Transporte */}
-                          <div className="flex items-center justify-between px-[16px] py-[12px] border-t border-[#f5f5f5]">
-                            <div>
-                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">Transporte</p>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">+ R$ {transportePrice},00</p>
-                            </div>
-                            <span className="flex items-center gap-[4px] bg-[#ecfdf3] text-[#079455] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">
-                              <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                              Disponível
-                            </span>
-                          </div>
-                          {/* Lanche */}
-                          <div className="flex items-center justify-between px-[16px] py-[12px] border-t border-[#f5f5f5]">
-                            <div>
-                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">Lanche</p>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">+ R$ {lanchePrice},00</p>
-                            </div>
-                            {lancheAvailable ? (
-                              <span className="flex items-center gap-[4px] bg-[#ecfdf3] text-[#079455] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">
-                                <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                Disponível
-                              </span>
-                            ) : (
-                              <span className="bg-[#fef3f2] text-[#d92d20] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">Indisponível</span>
-                            )}
-                          </div>
-                          {/* Warning if lanche unavailable */}
-                          {!lancheAvailable && (
-                            <>
-                              <div className="border-t border-[#f5f5f5] px-[16px] py-[12px]">
-                                <div className="flex items-start gap-[8px] bg-[#fffaeb] border border-[#fedf89] rounded-[8px] px-[12px] py-[10px]">
-                                  <svg className="size-[16px] text-[#dc6803] shrink-0 mt-[1px]" fill="none" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">O opcional Lanche não é oferecido na data escolhida. Decida o que fazer antes de remarcar.</p>
-                                </div>
+                          {/* Diárias — hospedagem */}
+                          {rescheduleActivityType === "hospedagem" && rescheduleRangeStart && rescheduleRangeEnd && (
+                            <div className="flex items-center justify-between px-[16px] py-[12px] border-t border-[#f5f5f5]">
+                              <div>
+                                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">{bookedNights} diária{bookedNights !== 1 ? "s" : ""} (reserva)</p>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">R$ {pricePerNight},00/noite</p>
                               </div>
-                              <div className="border-t border-[#f5f5f5] flex items-center justify-between px-[16px] py-[12px]">
-                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Levar este opcional?</p>
-                                <div className="flex items-center gap-[8px]">
-                                  <button type="button" className="h-[32px] px-[14px] rounded-[6px] border border-[#e9eaeb] bg-white font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#414651] cursor-pointer hover:bg-[#f8fafc] transition-colors">Remover</button>
-                                  <button type="button" className="h-[32px] px-[14px] rounded-[6px] border border-[#e9eaeb] bg-white font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#414651] cursor-pointer hover:bg-[#f8fafc] transition-colors">Levar mesmo assim</button>
-                                </div>
-                              </div>
-                            </>
+                              <span className="bg-[#eff6ff] text-[#0b5ed7] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">Mantida</span>
+                            </div>
                           )}
+                          {/* Diárias excedentes — hospedagem */}
+                          {rescheduleActivityType === "hospedagem" && extraNights > 0 && (
+                            <div className="flex items-center justify-between px-[16px] py-[12px] border-t border-[#f5f5f5]">
+                              <div>
+                                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#dc6803]">+{extraNights} diária{extraNights !== 1 ? "s" : ""} extra{extraNights !== 1 ? "s" : ""}</p>
+                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">+ R$ {extraNightsPrice},00</p>
+                              </div>
+                              <span className="flex items-center gap-[4px] bg-[#fffaeb] text-[#dc6803] text-[12px] font-['Helvetica_Neue:Medium',sans-serif] px-[8px] py-[3px] rounded-full">
+                                Excedente
+                              </span>
+                            </div>
+                          )}
+                          {/* Opcionais dinâmicos */}
+                          {Object.entries(rescheduleOptionals).map(([optId, qty]) => {
+                            const price = optionalPrices[optId] || 0;
+                            return (
+                              <div key={optId} className="flex items-center justify-between px-[16px] py-[12px] border-t border-[#f5f5f5]">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">{optId}</p>
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">R$ {price},00</p>
+                                </div>
+                                <div className="flex items-center gap-[2px]">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (qty <= 1) {
+                                        const next = { ...rescheduleOptionals }; delete next[optId]; setRescheduleOptionals(next);
+                                      } else {
+                                        setRescheduleOptionals({ ...rescheduleOptionals, [optId]: qty - 1 });
+                                      }
+                                    }}
+                                    className="flex items-center justify-center size-[32px] rounded-[6px] border border-[#e9eaeb] hover:bg-[#f8fafc] cursor-pointer transition-colors"
+                                  >
+                                    {qty <= 1 ? (
+                                      <svg className="size-[14px] text-[#d92d20]" fill="none" viewBox="0 0 24 24"><path d="M7 4a2 2 0 012-2h6a2 2 0 012 2v2H7V4zM19 6H5M9 10v8M15 10v8M6 6h12l-1 14a2 2 0 01-2 2H9a2 2 0 01-2-2L6 6z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    ) : (
+                                      <svg className="size-[14px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                    )}
+                                  </button>
+                                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27] w-[32px] text-center">{qty}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setRescheduleOptionals({ ...rescheduleOptionals, [optId]: qty + 1 })}
+                                    className="flex items-center justify-center size-[32px] rounded-[6px] border border-[#e9eaeb] hover:bg-[#f8fafc] cursor-pointer transition-colors"
+                                  >
+                                    <svg className="size-[14px] text-[#535862]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
 
                         {/* Novo valor da reserva */}
                         <div className="flex items-center justify-between pt-[4px]">
                           <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Novo valor da reserva</p>
                           <div className="text-right">
-                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27]">R$ {(totalPrice - discount)},00</p>
-                            {discount > 0 && (
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#d92d20]">- R$ {discount},00 (Lanche removido)</p>
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27]">R$ {totalPrice},00</p>
+                            {extraNightsPrice > 0 && (
+                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#dc6803]">+ R$ {extraNightsPrice},00 ({extraNights} diária{extraNights !== 1 ? "s" : ""} extra{extraNights !== 1 ? "s" : ""})</p>
                             )}
                           </div>
                         </div>
@@ -6531,7 +6930,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       {/* Bulk Cancel modal */}
       {bulkCancelModal && (() => {
         const allSelected = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && !bulkCancelExcluded.has(p.id));
-        const eligible = allSelected.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent");
+        const eligible = allSelected.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent" && p.checkInStatus !== "Rescheduled");
         const ineligible = allSelected.filter((p) => p.checkInStatus === "Cancelled" || p.checkInStatus === "Absent");
         const alreadyCancelled = allSelected.filter((p) => p.checkInStatus === "Cancelled").length;
         const alreadyPerformed = allSelected.filter((p) => p.checkInStatus === "Done").length;
@@ -7032,6 +7431,23 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           }}
         />
       )}
+      {badgeSheet && createPortal(
+        <div className="fixed inset-0 z-[70] flex flex-col justify-end md:hidden" onClick={() => setBadgeSheet(null)}>
+          <div className="absolute inset-0 bg-black/30 transition-opacity duration-200" />
+          <div className="relative z-10 bg-white rounded-t-[16px] shadow-[0px_-8px_24px_0px_rgba(0,0,0,0.12)] animate-in slide-in-from-bottom duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-center pt-[8px] pb-[4px]">
+              <div className="w-[36px] h-[4px] rounded-full bg-[#d0d5dd]" />
+            </div>
+            <div className="px-[20px] pt-[8px] pb-[24px]">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">{badgeSheet.title}</p>
+              {badgeSheet.subtitle && (
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] mt-[4px]">{badgeSheet.subtitle}</p>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
@@ -7484,6 +7900,15 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                   {/* Header */}
                   <div className="flex items-center justify-between px-[20px] h-[52px] shrink-0">
                     <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Resumo da atividade</p>
+                    {activity.lifecycleStatus === "EmAndamento" && (
+                      <button
+                        type="button"
+                        onClick={() => setShowQrScanner(true)}
+                        className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0b5ed7] hover:text-[#084fb7] transition-colors cursor-pointer whitespace-nowrap"
+                      >
+                        Check-in via QR Code
+                      </button>
+                    )}
                   </div>
                   {/* Content */}
                   <div className="flex-1 overflow-y-auto px-[16px] pb-[16px]">
@@ -7553,13 +7978,13 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                           {/* ── Section 1: Ocupação Total ── */}
                           <div className="flex flex-col gap-[16px]">
                             <div className="flex items-center gap-[8px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
-                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Ocupação total</p>
-                              <div className="flex items-center gap-[3px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] py-[3px]">
-                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#252b37]">{totalOccupancy}</p>
-                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#717680]">/</p>
-                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#535862]">{activity.capacity}</p>
-                                <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680] ml-[1px]">participantes</p>
-                              </div>
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px] shrink-0">Ocupação total</p>
+                              <span className="inline-flex items-center gap-[3px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] py-[3px] whitespace-nowrap shrink-0">
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#252b37]">{totalOccupancy}</span>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#717680]">/</span>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#535862]">{activity.capacity}</span>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680] ml-[1px]">participantes</span>
+                              </span>
                             </div>
                             <div className="flex flex-col gap-[12px]">
                               <div className="flex flex-col gap-[6px]">
@@ -7573,32 +7998,17 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                                 </div>
                               </div>
                               <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-[8px]">
-                                  <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                                    <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><g clipPath="url(#child-occupancy-icon)"><circle cx="10.0013" cy="9.99935" r="8.33333" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M11.668 4.78094C11.668 4.78094 10.7387 5.19775 10.086 4.87977C9.29 4.492 8.50051 2.87117 10.0775 1.66602" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.67545 7.5H6.66797M13.3346 7.5H13.3272" stroke="#535862" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 12.5C7.42807 13.512 8.63825 14.1667 10.0013 14.1667C11.3644 14.1667 12.5745 13.512 13.3346 12.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></g><defs><clipPath id="child-occupancy-icon"><rect width="20" height="20" fill="white"/></clipPath></defs></svg>
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Criança(s)</span>
-                                    <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{criancas}</span>
-                                  </div>
+                                <div className="flex items-center gap-[4px]">
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Crianças:</span>
+                                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{criancas}</span>
                                 </div>
-                                <div className="flex items-center gap-[8px]">
-                                  <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                                    <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M10.8346 9.16732C10.8346 7.32637 9.34225 5.83398 7.5013 5.83398C5.66035 5.83398 4.16797 7.32637 4.16797 9.16732C4.16797 11.0083 5.66035 12.5007 7.5013 12.5007C9.34225 12.5007 10.8346 11.0083 10.8346 9.16732Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9.20011 6.29811C9.17892 6.14622 9.16797 5.99106 9.16797 5.83333C9.16797 3.99238 10.6604 2.5 12.5013 2.5C14.3423 2.5 15.8346 3.99238 15.8346 5.83333C15.8346 7.67428 14.3423 9.16667 12.5013 9.16667C11.8808 9.16667 11.3 8.99714 10.8025 8.70189" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M12.5 17.5C12.5 14.7386 10.2614 12.5 7.5 12.5C4.73858 12.5 2.5 14.7386 2.5 17.5" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M17.5 14.166C17.5 11.4046 15.2614 9.16602 12.5 9.16602" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Adulto(s)</span>
-                                    <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{adultos}</span>
-                                  </div>
+                                <div className="flex items-center gap-[4px]">
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Adultos:</span>
+                                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{adultos}</span>
                                 </div>
-                                <div className="flex items-center gap-[8px]">
-                                  <div className="flex items-center justify-center size-[32px] rounded-[8px] bg-[#fafafa] border border-[#f5f5f5] shrink-0">
-                                    <svg className="size-[20px]" fill="none" viewBox="0 0 20 20"><path d="M12.5178 7.86112L12.9578 8.7483C13.0178 8.8718 13.1778 8.99026 13.3128 9.01294L14.1102 9.14652C14.6201 9.23221 14.7401 9.60523 14.3726 9.9732L13.7527 10.5983C13.6477 10.7041 13.5902 10.9083 13.6227 11.0544L13.8002 11.8282C13.9402 12.4407 13.6177 12.6776 13.0803 12.3575L12.3329 11.9114C12.1979 11.8307 11.9754 11.8307 11.8379 11.9114L11.0905 12.3575C10.5556 12.6776 10.2306 12.4381 10.3706 11.8282L10.5481 11.0544C10.5806 10.9083 10.5231 10.7041 10.4181 10.5983L9.79815 9.9732C9.43319 9.60523 9.55067 9.23221 10.0606 9.14652L10.858 9.01294C10.9905 8.99026 11.1505 8.8718 11.2105 8.7483L11.6504 7.86112C11.8904 7.37973 12.2804 7.37973 12.5178 7.86112Z" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 14.166L6.66797 17.0827" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.66797 2.91602V5.83268" stroke="#535862" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M18.3359 7.39847C18.2802 6.11341 18.1239 5.27683 17.6862 4.61505C17.4344 4.23432 17.1216 3.90317 16.7619 3.63658C15.7898 2.91602 14.4185 2.91602 11.6757 2.91602H8.33015C5.58742 2.91602 4.21606 2.91602 3.24396 3.63658C2.88431 3.90317 2.5715 4.23432 2.31967 4.61505C1.88198 5.27676 1.72574 6.11322 1.66996 7.39804C1.66042 7.61775 1.84967 7.78581 2.05703 7.78581C3.21185 7.78581 4.14801 8.77684 4.14801 9.99935C4.14801 11.2219 3.21185 12.2129 2.05703 12.2129C1.84967 12.2129 1.66042 12.381 1.66996 12.6007C1.72574 13.8855 1.88198 14.7219 2.31967 15.3837C2.5715 15.7644 2.88431 16.0955 3.24396 16.3621C4.21605 17.0827 5.58742 17.0827 8.33014 17.0827H8.33015H11.6757H11.6757C14.4185 17.0827 15.7898 17.0827 16.7619 16.3621C17.1216 16.0955 17.4344 15.7644 17.6862 15.3837C18.1239 14.7219 18.2802 13.8853 18.3359 12.6002V7.39847Z" stroke="#535862" strokeWidth="1.5" strokeLinejoin="round"/></svg>
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Cortesia(s)</span>
-                                    <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{cortesias}</span>
-                                  </div>
+                                <div className="flex items-center gap-[4px]">
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Cortesias:</span>
+                                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{cortesias}</span>
                                 </div>
                               </div>
                             </div>
@@ -7616,8 +8026,8 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                             if (!hasBadges) return null;
                             return (
                               <div className="flex flex-col gap-[16px]">
-                                <div className="w-full flex items-center bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
-                                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Resumo dos participantes</p>
+                                <div className="flex items-center gap-[8px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
+                                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px] shrink-0">Resumo dos participantes</p>
                                 </div>
                                 <div className="flex gap-[6px] items-center flex-wrap">
                                   {healthCount > 0 && (
@@ -7677,7 +8087,38 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                             );
                           })()}
 
-                          {/* ── Section 3: Previsão Climática ── */}
+                          {/* ── Section 3: Itens opcionais ── */}
+                          <div className="flex flex-col gap-[16px]">
+                            <div className="flex items-center gap-[8px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
+                              <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px] shrink-0">Itens opcionais</p>
+                              <span className="inline-flex items-center gap-[3px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] py-[3px] whitespace-nowrap shrink-0">
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#252b37]">5</span>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680]">itens</span>
+                              </span>
+                            </div>
+                            <div className="flex flex-col">
+                              {[
+                                { name: "Camiseta personalizada da atividade", qty: 12, price: 45 },
+                                { name: "Transporte ida e volta", qty: 18, price: 30 },
+                                { name: "Lanche trail mix", qty: 15, price: 25 },
+                                { name: "Foto profissional", qty: 8, price: 40 },
+                                { name: "Seguro aventura", qty: 22, price: 35 },
+                              ].map((item, idx) => (
+                                <div key={item.name} className={`flex items-center justify-between py-[10px] ${idx > 0 ? "border-t border-[#f5f5f5]" : ""}`}>
+                                  <div className="flex-1 min-w-0 mr-[12px]">
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{item.name}</p>
+                                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680]">R$ {item.price},00/un</p>
+                                  </div>
+                                  <div className="flex items-center gap-[8px] shrink-0">
+                                    <span className="inline-flex items-center justify-center bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] h-[22px] font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#252b37]">{item.qty}x</span>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] w-[65px] text-right">R$ {(item.qty * item.price).toLocaleString("pt-BR")},00</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* ── Section 4: Previsão Climática ── */}
                           <div className="flex flex-col gap-[16px]">
                             <div className="flex items-center gap-[6px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
                               <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Previsão climática</p>

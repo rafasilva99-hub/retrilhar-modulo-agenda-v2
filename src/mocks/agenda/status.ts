@@ -16,12 +16,13 @@ import type {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const reservationStateMachine: ReservationStateMachine = {
-  Draft: ["Scheduled", "Confirmed", "Cancelled"],
+  Draft: ["Scheduled", "Confirmed", "Cancelled", "Expired"],
   Scheduled: ["Confirmed", "Cancelled"],
   Confirmed: ["CheckedIn", "Cancelled", "Scheduled"],
   CheckedIn: ["Confirmed"],
   Performed: ["Confirmed"],
   Cancelled: ["Confirmed"],
+  Expired: [],
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

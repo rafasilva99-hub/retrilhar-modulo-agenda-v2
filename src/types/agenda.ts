@@ -73,7 +73,8 @@ export type ReservationStatus =
   | "Confirmed"
   | "CheckedIn"
   | "Performed"
-  | "Cancelled";
+  | "Cancelled"
+  | "Expired";
 
 export type PaymentStatus = "Pending" | "Partial" | "Paid" | "Refunded" | "Failed";
 
@@ -93,7 +94,7 @@ export type TariffType =
   | "Excursão Escolar Educativa (turma)"
   | (string & {});
 
-export type CheckInStatus = "Pending" | "Done" | "Absent" | "Cancelled" | "Scheduled";
+export type CheckInStatus = "Pending" | "Done" | "Absent" | "Cancelled" | "Scheduled" | "Rescheduled";
 
 export type ReservationType = "individual" | "group";
 

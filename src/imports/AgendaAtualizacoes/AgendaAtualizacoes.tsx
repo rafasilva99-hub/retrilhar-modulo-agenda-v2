@@ -2470,7 +2470,7 @@ function CheckInButton({ isDone, disabled, selected, mobile = false, onCheckIn, 
   const iconSizeClass = mobile ? "size-[20px]" : "size-[14px]";
   const textSizeClass = mobile ? "text-[16px]" : "text-[12px]";
   const buttonStyle = mobile
-    ? { padding: "6px 14px", minWidth: 95, minHeight: 44 }
+    ? { padding: "6px 14px", minWidth: 95, minHeight: 40 }
     : { padding: "4px 10px", minWidth: 84, height: 32 };
 
   return (
@@ -2731,7 +2731,7 @@ function ParticipantMenu({ reservation, participant, onAction, participantInsure
     <div className="relative" ref={menuRef} onClick={(e) => e.stopPropagation()}>
       <button
         onClick={() => setOpen(!open)}
-        className={`bg-white border border-[#e4e4e7] cursor-pointer flex items-center justify-center rounded-[8px] shrink-0 ${mobile ? "size-[44px]" : "size-[32px]"} hover:bg-[#f8fafc] transition-colors`}
+        className={`bg-white border border-[#e4e4e7] cursor-pointer flex items-center justify-center rounded-[8px] shrink-0 ${mobile ? "size-[40px]" : "size-[32px]"} hover:bg-[#f8fafc] transition-colors`}
       >
         <svg className={iconSizeClass} fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1" fill="#717680"/><circle cx="8" cy="8" r="1" fill="#717680"/><circle cx="8" cy="12.5" r="1" fill="#717680"/></svg>
       </button>
@@ -3027,9 +3027,9 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
 
         {/* Pending check-in modal */}
         {showPendingModal && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center">
+          <div className="fixed inset-0 z-[70] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={() => setShowPendingModal(false)} />
-            <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
               {/* Header */}
               <div className="shrink-0">
                 <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -3063,7 +3063,7 @@ function ConcluirAtividadeModal({ activity, reservations, onClose, onConfirm }: 
                 </button>
               </div>
               {/* Footer */}
-              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
                 <button onClick={() => setShowPendingModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Voltar</button>
                 <button onClick={() => { setShowPendingModal(false); onConfirm(); }} className={`flex-1 h-[40px] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors flex items-center justify-center gap-[6px] ${markPendingAsNoShow ? "bg-[#d92d20] hover:bg-[#b42318]" : "bg-[#0b5ed7] hover:bg-[#084fb7]"}`}>
                   {markPendingAsNoShow && <svg className="size-[16px]" fill="none" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
@@ -5436,9 +5436,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       </div>
       {toast && <Toast message={toast.message} type={toast.type} description={toast.description} actions={toast.actions} onClose={() => setToast(null)} />}
       {cancelActivityModal && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setCancelActivityModal(false)} />
-          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+          <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
             <div className="shrink-0">
               <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
                 <div className="flex flex-col gap-[4px]">
@@ -5468,7 +5468,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">Reservas, check-ins e comunicações vinculadas podem ser impactados. Confirme apenas se deseja prosseguir com o cancelamento da atividade.</p>
               </div>
             </div>
-            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+            <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
               <button onClick={() => setCancelActivityModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
               <button
                 disabled={cancelActivityConfirmText.trim() !== activity.name}
@@ -5909,9 +5909,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
           };
 
           return createPortal(
-            <div className="fixed inset-0 z-[60] flex items-center justify-center" onKeyDown={(e) => e.key === "Escape" && setCheckInModal(null)}>
+            <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center" onKeyDown={(e) => e.key === "Escape" && setCheckInModal(null)}>
               <div className="absolute inset-0 bg-black/40" onClick={() => setCheckInModal(null)} />
-              <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10 flex flex-col max-h-[90vh]">
+              <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10 flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="flex flex-col gap-[6px] px-[24px] pt-[24px] pb-[16px] border-b border-[#f5f5f5] shrink-0">
                   <div className="flex items-center justify-between">
@@ -6006,7 +6006,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
                 {/* Footer */}
                 <div className="flex items-center justify-end gap-[12px] px-[24px] pt-[16px] pb-[24px] border-t border-[#f5f5f5] shrink-0">
-                  <div className="flex gap-[12px]">
+                  <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] w-full md:w-auto [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
                     <button onClick={() => setCheckInModal(null)} className="bg-white border border-[#d92d20] border-solid cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#fef3f2] not-italic px-[16px] py-[10px] rounded-[8px] text-[14px] text-[#d92d20] transition-colors">Cancelar</button>
                     <button
                       onClick={handleConfirm}
@@ -6023,9 +6023,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
         return <CheckInModalContent />;
       })()}
       {cancelModal && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setCancelModal(null)} />
-          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+          <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
             {/* Header */}
             <div className="shrink-0">
             <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -6067,7 +6067,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
             </div>
             {/* Footer */}
-            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+            <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
               <button onClick={() => setCancelModal(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
               <button onClick={confirmCancel} className="flex-1 h-[40px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors">Cancelar reserva</button>
             </div>
@@ -6077,9 +6077,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       )}
       {/* No-show confirmation modal */}
       {noShowModal && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setNoShowModal(null)} />
-          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+          <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
             {/* Header */}
             <div className="shrink-0">
             <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -6109,7 +6109,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
             </div>
             {/* Footer */}
-            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+            <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
               <button onClick={() => setNoShowModal(null)} className="flex-1 h-[48px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
               <button onClick={confirmNoShow} className="flex-1 h-[48px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors">Definir não comparecimento</button>
             </div>
@@ -6952,9 +6952,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
 
 
         return createPortal(
-          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={() => setBulkCancelModal(false)} />
-            <div className="bg-white max-w-[560px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10 flex flex-col max-h-[90vh]">
+            <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[560px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10 flex flex-col max-h-[90vh]">
               {/* Header */}
               <div className="shrink-0">
               <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -7074,7 +7074,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
               </div>
               {/* Footer */}
-              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[20px] border-t border-[#e9eaeb] shrink-0">
+              <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[20px] border-t border-[#e9eaeb] shrink-0 [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
                 <button onClick={() => setBulkCancelModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
                 <button
                   onClick={() => {
@@ -7109,9 +7109,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       })()}
       {/* Bulk Cancel Result modal — partial failure */}
       {bulkCancelResult && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setBulkCancelResult(null)} />
-          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+          <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
             {/* Header */}
             <div className="shrink-0">
             <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -7151,7 +7151,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
               </div>
             </div>
             {/* Footer */}
-            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+            <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
               <button onClick={() => setBulkCancelResult(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Ver detalhes</button>
               <button
                 onClick={() => {
@@ -7177,9 +7177,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
         const eligibleParts = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && p.checkInStatus === "Pending");
         const eligibleCount = eligibleParts.length;
         return createPortal(
-          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={() => setBulkNoShowModal(false)} />
-            <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
               {/* Header */}
               <div className="shrink-0">
               <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -7209,7 +7209,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 </div>
               </div>
               {/* Footer */}
-              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
                 <button onClick={() => setBulkNoShowModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
                 <button
                   onClick={() => {
@@ -7250,9 +7250,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
         const isNoSlots = selected && selected.slots === 0;
         const canConfirm = !isNoSlots || rescheduleCapacityConfirmed;
         return createPortal(
-          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={() => setBulkRescheduleModal(false)} />
-            <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+            <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
               {/* Header */}
               <div className="shrink-0">
               <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -7385,7 +7385,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 )}
               </div>
               {/* Footer */}
-              <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+              <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
                 <button onClick={() => setBulkRescheduleModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
                 <button
                   onClick={() => {
@@ -7499,6 +7499,7 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
   const [selectedCategory, setSelectedCategory] = useState("observacao");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [feedAtBottom, setFeedAtBottom] = useState(false);
   const [entries, setEntries] = useState(MOCK_ACTIVITY_LOG);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -7588,11 +7589,11 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
   }
 
   return (
-    <div className="flex flex-col border-r border-[#e9eaeb] bg-white w-[400px] shrink-0 h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0 gap-[8px]">
+    <div className="flex flex-col border-r border-[#e9eaeb] bg-white w-full md:w-[400px] shrink-0 h-full">
+      {/* Header — mobile: always search input; desktop: title + toggle */}
+      {/* Desktop header */}
+      <div className="hidden md:flex items-center justify-between px-[20px] h-[52px] border-b border-[#f5f5f5] shrink-0 gap-[8px]">
         {searchOpen ? (
-          /* Search input mode */
           <div className="flex items-center gap-[8px] flex-1 min-w-0">
             <div className="flex items-center gap-[8px] flex-1 min-w-0 bg-[#f8fafc] rounded-[8px] px-[10px] py-[6px] border border-[#e9eaeb]">
               <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -7614,7 +7615,6 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
             </button>
           </div>
         ) : (
-          /* Default title mode */
           <>
             <div className="flex items-center gap-[10px]">
               <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37]">Histórico</p>
@@ -7635,7 +7635,31 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
       </div>
 
       {/* Scrollable feed */}
-      <div className="flex-1 overflow-y-auto px-[20px] py-[12px]">
+      <div
+        className="flex-1 overflow-y-auto px-[20px] pt-[8px] pb-[8px] md:pt-[12px] md:pb-[12px]"
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          setFeedAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 2);
+        }}
+      >
+        {/* Mobile search — scrolls with content */}
+        <div className="md:hidden px-0 pt-[0px] pb-[16px]">
+          <div className="flex items-center gap-[8px] w-full h-[36px] rounded-[8px] px-[10px] bg-[#f8fafc] border border-[#e9eaeb]">
+            <svg className="size-[14px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar comunicado..."
+              className="flex-1 min-w-0 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae]"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} className="cursor-pointer shrink-0">
+                <svg className="size-[14px] text-[#717680]" fill="none" viewBox="0 0 18 18"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              </button>
+            )}
+          </div>
+        </div>
         <div className="flex flex-col">
           {entries.filter((entry) => {
             if (!searchQuery.trim()) return true;
@@ -7722,7 +7746,7 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
       </div>
 
       {/* Bottom input */}
-      <div className="border-t border-[#f5f5f5] px-[16px] py-[14px] shrink-0">
+      <div className="px-[16px] py-[14px] shrink-0" style={{ boxShadow: feedAtBottom ? "none" : "0 -1px 0 0 #f5f5f5", transition: "box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
         <div className="flex flex-col rounded-[10px] border border-[#e4e4e7] bg-white">
           <textarea
             ref={commentInputRef}
@@ -7780,6 +7804,10 @@ function ActivityPanel({ onClose, autoFocusInput }: { onClose: () => void; autoF
 export default function AgendaAtualizacoes({ initialTab = "participantes", onBackToActivities, onActivityCancelled, activityId = "act-001", initialOverlay }: { initialTab?: string; onBackToActivities?: () => void; onActivityCancelled?: (activityDate?: string) => void; activityId?: string; initialOverlay?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [mobileSheet, setMobileSheet] = useState<string | null>(null);
+  const [mobileSheetAtBottom, setMobileSheetAtBottom] = useState(false);
+  const [mobileTeamSearch, setMobileTeamSearch] = useState("");
+  const [mobileTeamDropdownOpen, setMobileTeamDropdownOpen] = useState(false);
+  const [mobileTeamMemberMenu, setMobileTeamMemberMenu] = useState<number | null>(null);
   const [focusActivityInput, setFocusActivityInput] = useState(false);
   const [teamDropdownOpen, setTeamDropdownOpen] = useState(false);
   const [teamSearch, setTeamSearch] = useState("");
@@ -8111,7 +8139,6 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                                   </div>
                                   <div className="flex items-center gap-[8px] shrink-0">
                                     <span className="inline-flex items-center justify-center bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] h-[22px] font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#252b37]">{item.qty}x</span>
-                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] w-[65px] text-right">R$ {(item.qty * item.price).toLocaleString("pt-BR")},00</span>
                                   </div>
                                 </div>
                               ))}
@@ -8398,7 +8425,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
               <div className="w-[36px] h-[4px] rounded-full bg-[#d0d5dd]" />
             </div>
             {/* Header */}
-            <div className="flex items-center justify-between px-[16px] py-[12px] shrink-0">
+            <div className={`flex items-center justify-between px-[16px] pt-[12px] shrink-0 ${mobileSheet === "atualizacoes" ? "pb-[8px]" : "pb-[12px]"}`}>
               <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">
                 {mobileSheet === "resumo-atividade" ? "Resumo da atividade" : mobileSheet === "equipe" ? "Equipe responsável" : "Histórico"}
               </p>
@@ -8409,9 +8436,15 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
               </button>
             </div>
             {/* Content */}
-            <div className={`flex-1 min-h-0 ${mobileSheet === "equipe" ? "flex flex-col" : "overflow-y-auto"}`}>
+            <div
+              className={`flex-1 min-h-0 ${mobileSheet === "equipe" ? "flex flex-col" : "overflow-y-auto"}`}
+              onScroll={(e) => {
+                const el = e.currentTarget;
+                setMobileSheetAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < 2);
+              }}
+            >
               {mobileSheet === "resumo-atividade" && (
-                <div className="px-[16px] py-[16px]">
+                <div className="px-[16px] pb-[16px]">
                   {(() => {
                     const allParts = mockReservations.flatMap((r) => r.participants);
                     const totalOccupancy = allParts.length;
@@ -8420,57 +8453,154 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                     const adultos = totalOccupancy - criancas - cortesias;
                     const occupiedPct = activity.capacity > 0 ? Math.min(Math.round((totalOccupancy / activity.capacity) * 100), 100) : 0;
                     const vacantPct = Math.max(100 - occupiedPct, 0);
-                    const startP = activity.startTime.split(":").map(Number);
-                    const endP = activity.endTime.split(":").map(Number);
-                    const diffM = (endP[0] * 60 + endP[1]) - (startP[0] * 60 + startP[1]);
-                    const durLabel = diffM >= 60 ? `${Math.floor(diffM / 60)}h${diffM % 60 > 0 ? diffM % 60 : ""}` : `${diffM}min`;
-                    const dp = activity.date.split("-");
-                    const dateS = `${dp[2]}/${dp[1]}/${dp[0]}`;
-                    const f12 = (t: string) => { const [h, mi] = t.split(":").map(Number); return `${String(h % 12 || 12).padStart(2, "0")}:${String(mi).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`; };
                     return (
-                      <div className="flex flex-col gap-[24px]">
-                        <div className="flex flex-col gap-[12px]">
-                          <div className="flex items-center gap-[8px]">
-                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#61738d] uppercase tracking-[0.5px]">Ocupação total</p>
-                            <div className="flex items-center gap-[4px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[6px] px-[8px] py-[4px]">
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-none text-[#252b37]">{totalOccupancy}</p>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680]">/</p>
-                              <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#535862]">{activity.capacity}</p>
+                      <div className="flex flex-col gap-[20px]">
+                        {/* ── Section 1: Ocupação Total ── */}
+                        <div className="flex flex-col gap-[16px]">
+                          <div className="flex items-center gap-[8px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px] shrink-0">Ocupação total</p>
+                            <span className="inline-flex items-center gap-[3px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] py-[3px] whitespace-nowrap shrink-0">
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#252b37]">{totalOccupancy}</span>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#717680]">/</span>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[10px] leading-none text-[#535862]">{activity.capacity}</span>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680] ml-[1px]">participantes</span>
+                            </span>
+                          </div>
+                          <div className="flex flex-col gap-[12px]">
+                            <div className="flex flex-col gap-[6px]">
+                              <div className="flex h-[16px] w-full gap-[4px]">
+                                <div className="bg-[#2f80ed] h-full rounded-[4px]" style={{ width: `${occupiedPct}%`, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px)" }} />
+                                {vacantPct > 0 && <div className="bg-[#e4e7ec] h-full rounded-[4px] flex-1" />}
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#252b37]">{occupiedPct}% ocupado</span>
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680]">{vacantPct}% vago</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-[4px]">
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Crianças:</span>
+                                <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{criancas}</span>
+                              </div>
+                              <div className="flex items-center gap-[4px]">
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Adultos:</span>
+                                <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{adultos}</span>
+                              </div>
+                              <div className="flex items-center gap-[4px]">
+                                <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Cortesias:</span>
+                                <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{cortesias}</span>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex h-[16px] w-full gap-[4px]">
-                            <div className="bg-[#17b26a] h-full rounded-[4px]" style={{ width: `${occupiedPct}%`, backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.3) 4px, rgba(255,255,255,0.3) 8px)" }} />
-                            {vacantPct > 0 && <div className="bg-[#e4e7ec] h-full rounded-[4px] flex-1" />}
+                        </div>
+
+                        {/* ── Section 2: Resumo dos participantes ── */}
+                        {(() => {
+                          const healthCount = allParts.filter((p) => p.hasHealthIssue).length;
+                          const additionalCount = allParts.filter((p) => p.hasAdditionalItems).length;
+                          const minorCount = allParts.filter((p) => p.isMinor).length;
+                          const specialNeedsCount = allParts.filter((p) => p.hasSpecialNeeds).length;
+                          const dietaryCount = allParts.filter((p) => p.hasDietaryRestriction).length;
+                          const hasBadges = healthCount > 0 || additionalCount > 0 || minorCount > 0 || specialNeedsCount > 0 || dietaryCount > 0;
+                          if (!hasBadges) return null;
+                          return (
+                            <div className="flex flex-col gap-[16px]">
+                              <div className="flex items-center gap-[8px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
+                                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px] shrink-0">Resumo dos participantes</p>
+                              </div>
+                              <div className="flex gap-[6px] items-center flex-wrap">
+                                {healthCount > 0 && (
+                                  <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                    <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M13.0014 2C14.1053 2 15.0003 2.93126 15.0003 4.08003C15.0003 5.02915 15.0362 5.87375 14.2692 6.57196C11.7587 8.85732 10.5034 10 9.00027 10C7.49714 10 6.24187 8.85732 3.73133 6.57196C2.96426 5.87369 3.00027 5.029 3.00027 4.07981C3.00027 2.93116 3.8951 2 4.99893 2" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M9 14V17.4998C9 19.9852 11.0149 22.0001 13.5003 22.0001C15.9858 22.0001 18.0007 19.9852 18.0007 17.4998V16" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M14 7L12.6978 10.2556C12.3516 11.121 12.1785 11.5537 11.8887 11.9092C11.5988 12.2648 11.2098 12.5215 10.4319 13.0349L8.9696 14L7.53283 13.0323C6.77221 12.5201 6.39189 12.2639 6.10821 11.9126C5.82452 11.5613 5.65423 11.1356 5.31365 10.2841L4 7" stroke="#d92d20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M21 13C21 14.6569 19.6569 16 18 16C16.3431 16 15 14.6569 15 13C15 11.3431 16.3431 10 18 10C19.6569 10 21 11.3431 21 13Z" stroke="#d92d20" strokeWidth="1.5"/><path d="M18.008 13L17.999 13" stroke="#d92d20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#d92d20]">{healthCount} {healthCount === 1 ? "alerta" : "alertas"} de saúde</span>
+                                  </div>
+                                )}
+                                {additionalCount > 0 && (
+                                  <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                    <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M20.1765 12.5113C19.8261 9.50898 19.3142 7.25784 18.8394 5.65851C18.4501 4.34711 18.2554 3.69141 17.4572 3.0957C16.659 2.5 15.8431 2.5 14.2113 2.5H8.78876C7.15697 2.5 6.34107 2.5 5.54283 3.0957C4.74459 3.69141 4.54994 4.34711 4.16063 5.65851C3.68586 7.25784 3.1739 9.50898 2.82352 12.5113C2.41058 16.0497 2.20411 17.8189 3.39731 19.1594C4.59052 20.5 6.52422 20.5 10.3916 20.5H12.6084" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.5 6.5C8.5 8.15685 9.84315 9.5 11.5 9.5C13.1569 9.5 14.5 8.15685 14.5 6.5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M15.5 18.5H21.5M18.5 21.5V15.5" stroke="#0b5ed7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#0b5ed7]">{additionalCount} com adicionais</span>
+                                  </div>
+                                )}
+                                {specialNeedsCount > 0 && (
+                                  <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                    <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke="#dc6803" strokeWidth="1.5"/><path d="M19 8.5C17.227 7.462 15.06 7 12 7C8.94 7 6.773 7.462 5 8.5" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 7V12M12 12L9.5 17.5M12 12L14.5 17.5" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 22C8 19.239 9.791 17 12 17C14.209 17 16 19.239 16 22" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#dc6803]">{specialNeedsCount} com acessibilidade</span>
+                                  </div>
+                                )}
+                                {dietaryCount > 0 && (
+                                  <div className="flex items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap bg-white">
+                                    <svg className="size-[14px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M4 12C4 7.582 7.582 4 12 4C16.418 4 20 7.582 20 12C20 16.418 16.418 20 12 20C7.582 20 4 16.418 4 12Z" stroke="#dc6803" strokeWidth="1.5"/><path d="M15 9L9 15M15 15L9 9" stroke="#dc6803" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#dc6803]">{dietaryCount} com restrição alimentar</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* ── Section 3: Itens opcionais ── */}
+                        <div className="flex flex-col mb-[-14px]">
+                          <div className="flex items-center gap-[8px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px] shrink-0">Itens opcionais</p>
+                            <span className="inline-flex items-center gap-[3px] bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] py-[3px] whitespace-nowrap shrink-0">
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#252b37]">5</span>
+                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none text-[#717680]">itens</span>
+                            </span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#252b37]">{occupiedPct}% ocupado</span>
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680]">{vacantPct}% vago</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col items-center"><span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{criancas}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Crianças</span></div>
-                            <div className="flex flex-col items-center"><span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{adultos}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Adultos</span></div>
-                            <div className="flex flex-col items-center"><span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#252b37]">{cortesias}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862]">Cortesias</span></div>
+                          <div className="flex flex-col">
+                            {[
+                              { name: "Camiseta personalizada da atividade", qty: 12, price: 45 },
+                              { name: "Transporte ida e volta", qty: 18, price: 30 },
+                              { name: "Lanche trail mix", qty: 15, price: 25 },
+                              { name: "Foto profissional", qty: 8, price: 40 },
+                              { name: "Seguro aventura", qty: 22, price: 35 },
+                            ].map((item, idx) => (
+                              <div key={item.name} className={`flex items-center justify-between pb-[10px] ${idx === 0 ? "pt-[12px]" : "pt-[10px] border-t border-[#f5f5f5]"}`}>
+                                <div className="flex-1 min-w-0 mr-[12px]">
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{item.name}</p>
+                                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#717680]">R$ {item.price},00/un</p>
+                                </div>
+                                <div className="flex items-center gap-[8px] shrink-0">
+                                  <span className="inline-flex items-center justify-center bg-[#f5f5f5] border border-[#e9eaeb] rounded-[5px] px-[6px] h-[22px] font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#252b37]">{item.qty}x</span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                        <div className="flex flex-col gap-[12px]">
-                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#61738d] uppercase tracking-[0.5px]">Data e hora</p>
-                          <div className="flex items-center gap-[8px]">
-                            <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><path d="M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/></svg>
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{dateS}, {f12(activity.startTime)} <span className="text-[#717680]">({activity.timezone})</span></span>
+
+                        {/* ── Section 4: Previsão Climática ── */}
+                        <div className="flex flex-col gap-[16px]">
+                          <div className="flex items-center gap-[6px] bg-[#f9fafb] border-t border-b border-[#f0f1f3] px-[16px] h-[32px] -mx-[16px]" style={{ width: "calc(100% + 32px)" }}>
+                            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#a4a7ae] uppercase tracking-[0.8px]">Previsão climática</p>
                           </div>
-                          <div className="flex items-center gap-[8px]">
-                            <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/><path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{f12(activity.startTime)} - {f12(activity.endTime)} ({durLabel})</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-[12px]">
-                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[12px] text-[#61738d] uppercase tracking-[0.5px]">Previsão climática</p>
-                          <div className="flex items-center gap-[12px]">
-                            <div className="flex items-start"><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[36px] leading-none text-[#252b37]">{mockWeather.current.tempC}</span><span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680] mt-[2px] ml-[2px]">°C</span></div>
-                            <div className="flex flex-col gap-[4px] ml-auto">
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">💧 {mockWeather.current.humidityPct}%</span>
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">💨 {mockWeather.current.windKmh} km/h</span>
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">🌧️ {mockWeather.current.rainChancePct}%</span>
+                          <div className="flex flex-col gap-[8px]">
+                            <div className="flex items-center gap-[16px]">
+                              <div className="flex items-center gap-[12px] flex-1">
+                                <div className="flex items-center justify-center size-[48px] rounded-[12px] shrink-0" style={{ backgroundColor: "#fff7ed", border: "1px solid #fed7aa" }}>
+                                  <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none"><path d="M17.4776 12.0001C17.485 12 17.4925 12 17.5 12C19.9853 12 22 14.0147 22 16.5C22 18.9853 19.9853 21 17.5 21H7C4.23858 21 2 18.7614 2 16C2 13.4003 3.98398 11.2641 6.52042 11.0227M17.4776 12.0001C17.4924 11.8354 17.5 11.6686 17.5 11.5C17.5 8.46243 15.0376 6 12 6C9.12324 6 6.76233 8.20862 6.52042 11.0227M17.4776 12.0001C17.3753 13.1345 16.9286 14.1696 16.2428 15M6.52042 11.0227C6.67826 11.0077 6.83823 11 7 11C8.12582 11 9.16474 11.3721 10.0005 12" stroke="#F8A12E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M2.95939 10.1937C2.21865 7.47179 3.85922 4.67397 6.6237 3.94463M2.95939 10.1937L2 10.4468M2.95939 10.1937C3.14359 10.8706 3.4577 11.479 3.86823 12M6.6237 3.94463L6.36663 3M6.6237 3.94463C8.66673 3.40563 10.7518 4.14719 12 5.66961M3.4765 6.32297L2.4644 5.74628M11.1407 3.45725L10.557 4.45494" stroke="#F8A12E" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                                </div>
+                                <div className="flex flex-col">
+                                  <div className="flex items-start">
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[36px] leading-none text-[#252b37]">{mockWeather.current.tempC}</span>
+                                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680] mt-[2px] ml-[2px]">°C</span>
+                                  </div>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Sensação térmica: {mockWeather.current.feelsLikeC}°C</span>
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-[4px] shrink-0">
+                                <div className="flex items-center gap-[4px]">
+                                  <span className="text-[14px] leading-none">💧</span>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">Umidade: {mockWeather.current.humidityPct}%</span>
+                                </div>
+                                <div className="flex items-center gap-[4px]">
+                                  <span className="text-[14px] leading-none">💨</span>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">Vento: {mockWeather.current.windKmh} km/h</span>
+                                </div>
+                                <div className="flex items-center gap-[4px]">
+                                  <span className="text-[14px] leading-none">🌧️</span>
+                                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#252b37]">Chuva: {mockWeather.current.rainChancePct}%</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -8481,27 +8611,122 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
               )}
               {mobileSheet === "equipe" && (
                 <div className="flex flex-col flex-1 min-h-0">
-                  {/* Search input */}
-                  <div className="px-[16px] pt-[8px] pb-[12px] shrink-0">
-                    <div className="flex items-center gap-[8px] w-full h-[40px] rounded-[8px] px-[12px] border border-[#e9eaeb]">
-                      <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                      <input type="text" placeholder="Buscar ou adicionar membro..." className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae]" readOnly />
-                      <svg className="size-[14px] text-[#a4a7ae]" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </div>
+                  {/* Search input with dropdown */}
+                  <div className="px-[16px] pt-[8px] pb-[12px] shrink-0 relative z-20">
+                    {(() => {
+                      const allGuides = TEAM_GUIDE_OPTIONS;
+                      const available = allGuides.filter((g) => !localGuides.includes(g));
+                      const filtered = available.filter((g) => !mobileTeamSearch.trim() || g.toLowerCase().includes(mobileTeamSearch.toLowerCase()));
+                      return (
+                        <div className="relative">
+                          <div className={`flex items-center gap-[8px] w-full h-[40px] rounded-[8px] px-[12px] transition-colors border ${mobileTeamDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb]"}`}>
+                            <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                            <input
+                              type="text"
+                              value={mobileTeamSearch}
+                              onChange={(e) => { setMobileTeamSearch(e.target.value); if (!mobileTeamDropdownOpen) setMobileTeamDropdownOpen(true); }}
+                              onFocus={() => setMobileTeamDropdownOpen(true)}
+                              placeholder="Buscar ou adicionar membro..."
+                              className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] bg-transparent outline-none placeholder:text-[#a4a7ae] min-w-0"
+                            />
+                            <button onClick={() => setMobileTeamDropdownOpen(!mobileTeamDropdownOpen)} className="cursor-pointer shrink-0">
+                              <svg className={`size-[14px] text-[#a4a7ae] transition-transform ${mobileTeamDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                            </button>
+                          </div>
+                          {mobileTeamDropdownOpen && (
+                            <>
+                              <div className="fixed inset-0 z-[59]" onClick={() => setMobileTeamDropdownOpen(false)} />
+                              <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-[60] overflow-hidden">
+                                <div className="max-h-[200px] overflow-y-auto py-[4px]">
+                                  {filtered.length > 0 ? filtered.map((g) => {
+                                    const gi = g.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                                    const hasTimeConflict = TEAM_GUIDE_TIME_CONFLICTS.has(g);
+                                    return (
+                                      <button
+                                        key={g}
+                                        onClick={() => {
+                                          if (hasTimeConflict) { setTeamConflictConfirm(g); setMobileTeamDropdownOpen(false); return; }
+                                          setLocalGuides((prev) => [...prev, g]);
+                                          setGuideInsurance((prev) => ({ ...prev, [g]: false }));
+                                          setMobileTeamDropdownOpen(false);
+                                          setMobileTeamSearch("");
+                                        }}
+                                        className="flex items-center gap-[10px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors cursor-pointer"
+                                      >
+                                        <div className="flex items-center justify-center rounded-full size-[32px] shrink-0 border border-[#bfdbfe] bg-[#eff6ff]">
+                                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{gi}</p>
+                                        </div>
+                                        <div className="flex-1 min-w-0 text-left">
+                                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{g}</p>
+                                          <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] truncate ${hasTimeConflict ? "text-[#e17c00]" : "text-[#079455]"}`}>{hasTimeConflict ? "Conflito de horário" : "Disponível"}</p>
+                                        </div>
+                                        <svg className="size-[14px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                                      </button>
+                                    );
+                                  }) : (
+                                    <div className="px-[12px] py-[12px]">
+                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#a4a7ae] text-center">Nenhum membro encontrado</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                   {/* Members list — scrollable */}
                   <div className="flex-1 overflow-y-auto px-[16px] pb-[16px]">
                     {localGuides.length > 0 ? (
                       <div className="flex flex-col gap-[12px]">
-                        {localGuides.map((guide) => {
+                        {localGuides.map((guide, i) => {
                           const ini = guide.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
                           const ins = guideInsurance[guide] ?? false;
+                          const hasTimeConflict = TEAM_GUIDE_TIME_CONFLICTS.has(guide);
                           return (
                             <div key={guide} className="flex items-center gap-[12px] px-[12px] py-[10px] rounded-[10px] border border-[#f5f5f5] bg-[#fafafa]">
                               <div className="flex items-center justify-center rounded-full size-[32px] shrink-0 border border-[#bfdbfe] bg-[#eff6ff]"><p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] text-[#0b5ed7]">{ini}</p></div>
                               <div className="flex-1 min-w-0">
                                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#252b37] truncate">{guide}</p>
-                                <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] ${ins ? "text-[#0b5ed7]" : "text-[#dc6803]"}`}>{ins ? "Seguro contratado" : "Sem seguro"}</p>
+                                <div className="flex items-center gap-[6px] min-w-0">
+                                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] text-[11px] shrink-0 ${ins ? "text-[#0b5ed7]" : "text-[#dc6803]"}`}>{ins ? "Seguro contratado" : "Sem seguro"}</p>
+                                  {hasTimeConflict && (
+                                    <>
+                                      <div className="h-[10px] w-px bg-[#d5d7da] shrink-0" />
+                                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#dc6803] truncate">Conflito</p>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="relative shrink-0">
+                                <button onClick={(e) => { e.stopPropagation(); setMobileTeamMemberMenu(mobileTeamMemberMenu === i ? null : i); }} className="cursor-pointer flex items-center justify-center size-[28px] rounded-[6px] border border-[#e9eaeb] bg-white hover:bg-[#f8fafc] transition-colors">
+                                  <svg className="size-[12px]" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="3.5" r="1.2" fill="#717680"/><circle cx="8" cy="8" r="1.2" fill="#717680"/><circle cx="8" cy="12.5" r="1.2" fill="#717680"/></svg>
+                                </button>
+                                {mobileTeamMemberMenu === i && (
+                                  <>
+                                    <div className="fixed inset-0 z-[59]" onClick={() => setMobileTeamMemberMenu(null)} />
+                                    <div className="absolute right-0 top-full mt-[4px] bg-white border border-[#f5f5f5] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[200px] z-[60] py-[4px]">
+                                      <button onClick={() => { setGuideInsurance((prev) => ({ ...prev, [guide]: !prev[guide] })); setMobileTeamMemberMenu(null); }} className="cursor-pointer flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors">
+                                        {ins ? (
+                                          <svg className="shrink-0 size-[16px] text-[#414651]" fill="none" viewBox="0 0 20 20"><path d="M16.54 10.4165C16.54 10.4165 16.6668 7.86136 16.54 7.55495C16.4131 7.24853 16.1722 7.00756 15.6905 6.52564L11.7434 2.5768C11.3277 2.16088 11.1198 1.95292 10.8623 1.8297C10.8087 1.80407 10.7538 1.78132 10.6978 1.76155C10.4286 1.6665 10.1346 1.6665 9.5467 1.6665C6.84251 1.6665 5.49042 1.6665 4.5746 2.40522C4.38959 2.55446 4.22106 2.72306 4.07189 2.90815C3.3335 3.82436 3.3335 5.17705 3.3335 7.88241V11.6709C3.3335 14.8149 3.3335 16.3869 4.30981 17.3637C5.09571 18.1499 7.48039 17.8866 9.5467 17.9165M10.8335 2.08335V2.5002C10.8335 4.85825 10.8335 6.03727 11.5657 6.76982C12.298 7.50237 13.4765 7.50237 15.8335 7.50237H16.2502" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M17.5 18.3335L12.5 13.3335M17.5 13.3335L12.5 18.3335" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                        ) : (
+                                          <svg className="shrink-0 size-[16px] text-[#414651]" fill="none" viewBox="0 0 20 20"><path d="M16.6668 9.99984V8.88055C16.6668 8.1993 16.6668 7.85867 16.54 7.55239C16.4131 7.2461 16.1722 7.00524 15.6905 6.52353L11.7434 2.57641C11.3277 2.16067 11.1198 1.9528 10.8623 1.82962C10.8087 1.80401 10.7538 1.78127 10.6978 1.76151C10.4286 1.6665 10.1346 1.6665 9.5467 1.6665C6.84251 1.6665 5.49042 1.6665 4.5746 2.4049C4.38959 2.55407 4.22106 2.7226 4.07189 2.90761C3.3335 3.82343 3.3335 5.17552 3.3335 7.87971V11.6665C3.3335 14.8092 3.3335 16.3805 4.30981 17.3569C5.28612 18.3332 6.85747 18.3332 10.0002 18.3332M10.8335 2.08317V2.49984C10.8335 4.85686 10.8335 6.03537 11.5657 6.7676C12.298 7.49984 13.4765 7.49984 15.8335 7.49984H16.2502" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M16.6668 14.6855V13.0429C16.6668 12.7845 16.4771 12.5701 16.231 12.5261C15.2393 12.3488 14.416 11.9544 14.0144 11.7356C13.8499 11.6461 13.6505 11.6461 13.486 11.7356C13.0843 11.9544 12.2611 12.3488 11.2693 12.5261C11.0232 12.5701 10.8335 12.7845 10.8335 13.0429V14.6855C10.8335 16.8283 12.9522 17.9971 13.5781 18.2956C13.6885 18.3483 13.8118 18.3483 13.9223 18.2956C14.5482 17.9971 16.6668 16.8283 16.6668 14.6855Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                                        )}
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">{ins ? "Desfazer seguro" : "Contratar seguro"}</p>
+                                      </button>
+                                      <button onClick={() => setMobileTeamMemberMenu(null)} className="cursor-pointer flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors">
+                                        <svg className="shrink-0 size-[16px] text-[#075e54]" fill="none" viewBox="0 0 24 24"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.3789 2.27907 14.6926 2.78382 15.8877C3.06278 16.5481 3.20226 16.8784 3.21953 17.128C3.2368 17.3776 3.16334 17.6521 3.01642 18.2012L2 22L5.79877 20.9836C6.34788 20.8367 6.62244 20.7632 6.87202 20.7805C7.12161 20.7977 7.45185 20.9372 8.11235 21.2162C9.30745 21.7209 10.6211 22 12 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M8.58815 12.3773L9.45909 11.2956C9.82616 10.8397 10.2799 10.4153 10.3155 9.80826C10.3244 9.65494 10.2166 8.96657 10.0008 7.58986C9.91601 7.04881 9.41086 7 8.97332 7C8.40314 7 8.11805 7 7.83495 7.12931C7.47714 7.29275 7.10979 7.75231 7.02917 8.13733C6.96539 8.44196 7.01279 8.65187 7.10759 9.07169C7.51023 10.8548 8.45481 12.6158 9.91948 14.0805C11.3842 15.5452 13.1452 16.4898 14.9283 16.8924C15.3481 16.9872 15.558 17.0346 15.8627 16.9708C16.2477 16.8902 16.7072 16.5229 16.8707 16.165C17 15.8819 17 15.5969 17 15.0267C17 14.5891 16.9512 14.084 16.4101 13.9992C15.0334 13.7834 14.3451 13.6756 14.1917 13.6845C13.5847 13.7201 13.1603 14.1738 12.7044 14.5409L11.6227 15.4118" stroke="currentColor" strokeWidth="1.5" /></svg>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#075e54]">Ligar via WhatsApp</p>
+                                      </button>
+                                      <div className="bg-[#f5f5f5] h-px mx-[8px] my-[4px]" />
+                                      <button onClick={() => { setRemoveGuideConfirm(guide); setMobileTeamMemberMenu(null); }} className="cursor-pointer flex items-center gap-[8px] w-full px-[12px] py-[8px] hover:bg-[#fef3f2] transition-colors">
+                                        <svg className="shrink-0 size-[16px] text-[#d92d20]" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#d92d20]">Remover da atividade</p>
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             </div>
                           );
@@ -8526,37 +8751,38 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                 </div>
               )}
               {mobileSheet === "atualizacoes" && (
-                <div className="px-[16px] py-[16px]">
-                  <div className="flex flex-col gap-[16px]">
-                    {[
-                      { action: "Check-in realizado para Fernanda Alves", time: "Há 5 min", actor: "Sistema" },
-                      { action: "Equipe atualizada — João Silva adicionado", time: "Há 15 min", actor: "Pedro Lima" },
-                      { action: "Reserva #RE-0005 confirmada", time: "Há 30 min", actor: "Sistema" },
-                      { action: "Seguro contratado para participante", time: "Há 1h", actor: "Sistema" },
-                      { action: "Atividade criada", time: "Há 2 dias", actor: "Admin" },
-                    ].map((event, idx, arr) => (
-                      <div key={idx} className="flex gap-[10px] relative">
-                        {idx < arr.length - 1 && <div className="absolute left-[4px] top-[16px] bottom-[-12px] w-px bg-[#e9eaeb]" />}
-                        <div className="size-[9px] rounded-full bg-[#3b82f6] shrink-0 mt-[5px] z-10" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">{event.action}</p>
-                          <p className="font-['Helvetica_Neue:Light',sans-serif] text-[11px] text-[#9ca3af] mt-[2px]">{event.actor} · {event.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <ActivityPanel onClose={() => setMobileSheet(null)} />
               )}
             </div>
+            {/* Sticky QR check-in footer */}
+            {mobileSheet === "resumo-atividade" && (
+              <div className="shrink-0 px-[16px] py-[12px] bg-white" style={{ boxShadow: mobileSheetAtBottom ? "none" : "0 -1px 0 0 #e9eaeb", transition: "box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1)" }}>
+                <button
+                  type="button"
+                  onClick={() => { setMobileSheet(null); setShowQrScanner(true); }}
+                  className="flex w-full items-center justify-center gap-[8px] h-[44px] rounded-[10px] border border-[#bfdbfe] bg-white cursor-pointer transition-colors hover:bg-[#eff6ff]"
+                >
+                  <svg className="size-[20px] text-[#0b5ed7]" fill="none" viewBox="0 0 48 48" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round">
+                    <path d="M6 12C6 9.17157 6 7.75736 6.87868 6.87868C7.75736 6 9.17157 6 12 6C14.8284 6 16.2426 6 17.1213 6.87868C18 7.75736 18 9.17157 18 12C18 14.8284 18 16.2426 17.1213 17.1213C16.2426 18 14.8284 18 12 18C9.17157 18 7.75736 18 6.87868 17.1213C6 16.2426 6 14.8284 6 12Z" />
+                    <path d="M6 36C6 33.1716 6 31.7574 6.87868 30.8787C7.75736 30 9.17157 30 12 30C14.8284 30 16.2426 30 17.1213 30.8787C18 31.7574 18 33.1716 18 36C18 38.8284 18 40.2426 17.1213 41.1213C16.2426 42 14.8284 42 12 42C9.17157 42 7.75736 42 6.87868 41.1213C6 40.2426 6 38.8284 6 36Z" />
+                    <path d="M6 24L18 24" strokeLinejoin="round" />
+                    <path d="M24 6V16" strokeLinejoin="round" />
+                    <path d="M30 12C30 9.17157 30 7.75736 30.8787 6.87868C31.7574 6 33.1716 6 36 6C38.8284 6 40.2426 6 41.1213 6.87868C42 7.75736 42 9.17157 42 12C42 14.8284 42 16.2426 41.1213 17.1213C40.2426 18 38.8284 18 36 18C33.1716 18 31.7574 18 30.8787 17.1213C30 16.2426 30 14.8284 30 12Z" />
+                    <path d="M42 24H30C27.1716 24 25.7574 24 24.8787 24.8787C24 25.7574 24 27.1716 24 30M24 35.5385V41.0769M30 30V33C30 35.8927 31.5673 36 34 36C35.1046 36 36 36.8954 36 38M32 42H30M36 30C38.8284 30 40.2426 30 41.1213 30.88C42 31.7599 42 33.1762 42 36.0087C42 38.8412 42 40.2575 41.1213 41.1374C40.48 41.7796 39.5534 41.9531 38 42" />
+                  </svg>
+                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#0b5ed7]">Check-in via QR Code</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>,
         document.body,
       )}
       {/* Team time conflict confirmation modal */}
       {teamConflictConfirm && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setTeamConflictConfirm(null)} />
-          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+          <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
             <div className="shrink-0">
               <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
                 <div className="flex flex-col gap-[4px]">
@@ -8586,7 +8812,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
                 <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Caso prossiga, a notificação chegará para esse membro como convite. Ele poderá aceitar ou recusar a atribuição dessa atividade.</p>
               </div>
             </div>
-            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+            <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
                   <button onClick={() => setTeamConflictConfirm(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar</button>
               <button
                 onClick={() => {
@@ -8605,9 +8831,9 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
       )}
       {/* Remove team member confirmation modal */}
       {removeGuideConfirm && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setRemoveGuideConfirm(null)} />
-          <div className="bg-white max-w-[520px] relative rounded-[16px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] w-full z-10">
+          <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
             {/* Header */}
             <div className="shrink-0">
               <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
@@ -8638,7 +8864,7 @@ export default function AgendaAtualizacoes({ initialTab = "participantes", onBac
               </div>
             </div>
             {/* Footer */}
-            <div className="flex gap-[12px] px-[24px] pb-[24px] pt-[4px]">
+            <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
               <button onClick={() => setRemoveGuideConfirm(null)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Cancelar</button>
               <button onClick={() => { const g = removeGuideConfirm; setLocalGuides((prev) => prev.filter((x) => x !== g)); setGuideInsurance((prev) => { const next = { ...prev }; delete next[g]; return next; }); setRemoveGuideConfirm(null); }} className="flex-1 h-[40px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors">Remover membro</button>
             </div>

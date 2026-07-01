@@ -801,24 +801,26 @@ export function AgendaNovaAtividade({ onBack }: AgendaNovaAtividadeProps) {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-medium">Essa atividade se repete?</span>
-                    <span className="text-muted-foreground text-xs">
-                      Configure uma programação recorrente para não precisar recriar a atividade
-                      toda vez.
-                    </span>
+                <div className="space-y-[16px]">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-medium">Essa atividade se repete?</span>
+                      <span className="text-muted-foreground text-xs">
+                        Configure uma programação recorrente para não precisar recriar a atividade
+                        toda vez.
+                      </span>
+                    </div>
+                    <Switch
+                      checked={form.atividadeRepete}
+                      onCheckedChange={(v) => update("atividadeRepete", v)}
+                    />
                   </div>
-                  <Switch
-                    checked={form.atividadeRepete}
-                    onCheckedChange={(v) => update("atividadeRepete", v)}
-                  />
-                </div>
 
-                {/* Recorrência */}
-                {form.atividadeRepete && (
-                  <RecurrencePanel form={form} update={update} />
-                )}
+                  {/* Recorrência */}
+                  {form.atividadeRepete && (
+                    <RecurrencePanel form={form} update={update} />
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

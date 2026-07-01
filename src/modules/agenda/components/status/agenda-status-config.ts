@@ -30,6 +30,7 @@ const reservationStatusMap: Record<ReservationStatus, IndicatorConfig> = {
   CheckedIn: { label: "Check-in realizado", tone: "success" },
   Performed: { label: "Atividade realizada", tone: "neutral" },
   Cancelled: { label: "Cancelada", tone: "neutral" },
+  Expired: { label: "Expirada", tone: "neutral" },
 };
 
 function getPaymentStatusIndicator(status: PaymentStatus): IndicatorConfig {

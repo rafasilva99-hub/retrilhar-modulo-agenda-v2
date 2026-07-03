@@ -256,14 +256,6 @@ function buildProdutoFromForm(form: ProdutoFormState, current?: Produto): Produt
   };
 }
 
-function FieldLabel({ children }: { children: string }) {
-  return (
-    <label className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">
-      {children}
-    </label>
-  );
-}
-
 export function ProdutosPage() {
   const [produtos, setProdutos] = useState<Produto[]>(mockProdutos);
   const [search, setSearch] = useState("");
@@ -294,6 +286,7 @@ export function ProdutosPage() {
   const [diaPersonalizadoDias, setDiaPersonalizadoDias] = useState<boolean[]>([false, false, false, false, false, false, false]);
   const [possuiEntrada, setPossuiEntrada] = useState(false);
   const [entradaTipo, setEntradaTipo] = useState<"porcentagem" | "valor_fixo">("porcentagem");
+  const [permitirOverbooking, setPermitirOverbooking] = useState(false);
   const [entradaValor, setEntradaValor] = useState("");
   const [entradaDataLimite, setEntradaDataLimite] = useState("");
   const [tarifas, setTarifas] = useState<{ label: string; preco: string; idadeIni: string; idadeFim: string; minQty: string; maxQty: string }[]>([
@@ -302,8 +295,8 @@ export function ProdutosPage() {
   const [lotes, setLotes] = useState<{ label: string; de: string; ate: string; preco: string }[]>([
     { label: "", de: "", ate: "", preco: "" },
   ]);
-  const [nivelEstoque, setNivelEstoque] = useState<"produto" | "horario" | "evento" | "tarifario" | "item">("produto");
-  const [qtdVagas, setQtdVagas] = useState("");
+  const [niveisEstoque, setNiveisEstoque] = useState<Set<string>>(new Set(["produto"]));
+  const [estoqueQtd, setEstoqueQtd] = useState<Record<string, string>>({ produto: "40", horario: "20", evento: "0", tarifario: "0", item: "0" });
   const [diasSemana, setDiasSemana] = useState<boolean[]>([false, false, false, false, false, false, false]);
   const [opcionais, setOpcionais] = useState<{ nome: string; preco: string }[]>([]);
   const [textoCurto, setTextoCurto] = useState("");
@@ -313,6 +306,7 @@ export function ProdutosPage() {
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [linkMapa, setLinkMapa] = useState("");
   const [locaisAtivos, setLocaisAtivos] = useState<Set<string>>(new Set(["Loja online"]));
+  const [locaisDropdownOpen, setLocaisDropdownOpen] = useState(false);
   const [duracaoValor, setDuracaoValor] = useState("");
   const [duracaoUnidade, setDuracaoUnidade] = useState("horas");
   const [antecedenciaVenda, setAntecedenciaVenda] = useState("");
@@ -373,8 +367,8 @@ export function ProdutosPage() {
     setActiveSection("info-basicas");
     setTipoCobranca("fixo");
     setTarifas([{ label: "", preco: "", idadeIni: "", idadeFim: "", minQty: "", maxQty: "" }]);
-    setNivelEstoque("produto");
-    setQtdVagas("");
+    setNiveisEstoque(new Set(["produto"]));
+    setEstoqueQtd({ produto: "", horario: "", evento: "", tarifario: "", item: "" });
     setRecorrenciaAtiva(true);
     setRecorrenciaTipo("diario");
     setRecorrenciaIntervalo("1");
@@ -468,29 +462,47 @@ export function ProdutosPage() {
   };
 
   /* ── Tipo configuration ── */
+  const tipoLabels: Record<string, string> = {
+    "Atividade": "Atividade",
+    "Treinamento / aulas": "Treinamento / aulas",
+    "Excursao de 1 dia": "Excursão de 1 dia",
+    "Excursao": "Excursão",
+    "Tour privado": "Tour privado",
+    "Evento": "Evento",
+    "Ingresso": "Ingresso",
+    "Transporte": "Transporte",
+    "Meio de hospedagem": "Meio de hospedagem",
+    "Mercadorias": "Mercadorias",
+    "Aluguel": "Aluguel",
+    "Comida e Bebida": "Comida e Bebida",
+    "Assinatura": "Assinatura",
+    "Cartao presente": "Cartão presente",
+    "Produto personalizado": "Produto personalizado",
+  };
+
   const tipoDescriptions: Record<string, string> = {
-    "Atividade": "Experiencias com horario, data e vagas",
-    "Treinamento / aulas": "Cursos, workshops e capacitacoes",
+    "Atividade": "Experiências com horário, data e vagas",
+    "Treinamento / aulas": "Cursos, workshops e capacitações",
     "Excursao de 1 dia": "Passeios de ida e volta no mesmo dia",
     "Excursao": "Viagens com pernoite e roteiro completo",
-    "Tour privado": "Experiencias exclusivas sob demanda",
+    "Tour privado": "Experiências exclusivas sob demanda",
     "Evento": "Encontros, festivais e acontecimentos",
-    "Ingresso": "Acesso avulso a atracoes e espacos",
-    "Transporte": "Deslocamento terrestre, aereo ou aquatico",
-    "Meio de hospedagem": "Hoteis, pousadas, campings e chalés",
-    "Mercadorias": "Produtos fisicos para venda direta",
+    "Ingresso": "Acesso avulso a atrações e espaços",
+    "Transporte": "Deslocamento terrestre, aéreo ou aquático",
+    "Meio de hospedagem": "Hotéis, pousadas, campings e chalés",
+    "Mercadorias": "Produtos físicos para venda direta",
     "Aluguel": "Equipamentos e itens por tempo determinado",
-    "Comida e Bebida": "Refeicoes, lanches e bebidas avulsas",
+    "Comida e Bebida": "Refeições, lanches e bebidas avulsas",
     "Assinatura": "Planos recorrentes e mensalidades",
-    "Cartao presente": "Creditos e vouchers para presente",
-    "Produto personalizado": "Tipo livre com todas as secoes disponiveis",
+    "Cartao presente": "Créditos e vouchers para presente",
+    "Produto personalizado": "Tipo livre com todas as seções disponíveis",
   };
 
   const tipoGroups: { title: string; tipos: string[] }[] = [
-    { title: "Experiencias com tempo/vaga", tipos: ["Atividade", "Treinamento / aulas", "Excursao de 1 dia", "Excursao", "Tour privado", "Evento"] },
+    { title: "Experiências com tempo/vaga", tipos: ["Atividade", "Treinamento / aulas", "Excursao de 1 dia", "Excursao", "Tour privado", "Evento"] },
     { title: "Acesso e transporte", tipos: ["Ingresso", "Transporte"] },
     { title: "Hospedagem", tipos: ["Meio de hospedagem"] },
-    { title: "Produtos e recorrencia", tipos: ["Mercadorias", "Aluguel", "Comida e Bebida", "Assinatura", "Cartao presente"] },
+    { title: "Produtos e recorrência", tipos: ["Mercadorias", "Aluguel", "Comida e Bebida", "Assinatura", "Cartao presente"] },
     { title: "Livre", tipos: ["Produto personalizado"] },
   ];
 
@@ -666,7 +678,7 @@ export function ProdutosPage() {
                       onClick={() => setTipoDropdownOpen(!tipoDropdownOpen)}
                       className={`${fieldClass} flex cursor-pointer items-center justify-between text-left`}
                     >
-                      <span className={form.tipo ? "text-[#252b37]" : "text-[#a4a7ae]"}>{form.tipo || "Selecione..."}</span>
+                      <span className={form.tipo ? "text-[#252b37]" : "text-[#a4a7ae]"}>{form.tipo ? (tipoLabels[form.tipo] ?? form.tipo) : "Selecione..."}</span>
                       <svg className={`size-[14px] text-[#717680] transition-transform ${tipoDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
                         <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
@@ -688,7 +700,7 @@ export function ProdutosPage() {
                                   onClick={() => { updateForm("tipo", tipo); setTipoDropdownOpen(false); }}
                                   className={`flex w-full cursor-pointer flex-col px-[12px] py-[10px] text-left transition-colors ${form.tipo === tipo ? "bg-[#eff6ff]" : "hover:bg-[#f8fafc]"}`}
                                 >
-                                  <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${form.tipo === tipo ? "text-[#0b5ed7]" : "text-[#252b37]"}`}>{tipo}</span>
+                                  <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] ${form.tipo === tipo ? "text-[#0b5ed7]" : "text-[#252b37]"}`}>{tipoLabels[tipo] ?? tipo}</span>
                                   <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#a4a7ae]">{tipoDescriptions[tipo] ?? ""}</span>
                                 </button>
                               ))}
@@ -782,22 +794,51 @@ export function ProdutosPage() {
                 </div>
 
                 {/* Exibição e destaque card */}
-                <div className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm px-4 pt-4 pb-4">
+                <div className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm px-4 pt-4 pb-4 overflow-visible">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#181d27] mb-[10px]">Exibição</p>
                   <div className="flex flex-col gap-[12px]">
-                    <div className="flex flex-col gap-[6px]">
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Locais onde o produto aparece</p>
-                      <div className="flex flex-col gap-[6px]">
-                        {["Loja online", "Marketplace", "Balcão"].map((local) => {
-                          const isActive = locaisAtivos.has(local);
-                          return (
-                            <button key={local} type="button" onClick={() => setLocaisAtivos((prev) => { const next = new Set(prev); if (next.has(local)) next.delete(local); else next.add(local); return next; })} className={`w-full cursor-pointer rounded-[8px] border px-[12px] py-[8px] text-left font-['Helvetica_Neue:Regular',sans-serif] text-[13px] transition-all ${isActive ? "border-[#0b5ed7] bg-[#eff6ff] text-[#0b5ed7]" : "border-[#e9eaeb] bg-white text-[#414651] hover:bg-[#f8fafc]"}`}>
-                              {local}
-                            </button>
-                          );
-                        })}
+                    {/* Locais dropdown */}
+                    <div className="relative">
+                      <div className={`flex items-center gap-[8px] w-full h-[40px] rounded-[8px] px-[12px] transition-colors border ${locaisDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"} bg-white`}>
+                        <svg className="size-[16px] text-[#a4a7ae] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" /><path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                        <span className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#a4a7ae] cursor-pointer" onClick={() => setLocaisDropdownOpen(!locaisDropdownOpen)}>
+                          {locaisAtivos.size > 0 ? `${locaisAtivos.size} canal(is) selecionado(s)` : "Selecione um ou mais canais"}
+                        </span>
+                        <button type="button" onClick={() => setLocaisDropdownOpen(!locaisDropdownOpen)} className="cursor-pointer shrink-0">
+                          <svg className={`size-[14px] text-[#a4a7ae] transition-transform ${locaisDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </button>
                       </div>
+                      {locaisDropdownOpen && (
+                        <>
+                          <div className="fixed inset-0 z-[5]" onClick={() => setLocaisDropdownOpen(false)} />
+                          <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-50 py-[4px]">
+                            {["Loja online", "Marketplace", "Balcão", "App mobile", "WhatsApp"].map((local) => {
+                              const isSelected = locaisAtivos.has(local);
+                              return (
+                                <button key={local} type="button" onClick={() => setLocaisAtivos((prev) => { const next = new Set(prev); if (next.has(local)) next.delete(local); else next.add(local); return next; })} className={`flex w-full items-center justify-between px-[12px] py-[8px] hover:bg-[#f8fafc] transition-colors cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-left ${isSelected ? "text-[#0b5ed7] bg-[#f0f5ff]" : "text-[#252b37]"}`}>
+                                  <span>{local}</span>
+                                  {isSelected && <svg className="size-[14px] shrink-0" viewBox="0 0 14 14" fill="none"><path d="M3 7l2.5 2.5L11 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </>
+                      )}
                     </div>
+                    {/* Chips */}
+                    {locaisAtivos.size > 0 && (
+                      <div className="flex flex-wrap gap-[6px]">
+                        {Array.from(locaisAtivos).map((local) => (
+                          <span key={local} className="inline-flex items-center gap-[6px] rounded-full border border-[#dbeafe] bg-[#e8f0fe] px-[10px] py-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#0b5ed7]">
+                            {local}
+                            <button type="button" onClick={() => setLocaisAtivos((prev) => { const next = new Set(prev); next.delete(local); return next; })} className="cursor-pointer transition-colors hover:text-[#084fb7]">
+                              <svg className="size-[12px]" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {/* Destaque toggle */}
                     <div className="flex items-center justify-between border-t border-[#f5f5f5] pt-[12px]">
                       <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#535862]">Destacar produto na loja</span>
                       <Switch checked={form.destaque} onCheckedChange={(v) => updateForm("destaque", v)} />
@@ -980,43 +1021,134 @@ export function ProdutosPage() {
           if (!showEstoque) {
             return (
               <div>
-                <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27]">Estoque e vagas</h2>
-                <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680]">Controle a capacidade e disponibilidade do produto.</p>
-                <div className="mt-[16px] rounded-xl border border-[#e9eaeb] bg-white p-[24px] shadow-sm">
+                <div className="rounded-xl border border-[#e9eaeb] bg-white p-[24px] shadow-sm">
                   <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#717680]">Não se aplica para o tipo "{form.tipo}".</p>
                 </div>
               </div>
             );
           }
           return (
-            <div>
-              <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27]">Estoque e vagas</h2>
-              <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680]">Controle a capacidade e disponibilidade do produto.</p>
-              <div className="mt-[16px] rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
-                <div className="flex flex-col gap-[16px] p-[20px]">
-                  <div className="flex flex-col gap-[6px]">
-                    {([
-                      { value: "produto", label: "Por produto", desc: "Uma única quantidade para todo o produto" },
-                      { value: "horario", label: "Por horário", desc: "Vagas controladas por cada horário agendado" },
-                      { value: "evento", label: "Por evento", desc: "Vagas controladas por cada evento criado" },
-                      { value: "tarifario", label: "Por tarifário", desc: "Quantidade controlada por faixa de tarifa" },
-                      { value: "item", label: "Por item", desc: "Controle individual por unidade" },
-                    ] as const).map((opt) => (
-                      <label key={opt.value} className={`flex cursor-pointer items-start gap-[10px] rounded-[8px] border px-[14px] py-[12px] transition-all ${nivelEstoque === opt.value ? "border-[#0b5ed7] bg-[#eff6ff]" : "border-[#e9eaeb] bg-white hover:bg-[#f8fafc]"}`}>
-                        <input type="radio" name="nivelEstoque" checked={nivelEstoque === opt.value} onChange={() => setNivelEstoque(opt.value)} className="mt-[2px] size-[16px] accent-[#0b5ed7]" />
-                        <div>
-                          <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[13px] text-[#252b37]">{opt.label}</p>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">{opt.desc}</p>
-                        </div>
-                      </label>
-                    ))}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
+              {/* Left column */}
+              <div className="flex flex-col gap-6">
+                <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                  <div className="px-4 pt-4 pb-0">
+                    <h2 className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#181d27]">Estoque e vagas</h2>
                   </div>
-                  {nivelEstoque === "produto" && (
-                    <div className="flex flex-col gap-[8px]">
-                      <FieldLabel>Quantidade de vagas</FieldLabel>
-                      <input className={fieldClass} inputMode="numeric" value={qtdVagas || form.capacidade} onChange={(e) => { const v = e.target.value.replace(/\D/g, ""); setQtdVagas(v); updateForm("capacidade", v); }} placeholder="Ex.: 30" />
+                  <div className="flex flex-col gap-4 px-4 pb-4 pt-3">
+                    {/* Onde o estoque é controlado */}
+                    <div className="flex flex-col gap-[6px]">
+                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">Onde o estoque é controlado</p>
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Selecione em quais níveis a quantidade é limitada. Os campos de quantidade abaixo acompanham a seleção.</p>
                     </div>
-                  )}
+                    <div className="flex gap-[4px] bg-white rounded-[8px] border border-[#e9eaeb] p-[4px]">
+                      {([
+                        { value: "produto", label: "No produto" },
+                        { value: "horario", label: "No horário" },
+                        { value: "evento", label: "No evento" },
+                        { value: "tarifario", label: "No tarifário" },
+                        { value: "item", label: "Nos itens" },
+                      ] as const).map((opt) => {
+                        const isActive = niveisEstoque.has(opt.value);
+                        return (
+                          <button key={opt.value} type="button" onClick={() => setNiveisEstoque((prev) => { const next = new Set(prev); if (next.has(opt.value)) next.delete(opt.value); else next.add(opt.value); return next; })} className={`flex-1 rounded-[6px] px-[12px] py-[6px] text-[13px] transition-all cursor-pointer ${isActive ? "font-['Helvetica_Neue:Medium',sans-serif] bg-[#0b5ed7] text-white shadow-sm" : "font-['Helvetica_Neue:Regular',sans-serif] text-[#535862] hover:text-[#252b37] hover:bg-[#f8fafc]"}`}>
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Quantidades */}
+                    {niveisEstoque.size > 0 && (
+                      <div className="flex flex-col gap-[12px] border-t border-[#f0f1f3] pt-[16px]">
+                        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[14px] text-[#181d27]">Quantidades</p>
+                        {niveisEstoque.has("produto") && (
+                          <div className="flex flex-col gap-[6px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Estoque total do produto</p>
+                            <input className={fieldClass} inputMode="numeric" value={estoqueQtd.produto} onChange={(e) => setEstoqueQtd((prev) => ({ ...prev, produto: e.target.value.replace(/\D/g, "") }))} placeholder="0" />
+                          </div>
+                        )}
+                        {niveisEstoque.has("horario") && (
+                          <div className="flex flex-col gap-[6px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Vagas por horário</p>
+                            <input className={fieldClass} inputMode="numeric" value={estoqueQtd.horario} onChange={(e) => setEstoqueQtd((prev) => ({ ...prev, horario: e.target.value.replace(/\D/g, "") }))} placeholder="0" />
+                          </div>
+                        )}
+                        {niveisEstoque.has("evento") && (
+                          <div className="flex flex-col gap-[6px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Vagas por evento</p>
+                            <input className={fieldClass} inputMode="numeric" value={estoqueQtd.evento} onChange={(e) => setEstoqueQtd((prev) => ({ ...prev, evento: e.target.value.replace(/\D/g, "") }))} placeholder="0" />
+                          </div>
+                        )}
+                        {niveisEstoque.has("tarifario") && (
+                          <div className="flex flex-col gap-[6px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Limite por tarifa</p>
+                            <input className={fieldClass} inputMode="numeric" value={estoqueQtd.tarifario} onChange={(e) => setEstoqueQtd((prev) => ({ ...prev, tarifario: e.target.value.replace(/\D/g, "") }))} placeholder="0" />
+                          </div>
+                        )}
+                        {niveisEstoque.has("item") && (
+                          <div className="flex flex-col gap-[6px]">
+                            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Limite por item</p>
+                            <input className={fieldClass} inputMode="numeric" value={estoqueQtd.item} onChange={(e) => setEstoqueQtd((prev) => ({ ...prev, item: e.target.value.replace(/\D/g, "") }))} placeholder="0" />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </section>
+
+                {/* Identificação de estoque */}
+                <section className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                  <div className="px-4 pt-4 pb-0">
+                    <h2 className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#181d27]">Identificação de estoque</h2>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 px-4 pb-4 pt-3">
+                    <div className="flex flex-col gap-[6px]">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">SKU (Unidade de manutenção de estoque)</p>
+                      <input className={fieldClass} placeholder="" />
+                    </div>
+                    <div className="flex flex-col gap-[6px]">
+                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Código de barras (ISBN, UPC, GTIN etc.)</p>
+                      <input className={fieldClass} placeholder="" />
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              {/* Right column */}
+              <div className="flex flex-col gap-[16px]">
+                <div className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm px-4 pt-4 pb-4">
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#181d27] mb-[12px]">Controle de estoque e capacidade</p>
+                  <div className="flex flex-col divide-y divide-[#f0f1f3]">
+                    <div className="flex items-center justify-between gap-[12px] py-[12px] first:pt-0">
+                      <div className="flex flex-col gap-[2px]">
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Integração entre empresas</span>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Compartilha o mesmo estoque com empresas parceiras</span>
+                      </div>
+                      <Switch />
+                    </div>
+                    <div className="flex items-center justify-between gap-[12px] py-[12px]">
+                      <div className="flex flex-col gap-[2px]">
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Afiliados</span>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Reservam vagas do estoque</span>
+                      </div>
+                      <Switch />
+                    </div>
+                    <div className="flex items-center justify-between gap-[12px] py-[12px]">
+                      <div className="flex flex-col gap-[2px]">
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Cupom de desconto</span>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Pode limitar a quantidade disponível por cupom</span>
+                      </div>
+                      <Switch />
+                    </div>
+                    <div className="flex items-center justify-between gap-[12px] py-[12px] last:pb-0">
+                      <div className="flex flex-col gap-[2px]">
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Permitir overbooking</span>
+                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">Aceitar reservas além da capacidade máxima</span>
+                      </div>
+                      <Switch checked={permitirOverbooking} onCheckedChange={setPermitirOverbooking} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1416,10 +1548,11 @@ export function ProdutosPage() {
         case "pagamento":
           return (
             <div>
-              <h2 className="font-['Helvetica_Neue:Medium',sans-serif] text-[18px] text-[#181d27]">Formas de pagamento</h2>
-              <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#717680]">Configure as formas de pagamento aceitas pelo produto.</p>
-              <div className="mt-[16px] rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
-                <div className="flex flex-col gap-[20px] p-[20px]">
+              <div className="rounded-xl border border-[#e9eaeb] bg-white shadow-sm">
+                <div className="px-4 pt-4 pb-0">
+                  <h2 className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] text-[#181d27]">Formas de pagamento</h2>
+                </div>
+                <div className="flex flex-col gap-[20px] px-4 pb-4 pt-3">
                   {/* Proxy de pagamento */}
                   <div className="flex flex-col gap-[6px]">
                     <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">Proxy de pagamento</p>

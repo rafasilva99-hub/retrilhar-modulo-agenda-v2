@@ -52,14 +52,25 @@ export const systemPages: SystemPage[] = [
     page: "agenda",
     breadcrumb: "Reservas e horários",
   },
-  { id: "produtos", name: "Produtos", icon: Package01Icon, breadcrumb: "Catálogo de produtos" },
+  {
+    id: "produtos",
+    name: "Produtos",
+    icon: Package01Icon,
+    page: "produtos",
+    breadcrumb: "Catálogo de produtos",
+  },
   {
     id: "vendedores",
     name: "Vendedores",
     icon: UserIdVerificationIcon,
     breadcrumb: "Gerenciar vendedores",
   },
-  { id: "afiliados", name: "Afiliados", icon: UserStar01Icon, breadcrumb: "Programa de afiliados" },
+  {
+    id: "afiliados",
+    name: "Afiliados",
+    icon: UserStar01Icon,
+    breadcrumb: "Gestão de afiliados",
+  },
   {
     id: "indicadores",
     name: "Indicadores",

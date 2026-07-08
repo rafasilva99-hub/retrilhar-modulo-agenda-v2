@@ -68,10 +68,6 @@ const ELIGIBILITY_RULES: Record<BulkAction, EligibilityRule> = {
     test: (r) => r.status === "Confirmed" || r.status === "CheckedIn",
     reason: "Somente reservas confirmadas ou com check-in realizado podem ter o voucher reenviado.",
   },
-  reschedule: {
-    test: (r) => r.status === "Scheduled" || r.status === "Confirmed",
-    reason: "Somente reservas agendadas ou confirmadas podem ser reagendadas.",
-  },
   "no-show": {
     test: (r) => r.status === "Confirmed",
     reason: "Somente reservas confirmadas podem ser marcadas como não comparecimento.",

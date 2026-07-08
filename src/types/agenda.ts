@@ -255,7 +255,6 @@ export type BulkAction =
   | "mark-performed"
   | "add-insurance"
   | "resend-voucher"
-  | "reschedule"
   | "no-show"
   | "cancel";
 

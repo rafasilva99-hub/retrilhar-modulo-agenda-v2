@@ -7,7 +7,8 @@ export type AppPage =
   | "agendaDia"
   | "atualizacoes"
   | "novaAtividade"
-  | "produtos";
+  | "produtos"
+  | "afiliados";
 
 export interface ShellNavItem {
   title: string;
@@ -16,6 +17,8 @@ export interface ShellNavItem {
   enabled?: boolean;
   badge?: number;
   items?: ShellNavItem[];
+  /** Render a visual separator line before this item in the sidebar. */
+  separatorBefore?: boolean;
 }
 
 export type MenuItem = ShellNavItem;

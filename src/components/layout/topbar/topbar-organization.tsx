@@ -12,20 +12,41 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-import type { Organization } from "../types";
+import type { AppPage, Organization } from "../types";
 import { getInitials } from "../utils";
 
 interface TopBarOrganizationProps {
   organization: Organization;
   mobile?: boolean;
+  onNavigate?: (page: AppPage) => void;
 }
 
-const otherOrganizations: Organization[] = [
-  { id: "org-serra", name: "Serra Viva Experiências", code: "serra-viva" },
-  { id: "org-rio", name: "Rio Trilhas", code: "rio-trilhas" },
+type WorkspaceOrganization = Organization & { page?: AppPage };
+
+const defaultWorkspaceOrganizations: WorkspaceOrganization[] = [
+  {
+    id: "org-afiliado-temp",
+    name: "Painel de Afiliado",
+    code: "painel-afiliado",
+    page: "afiliados",
+  },
 ];
 
-export function TopBarOrganization({ organization, mobile }: TopBarOrganizationProps) {
+const affiliateWorkspaceOrganizations: WorkspaceOrganization[] = [
+  {
+    id: "org-elias",
+    name: "EliasTurismo",
+    code: "eliasturismo",
+    page: "agendaDia",
+  },
+];
+
+export function TopBarOrganization({ organization, mobile, onNavigate }: TopBarOrganizationProps) {
+  const workspaceOrganizations =
+    organization.id === "org-afiliado-temp"
+      ? affiliateWorkspaceOrganizations
+      : defaultWorkspaceOrganizations;
+
   const trigger = (
     <Button
       variant="ghost"
@@ -86,10 +107,13 @@ export function TopBarOrganization({ organization, mobile }: TopBarOrganizationP
           </p>
           <div className="relative">
             <div className="max-h-[17.5em] overflow-y-auto">
-              {otherOrganizations.map((item) => (
+              {workspaceOrganizations.map((item) => (
                 <DropdownMenuItem
                   key={item.id}
                   className="flex h-12 cursor-pointer items-center gap-3 rounded-xl px-3"
+                  onClick={() => {
+                    if (item.page) onNavigate?.(item.page);
+                  }}
                 >
                   <Avatar className="size-8 shrink-0">
                     <AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold">

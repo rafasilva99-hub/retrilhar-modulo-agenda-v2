@@ -3,7 +3,15 @@ import { lazy, Suspense, useCallback, useState } from "react";
 import ContextoMissao from "@/app/components/ContextoMissao";
 import { IntroTeste } from "@/app/components/IntroTeste";
 import { AppShell } from "@/components/layout/app-shell";
-import { shellNavItems, shellOrganization, shellProfile } from "@/mocks/shell";
+import {
+  affiliateNavItems,
+  affiliateOrganization,
+  affiliateProfile,
+  shellNavItems,
+  shellOrganization,
+  shellProfile,
+} from "@/mocks/shell";
+import { AfiliadosPage } from "@/modules/afiliados/AfiliadosPage";
 import { ProdutosPage } from "@/modules/produtos/ProdutosPage";
 
 import { AgendaDayPage } from "../adapters/figma-agenda-day-page";
@@ -70,6 +78,7 @@ function isAgendaViewMode(v: string | null): v is AgendaViewMode {
 
 function AgendaPrototypeApp() {
   const agenda = useAgendaPrototypeNavigation();
+  const navigateAfterActivityCancelled = agenda.handleActivityCancelled;
   const [dayToast, setDayToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -84,9 +93,9 @@ function AgendaPrototypeApp() {
           "A atividade foi enviada para cancelamento e os participantes serão notificados conforme a política definida.",
         type: "error",
       });
-      agenda.handleActivityCancelled(activityDate);
+      navigateAfterActivityCancelled(activityDate);
     },
-    [agenda.handleActivityCancelled]
+    [navigateAfterActivityCancelled]
   );
   const handleDayToastClose = useCallback(() => setDayToast(null), []);
 
@@ -137,6 +146,8 @@ function AgendaPrototypeApp() {
           />
         );
       }
+      case "afiliados":
+        return <AfiliadosPage />;
       case "agenda":
       default: {
         const initialView: AgendaViewMode = isAgendaViewMode(variant) ? variant : "mes";
@@ -151,6 +162,20 @@ function AgendaPrototypeApp() {
         );
       }
     }
+  }
+
+  if (agenda.currentPage === "afiliados") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={affiliateNavItems}
+        organization={affiliateOrganization}
+        profile={affiliateProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <AfiliadosPage />
+      </AppShell>
+    );
   }
 
   if (agenda.currentPage === "produtos") {

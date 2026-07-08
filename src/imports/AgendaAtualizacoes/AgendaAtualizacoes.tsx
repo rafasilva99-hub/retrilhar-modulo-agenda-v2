@@ -3305,7 +3305,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
 
   const bulkEligibility = useMemo(() => {
     if (selectedReservations.length === 0) return {} as Record<BulkAction, { eligible: number; total: number; reason: string }>;
-    const actions: BulkAction[] = ["check-in", "undo-check-in", "confirm", "undo-confirm", "mark-performed", "add-insurance", "resend-voucher", "reschedule", "no-show", "cancel"];
+    const actions: BulkAction[] = ["check-in", "undo-check-in", "confirm", "undo-confirm", "mark-performed", "add-insurance", "resend-voucher", "no-show", "cancel"];
     const result: Record<string, { eligible: number; total: number; reason: string }> = {};
     for (const action of actions) {
       const { eligible, reason } = isEligibleForBulkAction(selectedReservations, action);
@@ -3389,7 +3389,7 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
     }
 
     // Single selection → use individual modals instead of bulk
-    if (selectedIds.size === 1 && (action === "reschedule" || action === "no-show" || action === "cancel")) {
+    if (selectedIds.size === 1 && (action === "no-show" || action === "cancel")) {
       const pid = [...selectedIds][0];
       let foundR: Reservation | null = null;
       let foundP: Participant | null = null;
@@ -3399,21 +3399,9 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
       }
       if (foundR && foundP) {
         setShowMoreActions(false);
-        if (action === "reschedule") { setRescheduleModal({ r: foundR, p: foundP }); setRescheduleDropdownOpen(false); setRescheduleSelectedDate(null); setRescheduleCapacityConfirmed(false); }
         if (action === "no-show") { setNoShowModal({ r: foundR, p: foundP }); }
         if (action === "cancel") { setCancelModal({ r: foundR, p: foundP }); setCancelReason(""); }
       }
-      return;
-    }
-
-    // Special handling for reschedule bulk — open modal
-    if (action === "reschedule") {
-      setShowMoreActions(false);
-      setBulkRescheduleModal(true);
-      setRescheduleDropdownOpen(false);
-      setRescheduleSelectedDate(null);
-      setRescheduleCapacityConfirmed(false);
-      setRescheduleNotify("now");
       return;
     }
 
@@ -3490,7 +3478,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
   const [cancelReason, setCancelReason] = useState("");
   const [noShowModal, setNoShowModal] = useState<{ r: Reservation; p: Participant } | null>(null);
   const [rescheduleModal, setRescheduleModal] = useState<{ r: Reservation; p: Participant } | null>(null);
-  const [bulkRescheduleModal, setBulkRescheduleModal] = useState(false);
   const [bulkNoShowModal, setBulkNoShowModal] = useState(false);
   const [bulkCancelModal, setBulkCancelModal] = useState(false);
   const [bulkCancelSearch, setBulkCancelSearch] = useState("");
@@ -4924,7 +4911,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   "add-insurance": selParts.filter((p) => p.insuranceStatus !== "Contracted").length,
                   "undo-bulk-insurance": selParts.filter((p) => p.insuranceStatus === "Contracted").length,
                   "resend-voucher": total,
-                  "reschedule": selParts.filter((p) => p.checkInStatus === "Pending").length,
                   "no-show": selParts.filter((p) => p.checkInStatus === "Pending").length,
                   "cancel": selParts.filter((p) => p.checkInStatus !== "Cancelled" && p.checkInStatus !== "Absent" && p.checkInStatus !== "Rescheduled").length,
                 };
@@ -4932,7 +4918,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                 <div className="absolute mt-[4px] bg-white border border-[#e9eaeb] right-0 rounded-[10px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] w-[280px] z-40 py-[4px]">
                   {([
                     { action: "mark-performed" as BulkAction, label: "Definir como realizados", destructive: false, separator: false },
-                    { action: "reschedule" as BulkAction, label: "Remarcar reservas", destructive: false, separator: false },
                     selectedUninsuredCount >= selectedInsuredCount
                       ? { action: "add-insurance" as BulkAction, label: "Contratar seguros", destructive: false, separator: false }
                       : { action: "undo-bulk-insurance" as BulkAction, label: "Desfazer seguros", destructive: false, separator: false },
@@ -7224,184 +7209,6 @@ function ParticipantesTab({ onBackToActivities, onActivityCancelled, activity, i
                   }}
                   className="flex-1 h-[40px] bg-[#d92d20] cursor-pointer font-['Helvetica_Neue:Medium',sans-serif] hover:bg-[#b42318] not-italic rounded-[8px] text-[14px] text-white transition-colors"
                 >Marcar {eligibleCount} participantes</button>
-              </div>
-            </div>
-          </div>,
-          document.body,
-        );
-      })()}
-      {/* Bulk Reschedule modal */}
-      {bulkRescheduleModal && (() => {
-        const eligibleParts = reservations.flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id) && p.checkInStatus === "Pending");
-        const eligibleCount = eligibleParts.length;
-        const groupParts = reservations.filter((r) => r.type === "group").flatMap((r) => r.participants).filter((p) => selectedIds.has(p.id));
-        const groupCount = groupParts.length;
-        const groupRes = reservations.find((r) => r.type === "group" && r.participants.some((p) => selectedIds.has(p.id)));
-        const remainingInGroup = groupRes ? groupRes.participants.filter((p) => !selectedIds.has(p.id)).length : 0;
-        const dateOptions = [
-          { date: "29/04/2026", time: "08:00 - 16:00", slots: 25, available: true },
-          { date: "30/05/2026", time: "08:00 - 16:00", slots: 30, available: true },
-          { date: "02/05/2026", time: "08:00 - 16:00", slots: 8, available: true },
-          { date: "03/05/2026", time: "08:00 - 16:00", slots: 15, available: true },
-          { date: "04/05/2026", time: "08:00 - 16:00", slots: 0, available: false },
-          { date: "05/05/2026", time: "08:00 - 16:00", slots: 4, available: true },
-        ];
-        const selected = dateOptions.find((d) => d.date === rescheduleSelectedDate);
-        const isNoSlots = selected && selected.slots === 0;
-        const canConfirm = !isNoSlots || rescheduleCapacityConfirmed;
-        return createPortal(
-          <div className="fixed inset-0 z-[60] flex flex-col justify-end md:flex-row md:items-center md:justify-center">
-            <div className="absolute inset-0 bg-black/40" onClick={() => setBulkRescheduleModal(false)} />
-            <div className="bg-white w-full relative rounded-t-[16px] md:rounded-[16px] md:max-w-[520px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] z-10">
-              {/* Header */}
-              <div className="shrink-0">
-              <div className="flex items-start justify-between px-[24px] pt-[20px] pb-[16px]">
-                <div className="flex flex-col gap-[4px]">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[16px] text-[#181d27]">Remarcar {eligibleCount} reservas</p>
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#535862]">Selecione a nova data e horário</p>
-                </div>
-                <button onClick={() => setBulkRescheduleModal(false)} className="cursor-pointer flex items-center justify-center rounded-[6px] shrink-0 size-[32px] hover:bg-[#f5f5f5] transition-colors">
-                  <svg className="size-[16px]" fill="none" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#717680" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                </button>
-              </div>
-              <div className="ml-[24px] mr-[40px] h-px bg-[#e9eaeb]" />
-              </div>
-              {/* Body */}
-              <div className="flex flex-col gap-[20px] px-[24px] py-[20px]">
-                {/* Activity card */}
-                <div className="flex flex-col gap-[8px]">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Reserva atual de:</p>
-                  <div className="flex items-center gap-[10px] bg-[#fafafa] border border-[#f5f5f5] rounded-[12px] px-[12px] h-[64px]">
-                    <img src="/src/assets/activity-icon.png" alt="" className="size-[24px] shrink-0" />
-                    <div className="flex flex-col gap-[6px] min-w-0 flex-1">
-                      <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#252b37] leading-[20px]">{activity.name}</p>
-                      <div className="flex items-center gap-[6px] min-w-0 overflow-hidden">
-                        <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">{activity.occupancy} participantes</span>
-                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
-                        <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{formatActivityDate(activity.date)}</span>
-                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] shrink-0">·</span>
-                        <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] whitespace-nowrap shrink-0">{activity.startTime} - {activity.endTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Date/time selector */}
-                <div className="flex flex-col gap-[8px]">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Selecionar nova data / horário</p>
-                  <div className="relative">
-                    <button
-                      onClick={() => setRescheduleDropdownOpen(!rescheduleDropdownOpen)}
-                      className={`flex items-center justify-between w-full h-[44px] rounded-[8px] px-[14px] cursor-pointer transition-colors border ${rescheduleDropdownOpen ? "border-[#0b5ed7] shadow-[0_0_0_1px_#0b5ed7]" : "border-[#e9eaeb] hover:border-[#d0d5dd]"}`}
-                    >
-                      {selected ? (
-                        <>
-                          <div className="flex items-center gap-[6px]">
-                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.date}</span>
-                            <span className="text-[#d0d5dd]">·</span>
-                            <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{selected.time}</span>
-                          </div>
-                          <div className="flex items-center gap-[8px] shrink-0">
-                            <div className="flex items-center gap-[5px] bg-[#fafafa] border border-[#f5f5f5] rounded-full px-[10px] h-[24px]">
-                              <div className={`size-[6px] rounded-full ${selected.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
-                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] whitespace-nowrap ${selected.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>
-                                {selected.available ? `${selected.slots} vagas disponíveis` : "Sem vagas disponíveis"}
-                              </span>
-                            </div>
-                            <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#a4a7ae]">Selecionar</p>
-                          <svg className={`size-[16px] text-[#717680] transition-transform ${rescheduleDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </>
-                      )}
-                    </button>
-                    {rescheduleDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-[4px] bg-white border border-[#e9eaeb] rounded-[8px] shadow-[0px_4px_16px_0px_rgba(0,0,0,0.12)] z-10 py-[4px] max-h-[220px] overflow-y-auto">
-                        {dateOptions.map((opt) => (
-                          <button key={opt.date} onClick={() => { setRescheduleSelectedDate(opt.date); setRescheduleDropdownOpen(false); }} className={`flex items-center justify-between w-full px-[14px] py-[10px] cursor-pointer transition-colors hover:bg-[#f8fafc] ${rescheduleSelectedDate === opt.date ? "bg-[#f0f5ff]" : ""}`}>
-                            <div className="flex items-center gap-[6px]">
-                              {rescheduleSelectedDate === opt.date
-                                ? <svg className="size-[16px] text-[#0b5ed7] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                : <svg className="size-[16px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><path d="M12 1.33V4M4 1.33V4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M1.33 6h13.34M2.67 2.67h10.66c.74 0 1.34.6 1.34 1.33v9.33c0 .74-.6 1.34-1.34 1.34H2.67c-.73 0-1.34-.6-1.34-1.34V4c0-.73.6-1.33 1.34-1.33z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              }
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.date}</span>
-                              <span className="text-[#d0d5dd]">·</span>
-                              <svg className="size-[14px] text-[#535862] shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.67" stroke="currentColor" strokeWidth="1.2" /><path d="M8 5.33V8l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37]">{opt.time}</span>
-                            </div>
-                            <div className="flex items-center gap-[4px] shrink-0">
-                              <div className={`size-[6px] rounded-full ${opt.available ? "bg-[#17b26a]" : "bg-[#d92d20]"}`} />
-                              <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[12px] ${opt.available ? "text-[#17b26a]" : "text-[#d92d20]"}`}>{opt.available ? `${opt.slots} vagas disponíveis` : "Sem vagas disponíveis"}</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Notification options */}
-                <div className="hidden flex-col gap-[8px]">
-                  <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">Notificação ao cliente</p>
-                  <div className="grid grid-cols-2 gap-[12px]">
-                    <button onClick={() => setRescheduleNotify("now")} className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "now" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}>
-                      <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "now" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Notificar agora</p>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">Serão notificados via e-mail e WhatsApp imediatamente.</p>
-                    </button>
-                    <button onClick={() => setRescheduleNotify("later")} className={`flex flex-col gap-[4px] px-[14px] py-[12px] rounded-[8px] border-2 text-left cursor-pointer transition-colors ${rescheduleNotify === "later" ? "border-[#0b5ed7] bg-[#f0f5ff]" : "border-[#e9eaeb] bg-white hover:border-[#d0d5dd]"}`}>
-                      <p className={`font-['Helvetica_Neue:Medium',sans-serif] text-[13px] ${rescheduleNotify === "later" ? "text-[#0b5ed7]" : "text-[#414651]"}`}>Remarcar sem notificar</p>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#535862] leading-[16px]">Você pode notificar manualmente depois.</p>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Alerts */}
-                {isNoSlots ? (
-                  <>
-                    <div className="flex items-center gap-[10px] bg-[#fef9ec] border border-[#fef0c7] rounded-[10px] px-[12px] py-[10px]">
-                      <img src="/src/assets/alerta.png" alt="" className="size-[24px] shrink-0" />
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[16px]">Essa atividade tem a capacidade para {activity.capacity || 200} participantes e ficará com {(activity.capacity || 200) + eligibleCount} ({eligibleCount} movidos + {activity.capacity || 200} já existentes). Confirme se a operação suporta o excedente.</p>
-                    </div>
-                    <button onClick={() => setRescheduleCapacityConfirmed(!rescheduleCapacityConfirmed)} className="flex items-center gap-[10px] cursor-pointer text-left">
-                      <div className={`flex items-center justify-center shrink-0 size-[20px] rounded-[4px] border transition-colors ${rescheduleCapacityConfirmed ? "bg-[#0b5ed7] border-[#0b5ed7]" : "bg-white border-[#d5d7da]"}`}>
-                        {rescheduleCapacityConfirmed && <svg className="size-[12px]" fill="none" viewBox="0 0 12 12"><path d="M2.5 6l2.5 2.5L9.5 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                      </div>
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] leading-[18px]">Confirmo que a operação suporta o excedente de capacidade nesta atividade.</p>
-                    </button>
-                  </>
-                ) : groupCount > 0 && (
-                  <div className="flex items-center gap-[10px] bg-[#f8f9fc] border border-[#f5f5f5] rounded-[10px] px-[12px] py-[8px]">
-                    <svg className="size-[24px] shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" /><circle cx="12" cy="12" r="8" fill="#4A7BF7" /><path d="M12 16v-4M12 8h.01" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#414651] leading-[14px]">{groupCount} dos {eligibleCount} participantes pertencem à reserva em grupo {groupRes?.orderId}. Os demais {remainingInGroup} membros do grupo permanecerão na atividade original.</p>
-                  </div>
-                )}
-              </div>
-              {/* Footer */}
-              <div className="flex flex-col-reverse md:flex-row gap-[8px] md:gap-[12px] px-[24px] pb-[24px] pt-[4px] [&>button]:h-[40px] [&>button]:w-full [&>button]:flex-none [&>button]:md:flex-1 [&>button]:md:w-auto">
-                <button onClick={() => setBulkRescheduleModal(false)} className="flex-1 h-[40px] bg-white border border-[#e9eaeb] cursor-pointer font-['Helvetica_Neue:Regular',sans-serif] hover:bg-[#f8fafc] not-italic rounded-[8px] text-[14px] text-[#414651] transition-colors">Fechar</button>
-                <button
-                  onClick={() => {
-                    if (!canConfirm) return;
-                    for (const p of eligibleParts) dispatch({ type: "RESCHEDULE_PARTICIPANT", participantId: p.id });
-                    setBulkRescheduleModal(false);
-                    setToast({
-                      message: "As reservas selecionadas foram remarcadas",
-                      description: `Os ${eligibleCount} participantes selecionados serão notificados por e-mail e WhatsApp.`,
-                      type: "success",
-                      actions: [{ label: "Desfazer", onClick: () => { for (const p of eligibleParts) dispatch({ type: "UNDO_RESCHEDULE_PARTICIPANT", participantId: p.id }); setToast(null); } }],
-                    });
-                  }}
-                  disabled={!canConfirm}
-                  className={`flex-1 h-[40px] font-['Helvetica_Neue:Medium',sans-serif] not-italic rounded-[8px] text-[14px] text-white transition-colors ${canConfirm ? "bg-[#0b5ed7] hover:bg-[#084fb7] cursor-pointer" : "bg-[#93b4ed] cursor-not-allowed"}`}
-                >Remarcar {eligibleCount} reservas</button>
               </div>
             </div>
           </div>,

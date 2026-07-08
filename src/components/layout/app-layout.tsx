@@ -25,10 +25,12 @@ export function AppLayout({
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 0);
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const el = document.querySelector(".prototype-shell-surface");
+    if (!el) return;
+    const handleScroll = () => setScrolled(el.scrollTop > 0);
+    el.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Content offset includes the TopBar's inner pl-[0.75em] (12px) so content aligns with the search bar

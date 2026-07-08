@@ -70,7 +70,10 @@ export function TopBarProfile({ profile }: TopBarProfileProps) {
           <p className="text-muted-foreground px-[0.75em] pt-[0.5em] pb-[0.25em] text-[10px] font-normal tracking-widest uppercase">
             Preferências
           </p>
-          <DropdownMenuItem className="gap-[0.625em] rounded-lg px-[0.75em] py-[0.5em] text-sm font-normal">
+          <DropdownMenuItem
+            onClick={() => { window.location.hash = "#configuracoes"; }}
+            className="gap-[0.625em] rounded-lg px-[0.75em] py-[0.5em] text-sm font-normal"
+          >
             <HugeiconsIcon
               icon={AccountSetting01Icon}
               size={15}

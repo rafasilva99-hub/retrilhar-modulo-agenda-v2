@@ -8,12 +8,17 @@ export type AppPage =
   | "atualizacoes"
   | "novaAtividade"
   | "produtos"
-  | "afiliados";
+  | "afiliados"
+  | "indicacoes"
+  | "ganhos"
+  | "produtosLinks"
+  | "configuracoes";
 
 export interface ShellNavItem {
   title: string;
   page?: AppPage;
   icon: IconSvgElement;
+  customIconPaths?: string[];
   enabled?: boolean;
   badge?: number;
   items?: ShellNavItem[];

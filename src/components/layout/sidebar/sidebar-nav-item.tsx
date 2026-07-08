@@ -37,7 +37,22 @@ export function SidebarNavItem({ item, active, collapsed, onNavigate }: SidebarN
         {active && !collapsed && (
           <span className="bg-ring absolute top-3 left-0 h-6 w-1 rounded-r-full" />
         )}
-        <HugeiconsIcon icon={item.icon} size={20} className="shrink-0" />
+        {item.customIconPaths ? (
+          <svg className="shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none">
+            {item.customIconPaths.map((path) => (
+              <path
+                key={path}
+                d={path}
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+              />
+            ))}
+          </svg>
+        ) : (
+          <HugeiconsIcon icon={item.icon} size={20} className="shrink-0" />
+        )}
         {!collapsed && <span className="min-w-0 flex-1 truncate">{item.title}</span>}
         {!collapsed && item.badge ? (
           <span className="bg-primary text-primary-foreground grid min-w-5 place-items-center rounded-full px-1.5 text-xs">

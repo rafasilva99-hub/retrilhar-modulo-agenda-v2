@@ -14,6 +14,10 @@ const prototypePages: AppPage[] = [
   "novaAtividade",
   "produtos",
   "afiliados",
+  "indicacoes",
+  "ganhos",
+  "produtosLinks",
+  "configuracoes",
 ];
 
 type AgendaUpdatesInitialTab = "atualizacoes" | "participantes" | "visao-geral";
@@ -27,6 +31,10 @@ const previewBases = [
   "novaAtividade",
   "produtos",
   "afiliados",
+  "indicacoes",
+  "ganhos",
+  "produtosLinks",
+  "configuracoes",
 ] as const;
 type PreviewBase = (typeof previewBases)[number];
 type PreviewSelection = { base: PreviewBase; variant: string | null };

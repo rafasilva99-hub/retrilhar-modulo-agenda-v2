@@ -1,5 +1,3 @@
-import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import type { ReactNode } from "react";
 
 import {
@@ -9,7 +7,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 
 interface BreadcrumbEntry {
   title: string;
@@ -51,28 +48,14 @@ function BreadcrumbItems({ items, hasTitle }: { items: BreadcrumbEntry[]; hasTit
   );
 }
 
-export function AppPage({
-  children,
-  title,
-  description,
-  actions,
-  breadcrumb,
-  onBack,
-}: AppPageProps) {
+export function AppPage({ children, title, description, actions, breadcrumb }: AppPageProps) {
   return (
     <div
       className="animate-in fade-in flex min-h-screen flex-col gap-6 pt-[112px] pr-6 pb-6 duration-500"
       style={{ paddingLeft: "var(--shell-offset, 248px)" }}
     >
-      {(title || actions || breadcrumb || onBack) && (
+      {(title || actions || breadcrumb) && (
         <div className="flex flex-col gap-[0.75em]">
-          {onBack && (
-            <Button variant="outline" size="sm" className="w-fit" onClick={onBack}>
-              <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
-              Voltar
-            </Button>
-          )}
-
           {breadcrumb && breadcrumb.length > 0 && (
             <Breadcrumb>
               <BreadcrumbList>

@@ -12,6 +12,10 @@ import {
   shellProfile,
 } from "@/mocks/shell";
 import { AfiliadosPage } from "@/modules/afiliados/AfiliadosPage";
+import { ConfiguracoesPage } from "@/modules/afiliados/ConfiguracoesPage";
+import { GanhosPage } from "@/modules/afiliados/GanhosPage";
+import { IndicacoesPage } from "@/modules/afiliados/IndicacoesPage";
+import { ProdutosLinksPage } from "@/modules/afiliados/ProdutosLinksPage";
 import { ProdutosPage } from "@/modules/produtos/ProdutosPage";
 
 import { AgendaDayPage } from "../adapters/figma-agenda-day-page";
@@ -148,6 +152,14 @@ function AgendaPrototypeApp() {
       }
       case "afiliados":
         return <AfiliadosPage />;
+      case "indicacoes":
+        return <IndicacoesPage />;
+      case "ganhos":
+        return <GanhosPage />;
+      case "produtosLinks":
+        return <ProdutosLinksPage />;
+      case "configuracoes":
+        return <ConfiguracoesPage />;
       case "agenda":
       default: {
         const initialView: AgendaViewMode = isAgendaViewMode(variant) ? variant : "mes";
@@ -174,6 +186,62 @@ function AgendaPrototypeApp() {
         onNavigate={agenda.navigateTo}
       >
         <AfiliadosPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "indicacoes") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={affiliateNavItems}
+        organization={affiliateOrganization}
+        profile={affiliateProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <IndicacoesPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "ganhos") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={affiliateNavItems}
+        organization={affiliateOrganization}
+        profile={affiliateProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <GanhosPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "produtosLinks") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={affiliateNavItems}
+        organization={affiliateOrganization}
+        profile={affiliateProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <ProdutosLinksPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "configuracoes") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={affiliateNavItems}
+        organization={affiliateOrganization}
+        profile={affiliateProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <ConfiguracoesPage />
       </AppShell>
     );
   }

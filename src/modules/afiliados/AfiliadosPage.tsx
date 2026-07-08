@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
-  AddSquareIcon,
-  AsteriskIcon,
   Calendar03Icon,
   Copy02Icon,
   FilterHorizontalIcon,
@@ -13,63 +12,38 @@ import {
   UserStar01Icon,
   Wallet02Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
 
-import {
-  DataList,
-  DataListItem,
-  DataListLabel,
-  DataListValue,
-} from "@/components/custom/data-list";
 import { AppPage } from "@/components/layout/app-page";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
   affiliateCode,
+  affiliateOrganizations,
   type AfiliadoKpis,
   type AfiliadoPeriod,
   type AfiliadoReferral,
   type CommissionStatus,
   getFilteredReferrals,
   getKpis,
-  type OrderStatus,
   organizationMap,
   originLabels,
-  type ReferralOrigin,
 } from "@/mocks/afiliados";
 
 // ---------------------------------------------------------------------------
-// Status styling (with dark-mode variants, matching CardStats pattern)
-// ---------------------------------------------------------------------------
-
-const orderStatusClassName: Record<OrderStatus, string> = {
-  Pago: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/50 dark:text-emerald-400",
-  Pendente:
-    "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-400",
-};
-
 const commissionStatusLabel: Record<CommissionStatus, string> = {
   pendente: "Pendente",
   quitado: "Quitado",
-};
-
-const commissionStatusClassName: Record<CommissionStatus, string> = {
-  pendente: "text-amber-600 dark:text-amber-400",
-  quitado: "text-emerald-600 dark:text-emerald-400",
-};
-
-const originClassName: Record<ReferralOrigin, string> = {
-  "link-geral": "border-border bg-muted text-muted-foreground",
-  "link-org":
-    "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-400",
-  "link-produto":
-    "border-violet-200 bg-violet-50 text-violet-600 dark:border-violet-900/50 dark:bg-violet-950/50 dark:text-violet-400",
-  cupom:
-    "border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-400",
 };
 
 // ---------------------------------------------------------------------------
@@ -97,21 +71,16 @@ const steps = [
 // ---------------------------------------------------------------------------
 
 function SectionHeading({
-  icon,
   title,
   description,
   action,
 }: {
-  icon: IconSvgElement;
   title: string;
   description: string;
   action?: React.ReactNode;
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="bg-primary/10 text-primary grid size-8 shrink-0 place-items-center rounded-[10px]">
-        <HugeiconsIcon icon={icon} size={16} />
-      </span>
       <div className="min-w-0 flex-1">
         <h2 className="text-foreground truncate text-sm font-normal">{title}</h2>
         <p className="text-muted-foreground truncate text-xs">{description}</p>
@@ -133,9 +102,114 @@ function SectionHeading({
 interface KpiCardProps {
   title: string;
   value: string;
-  icon: IconSvgElement;
+  icon: React.ReactNode;
   detail?: string;
   badge?: { label: string; color: string };
+}
+
+function IndicacoesIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      className="text-primary"
+    >
+      <path
+        d="M13.7276 3.44418L15.4874 6.99288C15.7274 7.48687 16.3673 7.9607 16.9073 8.05143L20.0969 8.58575C22.1367 8.92853 22.6167 10.4206 21.1468 11.8925L18.6671 14.3927C18.2471 14.8161 18.0172 15.6327 18.1471 16.2175L18.8571 19.3125C19.417 21.7623 18.1271 22.71 15.9774 21.4296L12.9877 19.6452C12.4478 19.3226 11.5579 19.3226 11.0079 19.6452L8.01827 21.4296C5.8785 22.71 4.57865 21.7522 5.13859 19.3125L5.84851 16.2175C5.97849 15.6327 5.74852 14.8161 5.32856 14.3927L2.84884 11.8925C1.389 10.4206 1.85895 8.92853 3.89872 8.58575L7.08837 8.05143C7.61831 7.9607 8.25824 7.48687 8.49821 6.99288L10.258 3.44418C11.2179 1.51861 12.7777 1.51861 13.7276 3.44418Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CarrinhosAbandonadosIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      className="text-primary"
+    >
+      <path
+        d="M10.5 20.25C10.5 20.6642 10.1642 21 9.75 21C9.33579 21 9 20.6642 9 20.25C9 19.8358 9.33579 19.5 9.75 19.5C10.1642 19.5 10.5 19.8358 10.5 20.25Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M19 20.25C19 20.6642 18.6642 21 18.25 21C17.8358 21 17.5 20.6642 17.5 20.25C17.5 19.8358 17.8358 19.5 18.25 19.5C18.6642 19.5 19 19.8358 19 20.25Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 3H2.20664C3.53124 3 4.19354 3 4.6255 3.40221C5.05746 3.80441 5.10464 4.46503 5.19902 5.78626L5.45035 9.30496C5.5924 11.2936 5.66342 12.2879 5.96476 13.0961C6.62531 14.8677 8.08229 16.2244 9.89648 16.757C10.7241 17 11.7267 17 13.7317 17C15.8373 17 16.9129 17 17.7646 16.7416C19.6822 16.1599 21.1828 14.6593 21.7645 12.7417C21.9077 12.2695 21.9716 11.7373 22 11M14 6H5.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17 3L22 8M17 8L22 3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ComissaoAReceberIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      className="text-primary"
+    >
+      <path
+        d="M14.5 13.9999C14.5 15.3806 13.3807 16.4999 12 16.4999C10.6193 16.4999 9.5 15.3806 9.5 13.9999C9.5 12.6192 10.6193 11.4999 12 11.4999C13.3807 11.4999 14.5 12.6192 14.5 13.9999Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17 7C18.9452 7.08474 20.3228 7.40382 21.1329 7.65487C21.6756 7.82306 22 8.33744 22 8.9056V18.6804C22 19.7955 20.7719 20.6345 19.6762 20.4276C18.7361 20.2501 17.5107 20.1075 16 20.1075C11.2491 20.1075 10.1096 21.9132 3.1448 20.3773C2.47265 20.2291 2 19.6246 2 18.9363V8.91924C2 7.94339 2.92079 7.23174 3.87798 7.42169C5.31598 7.70704 6.49012 7.84057 7.5 7.87661"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M2 11C3.95133 11 5.70483 9.40507 5.92901 7.75417M18.5005 7.5C18.5005 9.53964 20.2655 11.469 22 11.469M22 17C20.1009 17 18.2601 18.3102 18.102 20.0983M6.00049 20.4961C6.00049 18.287 4.20963 16.4961 2.00049 16.4961"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 8.5L12 3M12 8.5C12.7002 8.5 14.5 6 14.5 6M12 8.5C11.2998 8.5 9.5 6 9.5 6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 function KpiCard({ title, value, icon, detail, badge }: KpiCardProps) {
@@ -163,7 +237,7 @@ function KpiCard({ title, value, icon, detail, badge }: KpiCardProps) {
             ) : null}
           </div>
           <div className="bg-primary/10 flex size-[2.5em] shrink-0 items-center justify-center rounded-lg">
-            <HugeiconsIcon icon={icon} size={20} className="text-primary" />
+            {icon}
           </div>
         </div>
       </CardContent>
@@ -177,25 +251,25 @@ function KpiRow({ kpis }: { kpis: AfiliadoKpis; period: AfiliadoPeriod }) {
       <KpiCard
         title="Indicações no período"
         value={String(kpis.indicacoesQtd)}
-        icon={UserStar01Icon}
+        icon={<IndicacoesIcon />}
         detail={`${kpis.indicacoesValor} originados · ${kpis.indicacoesPagas} pagas`}
       />
       <KpiCard
         title="Carrinhos abandonados"
         value={String(kpis.carrinhosQtd)}
-        icon={ShoppingBag01Icon}
+        icon={<CarrinhosAbandonadosIcon />}
         detail={`${kpis.carrinhosValor} em valor`}
       />
       <KpiCard
         title="Comissão recebida"
         value={kpis.comissaoRecebida}
-        icon={Wallet02Icon}
-        badge={{ label: "Pago", color: "#079455" }}
+        icon={<HugeiconsIcon icon={Wallet02Icon} size={20} className="text-primary" />}
+        badge={{ label: "Quitado", color: "#079455" }}
       />
       <KpiCard
         title="Comissão a receber"
         value={kpis.comissaoReceber}
-        icon={Calendar03Icon}
+        icon={<ComissaoAReceberIcon />}
         badge={{ label: "Pendente", color: "#d97706" }}
       />
     </div>
@@ -358,7 +432,6 @@ function ReferralsCard({
   return (
     <section className="flex flex-col rounded-2xl border border-[#EEF0F4] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)]">
       <SectionHeading
-        icon={MoneyBag02Icon}
         title="Minhas Indicações"
         description="Últimas indicações realizadas"
         action={
@@ -366,6 +439,7 @@ function ReferralsCard({
             variant="outline"
             size="sm"
             className="shrink-0"
+            onClick={() => { window.location.hash = "#indicacoes"; }}
           >
             Ver todas as indicações
           </Button>
@@ -390,6 +464,141 @@ function ReferralsCard({
 // Referral detail sheet (drawer)
 // ---------------------------------------------------------------------------
 
+function ReferralDrawerSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="flex h-[32px] w-full items-center border-y border-[#f0f1f3] bg-[#f9fafb] px-6">
+        <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[11px] tracking-[0.8px] text-[#a4a7ae] uppercase">
+          {title}
+        </p>
+      </div>
+      <div className="px-6 py-5">{children}</div>
+    </div>
+  );
+}
+
+function ReferralDetailField({
+  icon,
+  label,
+  value,
+}: {
+  icon?: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      {icon ? (
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-[#f5f5f5] bg-[#fafafa]">
+          {icon}
+        </div>
+      ) : null}
+      <div className="min-w-0">
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] mb-[2px] text-[12px] text-[#717680]">
+          {label}
+        </p>
+        <div className="font-['Helvetica_Neue:Regular',sans-serif] min-w-0 text-[14px] text-[#181d27]">
+          {value}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReferralStatusPill({
+  label,
+  variant,
+}: {
+  label: string;
+  variant: "green" | "amber" | "blue" | "gray";
+}) {
+  const styles = {
+    green: { color: "#17b26a" },
+    amber: { color: "#dc6803" },
+    blue: { color: "#0b5ed7" },
+    gray: { color: "#535862" },
+  }[variant];
+
+  return (
+    <div className="group relative inline-flex">
+      <div className="flex h-6 items-center gap-[6px] rounded-full border border-[#e4e4e7] bg-white px-2 whitespace-nowrap">
+        {variant === "green" || variant === "blue" ? (
+          <svg
+            className="size-[14px] shrink-0"
+            fill="none"
+            style={{ color: styles.color }}
+            viewBox="0 0 14 14"
+          >
+            <path
+              d="M3 7l3 3 5-5"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+            />
+          </svg>
+        ) : variant === "amber" ? (
+          <svg
+            className="size-[14px] shrink-0"
+            fill="none"
+            style={{ color: styles.color }}
+            viewBox="0 0 14 14"
+          >
+            <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" />
+            <path
+              d="M7 4.5v3M7 9.5h.01"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="1.2"
+            />
+          </svg>
+        ) : (
+          <svg
+            className="size-[14px] shrink-0"
+            fill="none"
+            style={{ color: styles.color }}
+            viewBox="0 0 14 14"
+          >
+            <path
+              d="M7 2.5v9M2.5 7h9"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="1.3"
+            />
+          </svg>
+        )}
+        <span
+          className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-none"
+          style={{ color: styles.color }}
+        >
+          {label}
+        </span>
+      </div>
+      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] transition-opacity duration-150 group-hover:opacity-100">
+        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-4 text-white">
+          {label}
+        </p>
+        <div className="absolute top-full left-1/2 size-0 -translate-x-1/2 border-t-[5px] border-r-[5px] border-l-[5px] border-t-[#181d27] border-r-transparent border-l-transparent" />
+      </div>
+    </div>
+  );
+}
+
+function referralInitials(name: string) {
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 function ReferralDetailSheet({
   referral,
   onClose,
@@ -400,101 +609,206 @@ function ReferralDetailSheet({
   showOrg: boolean;
 }) {
   const org = referral ? organizationMap[referral.organizationId] : null;
+  const [isClosing, setIsClosing] = useState(false);
 
-  return (
-    <Sheet open={!!referral} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>Detalhe da Indicação</SheetTitle>
-        </SheetHeader>
+  useEffect(() => {
+    if (!referral) return;
 
-        {referral && (
-          <div className="mt-6 flex flex-col gap-6 px-6 pb-6">
-            <DataList orientation="vertical" size="sm" className="gap-4">
-              <DataListItem className="gap-1">
-                <DataListLabel>Cliente</DataListLabel>
-                <DataListValue className="font-medium">{referral.customer}</DataListValue>
-              </DataListItem>
+    setIsClosing(false);
+    document.body.style.overflow = "hidden";
 
-              <DataListItem className="gap-1">
-                <DataListLabel>Produto</DataListLabel>
-                <DataListValue>{referral.product}</DataListValue>
-              </DataListItem>
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [referral]);
 
-              {showOrg && org && (
-                <DataListItem className="gap-1">
-                  <DataListLabel>Organização</DataListLabel>
-                  <DataListValue>{org.name}</DataListValue>
-                </DataListItem>
-              )}
+  if (!referral) return null;
 
-              <DataListItem className="gap-1">
-                <DataListLabel>Data</DataListLabel>
-                <DataListValue>{referral.date.split("-").reverse().join("/")}</DataListValue>
-              </DataListItem>
+  const handleClose = () => {
+    if (isClosing) return;
+    setIsClosing(true);
+    window.setTimeout(onClose, 200);
+  };
 
-              <DataListItem className="gap-1">
-                <DataListLabel>Origem</DataListLabel>
-                <DataListValue>
-                  <span
-                    className={cn(
-                      "inline-flex rounded-md border px-1.5 py-0.5 text-xs",
-                      originClassName[referral.origin]
-                    )}
-                  >
-                    {originLabels[referral.origin]}
-                  </span>
-                </DataListValue>
-              </DataListItem>
+  const purchaseDate = referral.date.split("-").reverse().join("/");
+  const ticketName = "Ingresso Adulto";
+  const orderSettled = referral.orderStatus === "Pago";
+  const commissionSettled = referral.commissionStatus === "quitado";
+  const originVariant =
+    referral.origin === "cupom" ? "amber" : referral.origin === "link-geral" ? "gray" : "blue";
 
-              <div className="border-border border-t" />
-
-              <DataListItem className="gap-1">
-                <DataListLabel>Valor da compra</DataListLabel>
-                <DataListValue className="text-lg font-medium">
-                  {referral.purchaseValue}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="gap-1">
-                <DataListLabel>Status do pedido</DataListLabel>
-                <DataListValue>
-                  <span
-                    className={cn(
-                      "inline-flex rounded-md border px-2 py-0.5 text-xs",
-                      orderStatusClassName[referral.orderStatus]
-                    )}
-                  >
-                    {referral.orderStatus}
-                  </span>
-                </DataListValue>
-              </DataListItem>
-
-              <div className="border-border border-t" />
-
-              <DataListItem className="gap-1">
-                <DataListLabel>Comissão</DataListLabel>
-                <DataListValue className="text-lg font-medium">{referral.commission}</DataListValue>
-              </DataListItem>
-
-              <DataListItem className="gap-1">
-                <DataListLabel>Status da comissão</DataListLabel>
-                <DataListValue>
-                  <span
-                    className={cn(
-                      "text-sm font-medium capitalize",
-                      commissionStatusClassName[referral.commissionStatus]
-                    )}
-                  >
-                    {commissionStatusLabel[referral.commissionStatus]}
-                  </span>
-                </DataListValue>
-              </DataListItem>
-            </DataList>
-          </div>
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[60] flex justify-end"
+      onKeyDown={(event) => event.key === "Escape" && handleClose()}
+    >
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/40 transition-opacity duration-200",
+          isClosing ? "opacity-0" : "opacity-100"
         )}
-      </SheetContent>
-    </Sheet>
+        onClick={handleClose}
+      />
+      <div
+        className={cn(
+          "relative z-10 flex max-h-full w-full flex-col overflow-hidden rounded-l-[16px] border border-[#e9eaeb] bg-white shadow-[-8px_0px_24px_0px_rgba(0,0,0,0.1)] sm:w-[720px]",
+          isClosing
+            ? "animate-out slide-out-to-right fill-mode-forwards duration-200"
+            : "animate-in slide-in-from-right duration-200"
+        )}
+      >
+        <div className="shrink-0">
+          <div className="flex items-center justify-between px-6 pt-5 pb-4">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#181d27]">
+              Detalhe da indicação
+            </p>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[6px] transition-colors hover:bg-[#f5f5f5]"
+              aria-label="Fechar detalhe da indicação"
+            >
+              <svg className="size-[18px]" fill="none" viewBox="0 0 18 18">
+                <path
+                  d="M4 4l10 10M14 4L4 14"
+                  stroke="#717680"
+                  strokeLinecap="round"
+                  strokeWidth="1.5"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="mx-6 h-px bg-[#f0f1f3]" />
+        </div>
+
+        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-button]:hidden [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/[0.08] hover:[&::-webkit-scrollbar-thumb]:bg-black/15 [&::-webkit-scrollbar-track]:bg-transparent">
+          <div className="px-6 py-5">
+            <div className="flex items-start gap-4">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-[#bfdbfe] bg-[#eff6ff]">
+                <p className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px] text-[#0b5ed7]">
+                  {referralInitials(referral.customer)}
+                </p>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] truncate text-[15px] text-[#181d27]">
+                    {referral.customer}
+                  </p>
+                </div>
+                <div className="mt-1 flex min-w-0 items-center gap-1.5">
+                  <HugeiconsIcon
+                    icon={Ticket02Icon}
+                    size={16}
+                    className="shrink-0 text-[#535862]"
+                  />
+                  <p className="font-['Helvetica_Neue:Light',sans-serif] truncate text-[13px] text-[#535862]">
+                    {ticketName}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-4 pb-1 sm:grid-cols-2">
+              <ReferralDetailField
+                icon={
+                  <HugeiconsIcon icon={Calendar03Icon} size={18} className="text-[#535862]" />
+                }
+                label="Data de compra"
+                value={purchaseDate}
+              />
+              <ReferralDetailField
+                icon={
+                  <HugeiconsIcon icon={UserStar01Icon} size={18} className="text-[#535862]" />
+                }
+                label="Origem"
+                value={
+                  <ReferralStatusPill label={originLabels[referral.origin]} variant={originVariant} />
+                }
+              />
+            </div>
+          </div>
+
+          <ReferralDrawerSection title="Dados da compra">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <ReferralDetailField
+                icon={
+                  <HugeiconsIcon icon={ShoppingBag01Icon} size={18} className="text-[#535862]" />
+                }
+                label="Atividade"
+                value={<span className="block truncate">{referral.product}</span>}
+              />
+              {showOrg && org ? (
+                <ReferralDetailField
+                  icon={
+                    <HugeiconsIcon icon={Wallet02Icon} size={18} className="text-[#535862]" />
+                  }
+                  label="Organização"
+                  value={<span className="block truncate">{org.name}</span>}
+                />
+              ) : null}
+              <ReferralDetailField
+                icon={
+                  <HugeiconsIcon icon={MoneyBag02Icon} size={18} className="text-[#535862]" />
+                }
+                label="Valor da compra"
+                value={
+                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px]">
+                    {referral.purchaseValue}
+                  </span>
+                }
+              />
+              <ReferralDetailField
+                label="Status do pedido"
+                value={
+                  <ReferralStatusPill
+                    label={orderSettled ? "Quitado" : "Pendente"}
+                    variant={orderSettled ? "green" : "amber"}
+                  />
+                }
+              />
+            </div>
+          </ReferralDrawerSection>
+
+          <ReferralDrawerSection title="Dados da comissão">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <ReferralDetailField
+                icon={
+                  <HugeiconsIcon icon={Wallet02Icon} size={18} className="text-[#535862]" />
+                }
+                label="Comissão"
+                value={
+                  <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px]">
+                    {referral.commission}
+                  </span>
+                }
+              />
+              <ReferralDetailField
+                label="Status da comissão"
+                value={
+                  <ReferralStatusPill
+                    label={commissionStatusLabel[referral.commissionStatus]}
+                    variant={commissionSettled ? "green" : "amber"}
+                  />
+                }
+              />
+            </div>
+          </ReferralDrawerSection>
+        </div>
+
+        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-[#e9eaeb] bg-white px-6 py-4">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#e9eaeb] bg-white px-5 transition-colors hover:bg-[#fafafa]"
+          >
+            <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651]">
+              Fechar aba
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }
 
@@ -534,9 +848,9 @@ function AffiliateCodeBanner() {
       </svg>
 
       {/* Mountain silhouette decoration */}
-      <div className="absolute bottom-0 left-0 right-0 h-[60px] opacity-[0.12] pointer-events-none rounded-b-xl overflow-hidden">
+      <div className="absolute bottom-[-30px] left-0 right-0 h-[60px] opacity-[0.12] pointer-events-none rounded-b-xl overflow-hidden">
         <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1200 60">
-          <path d="M0,60 L0,40 L150,15 L300,35 L450,10 L600,30 L750,20 L900,40 L1050,25 L1200,45 L1200,60 Z" fill="white"/>
+          <path d="M0,60 L0,42 C55,40 92,26 150,15 C207,4 248,27 300,35 C358,44 391,18 450,10 C509,2 544,22 600,30 C655,38 693,25 750,20 C808,15 848,32 900,40 C956,48 994,29 1050,25 C1108,21 1150,39 1200,45 L1200,60 Z" fill="white"/>
         </svg>
       </div>
 
@@ -609,7 +923,6 @@ function StepsCard() {
   return (
     <section className="border-border bg-card flex flex-1 flex-col rounded-2xl border p-5 shadow-sm">
       <SectionHeading
-        icon={AsteriskIcon}
         title="Passo a Passo"
         description="Confira como funciona e como você ganha suas comissões"
       />
@@ -699,16 +1012,25 @@ export function AfiliadosPage() {
             />
             <Input placeholder="Pesquisar..." className="pl-[2.25em]" />
           </div>
-          <div className="hidden md:block">
+          <Select defaultValue="all">
+            <SelectTrigger className="h-8 w-[220px] text-xs">
+              <SelectValue placeholder="Todas as organizacoes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as organizacoes</SelectItem>
+              {affiliateOrganizations.map((org) => (
+                <SelectItem key={org.id} value={org.id}>
+                  {org.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="hidden md:block ml-auto">
             <Button variant="outline" size="default">
               <HugeiconsIcon icon={FilterHorizontalIcon} size={16} />
               Filtros
             </Button>
           </div>
-          <Button className="hidden md:inline-flex ml-auto">
-            <HugeiconsIcon icon={AddSquareIcon} size={16} />
-            Solicitar filiação
-          </Button>
         </div>
 
         {/* Content */}

@@ -3,10 +3,13 @@
 // Fonte de verdade do protótipo: PRD Afiliados, Central de Vendas, Escopo.
 // ---------------------------------------------------------------------------
 
-export type OrderStatus = "Pago" | "Pendente";
+export type OrderStatus = "Pago" | "Pendente" | "Não paga" | "Carrinho abandonado";
 export type CommissionStatus = "pendente" | "quitado";
 export type ReferralOrigin = "link-geral" | "link-org" | "link-produto" | "cupom";
 export type AfiliadoPeriod = "semana" | "mes" | "ano";
+export type IndicacoesTab = "todas" | "pagas" | "nao-pagas" | "carrinhos-abandonados";
+export type GanhosTab = "todas" | "pendentes" | "quitadas";
+export type AffiliateScopeType = "todos" | "especificos";
 
 export interface AfiliadoOrganization {
   id: string;
@@ -25,6 +28,8 @@ export interface AfiliadoReferral {
   commission: string;
   origin: ReferralOrigin;
   date: string;
+  time?: string;
+  commissionRule?: string;
 }
 
 export interface AfiliadoKpis {
@@ -35,6 +40,71 @@ export interface AfiliadoKpis {
   carrinhosValor: string;
   comissaoRecebida: string;
   comissaoReceber: string;
+}
+
+export interface IndicacoesKpis {
+  indicacoesOriginadasQtd: number;
+  indicacoesOriginadasValor: string;
+  vendasPagasQtd: number;
+  vendasPagasValor: string;
+  carrinhosAbandonadosQtd: number;
+  carrinhosAbandonadosValor: string;
+  viaCupomQtd: number;
+  viaCupomValor: string;
+  comissaoGerada: string;
+}
+
+export interface GanhosKpis {
+  comissaoAReceber: string;
+  comissaoRecebida: string;
+  comissaoGerada: string;
+}
+
+export interface OrgBreakdown {
+  organizationId: string;
+  geradaNoPeriodo: string;
+  recebidaNoPeriodo: string;
+  aReceber: string;
+}
+
+export interface ComissaoLancamento {
+  id: string;
+  dataGeracao: string;
+  organizationId: string;
+  product: string;
+  referralId: string;
+  customerName: string;
+  valor: string;
+  status: CommissionStatus;
+  dataQuitacao?: string;
+  regraComissao: string;
+}
+
+export interface AffiliateProduct {
+  id: string;
+  name: string;
+  organizationId: string;
+  comissao: string;
+  comissaoOrigem: "afiliação" | "produto";
+  link: string;
+  vendasNoPeriodo: number;
+  isNew?: boolean;
+  indisponivel?: boolean;
+}
+
+export interface AffiliateProductRequest {
+  id: string;
+  name: string;
+  organizationId: string;
+  solicitado?: boolean;
+}
+
+export interface AffiliateOrgScope {
+  organizationId: string;
+  scopeType: AffiliateScopeType;
+  orgLink: string;
+  products: AffiliateProduct[];
+  availableToRequest: AffiliateProductRequest[];
 }
 
 // ---------------------------------------------------------------------------
@@ -72,7 +142,7 @@ export const affiliateOrgLinks: Record<string, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// Indicações (referrals) — dados variados conforme seção 5.2f do refinamento
+// Indicações (referrals) — dados variados conforme seção 5 do refinamento
 // ---------------------------------------------------------------------------
 
 export const affiliateReferrals: AfiliadoReferral[] = [
@@ -87,6 +157,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 568,00",
     origin: "link-produto",
     date: "2026-07-05",
+    time: "14:32",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-2",
@@ -99,6 +171,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 189,00",
     origin: "cupom",
     date: "2026-07-04",
+    time: "09:15",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-3",
@@ -111,6 +185,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 325,00",
     origin: "link-org",
     date: "2026-07-03",
+    time: "16:48",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-4",
@@ -123,6 +199,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 245,00",
     origin: "link-geral",
     date: "2026-07-02",
+    time: "11:20",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-5",
@@ -135,6 +213,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 412,00",
     origin: "link-produto",
     date: "2026-07-01",
+    time: "08:05",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-6",
@@ -147,6 +227,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 89,00",
     origin: "cupom",
     date: "2026-06-30",
+    time: "17:40",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-7",
@@ -159,6 +241,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 634,00",
     origin: "link-org",
     date: "2026-06-29",
+    time: "10:12",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-8",
@@ -171,6 +255,8 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 123,00",
     origin: "link-produto",
     date: "2026-06-28",
+    time: "13:55",
+    commissionRule: "10% sobre o valor da venda",
   },
   {
     id: "ref-9",
@@ -183,11 +269,95 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     commission: "R$ 78,00",
     origin: "link-geral",
     date: "2026-06-27",
+    time: "15:30",
+    commissionRule: "10% sobre o valor da venda",
+  },
+  // --- Novos registros: Não paga e Carrinho abandonado ---
+  {
+    id: "ref-10",
+    customer: "Luciana Martins de Oliveira",
+    product: "Trilha Pico do Itambé",
+    organizationId: "org-cerrado",
+    orderStatus: "Não paga",
+    commissionStatus: "pendente",
+    purchaseValue: "R$ 2.340,00",
+    commission: "R$ 234,00",
+    origin: "link-produto",
+    date: "2026-07-06",
+    time: "10:45",
+    commissionRule: "10% sobre o valor da venda",
+  },
+  {
+    id: "ref-11",
+    customer: "Thiago Rezende Souza",
+    product: "Rapel Cachoeira",
+    organizationId: "org-vertaco",
+    orderStatus: "Não paga",
+    commissionStatus: "pendente",
+    purchaseValue: "R$ 1.560,00",
+    commission: "R$ 156,00",
+    origin: "cupom",
+    date: "2026-07-05",
+    time: "18:20",
+    commissionRule: "10% sobre o valor da venda",
+  },
+  {
+    id: "ref-12",
+    customer: "Beatriz Helena Campos",
+    product: "Passeio de Barco",
+    organizationId: "org-trilheiras",
+    orderStatus: "Carrinho abandonado",
+    commissionStatus: "pendente",
+    purchaseValue: "R$ 1.890,00",
+    commission: "R$ 0,00",
+    origin: "link-geral",
+    date: "2026-07-04",
+    time: "12:10",
+  },
+  {
+    id: "ref-13",
+    customer: "Gabriel Augusto de Freitas",
+    product: "Mergulho Noturno",
+    organizationId: "org-cerrado",
+    orderStatus: "Carrinho abandonado",
+    commissionStatus: "pendente",
+    purchaseValue: "R$ 3.450,00",
+    commission: "R$ 0,00",
+    origin: "link-produto",
+    date: "2026-07-03",
+    time: "20:05",
+  },
+  {
+    id: "ref-14",
+    customer: "Camila Rodrigues de Almeida",
+    product: "Canionismo Serra Geral",
+    organizationId: "org-trilheiras",
+    orderStatus: "Carrinho abandonado",
+    commissionStatus: "pendente",
+    purchaseValue: "R$ 4.780,00",
+    commission: "R$ 0,00",
+    origin: "link-org",
+    date: "2026-07-01",
+    time: "07:30",
+  },
+  {
+    id: "ref-15",
+    customer: "Felipe Augusto Nascimento",
+    product: "Tirolesa Radical",
+    organizationId: "org-cerrado",
+    orderStatus: "Não paga",
+    commissionStatus: "pendente",
+    purchaseValue: "R$ 670,00",
+    commission: "R$ 67,00",
+    origin: "link-geral",
+    date: "2026-06-28",
+    time: "14:15",
+    commissionRule: "10% sobre o valor da venda",
   },
 ];
 
 // ---------------------------------------------------------------------------
-// KPIs por período × organização
+// KPIs por período × organização (Home)
 // FATO: Central de Vendas itens 1, 4, 6; Escopo 13.1
 // ---------------------------------------------------------------------------
 
@@ -311,19 +481,212 @@ export const affiliateKpis: KpiStore = {
 };
 
 // ---------------------------------------------------------------------------
+// KPIs da página Indicações (5 totalizadores)
+// ---------------------------------------------------------------------------
+
+type IndicacoesKpiStore = Record<AfiliadoPeriod, Record<string, IndicacoesKpis>>;
+
+export const indicacoesKpis: IndicacoesKpiStore = {
+  semana: {
+    all: {
+      indicacoesOriginadasQtd: 34,
+      indicacoesOriginadasValor: "R$ 42.850",
+      vendasPagasQtd: 28,
+      vendasPagasValor: "R$ 35.660",
+      carrinhosAbandonadosQtd: 6,
+      carrinhosAbandonadosValor: "R$ 7.190",
+      viaCupomQtd: 8,
+      viaCupomValor: "R$ 9.420",
+      comissaoGerada: "R$ 4.700",
+    },
+    "org-cerrado": {
+      indicacoesOriginadasQtd: 18,
+      indicacoesOriginadasValor: "R$ 23.460",
+      vendasPagasQtd: 15,
+      vendasPagasValor: "R$ 19.570",
+      carrinhosAbandonadosQtd: 3,
+      carrinhosAbandonadosValor: "R$ 3.890",
+      viaCupomQtd: 4,
+      viaCupomValor: "R$ 5.120",
+      comissaoGerada: "R$ 2.590",
+    },
+    "org-vertaco": {
+      indicacoesOriginadasQtd: 10,
+      indicacoesOriginadasValor: "R$ 12.340",
+      vendasPagasQtd: 8,
+      vendasPagasValor: "R$ 10.220",
+      carrinhosAbandonadosQtd: 2,
+      carrinhosAbandonadosValor: "R$ 2.120",
+      viaCupomQtd: 3,
+      viaCupomValor: "R$ 3.100",
+      comissaoGerada: "R$ 1.370",
+    },
+    "org-trilheiras": {
+      indicacoesOriginadasQtd: 6,
+      indicacoesOriginadasValor: "R$ 7.050",
+      vendasPagasQtd: 5,
+      vendasPagasValor: "R$ 5.870",
+      carrinhosAbandonadosQtd: 1,
+      carrinhosAbandonadosValor: "R$ 1.180",
+      viaCupomQtd: 1,
+      viaCupomValor: "R$ 1.200",
+      comissaoGerada: "R$ 740",
+    },
+  },
+  mes: {
+    all: {
+      indicacoesOriginadasQtd: 145,
+      indicacoesOriginadasValor: "R$ 189.350",
+      vendasPagasQtd: 118,
+      vendasPagasValor: "R$ 156.890",
+      carrinhosAbandonadosQtd: 23,
+      carrinhosAbandonadosValor: "R$ 28.750",
+      viaCupomQtd: 31,
+      viaCupomValor: "R$ 38.640",
+      comissaoGerada: "R$ 11.340",
+    },
+    "org-cerrado": {
+      indicacoesOriginadasQtd: 74,
+      indicacoesOriginadasValor: "R$ 98.200",
+      vendasPagasQtd: 61,
+      vendasPagasValor: "R$ 81.400",
+      carrinhosAbandonadosQtd: 11,
+      carrinhosAbandonadosValor: "R$ 14.800",
+      viaCupomQtd: 16,
+      viaCupomValor: "R$ 20.100",
+      comissaoGerada: "R$ 5.910",
+    },
+    "org-vertaco": {
+      indicacoesOriginadasQtd: 43,
+      indicacoesOriginadasValor: "R$ 55.120",
+      vendasPagasQtd: 35,
+      vendasPagasValor: "R$ 46.670",
+      carrinhosAbandonadosQtd: 7,
+      carrinhosAbandonadosValor: "R$ 8.450",
+      viaCupomQtd: 9,
+      viaCupomValor: "R$ 11.240",
+      comissaoGerada: "R$ 3.340",
+    },
+    "org-trilheiras": {
+      indicacoesOriginadasQtd: 28,
+      indicacoesOriginadasValor: "R$ 36.030",
+      vendasPagasQtd: 22,
+      vendasPagasValor: "R$ 28.820",
+      carrinhosAbandonadosQtd: 5,
+      carrinhosAbandonadosValor: "R$ 5.500",
+      viaCupomQtd: 6,
+      viaCupomValor: "R$ 7.300",
+      comissaoGerada: "R$ 2.090",
+    },
+  },
+  ano: {
+    all: {
+      indicacoesOriginadasQtd: 1247,
+      indicacoesOriginadasValor: "R$ 1.623.100",
+      vendasPagasQtd: 1089,
+      vendasPagasValor: "R$ 1.417.700",
+      carrinhosAbandonadosQtd: 158,
+      carrinhosAbandonadosValor: "R$ 205.400",
+      viaCupomQtd: 267,
+      viaCupomValor: "R$ 342.800",
+      comissaoGerada: "R$ 110.200",
+    },
+    "org-cerrado": {
+      indicacoesOriginadasQtd: 640,
+      indicacoesOriginadasValor: "R$ 837.200",
+      vendasPagasQtd: 562,
+      vendasPagasValor: "R$ 731.600",
+      carrinhosAbandonadosQtd: 78,
+      carrinhosAbandonadosValor: "R$ 105.600",
+      viaCupomQtd: 138,
+      viaCupomValor: "R$ 178.200",
+      comissaoGerada: "R$ 56.830",
+    },
+    "org-vertaco": {
+      indicacoesOriginadasQtd: 378,
+      indicacoesOriginadasValor: "R$ 487.900",
+      vendasPagasQtd: 328,
+      vendasPagasValor: "R$ 425.100",
+      carrinhosAbandonadosQtd: 50,
+      carrinhosAbandonadosValor: "R$ 62.800",
+      viaCupomQtd: 79,
+      viaCupomValor: "R$ 99.600",
+      comissaoGerada: "R$ 33.220",
+    },
+    "org-trilheiras": {
+      indicacoesOriginadasQtd: 229,
+      indicacoesOriginadasValor: "R$ 298.000",
+      vendasPagasQtd: 199,
+      vendasPagasValor: "R$ 261.000",
+      carrinhosAbandonadosQtd: 30,
+      carrinhosAbandonadosValor: "R$ 37.000",
+      viaCupomQtd: 50,
+      viaCupomValor: "R$ 65.000",
+      comissaoGerada: "R$ 20.150",
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 export function getKpis(period: AfiliadoPeriod, orgId: string): AfiliadoKpis {
   const store = affiliateKpis[period];
-  // Both orgId and "all" fallback are guaranteed to exist in the mock data.
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return (store[orgId] ?? store.all)!;
+}
+
+export function getIndicacoesKpis(period: AfiliadoPeriod, orgId: string): IndicacoesKpis {
+  const store = indicacoesKpis[period];
   return (store[orgId] ?? store.all)!;
 }
 
 export function getFilteredReferrals(orgId: string): AfiliadoReferral[] {
-  if (orgId === "all") return affiliateReferrals;
-  return affiliateReferrals.filter((r) => r.organizationId === orgId);
+  const base = orgId === "all" ? affiliateReferrals : affiliateReferrals.filter((r) => r.organizationId === orgId);
+  return base.filter((r) => r.orderStatus === "Pago" || r.orderStatus === "Pendente");
+}
+
+export function getStatusForTab(status: OrderStatus): IndicacoesTab {
+  switch (status) {
+    case "Pago": return "pagas";
+    case "Pendente":
+    case "Não paga": return "nao-pagas";
+    case "Carrinho abandonado": return "carrinhos-abandonados";
+  }
+}
+
+export function getFilteredIndicacoes(
+  orgId: string,
+  tab: IndicacoesTab,
+  search?: string,
+  originFilter?: ReferralOrigin | "all",
+): AfiliadoReferral[] {
+  let results = orgId === "all" ? affiliateReferrals : affiliateReferrals.filter((r) => r.organizationId === orgId);
+
+  if (tab !== "todas") {
+    results = results.filter((r) => getStatusForTab(r.orderStatus) === tab);
+  }
+
+  if (search) {
+    const q = search.toLowerCase();
+    results = results.filter((r) => r.customer.toLowerCase().includes(q) || r.product.toLowerCase().includes(q));
+  }
+
+  if (originFilter && originFilter !== "all") {
+    results = results.filter((r) => r.origin === originFilter);
+  }
+
+  return results;
+}
+
+export function getTabCounts(orgId: string): Record<IndicacoesTab, number> {
+  const all = orgId === "all" ? affiliateReferrals : affiliateReferrals.filter((r) => r.organizationId === orgId);
+  return {
+    todas: all.length,
+    pagas: all.filter((r) => getStatusForTab(r.orderStatus) === "pagas").length,
+    "nao-pagas": all.filter((r) => getStatusForTab(r.orderStatus) === "nao-pagas").length,
+    "carrinhos-abandonados": all.filter((r) => getStatusForTab(r.orderStatus) === "carrinhos-abandonados").length,
+  };
 }
 
 export function getAffiliateLink(orgId: string): string {
@@ -338,8 +701,246 @@ export const originLabels: Record<ReferralOrigin, string> = {
   cupom: "Cupom",
 };
 
+export const indicacoesTabLabels: Record<IndicacoesTab, string> = {
+  todas: "Todas",
+  pagas: "Pagas",
+  "nao-pagas": "Não pagas",
+  "carrinhos-abandonados": "Carrinhos abandonados",
+};
+
 export const periodLabels: Record<AfiliadoPeriod, string> = {
   semana: "Semana",
   mes: "Mês",
   ano: "Ano",
+};
+
+export const ganhosTabLabels: Record<GanhosTab, string> = {
+  todas: "Todas",
+  pendentes: "Pendentes",
+  quitadas: "Quitadas",
+};
+
+// ---------------------------------------------------------------------------
+// Ganhos — saldo "a receber" (independe de período)
+// ---------------------------------------------------------------------------
+
+export const ganhosKpisSaldo: Record<string, string> = {
+  all: "R$ 2.890",
+  "org-cerrado": "R$ 1.530",
+  "org-vertaco": "R$ 860",
+  "org-trilheiras": "R$ 500",
+};
+
+// ---------------------------------------------------------------------------
+// Ganhos — KPIs por período × org (recebida e gerada reagem ao período)
+// ---------------------------------------------------------------------------
+
+type GanhosKpiStore = Record<AfiliadoPeriod, Record<string, Omit<GanhosKpis, "comissaoAReceber">>>;
+
+export const ganhosKpisStore: GanhosKpiStore = {
+  semana: {
+    all: { comissaoRecebida: "R$ 3.420", comissaoGerada: "R$ 4.700" },
+    "org-cerrado": { comissaoRecebida: "R$ 1.870", comissaoGerada: "R$ 2.590" },
+    "org-vertaco": { comissaoRecebida: "R$ 990", comissaoGerada: "R$ 1.370" },
+    "org-trilheiras": { comissaoRecebida: "R$ 560", comissaoGerada: "R$ 740" },
+  },
+  mes: {
+    all: { comissaoRecebida: "R$ 8.450", comissaoGerada: "R$ 11.340" },
+    "org-cerrado": { comissaoRecebida: "R$ 4.380", comissaoGerada: "R$ 5.910" },
+    "org-vertaco": { comissaoRecebida: "R$ 2.480", comissaoGerada: "R$ 3.340" },
+    "org-trilheiras": { comissaoRecebida: "R$ 1.590", comissaoGerada: "R$ 2.090" },
+  },
+  ano: {
+    all: { comissaoRecebida: "R$ 97.860", comissaoGerada: "R$ 110.200" },
+    "org-cerrado": { comissaoRecebida: "R$ 50.430", comissaoGerada: "R$ 56.830" },
+    "org-vertaco": { comissaoRecebida: "R$ 29.480", comissaoGerada: "R$ 33.220" },
+    "org-trilheiras": { comissaoRecebida: "R$ 17.950", comissaoGerada: "R$ 20.150" },
+  },
+};
+
+export function getGanhosKpis(period: AfiliadoPeriod, orgId: string): GanhosKpis {
+  const store = ganhosKpisStore[period];
+  const flow = (store[orgId] ?? store.all)!;
+  const saldo = ganhosKpisSaldo[orgId] ?? ganhosKpisSaldo.all ?? "R$ 0";
+  return { comissaoAReceber: saldo, ...flow };
+}
+
+// ---------------------------------------------------------------------------
+// Ganhos — Breakdown por organização
+// ---------------------------------------------------------------------------
+
+type BreakdownStore = Record<AfiliadoPeriod, OrgBreakdown[]>;
+
+export const orgBreakdownStore: BreakdownStore = {
+  semana: [
+    { organizationId: "org-cerrado", geradaNoPeriodo: "R$ 2.590", recebidaNoPeriodo: "R$ 1.870", aReceber: "R$ 1.530" },
+    { organizationId: "org-vertaco", geradaNoPeriodo: "R$ 1.370", recebidaNoPeriodo: "R$ 990", aReceber: "R$ 860" },
+    { organizationId: "org-trilheiras", geradaNoPeriodo: "R$ 740", recebidaNoPeriodo: "R$ 560", aReceber: "R$ 500" },
+  ],
+  mes: [
+    { organizationId: "org-cerrado", geradaNoPeriodo: "R$ 5.910", recebidaNoPeriodo: "R$ 4.380", aReceber: "R$ 1.530" },
+    { organizationId: "org-vertaco", geradaNoPeriodo: "R$ 3.340", recebidaNoPeriodo: "R$ 2.480", aReceber: "R$ 860" },
+    { organizationId: "org-trilheiras", geradaNoPeriodo: "R$ 2.090", recebidaNoPeriodo: "R$ 1.590", aReceber: "R$ 500" },
+  ],
+  ano: [
+    { organizationId: "org-cerrado", geradaNoPeriodo: "R$ 56.830", recebidaNoPeriodo: "R$ 50.430", aReceber: "R$ 1.530" },
+    { organizationId: "org-vertaco", geradaNoPeriodo: "R$ 33.220", recebidaNoPeriodo: "R$ 29.480", aReceber: "R$ 860" },
+    { organizationId: "org-trilheiras", geradaNoPeriodo: "R$ 20.150", recebidaNoPeriodo: "R$ 17.950", aReceber: "R$ 500" },
+  ],
+};
+
+export function getOrgBreakdown(period: AfiliadoPeriod): OrgBreakdown[] {
+  return orgBreakdownStore[period];
+}
+
+// ---------------------------------------------------------------------------
+// Ganhos — Extrato de comissões (lançamentos)
+// ---------------------------------------------------------------------------
+
+export const comissaoLancamentos: ComissaoLancamento[] = [
+  { id: "lnc-1", dataGeracao: "2026-07-05", organizationId: "org-cerrado", product: "Trilha Pico do Itambé", referralId: "ref-1", customerName: "João Pedro da Silva Oliveira", valor: "R$ 568,00", status: "quitado", dataQuitacao: "2026-07-06", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-2", dataGeracao: "2026-07-04", organizationId: "org-vertaco", product: "Rapel Cachoeira", referralId: "ref-2", customerName: "Maria Eduarda Santos Pereira", valor: "R$ 189,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-3", dataGeracao: "2026-07-03", organizationId: "org-trilheiras", product: "Passeio de Barco", referralId: "ref-3", customerName: "Carlos Eduardo Ferreira Lima", valor: "R$ 325,00", status: "quitado", dataQuitacao: "2026-07-05", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-4", dataGeracao: "2026-07-02", organizationId: "org-cerrado", product: "Mergulho Noturno", referralId: "ref-4", customerName: "Juliana Aparecida de Lima", valor: "R$ 245,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-5", dataGeracao: "2026-07-01", organizationId: "org-vertaco", product: "Trilha Cachoeira Grande", referralId: "ref-5", customerName: "Amanda Cristina Miranda Souza", valor: "R$ 412,00", status: "quitado", dataQuitacao: "2026-07-03", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-6", dataGeracao: "2026-06-30", organizationId: "org-cerrado", product: "Tirolesa Radical", referralId: "ref-6", customerName: "Pedro Henrique Barbosa Costa", valor: "R$ 89,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-7", dataGeracao: "2026-06-29", organizationId: "org-trilheiras", product: "Canionismo Serra Geral", referralId: "ref-7", customerName: "Amauri dos Santos Lopes", valor: "R$ 634,00", status: "quitado", dataQuitacao: "2026-07-01", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-8", dataGeracao: "2026-06-28", organizationId: "org-cerrado", product: "Escalada Indoor", referralId: "ref-8", customerName: "Fernanda Beatriz Costa Almeida", valor: "R$ 123,00", status: "quitado", dataQuitacao: "2026-06-30", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-9", dataGeracao: "2026-06-27", organizationId: "org-vertaco", product: "Stand-Up Paddle", referralId: "ref-9", customerName: "Ricardo Augusto Alves Monteiro", valor: "R$ 78,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-10", dataGeracao: "2026-07-06", organizationId: "org-cerrado", product: "Trilha Pico do Itambé", referralId: "ref-10", customerName: "Luciana Martins de Oliveira", valor: "R$ 234,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-11", dataGeracao: "2026-06-28", organizationId: "org-cerrado", product: "Tirolesa Radical", referralId: "ref-15", customerName: "Felipe Augusto Nascimento", valor: "R$ 67,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-12", dataGeracao: "2026-07-05", organizationId: "org-vertaco", product: "Rapel Cachoeira", referralId: "ref-11", customerName: "Thiago Rezende Souza", valor: "R$ 156,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+];
+
+export function getFilteredLancamentos(
+  orgId: string,
+  tab: GanhosTab,
+  search?: string,
+): ComissaoLancamento[] {
+  let results = orgId === "all" ? comissaoLancamentos : comissaoLancamentos.filter((l) => l.organizationId === orgId);
+
+  if (tab === "pendentes") results = results.filter((l) => l.status === "pendente");
+  else if (tab === "quitadas") results = results.filter((l) => l.status === "quitado");
+
+  if (search) {
+    const q = search.toLowerCase();
+    results = results.filter((l) => l.customerName.toLowerCase().includes(q) || l.product.toLowerCase().includes(q));
+  }
+
+  return results;
+}
+
+export function getLancamentoTabCounts(orgId: string): Record<GanhosTab, number> {
+  const all = orgId === "all" ? comissaoLancamentos : comissaoLancamentos.filter((l) => l.organizationId === orgId);
+  return {
+    todas: all.length,
+    pendentes: all.filter((l) => l.status === "pendente").length,
+    quitadas: all.filter((l) => l.status === "quitado").length,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Dados bancários mock
+// ---------------------------------------------------------------------------
+
+export const dadosBancarios = {
+  banco: "Itaú",
+  codigoBanco: "341",
+  agencia: "****-2",
+  conta: "*****-8",
+  tipo: "Conta Corrente",
+  titular: "Katiely Pinheiro",
+};
+
+// ---------------------------------------------------------------------------
+// Produtos e Links — escopo por organização
+// ---------------------------------------------------------------------------
+
+export const affiliateOrgScopes: AffiliateOrgScope[] = [
+  {
+    organizationId: "org-cerrado",
+    scopeType: "todos",
+    orgLink: "https://retrilhar.com.br/ref/katiely-pinheiro/cerrado",
+    products: [
+      { id: "prod-c1", name: "Trilha Pico do Itambé", organizationId: "org-cerrado", comissao: "10%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/cerrado/trilha-pico-itambe", vendasNoPeriodo: 18 },
+      { id: "prod-c2", name: "Mergulho Noturno", organizationId: "org-cerrado", comissao: "10%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/cerrado/mergulho-noturno", vendasNoPeriodo: 12 },
+      { id: "prod-c3", name: "Tirolesa Radical", organizationId: "org-cerrado", comissao: "R$ 45", comissaoOrigem: "produto", link: "https://retrilhar.com.br/ref/katiely-pinheiro/cerrado/tirolesa-radical", vendasNoPeriodo: 8 },
+      { id: "prod-c4", name: "Escalada Indoor", organizationId: "org-cerrado", comissao: "10%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/cerrado/escalada-indoor", vendasNoPeriodo: 5 },
+      { id: "prod-c5", name: "Camping Estrelado", organizationId: "org-cerrado", comissao: "10%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/cerrado/camping-estrelado", vendasNoPeriodo: 0, isNew: true },
+      { id: "prod-c6", name: "Rafting Rio das Velhas", organizationId: "org-cerrado", comissao: "10%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/cerrado/rafting-rio-velhas", vendasNoPeriodo: 0, indisponivel: true },
+    ],
+    availableToRequest: [],
+  },
+  {
+    organizationId: "org-vertaco",
+    scopeType: "especificos",
+    orgLink: "https://retrilhar.com.br/ref/katiely-pinheiro/vertaco",
+    products: [
+      { id: "prod-v1", name: "Rapel Cachoeira", organizationId: "org-vertaco", comissao: "8%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/vertaco/rapel-cachoeira", vendasNoPeriodo: 14 },
+      { id: "prod-v2", name: "Trilha Cachoeira Grande", organizationId: "org-vertaco", comissao: "R$ 290", comissaoOrigem: "produto", link: "https://retrilhar.com.br/ref/katiely-pinheiro/vertaco/trilha-cachoeira-grande", vendasNoPeriodo: 9 },
+      { id: "prod-v3", name: "Stand-Up Paddle", organizationId: "org-vertaco", comissao: "8%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/vertaco/stand-up-paddle", vendasNoPeriodo: 6 },
+      { id: "prod-v4", name: "Caiaque Aventura", organizationId: "org-vertaco", comissao: "8%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/vertaco/caiaque-aventura", vendasNoPeriodo: 3 },
+    ],
+    availableToRequest: [],
+  },
+  {
+    organizationId: "org-trilheiras",
+    scopeType: "especificos",
+    orgLink: "https://retrilhar.com.br/ref/katiely-pinheiro/trilheiras",
+    products: [
+      { id: "prod-t1", name: "Passeio de Barco", organizationId: "org-trilheiras", comissao: "12%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/trilheiras/passeio-barco", vendasNoPeriodo: 7 },
+      { id: "prod-t2", name: "Canionismo Serra Geral", organizationId: "org-trilheiras", comissao: "R$ 180", comissaoOrigem: "produto", link: "https://retrilhar.com.br/ref/katiely-pinheiro/trilheiras/canionismo-serra-geral", vendasNoPeriodo: 4 },
+      { id: "prod-t3", name: "Caminhada Histórica", organizationId: "org-trilheiras", comissao: "12%", comissaoOrigem: "afiliação", link: "https://retrilhar.com.br/ref/katiely-pinheiro/trilheiras/caminhada-historica", vendasNoPeriodo: 2 },
+    ],
+    availableToRequest: [
+      { id: "req-v1", name: "Boia Cross Radical", organizationId: "org-trilheiras" },
+      { id: "req-v2", name: "Arvorismo Circuito Completo", organizationId: "org-trilheiras" },
+      { id: "req-v3", name: "Parapente Tandem", organizationId: "org-trilheiras", solicitado: true },
+      { id: "req-t1", name: "Trilha do Pôr do Sol", organizationId: "org-trilheiras" },
+      { id: "req-t2", name: "Espeleologia Caverna Real", organizationId: "org-trilheiras" },
+    ],
+  },
+];
+
+export function getAffiliateScopes(orgId?: string): AffiliateOrgScope[] {
+  if (!orgId || orgId === "all") return affiliateOrgScopes;
+  return affiliateOrgScopes.filter((s) => s.organizationId === orgId);
+}
+
+// ---------------------------------------------------------------------------
+// Configurações — perfil e afiliações
+// ---------------------------------------------------------------------------
+
+export interface AffiliateProfileData {
+  name: string;
+  email: string;
+  phone: string;
+  document: string;
+  documentType: "CPF" | "CNPJ" | "Passaporte";
+}
+
+export interface AffiliateAffiliation {
+  organizationId: string;
+  status: "Ativa" | "Pendente" | "Inativa";
+  since: string;
+}
+
+export const affiliateProfileData: AffiliateProfileData = {
+  name: "Katiely Pinheiro",
+  email: "katiely@retrilhar.com.br",
+  phone: "(31) 99876-5432",
+  document: "***.***.***-90",
+  documentType: "CPF",
+};
+
+export const affiliateAffiliations: AffiliateAffiliation[] = [
+  { organizationId: "org-cerrado", status: "Ativa", since: "2025-03-15" },
+  { organizationId: "org-vertaco", status: "Ativa", since: "2025-06-01" },
+  { organizationId: "org-trilheiras", status: "Ativa", since: "2025-09-10" },
+];
+
+export const notificationPreferences = {
+  produtoNovo: true,
+  comissaoQuitada: true,
+  conviteVinculo: true,
 };

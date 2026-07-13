@@ -15,6 +15,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { AppPage } from "@/components/layout/app-page";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
@@ -41,9 +50,36 @@ import {
 } from "@/mocks/afiliados";
 
 // ---------------------------------------------------------------------------
+// Period options — maps UI labels to internal AfiliadoPeriod values
+// ---------------------------------------------------------------------------
+
+type PeriodOption = {
+  value: string;
+  label: string;
+  internalPeriod: AfiliadoPeriod;
+};
+
+const periodOptions: PeriodOption[] = [
+  { value: "7d", label: "Últimos 7 dias", internalPeriod: "semana" },
+  { value: "30d", label: "Últimos 30 dias", internalPeriod: "mes" },
+  { value: "month", label: "Este mês", internalPeriod: "mes" },
+  { value: "12m", label: "Últimos 12 meses", internalPeriod: "ano" },
+  { value: "all", label: "Todo o período", internalPeriod: "ano" },
+];
+
+function getPeriodLabel(value: string): string {
+  return periodOptions.find((p) => p.value === value)?.label ?? "Últimos 30 dias";
+}
+
+function getInternalPeriod(value: string): AfiliadoPeriod {
+  return periodOptions.find((p) => p.value === value)?.internalPeriod ?? "mes";
+}
+
+// ---------------------------------------------------------------------------
 const commissionStatusLabel: Record<CommissionStatus, string> = {
-  pendente: "Pendente",
-  quitado: "Quitado",
+  "nao-gerada": "Não gerada",
+  "a-receber": "A receber",
+  quitada: "Quitada",
 };
 
 // ---------------------------------------------------------------------------
@@ -91,11 +127,6 @@ function SectionHeading({
 }
 
 // ---------------------------------------------------------------------------
-// Organization filter (tabs for ≤ 4 options)
-// ---------------------------------------------------------------------------
-
-
-// ---------------------------------------------------------------------------
 // KPI cards (aligned with CardStats visual pattern)
 // ---------------------------------------------------------------------------
 
@@ -104,7 +135,7 @@ interface KpiCardProps {
   value: string;
   icon: React.ReactNode;
   detail?: string;
-  badge?: { label: string; color: string };
+  periodLabel?: string;
 }
 
 function IndicacoesIcon() {
@@ -212,7 +243,7 @@ function ComissaoAReceberIcon() {
   );
 }
 
-function KpiCard({ title, value, icon, detail, badge }: KpiCardProps) {
+function KpiCard({ title, value, icon, detail, periodLabel }: KpiCardProps) {
   return (
     <Card className="h-[114px] gap-0 py-0 shadow-none">
       <CardContent className="h-full p-[1.25em]">
@@ -222,17 +253,13 @@ function KpiCard({ title, value, icon, detail, badge }: KpiCardProps) {
               {title}
             </span>
             <p className="mt-[0.25em] text-2xl leading-none tracking-tight">{value}</p>
-            {badge ? (
-              <span className="mt-[0.25em] flex items-center gap-1.5 text-xs">
-                <span
-                  className="size-[6px] shrink-0 rounded-full"
-                  style={{ backgroundColor: badge.color }}
-                />
-                <span style={{ color: badge.color }}>{badge.label}</span>
-              </span>
-            ) : detail ? (
+            {detail ? (
               <span className="text-muted-foreground mt-[0.25em] block text-xs">
                 {detail}
+              </span>
+            ) : periodLabel ? (
+              <span className="text-muted-foreground mt-[0.25em] block text-xs">
+                {periodLabel}
               </span>
             ) : null}
           </div>
@@ -245,188 +272,95 @@ function KpiCard({ title, value, icon, detail, badge }: KpiCardProps) {
   );
 }
 
-function KpiRow({ kpis }: { kpis: AfiliadoKpis; period: AfiliadoPeriod }) {
+function KpiRow({ kpis, periodLabel }: { kpis: AfiliadoKpis; periodLabel: string }) {
   return (
     <div className="grid grid-cols-1 gap-[1em] sm:grid-cols-2 md:grid-cols-4">
       <KpiCard
-        title="Indicações no período"
+        title="Indicações"
         value={String(kpis.indicacoesQtd)}
         icon={<IndicacoesIcon />}
         detail={`${kpis.indicacoesValor} originados · ${kpis.indicacoesPagas} pagas`}
+        periodLabel={periodLabel}
       />
       <KpiCard
         title="Carrinhos abandonados"
         value={String(kpis.carrinhosQtd)}
         icon={<CarrinhosAbandonadosIcon />}
         detail={`${kpis.carrinhosValor} em valor`}
+        periodLabel={periodLabel}
       />
       <KpiCard
         title="Comissão recebida"
         value={kpis.comissaoRecebida}
         icon={<HugeiconsIcon icon={Wallet02Icon} size={20} className="text-primary" />}
-        badge={{ label: "Quitado", color: "#079455" }}
+        periodLabel={periodLabel}
       />
       <KpiCard
         title="Comissão a receber"
         value={kpis.comissaoReceber}
         icon={<ComissaoAReceberIcon />}
-        badge={{ label: "Pendente", color: "#d97706" }}
+        periodLabel="Saldo total"
       />
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Referral row
+// Status helpers (aligned with IndicacoesPage)
 // ---------------------------------------------------------------------------
+
+import type { OrderStatus } from "@/mocks/afiliados";
+
+const orderStatusLabel: Record<OrderStatus, string> = {
+  Pago: "Pago",
+  "Aguardando pagamento": "Aguardando pagamento",
+  Cancelado: "Cancelado",
+  Abandonado: "Abandonado",
+};
+
+function orderStatusBadgeClass(status: OrderStatus): string {
+  switch (status) {
+    case "Pago":
+      return "bg-[#dcfce7] text-[#166534] border-[#bbf7d0]";
+    case "Aguardando pagamento":
+      return "bg-[#ffedd5] text-[#9a3412] border-[#fed7aa]";
+    case "Cancelado":
+      return "bg-[#fee2e2] text-[#991b1b] border-[#fecaca]";
+    case "Abandonado":
+      return "bg-[#fef3c7] text-[#92400e] border-[#fde68a]";
+  }
+}
+
+function commissionStatusBadgeClass(status: CommissionStatus): string {
+  switch (status) {
+    case "quitada":
+      return "bg-[#dcfce7] text-[#166534] border-[#bbf7d0]";
+    case "a-receber":
+      return "bg-[#ffedd5] text-[#9a3412] border-[#fed7aa]";
+    case "nao-gerada":
+      return "bg-gray-100 text-gray-500 border-gray-200";
+  }
+}
 
 function formatDate(iso: string): string {
   const [, m, d] = iso.split("-");
   return `${d}/${m}`;
 }
 
-function ReferralRow({
-  referral,
-  onClick,
-}: {
-  referral: AfiliadoReferral;
-  showOrg?: boolean;
-  onClick: () => void;
-}) {
-  const commissionSettled = referral.commissionStatus === "quitado";
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex min-h-[52px] w-full cursor-pointer items-center border-t border-[#f5f5f5] text-left transition-colors first:border-t-0 hover:bg-[#f8fafc]"
-      style={{ paddingLeft: 16 }}
-    >
-      {/* Name + origin */}
-      <div
-        className="flex shrink-0 items-center gap-[12px] overflow-hidden"
-        style={{ width: 280, padding: "8px 16px" }}
-      >
-        <div className="flex min-w-0 flex-1 flex-col gap-0">
-          <p className="min-w-0 truncate text-[14px] text-[#0a0a0a]">
-            {referral.customer}
-          </p>
-          <p className="text-[12px] text-[#a1a1aa] whitespace-nowrap">
-            {originLabels[referral.origin]}
-          </p>
-        </div>
-      </div>
-
-      <div className="h-[32px] w-[1px] shrink-0 bg-[#e9eaeb]" />
-
-      {/* Atividade + data */}
-      <div
-        className="flex shrink-0 items-center min-w-0"
-        style={{ width: 280, padding: "8px 12px" }}
-      >
-        <div className="flex min-w-0 flex-col gap-[1px]">
-          <div className="flex min-w-0 items-center gap-[4px]">
-            <p className="truncate text-[13px] text-[#252b37]">{referral.product}</p>
-            <span className="shrink-0 text-[#a1a1aa]">·</span>
-            <p className="shrink-0 text-[13px] text-[#252b37]">{formatDate(referral.date)}</p>
-          </div>
-          <p className="text-[12px] whitespace-nowrap text-[#a1a1aa]">
-            Atividade / Data de compra
-          </p>
-        </div>
-      </div>
-
-      <div className="h-[32px] w-[1px] shrink-0 bg-[#e9eaeb]" />
-
-      {/* Valor + Status do pedido */}
-      <div
-        className="flex shrink-0 items-center min-w-0"
-        style={{ width: 220, padding: "8px 12px" }}
-      >
-        <div className="flex min-w-0 flex-col gap-[1px]">
-          <div className="flex items-center gap-[6px]">
-            <p className="truncate text-[13px] whitespace-nowrap text-[#252b37]">
-              {referral.purchaseValue}
-            </p>
-            <span className="text-[#a1a1aa]">·</span>
-            <div
-              className="flex w-fit items-center gap-[4px]"
-              style={{ color: referral.orderStatus === "Pago" ? "rgb(7, 148, 85)" : "rgb(220, 104, 3)" }}
-            >
-              <p className="text-[13px] truncate">
-                {referral.orderStatus === "Pago" ? "Quitado" : referral.orderStatus}
-              </p>
-              {referral.orderStatus === "Pago" ? (
-                <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14">
-                  <path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ) : (
-                <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14">
-                  <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" />
-                  <path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                </svg>
-              )}
-            </div>
-          </div>
-          <p className="text-[12px] whitespace-nowrap text-[#a1a1aa]">
-            Valor / Status do pedido
-          </p>
-        </div>
-      </div>
-
-      <div className="h-[32px] w-[1px] shrink-0 bg-[#e9eaeb]" />
-
-      {/* Comissão + Status da comissão */}
-      <div
-        className="flex shrink-0 items-center min-w-0"
-        style={{ width: 220, padding: "8px 12px" }}
-      >
-        <div className="flex min-w-0 flex-col gap-[1px]">
-          <div className="flex items-center gap-[6px]">
-            <p className="truncate text-[13px] whitespace-nowrap text-[#252b37]">
-              {referral.commission}
-            </p>
-            <span className="text-[#a1a1aa]">·</span>
-            <div
-              className="flex w-fit items-center gap-[4px]"
-              style={{ color: commissionSettled ? "rgb(7, 148, 85)" : "rgb(220, 104, 3)" }}
-            >
-              <p className="text-[13px] truncate">
-                {commissionStatusLabel[referral.commissionStatus]}
-              </p>
-              {commissionSettled ? (
-                <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14">
-                  <path d="M3 7l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              ) : (
-                <svg className="shrink-0 size-[12px]" fill="none" viewBox="0 0 14 14">
-                  <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" />
-                  <path d="M7 4.5v3M7 9.5h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-                </svg>
-              )}
-            </div>
-          </div>
-          <p className="text-[12px] whitespace-nowrap text-[#a1a1aa]">
-            Comissão / Status da comissão
-          </p>
-        </div>
-      </div>
-
-    </button>
-  );
+function formatDateWithTime(iso: string, time?: string): string {
+  const [, m, d] = iso.split("-");
+  return time ? `${d}/${m} às ${time}` : `${d}/${m}`;
 }
 
 // ---------------------------------------------------------------------------
-// Referrals card
+// Referrals card (table-based, aligned with IndicacoesPage)
 // ---------------------------------------------------------------------------
 
 function ReferralsCard({
   referrals,
-  showOrg,
   onSelect,
 }: {
   referrals: AfiliadoReferral[];
-  showOrg: boolean;
   onSelect: (r: AfiliadoReferral) => void;
 }) {
   return (
@@ -439,7 +373,9 @@ function ReferralsCard({
             variant="outline"
             size="sm"
             className="shrink-0"
-            onClick={() => { window.location.hash = "#indicacoes"; }}
+            onClick={() => {
+              window.location.hash = "#indicacoes";
+            }}
           >
             Ver todas as indicações
           </Button>
@@ -447,14 +383,105 @@ function ReferralsCard({
       />
 
       <div className="mt-4 overflow-hidden rounded-xl border border-[#EEF0F4] bg-white">
-        {referrals.map((referral) => (
-          <ReferralRow
-            key={referral.id}
-            referral={referral}
-            showOrg={showOrg}
-            onClick={() => onSelect(referral)}
-          />
-        ))}
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="text-muted-foreground text-xs font-medium">
+                Comprador
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">
+                Organização
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">Pedido</TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">
+                Atividade
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">Valor</TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">
+                Comissão
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {referrals.map((referral) => {
+              const org = organizationMap[referral.organizationId];
+              const isAbandoned = referral.orderStatus === "Abandonado";
+              const displayCommission = isAbandoned ? "R$ 0,00" : referral.commission;
+
+              return (
+                <TableRow
+                  key={referral.id}
+                  className={cn("cursor-pointer", isAbandoned && "opacity-60")}
+                  onClick={() => onSelect(referral)}
+                >
+                  <TableCell>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-foreground truncate text-sm font-medium">
+                        {referral.customer}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {originLabels[referral.origin]}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-foreground text-sm">{org?.name ?? "-"}</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-foreground text-sm font-medium">
+                        {referral.orderId}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {formatDateWithTime(referral.purchaseDate, referral.time)}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-foreground truncate text-sm">{referral.product}</span>
+                      <span className="text-muted-foreground text-xs">
+                        Realização: {formatDate(referral.activityDate)}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-foreground text-sm font-medium">
+                        {referral.purchaseValue}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "w-fit text-[11px]",
+                          orderStatusBadgeClass(referral.orderStatus)
+                        )}
+                      >
+                        {orderStatusLabel[referral.orderStatus]}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-foreground text-sm font-medium">
+                        {displayCommission}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "w-fit text-[11px]",
+                          commissionStatusBadgeClass(referral.commissionStatus)
+                        )}
+                      >
+                        {commissionStatusLabel[referral.commissionStatus]}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
     </section>
   );
@@ -602,11 +629,9 @@ function referralInitials(name: string) {
 function ReferralDetailSheet({
   referral,
   onClose,
-  showOrg,
 }: {
   referral: AfiliadoReferral | null;
   onClose: () => void;
-  showOrg: boolean;
 }) {
   const org = referral ? organizationMap[referral.organizationId] : null;
   const [isClosing, setIsClosing] = useState(false);
@@ -630,12 +655,16 @@ function ReferralDetailSheet({
     window.setTimeout(onClose, 200);
   };
 
-  const purchaseDate = referral.date.split("-").reverse().join("/");
-  const ticketName = "Ingresso Adulto";
+  const purchaseDate = referral.purchaseDate.split("-").reverse().join("/");
+  const activityDate = referral.activityDate.split("-").reverse().join("/");
   const orderSettled = referral.orderStatus === "Pago";
-  const commissionSettled = referral.commissionStatus === "quitado";
+  const commissionSettled = referral.commissionStatus === "quitada";
+  const isAbandoned = referral.orderStatus === "Abandonado";
   const originVariant =
     referral.origin === "cupom" ? "amber" : referral.origin === "link-geral" ? "gray" : "blue";
+  const orderVariant =
+    orderSettled ? "green" : referral.orderStatus === "Cancelado" ? "amber" : "amber";
+  const commissionVariant = commissionSettled ? "green" : isAbandoned ? "gray" : "amber";
 
   return createPortal(
     <div
@@ -702,7 +731,7 @@ function ReferralDetailSheet({
                     className="shrink-0 text-[#535862]"
                   />
                   <p className="font-['Helvetica_Neue:Light',sans-serif] truncate text-[13px] text-[#535862]">
-                    {ticketName}
+                    {org?.name ?? "-"} · {referral.orderId}
                   </p>
                 </div>
               </div>
@@ -713,8 +742,8 @@ function ReferralDetailSheet({
                 icon={
                   <HugeiconsIcon icon={Calendar03Icon} size={18} className="text-[#535862]" />
                 }
-                label="Data de compra"
-                value={purchaseDate}
+                label="Pedido"
+                value={`${referral.orderId} · ${purchaseDate}${referral.time ? ` às ${referral.time}` : ""}`}
               />
               <ReferralDetailField
                 icon={
@@ -737,20 +766,18 @@ function ReferralDetailSheet({
                 label="Atividade"
                 value={<span className="block truncate">{referral.product}</span>}
               />
-              {showOrg && org ? (
-                <ReferralDetailField
-                  icon={
-                    <HugeiconsIcon icon={Wallet02Icon} size={18} className="text-[#535862]" />
-                  }
-                  label="Organização"
-                  value={<span className="block truncate">{org.name}</span>}
-                />
-              ) : null}
+              <ReferralDetailField
+                icon={
+                  <HugeiconsIcon icon={Calendar03Icon} size={18} className="text-[#535862]" />
+                }
+                label="Data de realização"
+                value={activityDate}
+              />
               <ReferralDetailField
                 icon={
                   <HugeiconsIcon icon={MoneyBag02Icon} size={18} className="text-[#535862]" />
                 }
-                label="Valor da compra"
+                label="Valor da venda"
                 value={
                   <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px]">
                     {referral.purchaseValue}
@@ -761,8 +788,8 @@ function ReferralDetailSheet({
                 label="Status do pedido"
                 value={
                   <ReferralStatusPill
-                    label={orderSettled ? "Quitado" : "Pendente"}
-                    variant={orderSettled ? "green" : "amber"}
+                    label={orderStatusLabel[referral.orderStatus]}
+                    variant={orderVariant}
                   />
                 }
               />
@@ -778,7 +805,7 @@ function ReferralDetailSheet({
                 label="Comissão"
                 value={
                   <span className="font-['Helvetica_Neue:Medium',sans-serif] text-[16px]">
-                    {referral.commission}
+                    {isAbandoned ? "R$ 0,00" : referral.commission}
                   </span>
                 }
               />
@@ -787,7 +814,7 @@ function ReferralDetailSheet({
                 value={
                   <ReferralStatusPill
                     label={commissionStatusLabel[referral.commissionStatus]}
-                    variant={commissionSettled ? "green" : "amber"}
+                    variant={commissionVariant}
                   />
                 }
               />
@@ -975,14 +1002,15 @@ function EmptyState({ selectedOrg }: { selectedOrg: string }) {
 
 export function AfiliadosPage() {
   const selectedOrg = "all";
-  const period: AfiliadoPeriod = "mes";
+  const [selectedPeriod, setSelectedPeriod] = useState("30d");
   const [selectedReferral, setSelectedReferral] = useState<AfiliadoReferral | null>(null);
 
-  const kpis = getKpis(period, selectedOrg);
+  const internalPeriod = getInternalPeriod(selectedPeriod);
+  const periodLabel = getPeriodLabel(selectedPeriod);
+
+  const kpis = getKpis(internalPeriod, selectedOrg);
   const referrals = getFilteredReferrals(selectedOrg);
   const isEmpty = referrals.length === 0;
-  const showOrg = selectedOrg === "all";
-
   return (
     <AppPage>
       <div className="flex flex-col gap-6">
@@ -993,14 +1021,14 @@ export function AfiliadosPage() {
             <span className="text-muted-foreground font-normal">bem-vinda de volta!</span>
           </h1>
           <p className="text-muted-foreground text-sm">
-            Confira o resumo das suas indicações e valores • Atualizado agora há pouco
+            Confira o resumo das suas indicações e valores
           </p>
         </header>
 
         <AffiliateCodeBanner />
 
         {/* KPIs */}
-        <KpiRow kpis={kpis} period={period} />
+        <KpiRow kpis={kpis} periodLabel={periodLabel} />
 
         {/* Filters */}
         <div className="flex items-center gap-[0.75em]">
@@ -1014,13 +1042,25 @@ export function AfiliadosPage() {
           </div>
           <Select defaultValue="all">
             <SelectTrigger className="h-8 w-[220px] text-xs">
-              <SelectValue placeholder="Todas as organizacoes" />
+              <SelectValue placeholder="Todas as organizações" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas as organizacoes</SelectItem>
+              <SelectItem value="all">Todas as organizações</SelectItem>
               {affiliateOrganizations.map((org) => (
                 <SelectItem key={org.id} value={org.id}>
                   {org.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+            <SelectTrigger className="h-8 w-[220px] text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {periodOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -1037,7 +1077,7 @@ export function AfiliadosPage() {
         {isEmpty ? (
           <EmptyState selectedOrg={selectedOrg} />
         ) : (
-          <ReferralsCard referrals={referrals} showOrg={showOrg} onSelect={setSelectedReferral} />
+          <ReferralsCard referrals={referrals} onSelect={setSelectedReferral} />
         )}
       </div>
 
@@ -1045,7 +1085,6 @@ export function AfiliadosPage() {
       <ReferralDetailSheet
         referral={selectedReferral}
         onClose={() => setSelectedReferral(null)}
-        showOrg={showOrg}
       />
     </AppPage>
   );

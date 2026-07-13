@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   AnalyticsUpIcon,
-  BankIcon,
   Calendar03Icon,
   FilterHorizontalIcon,
   MoneyBag02Icon,
@@ -35,7 +34,6 @@ import {
   affiliateOrganizations,
   type ComissaoLancamento,
   type CommissionStatus,
-  dadosBancarios,
   getFilteredLancamentos,
   getGanhosKpis,
   getOrgBreakdown,
@@ -47,11 +45,15 @@ import {
 // ---------------------------------------------------------------------------
 
 function commissionStatusColor(status: CommissionStatus): string {
-  return status === "quitado" ? "rgb(7, 148, 85)" : "rgb(220, 104, 3)";
+  return status === "quitada" ? "rgb(7, 148, 85)" : "rgb(220, 104, 3)";
 }
 
 function commissionStatusLabel(status: CommissionStatus): string {
-  return status === "quitado" ? "Quitado" : "Pendente";
+  switch (status) {
+    case "quitada": return "Quitada";
+    case "a-receber": return "A receber";
+    case "nao-gerada": return "Não gerada";
+  }
 }
 
 function StatusIconCheck({ color }: { color: string }) {
@@ -79,7 +81,7 @@ function StatusIconAlert({ color }: { color: string }) {
 
 function CommissionStatusIcon({ status }: { status: CommissionStatus }) {
   const color = commissionStatusColor(status);
-  return status === "quitado" ? (
+  return status === "quitada" ? (
     <StatusIconCheck color={color} />
   ) : (
     <StatusIconAlert color={color} />
@@ -320,7 +322,7 @@ function LancamentoDetailDrawer({
                   <Badge
                     variant="outline"
                     className={cn(
-                      lancamento.status === "quitado"
+                      lancamento.status === "quitada"
                         ? "border-green-200 bg-green-50 text-green-700"
                         : "border-amber-200 bg-amber-50 text-amber-700"
                     )}
@@ -330,7 +332,7 @@ function LancamentoDetailDrawer({
                 </DataListValue>
               </DataListItem>
 
-              {lancamento.status === "quitado" && lancamento.dataQuitacao && (
+              {lancamento.status === "quitada" && lancamento.dataQuitacao && (
                 <DataListItem className="justify-between py-2">
                   <DataListLabel className="text-sm">Data de quitacao</DataListLabel>
                   <DataListValue className="text-right text-sm font-medium">
@@ -537,30 +539,6 @@ export function GanhosPage() {
           )}
         </section>
 
-        {/* Card "Recebendo em" (bank details) */}
-        <Card className="rounded-3xl py-0 shadow-none">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-3">
-              <div className="bg-primary/10 flex size-8 shrink-0 items-center justify-center rounded-lg">
-                <HugeiconsIcon icon={BankIcon} size={16} className="text-primary" />
-              </div>
-              <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h3 className="text-foreground text-sm font-medium">Recebendo em</h3>
-                  <p className="text-muted-foreground mt-0.5 text-xs">
-                    {dadosBancarios.banco} ({dadosBancarios.codigoBanco}) &middot; Ag{" "}
-                    {dadosBancarios.agencia} &middot; Cc {dadosBancarios.conta} &middot;{" "}
-                    {dadosBancarios.tipo}
-                  </p>
-                  <p className="text-muted-foreground text-xs">Titular: {dadosBancarios.titular}</p>
-                </div>
-                <Button variant="outline" size="sm" className="w-fit shrink-0">
-                  Editar dados bancarios
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Detail drawer */}

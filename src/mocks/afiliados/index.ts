@@ -3,8 +3,8 @@
 // Fonte de verdade do protótipo: PRD Afiliados, Central de Vendas, Escopo.
 // ---------------------------------------------------------------------------
 
-export type OrderStatus = "Pago" | "Pendente" | "Não paga" | "Carrinho abandonado";
-export type CommissionStatus = "pendente" | "quitado";
+export type OrderStatus = "Pago" | "Aguardando pagamento" | "Cancelado" | "Abandonado";
+export type CommissionStatus = "nao-gerada" | "a-receber" | "quitada";
 export type ReferralOrigin = "link-geral" | "link-org" | "link-produto" | "cupom";
 export type AfiliadoPeriod = "semana" | "mes" | "ano";
 export type IndicacoesTab = "todas" | "pagas" | "nao-pagas" | "carrinhos-abandonados";
@@ -30,6 +30,9 @@ export interface AfiliadoReferral {
   date: string;
   time?: string;
   commissionRule?: string;
+  orderId: string;
+  purchaseDate: string;
+  activityDate: string;
 }
 
 export interface AfiliadoKpis {
@@ -152,27 +155,33 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     product: "Trilha Pico do Itambé",
     organizationId: "org-cerrado",
     orderStatus: "Pago",
-    commissionStatus: "quitado",
+    commissionStatus: "quitada",
     purchaseValue: "R$ 5.679,99",
     commission: "R$ 568,00",
     origin: "link-produto",
     date: "2026-07-05",
     time: "14:32",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-001",
+    purchaseDate: "2026-07-05",
+    activityDate: "2026-07-10",
   },
   {
     id: "ref-2",
     customer: "Maria Eduarda Santos Pereira",
     product: "Rapel Cachoeira",
     organizationId: "org-vertaco",
-    orderStatus: "Pendente",
-    commissionStatus: "pendente",
+    orderStatus: "Aguardando pagamento",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 1.890,00",
     commission: "R$ 189,00",
     origin: "cupom",
     date: "2026-07-04",
     time: "09:15",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-002",
+    purchaseDate: "2026-07-04",
+    activityDate: "2026-07-09",
   },
   {
     id: "ref-3",
@@ -180,13 +189,16 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     product: "Passeio de Barco",
     organizationId: "org-trilheiras",
     orderStatus: "Pago",
-    commissionStatus: "quitado",
+    commissionStatus: "quitada",
     purchaseValue: "R$ 3.250,00",
     commission: "R$ 325,00",
     origin: "link-org",
     date: "2026-07-03",
     time: "16:48",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-003",
+    purchaseDate: "2026-07-03",
+    activityDate: "2026-07-08",
   },
   {
     id: "ref-4",
@@ -194,13 +206,16 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     product: "Mergulho Noturno",
     organizationId: "org-cerrado",
     orderStatus: "Pago",
-    commissionStatus: "pendente",
+    commissionStatus: "a-receber",
     purchaseValue: "R$ 2.450,00",
     commission: "R$ 245,00",
     origin: "link-geral",
     date: "2026-07-02",
     time: "11:20",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-004",
+    purchaseDate: "2026-07-02",
+    activityDate: "2026-07-06",
   },
   {
     id: "ref-5",
@@ -208,27 +223,33 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     product: "Trilha Cachoeira Grande",
     organizationId: "org-vertaco",
     orderStatus: "Pago",
-    commissionStatus: "quitado",
+    commissionStatus: "quitada",
     purchaseValue: "R$ 4.120,00",
     commission: "R$ 412,00",
     origin: "link-produto",
     date: "2026-07-01",
     time: "08:05",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-005",
+    purchaseDate: "2026-07-01",
+    activityDate: "2026-07-05",
   },
   {
     id: "ref-6",
     customer: "Pedro Henrique Barbosa Costa",
     product: "Tirolesa Radical",
     organizationId: "org-cerrado",
-    orderStatus: "Pendente",
-    commissionStatus: "pendente",
+    orderStatus: "Aguardando pagamento",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 890,00",
     commission: "R$ 89,00",
     origin: "cupom",
     date: "2026-06-30",
     time: "17:40",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-006",
+    purchaseDate: "2026-06-30",
+    activityDate: "2026-07-04",
   },
   {
     id: "ref-7",
@@ -236,13 +257,16 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     product: "Canionismo Serra Geral",
     organizationId: "org-trilheiras",
     orderStatus: "Pago",
-    commissionStatus: "quitado",
+    commissionStatus: "quitada",
     purchaseValue: "R$ 6.340,00",
     commission: "R$ 634,00",
     origin: "link-org",
     date: "2026-06-29",
     time: "10:12",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-007",
+    purchaseDate: "2026-06-29",
+    activityDate: "2026-07-03",
   },
   {
     id: "ref-8",
@@ -250,13 +274,16 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     product: "Escalada Indoor",
     organizationId: "org-cerrado",
     orderStatus: "Pago",
-    commissionStatus: "quitado",
+    commissionStatus: "quitada",
     purchaseValue: "R$ 1.230,00",
     commission: "R$ 123,00",
     origin: "link-produto",
     date: "2026-06-28",
     time: "13:55",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-008",
+    purchaseDate: "2026-06-28",
+    activityDate: "2026-07-02",
   },
   {
     id: "ref-9",
@@ -264,95 +291,116 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     product: "Stand-Up Paddle",
     organizationId: "org-vertaco",
     orderStatus: "Pago",
-    commissionStatus: "pendente",
+    commissionStatus: "a-receber",
     purchaseValue: "R$ 780,00",
     commission: "R$ 78,00",
     origin: "link-geral",
     date: "2026-06-27",
     time: "15:30",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-009",
+    purchaseDate: "2026-06-27",
+    activityDate: "2026-07-01",
   },
-  // --- Novos registros: Não paga e Carrinho abandonado ---
+  // --- Cancelados e Abandonados ---
   {
     id: "ref-10",
     customer: "Luciana Martins de Oliveira",
     product: "Trilha Pico do Itambé",
     organizationId: "org-cerrado",
-    orderStatus: "Não paga",
-    commissionStatus: "pendente",
+    orderStatus: "Cancelado",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 2.340,00",
     commission: "R$ 234,00",
     origin: "link-produto",
     date: "2026-07-06",
     time: "10:45",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-010",
+    purchaseDate: "2026-07-06",
+    activityDate: "2026-07-12",
   },
   {
     id: "ref-11",
     customer: "Thiago Rezende Souza",
     product: "Rapel Cachoeira",
     organizationId: "org-vertaco",
-    orderStatus: "Não paga",
-    commissionStatus: "pendente",
+    orderStatus: "Cancelado",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 1.560,00",
     commission: "R$ 156,00",
     origin: "cupom",
     date: "2026-07-05",
     time: "18:20",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-011",
+    purchaseDate: "2026-07-05",
+    activityDate: "2026-07-11",
   },
   {
     id: "ref-12",
     customer: "Beatriz Helena Campos",
     product: "Passeio de Barco",
     organizationId: "org-trilheiras",
-    orderStatus: "Carrinho abandonado",
-    commissionStatus: "pendente",
+    orderStatus: "Abandonado",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 1.890,00",
     commission: "R$ 0,00",
     origin: "link-geral",
     date: "2026-07-04",
     time: "12:10",
+    orderId: "PED-2931-012",
+    purchaseDate: "2026-07-04",
+    activityDate: "2026-07-09",
   },
   {
     id: "ref-13",
     customer: "Gabriel Augusto de Freitas",
     product: "Mergulho Noturno",
     organizationId: "org-cerrado",
-    orderStatus: "Carrinho abandonado",
-    commissionStatus: "pendente",
+    orderStatus: "Abandonado",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 3.450,00",
     commission: "R$ 0,00",
     origin: "link-produto",
     date: "2026-07-03",
     time: "20:05",
+    orderId: "PED-2931-013",
+    purchaseDate: "2026-07-03",
+    activityDate: "2026-07-07",
   },
   {
     id: "ref-14",
     customer: "Camila Rodrigues de Almeida",
     product: "Canionismo Serra Geral",
     organizationId: "org-trilheiras",
-    orderStatus: "Carrinho abandonado",
-    commissionStatus: "pendente",
+    orderStatus: "Abandonado",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 4.780,00",
     commission: "R$ 0,00",
     origin: "link-org",
     date: "2026-07-01",
     time: "07:30",
+    orderId: "PED-2931-014",
+    purchaseDate: "2026-07-01",
+    activityDate: "2026-07-05",
   },
   {
     id: "ref-15",
     customer: "Felipe Augusto Nascimento",
     product: "Tirolesa Radical",
     organizationId: "org-cerrado",
-    orderStatus: "Não paga",
-    commissionStatus: "pendente",
+    orderStatus: "Cancelado",
+    commissionStatus: "nao-gerada",
     purchaseValue: "R$ 670,00",
     commission: "R$ 67,00",
     origin: "link-geral",
     date: "2026-06-28",
     time: "14:15",
     commissionRule: "10% sobre o valor da venda",
+    orderId: "PED-2931-015",
+    purchaseDate: "2026-06-28",
+    activityDate: "2026-07-03",
   },
 ];
 
@@ -643,15 +691,15 @@ export function getIndicacoesKpis(period: AfiliadoPeriod, orgId: string): Indica
 
 export function getFilteredReferrals(orgId: string): AfiliadoReferral[] {
   const base = orgId === "all" ? affiliateReferrals : affiliateReferrals.filter((r) => r.organizationId === orgId);
-  return base.filter((r) => r.orderStatus === "Pago" || r.orderStatus === "Pendente");
+  return base.filter((r) => r.orderStatus === "Pago" || r.orderStatus === "Aguardando pagamento");
 }
 
 export function getStatusForTab(status: OrderStatus): IndicacoesTab {
   switch (status) {
     case "Pago": return "pagas";
-    case "Pendente":
-    case "Não paga": return "nao-pagas";
-    case "Carrinho abandonado": return "carrinhos-abandonados";
+    case "Aguardando pagamento":
+    case "Cancelado": return "nao-pagas";
+    case "Abandonado": return "carrinhos-abandonados";
   }
 }
 
@@ -798,18 +846,18 @@ export function getOrgBreakdown(period: AfiliadoPeriod): OrgBreakdown[] {
 // ---------------------------------------------------------------------------
 
 export const comissaoLancamentos: ComissaoLancamento[] = [
-  { id: "lnc-1", dataGeracao: "2026-07-05", organizationId: "org-cerrado", product: "Trilha Pico do Itambé", referralId: "ref-1", customerName: "João Pedro da Silva Oliveira", valor: "R$ 568,00", status: "quitado", dataQuitacao: "2026-07-06", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-2", dataGeracao: "2026-07-04", organizationId: "org-vertaco", product: "Rapel Cachoeira", referralId: "ref-2", customerName: "Maria Eduarda Santos Pereira", valor: "R$ 189,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-3", dataGeracao: "2026-07-03", organizationId: "org-trilheiras", product: "Passeio de Barco", referralId: "ref-3", customerName: "Carlos Eduardo Ferreira Lima", valor: "R$ 325,00", status: "quitado", dataQuitacao: "2026-07-05", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-4", dataGeracao: "2026-07-02", organizationId: "org-cerrado", product: "Mergulho Noturno", referralId: "ref-4", customerName: "Juliana Aparecida de Lima", valor: "R$ 245,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-5", dataGeracao: "2026-07-01", organizationId: "org-vertaco", product: "Trilha Cachoeira Grande", referralId: "ref-5", customerName: "Amanda Cristina Miranda Souza", valor: "R$ 412,00", status: "quitado", dataQuitacao: "2026-07-03", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-6", dataGeracao: "2026-06-30", organizationId: "org-cerrado", product: "Tirolesa Radical", referralId: "ref-6", customerName: "Pedro Henrique Barbosa Costa", valor: "R$ 89,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-7", dataGeracao: "2026-06-29", organizationId: "org-trilheiras", product: "Canionismo Serra Geral", referralId: "ref-7", customerName: "Amauri dos Santos Lopes", valor: "R$ 634,00", status: "quitado", dataQuitacao: "2026-07-01", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-8", dataGeracao: "2026-06-28", organizationId: "org-cerrado", product: "Escalada Indoor", referralId: "ref-8", customerName: "Fernanda Beatriz Costa Almeida", valor: "R$ 123,00", status: "quitado", dataQuitacao: "2026-06-30", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-9", dataGeracao: "2026-06-27", organizationId: "org-vertaco", product: "Stand-Up Paddle", referralId: "ref-9", customerName: "Ricardo Augusto Alves Monteiro", valor: "R$ 78,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-10", dataGeracao: "2026-07-06", organizationId: "org-cerrado", product: "Trilha Pico do Itambé", referralId: "ref-10", customerName: "Luciana Martins de Oliveira", valor: "R$ 234,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-11", dataGeracao: "2026-06-28", organizationId: "org-cerrado", product: "Tirolesa Radical", referralId: "ref-15", customerName: "Felipe Augusto Nascimento", valor: "R$ 67,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
-  { id: "lnc-12", dataGeracao: "2026-07-05", organizationId: "org-vertaco", product: "Rapel Cachoeira", referralId: "ref-11", customerName: "Thiago Rezende Souza", valor: "R$ 156,00", status: "pendente", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-1", dataGeracao: "2026-07-05", organizationId: "org-cerrado", product: "Trilha Pico do Itambé", referralId: "ref-1", customerName: "João Pedro da Silva Oliveira", valor: "R$ 568,00", status: "quitada", dataQuitacao: "2026-07-06", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-2", dataGeracao: "2026-07-04", organizationId: "org-vertaco", product: "Rapel Cachoeira", referralId: "ref-2", customerName: "Maria Eduarda Santos Pereira", valor: "R$ 189,00", status: "a-receber", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-3", dataGeracao: "2026-07-03", organizationId: "org-trilheiras", product: "Passeio de Barco", referralId: "ref-3", customerName: "Carlos Eduardo Ferreira Lima", valor: "R$ 325,00", status: "quitada", dataQuitacao: "2026-07-05", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-4", dataGeracao: "2026-07-02", organizationId: "org-cerrado", product: "Mergulho Noturno", referralId: "ref-4", customerName: "Juliana Aparecida de Lima", valor: "R$ 245,00", status: "a-receber", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-5", dataGeracao: "2026-07-01", organizationId: "org-vertaco", product: "Trilha Cachoeira Grande", referralId: "ref-5", customerName: "Amanda Cristina Miranda Souza", valor: "R$ 412,00", status: "quitada", dataQuitacao: "2026-07-03", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-6", dataGeracao: "2026-06-30", organizationId: "org-cerrado", product: "Tirolesa Radical", referralId: "ref-6", customerName: "Pedro Henrique Barbosa Costa", valor: "R$ 89,00", status: "a-receber", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-7", dataGeracao: "2026-06-29", organizationId: "org-trilheiras", product: "Canionismo Serra Geral", referralId: "ref-7", customerName: "Amauri dos Santos Lopes", valor: "R$ 634,00", status: "quitada", dataQuitacao: "2026-07-01", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-8", dataGeracao: "2026-06-28", organizationId: "org-cerrado", product: "Escalada Indoor", referralId: "ref-8", customerName: "Fernanda Beatriz Costa Almeida", valor: "R$ 123,00", status: "quitada", dataQuitacao: "2026-06-30", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-9", dataGeracao: "2026-06-27", organizationId: "org-vertaco", product: "Stand-Up Paddle", referralId: "ref-9", customerName: "Ricardo Augusto Alves Monteiro", valor: "R$ 78,00", status: "a-receber", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-10", dataGeracao: "2026-07-06", organizationId: "org-cerrado", product: "Trilha Pico do Itambé", referralId: "ref-10", customerName: "Luciana Martins de Oliveira", valor: "R$ 234,00", status: "a-receber", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-11", dataGeracao: "2026-06-28", organizationId: "org-cerrado", product: "Tirolesa Radical", referralId: "ref-15", customerName: "Felipe Augusto Nascimento", valor: "R$ 67,00", status: "a-receber", regraComissao: "10% sobre o valor da venda" },
+  { id: "lnc-12", dataGeracao: "2026-07-05", organizationId: "org-vertaco", product: "Rapel Cachoeira", referralId: "ref-11", customerName: "Thiago Rezende Souza", valor: "R$ 156,00", status: "a-receber", regraComissao: "10% sobre o valor da venda" },
 ];
 
 export function getFilteredLancamentos(
@@ -819,8 +867,8 @@ export function getFilteredLancamentos(
 ): ComissaoLancamento[] {
   let results = orgId === "all" ? comissaoLancamentos : comissaoLancamentos.filter((l) => l.organizationId === orgId);
 
-  if (tab === "pendentes") results = results.filter((l) => l.status === "pendente");
-  else if (tab === "quitadas") results = results.filter((l) => l.status === "quitado");
+  if (tab === "pendentes") results = results.filter((l) => l.status === "a-receber" || l.status === "nao-gerada");
+  else if (tab === "quitadas") results = results.filter((l) => l.status === "quitada");
 
   if (search) {
     const q = search.toLowerCase();
@@ -834,8 +882,8 @@ export function getLancamentoTabCounts(orgId: string): Record<GanhosTab, number>
   const all = orgId === "all" ? comissaoLancamentos : comissaoLancamentos.filter((l) => l.organizationId === orgId);
   return {
     todas: all.length,
-    pendentes: all.filter((l) => l.status === "pendente").length,
-    quitadas: all.filter((l) => l.status === "quitado").length,
+    pendentes: all.filter((l) => l.status === "a-receber" || l.status === "nao-gerada").length,
+    quitadas: all.filter((l) => l.status === "quitada").length,
   };
 }
 

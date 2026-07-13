@@ -12,7 +12,8 @@ export type AppPage =
   | "indicacoes"
   | "ganhos"
   | "produtosLinks"
-  | "configuracoes";
+  | "configuracoes"
+  | "ajuda";
 
 export interface ShellNavItem {
   title: string;

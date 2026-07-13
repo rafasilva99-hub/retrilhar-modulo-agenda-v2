@@ -840,7 +840,7 @@ export function getLancamentoTabCounts(orgId: string): Record<GanhosTab, number>
 }
 
 // ---------------------------------------------------------------------------
-// Dados bancários mock
+// Dados bancários mock (legado, mantido para compatibilidade)
 // ---------------------------------------------------------------------------
 
 export const dadosBancarios = {
@@ -851,6 +851,80 @@ export const dadosBancarios = {
   tipo: "Conta Corrente",
   titular: "Katiely Pinheiro",
 };
+
+// ---------------------------------------------------------------------------
+// Formas de recebimento — destinos e vínculos por afiliação
+// FATO: multivalorado (Cristiano, 08/07)
+// ---------------------------------------------------------------------------
+
+export interface ReceivingDestination {
+  id: string;
+  apelido: string;
+  tipoDestino: "Conta bancária";
+  banco: string;
+  codigoBanco: string;
+  agencia: string;
+  agenciaMascarada: string;
+  conta: string;
+  contaMascarada: string;
+  tipoConta: "Conta corrente" | "Conta poupança" | "Conta pagamento";
+  titular: string;
+  documentoTitular: string;
+  documentoTitularMascarado: string;
+  tipoDocumento: "CPF" | "CNPJ" | "Passaporte";
+  padrao: boolean;
+}
+
+export type FormaRecebimento = "Split de pagamento" | "Transferência bancária" | "Dinheiro";
+
+export interface AffiliationReceiving {
+  organizationId: string;
+  forma: FormaRecebimento;
+  destinoId: string | null;
+}
+
+export const receivingDestinations: ReceivingDestination[] = [
+  {
+    id: "dest-1",
+    apelido: "Conta principal",
+    tipoDestino: "Conta bancária",
+    banco: "Itaú",
+    codigoBanco: "341",
+    agencia: "0932",
+    agenciaMascarada: "****-2",
+    conta: "12345-8",
+    contaMascarada: "*****-8",
+    tipoConta: "Conta corrente",
+    titular: "Katiely Pinheiro",
+    documentoTitular: "123.456.789-90",
+    documentoTitularMascarado: "***.***.***-90",
+    tipoDocumento: "CPF",
+    padrao: true,
+  },
+  {
+    id: "dest-2",
+    apelido: "Conta da empresa",
+    tipoDestino: "Conta bancária",
+    banco: "Nubank",
+    codigoBanco: "260",
+    agencia: "0001",
+    agenciaMascarada: "****-1",
+    conta: "98765-3",
+    contaMascarada: "*****-3",
+    tipoConta: "Conta pagamento",
+    titular: "KP Aventuras LTDA",
+    documentoTitular: "12.345.678/0001-90",
+    documentoTitularMascarado: "**.***.****/****-90",
+    tipoDocumento: "CNPJ",
+    padrao: false,
+  },
+];
+
+export const affiliationReceivings: AffiliationReceiving[] = [
+  { organizationId: "org-cerrado", forma: "Split de pagamento", destinoId: "dest-1" },
+  { organizationId: "org-vertaco", forma: "Transferência bancária", destinoId: "dest-1" },
+  { organizationId: "org-trilheiras", forma: "Dinheiro", destinoId: null },
+];
 
 // ---------------------------------------------------------------------------
 // Produtos e Links — escopo por organização
@@ -944,3 +1018,52 @@ export const notificationPreferences = {
   comissaoQuitada: true,
   conviteVinculo: true,
 };
+
+// ---------------------------------------------------------------------------
+// FAQ — dúvidas frequentes
+// ---------------------------------------------------------------------------
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export const affiliateFaqItems: FaqItem[] = [
+  {
+    id: "faq-1",
+    question: "Como funciona o programa de afiliados?",
+    answer:
+      "O programa de afiliados permite que você divulgue os produtos das organizações parceiras e receba comissões sobre as vendas realizadas através dos seus links ou códigos. Basta se cadastrar, ser aprovado pela organização e começar a compartilhar.",
+  },
+  {
+    id: "faq-2",
+    question: "Quando recebo minhas comissões?",
+    answer:
+      "O prazo de pagamento das comissões varia conforme a forma de recebimento configurada. No split de pagamento, a comissão é liquidada na hora da venda. Para transferência bancária, o repasse é feito pela organização conforme o ciclo acordado.",
+  },
+  {
+    id: "faq-3",
+    question: "Posso me afiliar a mais de uma organização?",
+    answer:
+      "Sim! Você pode se vincular a múltiplas organizações simultaneamente. Cada vínculo é independente e possui seus próprios produtos, comissões e configurações.",
+  },
+  {
+    id: "faq-4",
+    question: "Como altero meus dados bancários?",
+    answer:
+      "Acesse a seção 'Formas de recebimento' nas configurações. Lá você pode adicionar, editar ou remover destinos de pagamento. É possível ter mais de um destino cadastrado e definir um como padrão.",
+  },
+  {
+    id: "faq-5",
+    question: "O que acontece se meu link expirar?",
+    answer:
+      "Os links de afiliado não expiram enquanto seu vínculo com a organização estiver ativo. Caso o vínculo seja encerrado, os links deixam de rastrear novas vendas, mas comissões pendentes continuam válidas.",
+  },
+  {
+    id: "faq-6",
+    question: "Como acompanho minhas indicações e ganhos?",
+    answer:
+      "No painel principal do afiliado, você tem acesso ao resumo de indicações, ganhos e KPIs. Use os filtros de período para visualizar dados específicos e acompanhe o status de cada comissão na aba de ganhos.",
+  },
+];

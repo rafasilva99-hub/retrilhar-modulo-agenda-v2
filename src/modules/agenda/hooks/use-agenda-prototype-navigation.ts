@@ -18,6 +18,7 @@ const prototypePages: AppPage[] = [
   "ganhos",
   "produtosLinks",
   "configuracoes",
+  "ajuda",
 ];
 
 type AgendaUpdatesInitialTab = "atualizacoes" | "participantes" | "visao-geral";
@@ -35,6 +36,7 @@ const previewBases = [
   "ganhos",
   "produtosLinks",
   "configuracoes",
+  "ajuda",
 ] as const;
 type PreviewBase = (typeof previewBases)[number];
 type PreviewSelection = { base: PreviewBase; variant: string | null };

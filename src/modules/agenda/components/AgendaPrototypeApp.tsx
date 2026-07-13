@@ -12,6 +12,7 @@ import {
   shellProfile,
 } from "@/mocks/shell";
 import { AfiliadosPage } from "@/modules/afiliados/AfiliadosPage";
+import { AjudaPage } from "@/modules/afiliados/AjudaPage";
 import { ConfiguracoesPage } from "@/modules/afiliados/ConfiguracoesPage";
 import { GanhosPage } from "@/modules/afiliados/GanhosPage";
 import { IndicacoesPage } from "@/modules/afiliados/IndicacoesPage";
@@ -160,6 +161,8 @@ function AgendaPrototypeApp() {
         return <ProdutosLinksPage />;
       case "configuracoes":
         return <ConfiguracoesPage />;
+      case "ajuda":
+        return <AjudaPage />;
       case "agenda":
       default: {
         const initialView: AgendaViewMode = isAgendaViewMode(variant) ? variant : "mes";
@@ -233,17 +236,11 @@ function AgendaPrototypeApp() {
   }
 
   if (agenda.currentPage === "configuracoes") {
-    return (
-      <AppShell
-        activePage={agenda.currentPage}
-        navItems={affiliateNavItems}
-        organization={affiliateOrganization}
-        profile={affiliateProfile}
-        onNavigate={agenda.navigateTo}
-      >
-        <ConfiguracoesPage />
-      </AppShell>
-    );
+    return <ConfiguracoesPage />;
+  }
+
+  if (agenda.currentPage === "ajuda") {
+    return <AjudaPage />;
   }
 
   if (agenda.currentPage === "produtos") {

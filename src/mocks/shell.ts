@@ -1,7 +1,6 @@
 import {
   AnalyticsUpIcon,
   Calendar03Icon,
-  HelpSquareIcon,
   Home01Icon,
   Link04Icon,
   Money01Icon,
@@ -62,5 +61,4 @@ export const affiliateNavItems: ShellNavItem[] = [
   },
   { title: "Ganhos", page: "ganhos", icon: Money01Icon },
   { title: "Produtos e Links", page: "produtosLinks", icon: Link04Icon },
-  { title: "Dúvidas", icon: HelpSquareIcon, enabled: false },
 ];

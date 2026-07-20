@@ -48,6 +48,7 @@ import {
   type CommissionStatus,
   getFilteredIndicacoes,
   getIndicacoesKpis,
+  getReferralCartItems,
   type OrderStatus,
   organizationMap,
   originLabels,
@@ -164,11 +165,6 @@ function KpiCard({ title, value, icon, detail, periodLabel }: KpiCardProps) {
 // Date formatting
 // ---------------------------------------------------------------------------
 
-function formatDate(iso: string): string {
-  const [, m, d] = iso.split("-");
-  return `${d}/${m}`;
-}
-
 function formatDateFull(iso: string): string {
   const [y, m, d] = iso.split("-");
   return `${d}/${m}/${y}`;
@@ -177,6 +173,17 @@ function formatDateFull(iso: string): string {
 function formatDateWithTime(iso: string, time?: string): string {
   const formatted = formatDateFull(iso);
   return time ? `${formatted} às ${time}` : formatted;
+}
+
+function CartItemsPreview({ referral }: { referral: AfiliadoReferral }) {
+  const cartItems = getReferralCartItems(referral);
+  const itemCount = cartItems.length;
+
+  return (
+    <span className="text-foreground text-sm">
+      {itemCount} {itemCount === 1 ? "item" : "itens"}
+    </span>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -205,6 +212,7 @@ function ReferralDetailDrawer({
   onClose: () => void;
 }) {
   const org = referral ? organizationMap[referral.organizationId] : null;
+  const cartItems = referral ? getReferralCartItems(referral) : [];
 
   return (
     <Sheet open={!!referral} onOpenChange={(open) => !open && onClose()}>
@@ -253,17 +261,20 @@ function ReferralDetailDrawer({
                 </DataListValue>
               </DataListItem>
 
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Atividade</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {referral.product}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Data de realização</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {formatDateFull(referral.activityDate)}
+              <DataListItem className="items-start justify-between gap-4 py-2">
+                <DataListLabel className="text-sm">Itens do carrinho</DataListLabel>
+                <DataListValue className="flex min-w-0 flex-col gap-2 text-right text-sm">
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="min-w-0">
+                      <p className="truncate font-medium">{item.product}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {formatDateFull(item.activityDate)}
+                        {item.quantity
+                          ? ` · ${item.quantity} ${item.quantity === 1 ? "pessoa" : "pessoas"}`
+                          : ""}
+                      </p>
+                    </div>
+                  ))}
                 </DataListValue>
               </DataListItem>
             </DataList>
@@ -499,10 +510,16 @@ export function IndicacoesPage() {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-muted-foreground text-xs font-medium">Comprador</TableHead>
+                  <TableHead className="text-muted-foreground text-xs font-medium">
+                    Comprador / ID do pedido
+                  </TableHead>
                   <TableHead className="text-muted-foreground text-xs font-medium">Organização</TableHead>
-                  <TableHead className="text-muted-foreground text-xs font-medium">Pedido</TableHead>
-                  <TableHead className="text-muted-foreground text-xs font-medium">Atividade</TableHead>
+                  <TableHead className="text-muted-foreground text-xs font-medium">
+                    Data do pedido
+                  </TableHead>
+                  <TableHead className="text-muted-foreground text-xs font-medium">
+                    Itens (Qtde.)
+                  </TableHead>
                   <TableHead className="text-muted-foreground text-xs font-medium">Valor</TableHead>
                   <TableHead className="text-muted-foreground text-xs font-medium">Comissão</TableHead>
                 </TableRow>
@@ -529,7 +546,7 @@ export function IndicacoesPage() {
                             {referral.customer}
                           </span>
                           <span className="text-muted-foreground text-xs">
-                            {originLabels[referral.origin]}
+                            {referral.orderId}
                           </span>
                         </div>
                       </TableCell>
@@ -543,26 +560,14 @@ export function IndicacoesPage() {
 
                       {/* Pedido */}
                       <TableCell>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-foreground text-sm font-medium">
-                            {referral.orderId}
-                          </span>
-                          <span className="text-muted-foreground text-xs">
-                            {formatDateWithTime(referral.purchaseDate, referral.time)}
-                          </span>
-                        </div>
+                        <span className="text-foreground text-sm">
+                          {formatDateWithTime(referral.purchaseDate, referral.time)}
+                        </span>
                       </TableCell>
 
                       {/* Atividade */}
                       <TableCell>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-foreground truncate text-sm">
-                            {referral.product}
-                          </span>
-                          <span className="text-muted-foreground text-xs">
-                            Realização: {formatDate(referral.activityDate)}
-                          </span>
-                        </div>
+                        <CartItemsPreview referral={referral} />
                       </TableCell>
 
                       {/* Valor */}

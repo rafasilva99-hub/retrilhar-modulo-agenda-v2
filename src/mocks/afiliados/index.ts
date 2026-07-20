@@ -17,10 +17,18 @@ export interface AfiliadoOrganization {
   code: string;
 }
 
+export interface AfiliadoReferralCartItem {
+  id: string;
+  product: string;
+  activityDate: string;
+  quantity?: number;
+}
+
 export interface AfiliadoReferral {
   id: string;
   customer: string;
   product: string;
+  cartItems?: AfiliadoReferralCartItem[];
   organizationId: string;
   orderStatus: OrderStatus;
   commissionStatus: CommissionStatus;
@@ -165,6 +173,26 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     orderId: "PED-2931-001",
     purchaseDate: "2026-07-05",
     activityDate: "2026-07-10",
+    cartItems: [
+      {
+        id: "ref-1-item-1",
+        product: "Trilha Pico do Itambé",
+        activityDate: "2026-07-10",
+        quantity: 2,
+      },
+      {
+        id: "ref-1-item-2",
+        product: "Rapel Cachoeira",
+        activityDate: "2026-07-12",
+        quantity: 2,
+      },
+      {
+        id: "ref-1-item-3",
+        product: "Tirolesa Radical",
+        activityDate: "2026-07-13",
+        quantity: 1,
+      },
+    ],
   },
   {
     id: "ref-2",
@@ -199,6 +227,20 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     orderId: "PED-2931-003",
     purchaseDate: "2026-07-03",
     activityDate: "2026-07-08",
+    cartItems: [
+      {
+        id: "ref-3-item-1",
+        product: "Passeio de Barco",
+        activityDate: "2026-07-08",
+        quantity: 3,
+      },
+      {
+        id: "ref-3-item-2",
+        product: "Stand-Up Paddle",
+        activityDate: "2026-07-08",
+        quantity: 3,
+      },
+    ],
   },
   {
     id: "ref-4",
@@ -352,6 +394,20 @@ export const affiliateReferrals: AfiliadoReferral[] = [
     orderId: "PED-2931-012",
     purchaseDate: "2026-07-04",
     activityDate: "2026-07-09",
+    cartItems: [
+      {
+        id: "ref-12-item-1",
+        product: "Passeio de Barco",
+        activityDate: "2026-07-09",
+        quantity: 2,
+      },
+      {
+        id: "ref-12-item-2",
+        product: "Mergulho Noturno",
+        activityDate: "2026-07-10",
+        quantity: 2,
+      },
+    ],
   },
   {
     id: "ref-13",
@@ -694,6 +750,20 @@ export function getFilteredReferrals(orgId: string): AfiliadoReferral[] {
   return base.filter((r) => r.orderStatus === "Pago" || r.orderStatus === "Aguardando pagamento");
 }
 
+export function getReferralCartItems(referral: AfiliadoReferral): AfiliadoReferralCartItem[] {
+  if (referral.cartItems?.length) {
+    return referral.cartItems;
+  }
+
+  return [
+    {
+      id: `${referral.id}-item-1`,
+      product: referral.product,
+      activityDate: referral.activityDate,
+    },
+  ];
+}
+
 export function getStatusForTab(status: OrderStatus): IndicacoesTab {
   switch (status) {
     case "Pago": return "pagas";
@@ -717,7 +787,11 @@ export function getFilteredIndicacoes(
 
   if (search) {
     const q = search.toLowerCase();
-    results = results.filter((r) => r.customer.toLowerCase().includes(q) || r.product.toLowerCase().includes(q));
+    results = results.filter(
+      (r) =>
+        r.customer.toLowerCase().includes(q) ||
+        getReferralCartItems(r).some((item) => item.product.toLowerCase().includes(q))
+    );
   }
 
   if (originFilter && originFilter !== "all") {

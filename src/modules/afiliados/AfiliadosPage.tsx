@@ -45,6 +45,7 @@ import {
   type CommissionStatus,
   getFilteredReferrals,
   getKpis,
+  getReferralCartItems,
   organizationMap,
   originLabels,
 } from "@/mocks/afiliados";
@@ -342,14 +343,46 @@ function commissionStatusBadgeClass(status: CommissionStatus): string {
   }
 }
 
-function formatDate(iso: string): string {
-  const [, m, d] = iso.split("-");
-  return `${d}/${m}`;
-}
-
 function formatDateWithTime(iso: string, time?: string): string {
   const [, m, d] = iso.split("-");
   return time ? `${d}/${m} às ${time}` : `${d}/${m}`;
+}
+
+function formatDateFull(iso: string): string {
+  return iso.split("-").reverse().join("/");
+}
+
+function CartItemsPreview({ referral }: { referral: AfiliadoReferral }) {
+  const cartItems = getReferralCartItems(referral);
+  const itemCount = cartItems.length;
+
+  return (
+    <span className="text-foreground text-sm">
+      {itemCount} {itemCount === 1 ? "item" : "itens"}
+    </span>
+  );
+}
+
+function CartItemsDetailValue({ referral }: { referral: AfiliadoReferral }) {
+  const cartItems = getReferralCartItems(referral);
+
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      {cartItems.map((item) => (
+        <div key={item.id} className="min-w-0">
+          <p className="truncate font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">
+            {item.product}
+          </p>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680]">
+            {formatDateFull(item.activityDate)}
+            {item.quantity
+              ? ` · ${item.quantity} ${item.quantity === 1 ? "pessoa" : "pessoas"}`
+              : ""}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -387,14 +420,16 @@ function ReferralsCard({
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="text-muted-foreground text-xs font-medium">
-                Comprador
+                Comprador / ID do pedido
               </TableHead>
               <TableHead className="text-muted-foreground text-xs font-medium">
                 Organização
               </TableHead>
-              <TableHead className="text-muted-foreground text-xs font-medium">Pedido</TableHead>
               <TableHead className="text-muted-foreground text-xs font-medium">
-                Atividade
+                Data do pedido
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs font-medium">
+                Itens (Qtde.)
               </TableHead>
               <TableHead className="text-muted-foreground text-xs font-medium">Valor</TableHead>
               <TableHead className="text-muted-foreground text-xs font-medium">
@@ -420,7 +455,7 @@ function ReferralsCard({
                         {referral.customer}
                       </span>
                       <span className="text-muted-foreground text-xs">
-                        {originLabels[referral.origin]}
+                        {referral.orderId}
                       </span>
                     </div>
                   </TableCell>
@@ -428,22 +463,12 @@ function ReferralsCard({
                     <span className="text-foreground text-sm">{org?.name ?? "-"}</span>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-foreground text-sm font-medium">
-                        {referral.orderId}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {formatDateWithTime(referral.purchaseDate, referral.time)}
-                      </span>
-                    </div>
+                    <span className="text-foreground text-sm">
+                      {formatDateWithTime(referral.purchaseDate, referral.time)}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-foreground truncate text-sm">{referral.product}</span>
-                      <span className="text-muted-foreground text-xs">
-                        Realização: {formatDate(referral.activityDate)}
-                      </span>
-                    </div>
+                    <CartItemsPreview referral={referral} />
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
@@ -514,13 +539,15 @@ function ReferralDetailField({
   icon,
   label,
   value,
+  className,
 }: {
   icon?: React.ReactNode;
   label: string;
   value: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className={cn("flex items-center gap-3", className)}>
       {icon ? (
         <div className="flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-[#f5f5f5] bg-[#fafafa]">
           {icon}
@@ -656,7 +683,6 @@ function ReferralDetailSheet({
   };
 
   const purchaseDate = referral.purchaseDate.split("-").reverse().join("/");
-  const activityDate = referral.activityDate.split("-").reverse().join("/");
   const orderSettled = referral.orderStatus === "Pago";
   const commissionSettled = referral.commissionStatus === "quitada";
   const isAbandoned = referral.orderStatus === "Abandonado";
@@ -760,18 +786,12 @@ function ReferralDetailSheet({
           <ReferralDrawerSection title="Dados da compra">
             <div className="grid gap-5 sm:grid-cols-2">
               <ReferralDetailField
+                className="items-start sm:col-span-2"
                 icon={
                   <HugeiconsIcon icon={ShoppingBag01Icon} size={18} className="text-[#535862]" />
                 }
-                label="Atividade"
-                value={<span className="block truncate">{referral.product}</span>}
-              />
-              <ReferralDetailField
-                icon={
-                  <HugeiconsIcon icon={Calendar03Icon} size={18} className="text-[#535862]" />
-                }
-                label="Data de realização"
-                value={activityDate}
+                label="Itens do carrinho"
+                value={<CartItemsDetailValue referral={referral} />}
               />
               <ReferralDetailField
                 icon={

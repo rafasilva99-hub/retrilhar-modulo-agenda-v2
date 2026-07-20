@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useState, useMemo, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar";
 import svgPaths from "./svg-fmdffnj3gf";
 import imgTopBar from "./4a664b1820bfb04f20dc4f636db105ede4311f14.png";
 import imgAvatar from "./87b552f8867f96fa4d2ca833ef943c5aa1ab172b.png";
@@ -9,6 +10,8 @@ import {
   addWeeks, subWeeks, addDays, subDays,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ArrowDown01Icon, Search01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { mockActivities, allHolidays } from "../../mocks/agenda";
 import type { Activity, ActivityStatus } from "../../types/agenda";
 
@@ -534,46 +537,118 @@ function NavLabel({ label, onPrev, onNext }: { label: string; onPrev: () => void
 }
 
 function ViewToggle({ view, onViewChange }: { view: ViewMode; onViewChange: (v: ViewMode) => void }) {
+  const [open, setOpen] = useState(false);
   const items: { key: ViewMode; label: string }[] = [
-    { key: "mes", label: "Mês" },
-    { key: "semana", label: "Semana" },
     { key: "dia", label: "Dia" },
+    { key: "semana", label: "Semana" },
+    { key: "mes", label: "Mês" },
   ];
+  const selected = items.find((item) => item.key === view) ?? items[0];
+
   return (
-    <div className="bg-[#f1f5f9] h-full relative rounded-[12px] shrink-0" data-name="Container">
-      <div className="flex flex-row items-center size-full">
-        <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center p-[4px] relative size-full">
-          {items.map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => onViewChange(key)}
-              className={`h-full relative rounded-[10px] shrink-0 cursor-pointer ${key === view ? "bg-white shadow-[0px_0px_0px_0px_rgba(0,0,0,0.05),0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)]" : ""}`}
-              data-name="Button"
-            >
-              <div className="flex flex-row items-center justify-center size-full">
-                <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex items-center justify-center px-[12px] py-[8px] relative size-full">
-                  <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[12px] text-center whitespace-nowrap ${key === view ? "text-[#084fb7]" : "text-[#62748e]"}`}>{label}</p>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
+    <div className="flex flex-col gap-[12px] relative shrink-0 w-[132px]" data-name="ViewDropdown">
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen((current) => !current)}
+          className={`flex items-center h-[40px] w-full rounded-[8px] border bg-[#fbfcfd] px-[12px] transition-colors ${open ? "border-[#155dfc]" : "border-[#e9eaeb]"} cursor-pointer`}
+          aria-expanded={open}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="mr-[8px] shrink-0 size-[16px] text-[#314158]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M16 2V6M8 2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="flex-1 min-w-0 font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] text-left truncate">
+            {selected.label}
+          </span>
+          <HugeiconsIcon icon={ArrowDown01Icon} size={16} className={`text-[#a4a7ae] transition-transform ${open ? "rotate-180" : ""}`} />
+        </button>
+        {open && (
+          <div className="absolute bg-white border border-[#e9eaeb] border-solid left-0 overflow-hidden rounded-[8px] shadow-[0px_8px_16px_rgba(15,23,43,0.08)] top-[44px] w-full z-30">
+            {items.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => {
+                  onViewChange(key);
+                  setOpen(false);
+                }}
+                className={`content-stretch flex items-center px-[12px] py-[9px] relative w-full cursor-pointer hover:bg-[#f8fafc] ${key === view ? "bg-[#eff6ff]" : "bg-white"}`}
+              >
+                <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] whitespace-nowrap ${key === view ? "text-[#084fb7]" : "text-[#314158]"}`}>
+                  {label}
+                </p>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function CalendarHeader({ navLabel, onPrev, onNext, view, onViewChange }: {
-  navLabel: string; onPrev: () => void; onNext: () => void;
+function ReservationsListIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="shrink-0 size-[16px] text-[#314158]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M19.4999 10C19.4999 6.22876 19.4999 4.34315 18.3284 3.17157C17.1568 2 15.2712 2 11.4999 2H10.5C6.72883 2 4.84323 2 3.67166 3.17156C2.50008 4.34312 2.50007 6.22872 2.50004 9.99993L2.5 13.9999C2.49997 17.7712 2.49995 19.6568 3.67153 20.8284C4.8431 22 6.72873 22 10.5 22H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 7H15M7 12H13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M15.8613 22H20.1387C21.0238 22 21.7723 21.3987 21.4039 20.753C20.8135 19.7186 19.5114 19 18 19C16.4886 19 15.1865 19.7186 14.5961 20.753C14.2277 21.3987 14.9762 22 15.8613 22Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M17.9969 16.5C18.9639 16.5 19.7477 15.7165 19.7477 14.75C19.7477 13.7835 18.9639 13 17.9969 13C17.03 13 16.2461 13.7835 16.2461 14.75C16.2461 15.7165 17.03 16.5 17.9969 16.5Z" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function HeaderIconButton({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      className="bg-white border border-[#e2e8f0] border-solid content-stretch flex items-center justify-center relative rounded-[8px] shrink-0 size-[40px] cursor-pointer hover:bg-[#f8fafc] transition-colors"
+      data-name="IconButton"
+    >
+      {children}
+    </button>
+  );
+}
+
+function CalendarHeader({ navLabel, onPrev, onNext, onToday, view, onViewChange }: {
+  navLabel: string; onPrev: () => void; onNext: () => void; onToday: () => void;
   view: ViewMode; onViewChange: (v: ViewMode) => void;
 }) {
   return (
     <div className="bg-[rgba(255,255,255,0.95)] relative shrink-0 w-full" data-name="Container">
-      <div className="flex flex-row items-end size-full">
-        <div className="content-stretch flex items-end justify-between px-[24px] py-[20px] relative size-full">
-          <NavLabel label={navLabel} onPrev={onPrev} onNext={onNext} />
-          <div className="flex flex-row items-end self-stretch">
+      <div className="flex flex-row items-center size-full">
+        <div className="content-stretch flex items-center justify-between gap-[24px] pl-[20px] pr-[32px] py-[20px] relative size-full border-b border-[#e2e8f0]">
+          <div className="flex gap-[8px] items-center shrink-0">
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[#0f172b] text-[16px] whitespace-nowrap">
+              {navLabel}
+            </p>
+            <button onClick={onToday} className="relative rounded-[9999px] shrink-0 cursor-pointer border border-[#e2e8f0] hover:bg-[#f5f5f5] transition-colors" data-name="Button">
+              <div className="content-stretch flex items-center justify-center px-[10px] py-[4px] relative size-full">
+                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#314158] text-[12px] text-center whitespace-nowrap">Hoje</p>
+              </div>
+            </button>
+            <button onClick={onPrev} className="flex items-center justify-center size-[32px] rounded-[6px] shrink-0 cursor-pointer hover:bg-[#f5f5f5] transition-colors" data-name="button">
+              <div className="overflow-clip relative shrink-0 size-[16px]" data-name="arrow-left-01-round">
+                <Elements8 />
+              </div>
+            </button>
+            <button onClick={onNext} className="flex items-center justify-center size-[32px] rounded-[6px] shrink-0 cursor-pointer hover:bg-[#f5f5f5] transition-colors" data-name="button">
+              <div className="overflow-clip relative shrink-0 size-[16px]" data-name="arrow-right-01-round">
+                <Elements9 />
+              </div>
+            </button>
+          </div>
+          <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
             <ViewToggle view={view} onViewChange={onViewChange} />
+            <HeaderIconButton label="Lista de reservas">
+              <ReservationsListIcon />
+            </HeaderIconButton>
+            <HeaderIconButton label="Buscar atividade">
+              <HugeiconsIcon icon={Search01Icon} className="size-[16px] text-[#314158]" />
+            </HeaderIconButton>
           </div>
         </div>
       </div>
@@ -2116,15 +2191,13 @@ const CAL_COLORS: Record<ActivityStatus, { bg: string; dot: string; txt: string;
 // Single-line chip (confirmed / full)
 function CalSingleChip({ name, info, c }: { name: string; info: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
   return (
-    <div className="relative rounded-[4px] shrink-0 w-full" style={{ backgroundColor: c.bg }}>
+    <div className="relative rounded-[6px] shrink-0 w-full" style={{ backgroundColor: c.dot }}>
       <div className="flex items-center overflow-hidden rounded-[inherit] w-full">
-        <div className="flex gap-[4px] items-center min-w-0 p-[5px] w-full">
-          <div className="rounded-[9999px] shrink-0 size-[6px]" style={{ backgroundColor: c.dot }} />
-          <p className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[12px] text-ellipsis whitespace-nowrap" style={{ color: c.txt }}>{name}</p>
-          {info && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[12px] whitespace-nowrap" style={{ color: c.txt }}>{info}</p>}
+        <div className="flex gap-[4px] items-center min-w-0 px-[7px] py-[3px] w-full">
+          <p className="flex-1 font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[10px] text-ellipsis whitespace-nowrap text-white">{name}</p>
+          {info && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[10px] whitespace-nowrap text-white/70">{info}</p>}
         </div>
       </div>
-      <div aria-hidden="true" className="absolute border-[0.556px] border-solid inset-0 pointer-events-none rounded-[4px]" style={{ borderColor: c.bdr }} />
     </div>
   );
 }
@@ -2132,18 +2205,16 @@ function CalSingleChip({ name, info, c }: { name: string; info: string; c: (type
 // Two-line chip (pending / blocked)
 function CalDoubleChip({ name, info, sub, c }: { name: string; info: string; sub: string; c: (typeof CAL_COLORS)[ActivityStatus] }) {
   return (
-    <div className="min-w-0 relative rounded-[4px] w-full" style={{ backgroundColor: c.bg }}>
+    <div className="min-w-0 relative rounded-[6px] w-full" style={{ backgroundColor: c.dot }}>
       <div className="overflow-hidden rounded-[inherit] w-full">
-        <div className="flex flex-col gap-[2px] p-[5px] w-full">
+        <div className="flex flex-col gap-[1px] px-[7px] py-[3px] w-full">
           <div className="flex gap-[4px] items-center min-w-0 w-full">
-            <div className="rounded-[9999px] shrink-0 size-[6px]" style={{ backgroundColor: c.dot }} />
-            <p className="flex-1 font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[12px] text-ellipsis whitespace-nowrap" style={{ color: c.txt }}>{name}</p>
-            {info && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[12px] whitespace-nowrap" style={{ color: c.txt }}>{info}</p>}
+            <p className="flex-1 font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[10px] text-ellipsis whitespace-nowrap text-white">{name}</p>
+            {info && <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[10px] whitespace-nowrap text-white/70">{info}</p>}
           </div>
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden pl-[10px] text-[10px] text-ellipsis whitespace-nowrap" style={{ color: c.sub }}>{sub}</p>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic overflow-hidden text-[9px] text-ellipsis whitespace-nowrap text-white/60">{sub}</p>
         </div>
       </div>
-      <div aria-hidden="true" className="absolute border-[0.556px] border-solid inset-0 pointer-events-none rounded-[4px]" style={{ borderColor: c.bdr }} />
     </div>
   );
 }
@@ -2151,35 +2222,35 @@ function CalDoubleChip({ name, info, sub, c }: { name: string; info: string; sub
 // Holiday badge (purple)
 function CalHolidayBadge({ label }: { label: string }) {
   return (
-    <div className="bg-[#f3e8ff] max-w-full overflow-hidden relative rounded-[8px]">
-      <div className="flex gap-[4px] items-center overflow-hidden px-[8px] py-[2px] relative rounded-[inherit]">
-        <div className="relative shrink-0 size-[14px]">
-          <div className="bg-clip-padding border-0 border-[transparent] border-solid overflow-clip relative rounded-[inherit] size-full">
-            <div className="absolute inset-[8.33%]">
-              <div className="absolute inset-[-4.29%]">
-                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.6667 12.6667">
-                  <g>
-                    <path d={svgPaths.p113f5f0} stroke="var(--stroke-0, #8200DB)" />
-                    <path d={svgPaths.p2c4e4400} stroke="var(--stroke-0, #8200DB)" strokeLinecap="round" strokeLinejoin="round" />
-                  </g>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden relative text-[#8200db] text-[12px] text-ellipsis whitespace-nowrap">{label}</p>
+    <div className="bg-[#8200db] max-w-full overflow-hidden relative rounded-[6px]">
+      <div className="flex gap-[4px] items-center overflow-hidden px-[8px] py-[4px] relative rounded-[inherit]">
+        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden relative text-white text-[11px] text-ellipsis whitespace-nowrap">{label}</p>
       </div>
-      <div aria-hidden="true" className="absolute border-[#dab2ff] border-[0.556px] border-solid inset-0 pointer-events-none rounded-[8px]" />
     </div>
   );
 }
 
 // Activity chips (max 2 visible + overflow)
 function CalChips({ acts }: { acts: Activity[] }) {
-  const visible = acts.slice(0, 2);
-  const overflow = acts.length - 2;
+  const maxContentHeight = 76;
+  const moreRowHeight = 16;
+  let usedHeight = 0;
+  const visible: Activity[] = [];
+
+  for (const activity of acts) {
+    const chipHeight = activity.status === "pending" || activity.status === "blocked" ? 29 : 22;
+    const gapHeight = visible.length > 0 ? 4 : 0;
+    const remainingAfterThis = acts.length - visible.length - 1;
+    const reservedMoreHeight = remainingAfterThis > 0 ? moreRowHeight + 4 : 0;
+
+    if (usedHeight + gapHeight + chipHeight + reservedMoreHeight > maxContentHeight) break;
+    visible.push(activity);
+    usedHeight += gapHeight + chipHeight;
+  }
+
+  const overflow = acts.length - visible.length;
   return (
-    <div className="flex flex-[1_0_0] flex-col gap-[4px] items-start min-w-0 overflow-hidden relative">
+    <div className="flex w-full flex-col gap-[4px] items-start min-w-0 overflow-hidden relative">
       {visible.map((a) => {
         const c = CAL_COLORS[a.status];
         const { name, info } = calLabel(a);
@@ -2205,80 +2276,56 @@ function CalChips({ acts }: { acts: Activity[] }) {
 function CalDayCell({
   cell,
   onDayClick,
+  showWeekday,
 }: {
   cell: (typeof CAL_GRID)[number];
   onDayClick?: (day: number) => void;
+  showWeekday?: boolean;
 }) {
-  const holiday = CAL_HOLIDAYS[cell.iso];
+  const holiday = cell.inMonth ? CAL_HOLIDAYS[cell.iso] : undefined;
   const acts = cell.inMonth ? calGetActs(cell.iso) : [];
   const clickable = cell.inMonth;
-
-  // Date number element
-  const dateEl = cell.isToday ? (
-    <div className="bg-[#155dfc] relative rounded-[9999px] shrink-0 size-[24px]">
-      <div className="-translate-x-1/2 -translate-y-1/2 absolute flex flex-col font-['Helvetica_Neue:Medium',sans-serif] justify-center leading-[0] left-1/2 not-italic text-[12px] text-center text-white top-[calc(50%+0.5px)] w-[24px]">
-        <p className="leading-[normal]">{cell.day}</p>
-      </div>
-    </div>
-  ) : (
-    <div className="relative rounded-[9999px] shrink-0 size-[24px]">
-      <p className={`absolute font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] left-[4px] not-italic text-[12px] top-[calc(50%-9px)] whitespace-nowrap ${cell.inMonth ? "text-[#414651]" : "text-[#717680]"}`}>
-        {cell.day}
-      </p>
-    </div>
-  );
+  const weekday = showWeekday ? CAL_WD[cell.date.getDay()] : undefined;
 
   return (
     <div
       onClick={clickable ? () => onDayClick?.(cell.day) : undefined}
-      className={`bg-white h-[100px] overflow-hidden relative shrink-0 w-full${clickable ? " cursor-pointer hover:bg-[#f8fafc] transition-colors" : ""}`}
+      className={`bg-white h-[120px] min-w-[108px] overflow-hidden relative shrink-0 w-full${clickable ? " cursor-pointer hover:bg-[#fafbfc] transition-colors" : ""}`}
       data-name="_Calendar cell/Month view"
     >
       <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
-      {holiday ? (
-        /* Holiday cell: flex-col with badge at bottom-right */
-        <div className="flex flex-col items-end size-full">
-          <div className="content-stretch flex flex-col items-end justify-between p-[8px] relative size-full">
-            <div className="content-stretch flex gap-[4px] items-start relative shrink-0 w-full">
-              {dateEl}
-              {acts.length > 0 && <CalChips acts={acts} />}
+      <div className="flex flex-col gap-[6px] px-[12px] pb-[10px] pt-[10px] relative size-full">
+        {/* Header row: weekday label (left) + day number (right) */}
+        <div className="flex items-center justify-between w-full mb-[2px]">
+          {weekday ? (
+            <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[#535862] text-[12px] whitespace-nowrap">{weekday[0] + weekday.slice(1).toLowerCase()}</p>
+          ) : (
+            <span />
+          )}
+          {cell.isToday ? (
+            <div className="bg-[#155dfc] rounded-[9999px] size-[24px] flex items-center justify-center">
+              <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[12px] text-white">{cell.day}</p>
             </div>
-            <CalHolidayBadge label={holiday} />
-          </div>
+          ) : (
+            <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap ${cell.inMonth ? "text-[#414651]" : "text-[#a4a7ae]"}`}>
+              {cell.day}
+            </p>
+          )}
         </div>
-      ) : (
-        /* Normal cell */
-        <div className="content-stretch flex gap-[4px] items-start p-[8px] relative size-full">
-          {dateEl}
-          {acts.length > 0 && <CalChips acts={acts} />}
-        </div>
-      )}
+        {/* Activity chips */}
+        {acts.length > 0 && <CalChips acts={acts} />}
+        {holiday && <CalHolidayBadge label={holiday} />}
+      </div>
     </div>
   );
 }
 
 function Content({ onDayClick, refDate }: { onDayClick?: (day: number) => void; refDate: Date }) {
   const grid = useMemo(() => buildCalGrid(refDate), [refDate]);
-  const rows = grid.length / 7;
   return (
-    <div className="content-stretch flex items-stretch relative w-full" data-name="Content">
-      {CAL_WD.map((label, colIdx) => (
-        <div key={label} className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px relative" data-name="Column">
-          {/* Column header — exact Figma Make _Calendar column header */}
-          <div className="bg-[#f8fafc] relative shrink-0 w-full" data-name="_Calendar column header">
-            <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
-            <div className="flex flex-row items-center justify-center size-full">
-              <div className="content-stretch flex gap-[4px] items-center justify-center p-[8px] relative size-full">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#90a1b9] text-[12px] whitespace-nowrap">{label}</p>
-              </div>
-            </div>
-          </div>
-          {/* Day cells — one per row */}
-          {Array.from({ length: rows }, (_, rowIdx) => {
-            const cell = grid[rowIdx * 7 + colIdx];
-            return <CalDayCell key={cell.iso} cell={cell} onDayClick={onDayClick} />;
-          })}
-        </div>
+    <div className="grid grid-cols-[repeat(7,minmax(108px,1fr))] justify-start relative w-full overflow-hidden" data-name="Content">
+      {grid.map((cell, i) => (
+        <CalDayCell key={cell.iso} cell={cell} onDayClick={onDayClick} showWeekday={i < 7} />
       ))}
     </div>
   );
@@ -2350,169 +2397,328 @@ function WeekActivityCard({ a, onClick }: { a: Activity; onClick?: () => void })
   );
 }
 
-function WeekContent({ weekStart, onDayClick, onViewDetails }: { weekStart: Date; onDayClick?: (day: number) => void; onViewDetails?: (activityId?: string) => void }) {
-  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+function WeekTimeEvent({ a, onClick }: { a: Activity; onClick?: () => void }) {
+  const c = CAL_COLORS[a.status];
+  const isFull = a.status === "full";
+  const isBlocked = a.status === "blocked";
+  const label = isFull ? "Lotado" : isBlocked ? "Bloqueado" : `${a.occupancy}/${a.capacity}`;
 
   return (
-    <div className="content-stretch flex items-start relative w-full" style={{ minHeight: "500px" }} data-name="WeekContent">
-      {days.map((day) => {
-        const iso = format(day, "yyyy-MM-dd");
-        const isToday = isSameDay(day, CAL_TODAY);
-        const acts = mockActivities.filter((a) => a.date === iso);
-        const holiday = CAL_HOLIDAYS[iso];
-        const dayNum = day.getDate();
+    <button
+      onClick={onClick}
+      className="relative w-full rounded-[10px] text-left cursor-pointer transition-shadow hover:shadow-sm"
+      style={{ backgroundColor: c.bg }}
+    >
+      <div aria-hidden="true" className="absolute border-[0.556px] border-solid inset-0 pointer-events-none rounded-[10px]" style={{ borderColor: c.bdr }} />
+      <div className="content-stretch flex flex-col gap-[8px] overflow-hidden px-[12px] py-[10px] relative rounded-[inherit]">
+        <div className="content-stretch flex gap-[6px] items-center min-w-0">
+          <div className="rounded-[9999px] shrink-0 size-[6px]" style={{ backgroundColor: c.dot }} />
+          <p className="flex-1 font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[13px] text-ellipsis whitespace-nowrap" style={{ color: c.txt }}>
+            {a.name}
+          </p>
+        </div>
+        <div className="content-stretch flex items-center justify-between gap-[8px] min-w-0">
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] min-w-0 not-italic overflow-hidden text-[11px] text-ellipsis whitespace-nowrap" style={{ color: c.txt }}>
+            {a.startTime} - {a.endTime}
+          </p>
+          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic shrink-0 text-[11px] whitespace-nowrap" style={{ color: c.txt }}>
+            {label}
+          </p>
+        </div>
+      </div>
+    </button>
+  );
+}
 
-        return (
-          <div
-            key={iso}
-            className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px relative"
-            style={{ padding: "8px 6px 0 6px" }}
-            data-name="WeekColumn"
-          >
-            {/* Column header */}
-            <div
-              className="content-stretch flex flex-col gap-[2px] items-center pb-[8px] pt-[8px] relative shrink-0 w-full cursor-pointer"
-              onClick={() => onDayClick?.(dayNum)}
-            >
-              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[11px] text-[#90a1b9] tracking-[0.5px] whitespace-nowrap">
-                {WEEK_DAY_NAMES[day.getDay()]}
-              </p>
-              {isToday ? (
-                <div className="bg-[#155dfc] flex items-center justify-center rounded-[9999px] size-[28px]">
-                  <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-white">{dayNum}</p>
-                </div>
-              ) : (
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651]">{dayNum}</p>
-              )}
-            </div>
-            {/* Holiday badge */}
-            {holiday && (
-              <div className="shrink-0 w-full mb-[8px]">
-                <CalHolidayBadge label={holiday} />
-              </div>
-            )}
-            {/* Activity cards */}
-            <div className="content-stretch flex flex-col gap-[8px] items-start relative w-full">
-              {acts.map((a) => (
-                <WeekActivityCard key={a.id} a={a} onClick={() => onViewDetails?.(a.id)} />
-              ))}
-            </div>
+function WeekContent({ weekStart, onDayClick, onViewDetails }: { weekStart: Date; onDayClick?: (day: number) => void; onViewDetails?: (activityId?: string) => void }) {
+  const days = eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) });
+  const hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] as const;
+
+  return (
+    <div className="bg-white relative rounded-[16px] w-full" data-name="WeekContent">
+      <div className="content-stretch flex flex-col items-start overflow-clip relative rounded-[inherit] w-full">
+        <div className="content-stretch flex items-stretch relative w-full">
+          <div className="bg-[#f8fafc] shrink-0 w-[64px]">
+            <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
           </div>
-        );
-      })}
+          {days.map((day) => {
+            const isToday = isSameDay(day, CAL_TODAY);
+            const dayNum = day.getDate();
+            return (
+              <button
+                key={format(day, "yyyy-MM-dd")}
+                onClick={() => onDayClick?.(dayNum)}
+                className="bg-[#f8fafc] content-stretch flex flex-[1_0_0] flex-col gap-[2px] items-center justify-center min-w-px px-[8px] py-[14px] relative cursor-pointer"
+              >
+                <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
+                <p className={`font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] whitespace-nowrap ${isToday ? "text-[#155dfc]" : "text-[#90a1b9]"}`}>
+                  {WEEK_DAY_NAMES[day.getDay()].slice(0, 3)}
+                </p>
+                {isToday ? (
+                  <div className="bg-[#155dfc] flex items-center justify-center rounded-[9999px] size-[28px]">
+                    <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[13px] text-white">{dayNum}</p>
+                  </div>
+                ) : (
+                  <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#414651]">{dayNum}</p>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <div className="content-stretch flex items-stretch relative w-full">
+          <div className="content-stretch flex shrink-0 w-[64px] flex-col items-start">
+            {hours.map((hour) => (
+              <div key={hour} className="bg-white h-[82px] relative shrink-0 w-full">
+                <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
+                <p className="absolute font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] left-[16px] not-italic text-[#717680] text-[12px] top-[10px] whitespace-nowrap">
+                  {String(hour).padStart(2, "0")}:00
+                </p>
+              </div>
+            ))}
+          </div>
+          {days.map((day) => {
+            const iso = format(day, "yyyy-MM-dd");
+            const dayActs = mockActivities.filter((a) => a.date === iso);
+            return (
+              <div key={iso} className="content-stretch flex flex-[1_0_0] flex-col items-start min-w-px relative">
+                {hours.map((hour) => {
+                  const hourActs = dayActs.filter((a) => Number(a.startTime.slice(0, 2)) === hour);
+                  return (
+                    <div key={`${iso}-${hour}`} className="bg-white h-[82px] overflow-hidden relative shrink-0 w-full">
+                      <div aria-hidden="true" className="absolute border-[#e9eaeb] border-b border-r border-solid inset-0 pointer-events-none" />
+                      <div className="content-stretch flex flex-col gap-[6px] items-start p-[6px] relative size-full">
+                        {hourActs.slice(0, 1).map((a) => (
+                          <WeekTimeEvent key={a.id} a={a} onClick={() => onViewDetails?.(a.id)} />
+                        ))}
+                        {hourActs.length > 1 && (
+                          <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic px-[6px] text-[#717680] text-[11px] whitespace-nowrap">
+                            Mais {hourActs.length - 1}...
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div aria-hidden="true" className="absolute border border-[#e2e8f0] border-solid inset-0 pointer-events-none rounded-[16px]" />
     </div>
   );
 }
 
 // ─── Day View ───────────────────────────────────────────────────────────────
 
-const DAY_HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] as const;
-
-function DayActivityCard({ a, onClick }: { a: Activity; onClick?: () => void }) {
-  const c = CAL_COLORS[a.status];
-  const borderColor = WEEK_STATUS_BORDER[a.status];
-  const isBlocked = a.status === "blocked";
-  const isFull = a.status === "full";
-
-  const startH = parseInt(a.startTime.split(":")[0]);
-  const startM = parseInt(a.startTime.split(":")[1]);
-  const endH = parseInt(a.endTime.split(":")[0]);
-  const endM = parseInt(a.endTime.split(":")[1]);
-  const durationMin = (endH * 60 + endM) - (startH * 60 + startM);
-  const durationStr = durationMin >= 60 ? `${Math.floor(durationMin / 60)}h duração` : `${durationMin}min`;
-
-  const occupancyPct = a.capacity > 0 ? Math.round((a.occupancy / a.capacity) * 100) : 0;
-  const barColor = isFull ? "#fb2c36" : a.status === "pending" ? "#ff992b" : "#22c55e";
-
+function DayIcon({ type, className = "text-[#717680]" }: { type: "clock" | "calendar" | "users" | "team" | "alert" | "shield" | "close" | "check" | "progress"; className?: string }) {
+  if (type === "clock") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" className={className}>
+        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M12 8V12L14 14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (type === "calendar") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" className={className}>
+        <path d="M16 2V6M8 2V6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+        <path d="M13 4H11C7.23 4 5.34 4 4.17 5.17C3 6.34 3 8.23 3 12V14C3 17.77 3 19.66 4.17 20.83C5.34 22 7.23 22 11 22H13C16.77 22 18.66 22 19.83 20.83C21 19.66 21 17.77 21 14V12C21 8.23 21 6.34 19.83 5.17C18.66 4 16.77 4 13 4Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+        <path d="M3 10H21" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (type === "users" || type === "team") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" className={className}>
+        <path d="M13 7C13 9.21 11.21 11 9 11C6.79 11 5 9.21 5 7C5 4.79 6.79 3 9 3C11.21 3 13 4.79 13 7Z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M15 11C17.21 11 19 9.21 19 7C19 4.79 17.21 3 15 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+        <path d="M11 14H7C4.24 14 2 16.24 2 19C2 20.1 2.9 21 4 21H14C15.1 21 16 20.1 16 19C16 16.24 13.76 14 11 14Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.5" />
+        <path d="M17 14C19.76 14 22 16.24 22 19C22 20.1 21.1 21 20 21H18.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (type === "shield") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className={className}>
+        <path d="M18.7 3.5C16.82 2.55 14.5 2 12 2C9.5 2 7.18 2.55 5.3 3.5C4.36 3.96 3.9 4.19 3.45 4.91C3 5.64 3 6.34 3 7.75V11.24C3 16.92 7.54 20.08 10.17 21.43C10.91 21.81 11.27 22 12 22C12.73 22 13.09 21.81 13.83 21.43C16.46 20.08 21 16.92 21 11.24V7.75C21 6.34 21 5.64 20.55 4.91C20.1 4.19 19.64 3.96 18.7 3.5Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+        <path d="M9 11.5C9 11.5 10.4 11.75 11 13.5C11 13.5 12.5 10.5 15 9.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (type === "close") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className={className}>
+        <path d="M18 6L6 18M18 18L6 6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (type === "check") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className={className}>
+        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8 12.75C8 12.75 9.6 13.66 10.4 15C10.4 15 12.8 9.75 16 8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (type === "progress") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className={className}>
+        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+        <path d="M12 6C13.05 6 14.09 6.28 15 6.8C15.91 7.33 16.67 8.09 17.2 9C17.72 9.91 18 10.95 18 12C18 13.05 17.72 14.09 17.2 15C16.67 15.91 15.91 16.67 15 17.2C14.09 17.72 13.05 18 12 18C10.95 18 9.91 17.72 9 17.2C8.09 16.67 7.33 15.91 6.8 15L12 12V6Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    );
+  }
   return (
-    <div
-      onClick={onClick}
-      className={`relative rounded-[16px] w-full shrink-0${onClick ? " cursor-pointer hover:shadow-md transition-shadow" : ""}`}
-      style={{
-        backgroundColor: isBlocked ? "#fafafa" : "white",
-        borderLeft: `4px ${isBlocked ? "dashed" : "solid"} ${borderColor}`,
-      }}
-    >
-      <div aria-hidden="true" className="absolute border border-[#e9eaeb] border-solid inset-0 pointer-events-none rounded-[16px]" style={isBlocked ? { borderStyle: "dashed" } : undefined} />
-      <div className="content-stretch flex flex-col gap-[8px] p-[16px] relative size-full">
-        {/* Header: name + status badge */}
-        <div className="flex items-center gap-[8px]">
-          <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[14px] text-[#414651] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
-            {a.name}
-          </p>
-          {isFull && (
-            <span className="bg-[#fef2f2] border border-[#ffe2e2] border-solid font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic px-[8px] py-[2px] rounded-[6px] text-[11px] text-[#c10007] uppercase tracking-[0.5px] whitespace-nowrap shrink-0">
-              Lotado
-            </span>
-          )}
-          {a.status === "pending" && !a.guideName && (
-            <span className="bg-[#fef2f2] border border-[#ffe2e2] border-solid font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic px-[8px] py-[2px] rounded-[6px] text-[11px] text-[#c10007] uppercase tracking-[0.5px] whitespace-nowrap shrink-0">
-              Sem Guia
-            </span>
-          )}
-        </div>
-        {/* Time + duration */}
-        <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">
-          {a.startTime} - {a.endTime} · {durationStr}
-        </p>
-        {/* Guide + occupancy row */}
-        <div className="flex items-center justify-between">
-          {a.guideName ? (
-            <div className="flex items-center gap-[6px]">
-              <div className="bg-[#e2e8f0] flex items-center justify-center rounded-[9999px] size-[24px]">
-                <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[10px] text-[#414651]">
-                  {a.guideName.split(" ").map((w) => w[0]).join("").slice(0, 2)}
-                </p>
-              </div>
-              <div className="flex flex-col">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#414651]">{a.guideName}</p>
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[10px] text-[#717680]">Guia atribuído</p>
-              </div>
-            </div>
-          ) : (
-            <div />
-          )}
-          <div className="flex items-center gap-[8px]">
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#414651]">
-              {a.occupancy}/{a.capacity}
-            </p>
-            <div className="bg-[#e9eaeb] h-[4px] relative rounded-[9999px] w-[60px]">
-              <div className="absolute h-full left-0 rounded-[9999px] top-0" style={{ width: `${occupancyPct}%`, backgroundColor: barColor }} />
-            </div>
-          </div>
-        </div>
-        {/* Blocked reason */}
-        {isBlocked && (
-          <p className="font-['Helvetica_Neue:Regular',sans-serif] italic leading-[normal] text-[12px] text-[#717680]">
-            Interrompida para o Feriado
-          </p>
-        )}
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M12 9V13" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      <path d="M12 17H12.01" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      <path d="M13.92 21H10.08C5.44 21 3.13 21 2.28 19.49C1.42 17.99 2.61 15.99 4.98 12L6.9 8.75C9.18 4.92 10.31 3 12 3C13.69 3 14.82 4.92 17.1 8.75L19.02 12C21.39 15.99 22.58 17.99 21.72 19.49C20.87 21 18.56 21 13.92 21Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function dayLifecycleMeta(a: Activity) {
+  if (a.lifecycleStatus === "EmAndamento") return { label: "Em Andamento", icon: "progress" as const, card: "border-blue-300/60 border-l-blue-500 bg-blue-50/20", badge: "bg-blue-50 text-blue-600 border-blue-200" };
+  if (a.lifecycleStatus === "Realizada") return { label: "Concluída", icon: "check" as const, card: "border-emerald-300/60 border-l-emerald-500 bg-emerald-50/20", badge: "bg-emerald-50 text-emerald-600 border-emerald-200" };
+  if (a.lifecycleStatus === "Cancelada") return { label: "Cancelada", icon: "close" as const, card: "border-red-300/60 border-l-red-500 bg-red-50/20", badge: "bg-red-50 text-red-600 border-red-200" };
+  return { label: "Não Iniciada", icon: "progress" as const, card: "border-gray-300/60 border-l-gray-400 bg-white", badge: "bg-gray-50 text-gray-500 border-gray-200" };
+}
+
+function dayDateLabel(date: string) {
+  return format(new Date(`${date}T12:00:00`), "dd/MM/yyyy");
+}
+
+function dayLongDateLabel(date: string) {
+  return format(new Date(`${date}T12:00:00`), "d 'de' MMMM", { locale: ptBR });
+}
+
+function DayMetric({ icon, label, value, danger = false }: { icon: "clock" | "calendar" | "users" | "team"; label: string; value: string; danger?: boolean }) {
+  return (
+    <div className="flex items-start gap-[8px] min-w-[128px]">
+      <div className={`${danger ? "bg-red-100" : "bg-[#f8fafc]"} rounded-[6px] p-[4px] shrink-0 border border-[#e9eaeb]`}>
+        <DayIcon type={icon} className={danger ? "text-[#c10007]" : "text-[#717680]"} />
+      </div>
+      <div className="flex flex-col min-w-0">
+        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[10.5px] leading-[normal] ${danger ? "text-[#c10007]" : "text-[#717680]"}`}>{label}</span>
+        <span className={`font-['Helvetica_Neue:Regular',sans-serif] text-[13px] leading-[normal] truncate ${danger ? "text-[#c10007]" : "text-[#414651]"}`}>{value}</span>
       </div>
     </div>
   );
 }
 
-function DayContent({ dayDate, onDayClick, onViewDetails }: { dayDate: Date; onDayClick?: (day: number) => void; onViewDetails?: (activityId?: string) => void }) {
-  const iso = format(dayDate, "yyyy-MM-dd");
-  const acts = mockActivities.filter((a) => a.date === iso);
-  const holiday = CAL_HOLIDAYS[iso];
+function DaySeparator() {
+  return <div className="hidden md:block shrink-0 bg-[#e9eaeb] h-[40px] w-px self-center" />;
+}
 
-  // Group acts by start hour
-  const actsByHour: Record<number, Activity[]> = {};
-  for (const a of acts) {
-    const h = parseInt(a.startTime.split(":")[0]);
-    if (!actsByHour[h]) actsByHour[h] = [];
-    actsByHour[h].push(a);
-  }
+function DayBadge({ icon, label, tone }: { icon: "alert" | "shield"; label: string; tone: "red" | "amber" | "emerald" | "gray" }) {
+  const classes = {
+    red: "bg-red-100 text-red-800",
+    amber: "bg-amber-100 text-amber-800",
+    emerald: "bg-emerald-100 text-emerald-800",
+    gray: "bg-gray-200 text-gray-600",
+  }[tone];
+  return (
+    <span className={`inline-flex h-[22px] w-fit shrink-0 items-center justify-center gap-[4px] rounded-[9999px] px-[8px] py-[2px] font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[normal] whitespace-nowrap ${classes}`}>
+      <DayIcon type={icon} className="shrink-0" />
+      {label}
+    </span>
+  );
+}
 
-  // "Now" marker at 10:15 only if viewing today
-  const isViewingToday = isSameDay(dayDate, CAL_TODAY);
+function DayActivityCard({ a, onClick }: { a: Activity; onClick?: () => void }) {
+  const meta = dayLifecycleMeta(a);
+  const isMultiDay = a.activityType === "multi-dias" && a.startDate && a.endDate;
+  const filledDanger = a.occupancy > a.capacity;
+  const remaining = Math.max(a.capacity - a.occupancy, 0);
+  const teamLabel = a.assignedGuides.length > 0 ? `${a.assignedGuides.length} guia(s)` : "Sem equipe";
+  const detailMetrics = isMultiDay
+    ? [
+        { icon: "calendar" as const, label: "Início", value: `${dayLongDateLabel(a.startDate!)} às ${a.startTime}` },
+        { icon: "calendar" as const, label: "Fim", value: `${dayLongDateLabel(a.endDate!)} às ${a.endTime}` },
+        { icon: "clock" as const, label: "Duração", value: `${a.totalDays ?? 1} dias` },
+      ]
+    : [
+        { icon: "clock" as const, label: "Horário", value: `${a.startTime} às ${a.endTime}` },
+        { icon: "calendar" as const, label: "Data", value: dayDateLabel(a.date) },
+      ];
+
+  const badges: Array<{ icon: "alert" | "shield"; label: string; tone: "red" | "amber" | "emerald" | "gray" }> = [];
+  if (filledDanger) badges.push({ icon: "alert", label: "Vagas excedidas", tone: "red" });
+  if (a.allParticipantsInsured) badges.push({ icon: "shield", label: "Todos segurados", tone: "emerald" });
+  else badges.push({ icon: "shield", label: a.requiresInsurance ? "Seguro pendente" : "Seguro opcional", tone: a.requiresInsurance ? "amber" : "gray" });
+  if (a.participantsNeedingMedicalAttention > 0) badges.push({ icon: "alert", label: `Atenção médica (${a.participantsNeedingMedicalAttention})`, tone: "amber" });
+  if (!a.assignedGuides.length && a.teamAssignmentDeadline) badges.push({ icon: "alert", label: "Equipe pendente", tone: "amber" });
 
   return (
-    <div className="content-stretch flex flex-col px-[24px] py-[16px] relative w-full" data-name="DayContent">
-      {/* Holiday banner */}
+    <button
+      type="button"
+      onClick={onClick}
+      className={`block text-left group/card flex flex-col text-sm text-[#414651] gap-0 py-0 mt-[8px] shadow-none rounded-[12px] transition-shadow hover:shadow-sm ring-0 border-[1.5px] border-l-[4px] relative overflow-visible w-full ${meta.card}`}
+    >
+      <div className="px-[20px] pt-[20px] pb-[20px]">
+        <div className="flex flex-col gap-[16px]">
+          <div className="flex items-center gap-[8px] flex-wrap">
+            <h3 className="font-['Helvetica_Neue:Regular',sans-serif] text-[16px] leading-[normal] text-[#181d27]">{a.name}</h3>
+            {isMultiDay && (
+              <span className="inline-flex h-[22px] items-center gap-[4px] rounded-[6px] bg-purple-100 px-[8px] py-[2px] font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-purple-800">
+                <DayIcon type="clock" className="shrink-0" />
+                Atividade estendida
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-[12px] md:flex md:items-start md:gap-[16px]">
+            {detailMetrics.map((metric, index) => (
+              <div key={`${metric.label}-${metric.value}`} className="contents">
+                {index > 0 && <DaySeparator />}
+                <DayMetric icon={metric.icon} label={metric.label} value={metric.value} />
+              </div>
+            ))}
+            <DaySeparator />
+            <DayMetric icon="users" label="Vagas preenchidas" value={`${a.occupancy}/${a.capacity}`} danger={filledDanger} />
+            <DaySeparator />
+            <DayMetric icon="users" label="Vagas restantes" value={String(remaining)} />
+            <DaySeparator />
+            <DayMetric icon="team" label="Equipe responsável" value={teamLabel} />
+          </div>
+        </div>
+      </div>
+      {badges.length > 0 && (
+        <div className="bg-[#f8fafc] px-[20px] py-[12px] border-t border-[#e9eaeb] rounded-b-[12px]">
+          <div className="flex flex-wrap gap-[8px]">
+            {badges.map((badge) => (
+              <DayBadge key={`${badge.label}-${badge.tone}`} {...badge} />
+            ))}
+          </div>
+        </div>
+      )}
+      <span className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-[4px] text-[12px] px-[8px] py-[2px] rounded-[4px] border whitespace-nowrap ${meta.badge}`}>
+        {meta.label}
+        <DayIcon type={meta.icon} className="shrink-0" />
+      </span>
+    </button>
+  );
+}
+
+function DayContent({ dayDate, onDayClick, onViewDetails }: { dayDate: Date; onDayClick?: (day: number) => void; onViewDetails?: (activityId?: string) => void }) {
+  const iso = format(dayDate, "yyyy-MM-dd");
+  const acts = mockActivities
+    .filter((a) => a.date === iso)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const holiday = CAL_HOLIDAYS[iso];
+
+  const actsByTime: Record<string, Activity[]> = {};
+  for (const a of acts) {
+    if (!actsByTime[a.startTime]) actsByTime[a.startTime] = [];
+    actsByTime[a.startTime].push(a);
+  }
+  const timeGroups = Object.entries(actsByTime).sort(([a], [b]) => a.localeCompare(b));
+
+  return (
+    <div className="content-stretch flex flex-col gap-[20px] px-[24px] py-[20px] relative w-full" data-name="DayContent">
       {holiday && (
-        <div className="bg-[#f3e8ff] border border-[#dab2ff] border-solid content-stretch flex items-center justify-center mb-[16px] px-[16px] py-[8px] relative rounded-[12px] shrink-0 w-full">
+        <div className="bg-[#f3e8ff] border border-[#dab2ff] border-solid content-stretch flex items-center justify-center px-[16px] py-[8px] relative rounded-[12px] shrink-0 w-full">
           <div className="flex items-center gap-[6px]">
             <div className="relative shrink-0 size-[14px]">
               <svg className="block size-full" fill="none" viewBox="0 0 14 14">
@@ -2524,43 +2730,31 @@ function DayContent({ dayDate, onDayClick, onViewDetails }: { dayDate: Date; onD
           </div>
         </div>
       )}
-      {/* Timeline */}
-      <div className="relative w-full">
-        {DAY_HOURS.map((hour) => {
-          const hourActs = actsByHour[hour] || [];
-          const label = `${String(hour).padStart(2, "0")}:00`;
+      <div className="flex flex-col gap-[20px] relative w-full">
+        {timeGroups.map(([time, timeActs]) => {
           return (
-            <div key={hour} className="flex items-start min-h-[80px] relative w-full">
-              {/* Hour label */}
-              <div className="flex items-center shrink-0 w-[60px] pt-[2px]">
-                <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[12px] text-[#717680]">{label}</p>
-                <div className="bg-[#e9eaeb] h-[1px] ml-[8px] relative rounded-[9999px] shrink-0 w-[6px]" style={{ backgroundColor: hourActs.length > 0 ? WEEK_STATUS_BORDER[hourActs[0].status] : "#e9eaeb" }} />
+            <div key={time} className="flex flex-col gap-[12px] relative w-full">
+              <div className="flex items-center gap-[8px]">
+                <div className="flex items-center gap-[6px] rounded-[8px] px-[10px] py-[4px] shrink-0 border border-[#e9eaeb] bg-white">
+                  <DayIcon type="clock" className="text-[#a4a7ae]" />
+                  <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862] leading-[normal]">{time}</span>
+                  {timeActs.length > 1 && (
+                    <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#717680] leading-[normal]">· {timeActs.length} atividades</span>
+                  )}
+                </div>
+                <div className="flex-1 border-t border-dashed border-[#e9eaeb]" />
               </div>
-              {/* Hour line */}
-              <div className="flex-1 min-w-0 relative border-t border-[#e9eaeb]">
-                {hourActs.length > 0 ? (
-                  <div className="content-stretch flex gap-[12px] py-[8px] relative w-full">
-                    {hourActs.map((a) => (
-                      <div key={a.id} className="flex-1 min-w-0">
-                        <DayActivityCard a={a} onClick={() => onViewDetails?.(a.id)} />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="py-[8px]">
-                    <p className="font-['Helvetica_Neue:Regular',sans-serif] italic leading-[normal] not-italic text-[12px] text-[#c7c7c7]">Sem atividades</p>
-                  </div>
-                )}
+              <div className="flex flex-col gap-[12px]">
+                {timeActs.map((a) => (
+                  <DayActivityCard key={a.id} a={a} onClick={() => onViewDetails?.(a.id)} />
+                ))}
               </div>
             </div>
           );
         })}
-        {/* Current time indicator */}
-        {isViewingToday && (
-          <div className="absolute left-[52px] right-0 flex items-center" style={{ top: `${((10.25 - 8) / (18 - 8)) * 100}%` }}>
-            <div className="bg-[#155dfc] rounded-[9999px] size-[8px] shrink-0" />
-            <div className="bg-[#155dfc] flex-1 h-[2px]" />
-            <div className="bg-[#155dfc] font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] ml-[4px] not-italic px-[6px] py-[2px] rounded-[6px] shrink-0 text-[10px] text-white whitespace-nowrap">10:15</div>
+        {timeGroups.length === 0 && (
+          <div className="border border-dashed border-[#e9eaeb] rounded-[12px] px-[16px] py-[28px] text-center">
+            <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px] text-[#717680]">Nenhuma atividade para este dia.</p>
           </div>
         )}
       </div>
@@ -2568,16 +2762,145 @@ function DayContent({ dayDate, onDayClick, onViewDetails }: { dayDate: Date; onD
   );
 }
 
+function MiniMonthCalendar({
+  refDate,
+  onDateSelect,
+  onMonthChange,
+}: {
+  refDate: Date;
+  onDateSelect: (date: Date) => void;
+  onMonthChange: (date: Date) => void;
+}) {
+  return (
+    <div className="relative w-full" data-name="MiniCalendar">
+      <Calendar
+        mode="single"
+        month={refDate}
+        selected={refDate}
+        onMonthChange={onMonthChange}
+        onSelect={(date) => date && onDateSelect(date)}
+        locale={ptBR}
+        formatters={{
+          formatWeekdayName: (weekday) => ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][weekday.getDay()],
+        }}
+        buttonVariant="ghost"
+        className="w-full p-0 [--cell-radius:8px] [--cell-size:36px]"
+        classNames={{
+          root: "w-full",
+          months: "w-full",
+          month: "flex w-full flex-col gap-[18px]",
+          month_caption: "flex h-[36px] w-full items-center justify-start pl-[8px] pr-[76px]",
+          caption_label: "font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[#181d27] text-[14px] capitalize",
+          nav: "absolute right-0 top-0 flex items-center justify-end gap-[4px]",
+          button_previous: "flex items-center justify-center size-[32px] rounded-[6px] transition-colors cursor-pointer hover:bg-[#f5f5f5] [&>svg]:size-[16px] [&>svg]:text-[#535862]",
+          button_next: "flex items-center justify-center size-[32px] rounded-[6px] transition-colors cursor-pointer hover:bg-[#f5f5f5] [&>svg]:size-[16px] [&>svg]:text-[#535862]",
+          weekdays: "grid grid-cols-7 w-full",
+          weekday: "font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#90a1b9] text-[12px] text-center",
+          week: "grid grid-cols-7 mt-[8px] w-full",
+          day: "relative aspect-square h-[38px] w-full rounded-[8px] p-0 text-center select-none",
+          today: "bg-transparent text-inherit",
+        }}
+        components={{
+          DayButton: ({ day, modifiers, ...props }) => {
+            const iso = format(day.date, "yyyy-MM-dd");
+            const acts = calGetActs(iso);
+            return (
+              <button
+                {...props}
+                className={`content-stretch flex flex-col gap-[2px] items-center justify-center size-full ${
+                  modifiers.selected
+                    ? "rounded-full bg-[#dbeafe] text-[#1447e6]"
+                    : modifiers.outside
+                      ? "rounded-[8px] text-[#c7c7c7] hover:bg-[#eef2f7]"
+                      : "rounded-[8px] text-[#414651] hover:bg-[#eef2f7]"
+                }`}
+              >
+                <span className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[13px]">{day.date.getDate()}</span>
+                {acts.length > 0 && (
+                  <span className="content-stretch flex gap-[2px] items-center justify-center h-[4px] max-w-full overflow-hidden">
+                    {acts.slice(0, 3).map((activity) => (
+                      <span
+                        key={activity.id}
+                        className="rounded-[9999px] shrink-0 size-[4px]"
+                        style={{ backgroundColor: CAL_COLORS[activity.status].dot }}
+                      />
+                    ))}
+                  </span>
+                )}
+              </button>
+            );
+          },
+        }}
+      />
+    </div>
+  );
+}
+
+function CalendarCategories({ refDate }: { refDate: Date }) {
+  const monthActivities = mockActivities.filter((activity) => isSameMonth(new Date(`${activity.date}T12:00:00`), refDate));
+  const categories: { key: ActivityStatus; label: string }[] = [
+    { key: "confirmed", label: "Confirmadas" },
+    { key: "pending", label: "Pendentes" },
+    { key: "full", label: "Lotadas" },
+    { key: "blocked", label: "Bloqueadas" },
+  ];
+  const maxCount = Math.max(1, ...categories.map(({ key }) => monthActivities.filter((activity) => activity.status === key).length));
+
+  return (
+    <div className="content-stretch flex flex-col gap-[18px] items-start relative w-full" data-name="Categories">
+      <div className="content-stretch flex items-center justify-between relative w-full">
+        <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[#0f172b] text-[14px] whitespace-nowrap">Categorias</p>
+      </div>
+      <div className="content-stretch flex flex-col gap-[14px] items-start relative w-full">
+        {categories.map(({ key, label }) => {
+          const count = monthActivities.filter((activity) => activity.status === key).length;
+          const color = CAL_COLORS[key];
+          return (
+            <div key={key} className="content-stretch flex gap-[12px] items-center relative w-full">
+              <div className="rounded-full shrink-0 size-[8px]" style={{ backgroundColor: color.dot }} />
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#314158] text-[14px] w-[92px] whitespace-nowrap">
+                {label}
+              </p>
+              <div className="bg-[#e2e8f0] h-[3px] min-w-0 relative rounded-[9999px] flex-1">
+                <div className="absolute h-full left-0 rounded-[9999px] top-0" style={{ width: `${Math.max(12, (count / maxCount) * 100)}%`, backgroundColor: color.dot }} />
+              </div>
+              <p className="font-['Helvetica_Neue:Regular',sans-serif] leading-[normal] not-italic text-[#62748e] text-[12px] text-right w-[18px]">{count}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function CalendarSidePanel({
+  refDate,
+  onDateSelect,
+  onMonthChange,
+}: {
+  refDate: Date;
+  onDateSelect: (date: Date) => void;
+  onMonthChange: (date: Date) => void;
+}) {
+  return (
+    <aside className="content-stretch flex flex-col gap-[36px] items-start relative shrink-0 w-[340px] mr-[16px] pt-[24px] pl-[16px]" data-name="CalendarSidePanel">
+      <MiniMonthCalendar refDate={refDate} onDateSelect={onDateSelect} onMonthChange={onMonthChange} />
+      <CalendarCategories refDate={refDate} />
+    </aside>
+  );
+}
+
 // ─── Calendar Wrapper (switches between Month/Week/Day) ─────────────────────
 
 function CalendarCard({
   view, onViewChange, onDayClick, onViewDetails,
-  refDate, onPrev, onNext,
+  refDate, onPrev, onNext, onToday, onDateSelect, onMonthChange,
 }: {
   view: ViewMode; onViewChange: (v: ViewMode) => void;
   onDayClick?: (day: number) => void;
   onViewDetails?: (activityId?: string) => void;
-  refDate: Date; onPrev: () => void; onNext: () => void;
+  refDate: Date; onPrev: () => void; onNext: () => void; onToday: () => void;
+  onDateSelect: (date: Date) => void; onMonthChange: (date: Date) => void;
 }) {
   // Build nav label based on view
   let navLabel: string;
@@ -2600,20 +2923,26 @@ function CalendarCard({
   return (
     <div className="absolute bg-white left-[var(--shell-offset,248px)] right-[24px] rounded-[24px] top-[363px]" data-name="Container">
       <div className="content-stretch flex flex-col items-start overflow-clip py-px relative rounded-[inherit] size-full">
-        <CalendarHeader navLabel={navLabel} onPrev={onPrev} onNext={onNext} view={view} onViewChange={onViewChange} />
+        <CalendarHeader navLabel={navLabel} onPrev={onPrev} onNext={onNext} onToday={onToday} view={view} onViewChange={onViewChange} />
         <div className="bg-white relative shrink-0 w-full" data-name="CalendarBody" style={{ minHeight: view === "dia" ? "520px" : undefined }}>
-          <div className={`flex flex-col rounded-[inherit] w-full`}>
-            {view === "mes" && (
-              <div className="content-stretch flex flex-col items-start pb-[16px] pt-[4px] px-[24px] relative w-full">
-                <Main onDayClick={onDayClick} refDate={refDate} />
-              </div>
-            )}
-            {view === "semana" && (
-              <WeekContent weekStart={startOfWeek(refDate, { weekStartsOn: 0 })} onDayClick={onDayClick} onViewDetails={onViewDetails} />
-            )}
-            {view === "dia" && (
-              <DayContent dayDate={refDate} onDayClick={onDayClick} onViewDetails={onViewDetails} />
-            )}
+          <div className="flex flex-row rounded-[inherit] w-full">
+            <div className="min-w-0 flex-1">
+              {view === "mes" && (
+                <div className="content-stretch flex flex-col items-start pb-[18px] pt-[24px] px-[20px] relative w-full">
+                  <Main onDayClick={onDayClick} refDate={refDate} />
+                </div>
+              )}
+              {view === "semana" && (
+                <div className="content-stretch flex flex-col items-start pb-[24px] pt-[4px] px-[24px] relative w-full">
+                  <WeekContent weekStart={startOfWeek(refDate, { weekStartsOn: 0 })} onDayClick={onDayClick} onViewDetails={onViewDetails} />
+                </div>
+              )}
+              {view === "dia" && (
+                <DayContent dayDate={refDate} onDayClick={onDayClick} onViewDetails={onViewDetails} />
+              )}
+            </div>
+            <div className="w-px bg-[#e9eaeb] shrink-0 self-stretch" />
+            <CalendarSidePanel refDate={refDate} onDateSelect={onDateSelect} onMonthChange={onMonthChange} />
           </div>
         </div>
       </div>
@@ -3243,6 +3572,18 @@ export default function AgendaMes({ onDayClick, onViewDetails, initialView = "me
     else setRefDate((d) => addDays(d, 1));
   };
 
+  const handleToday = () => {
+    setRefDate(CAL_TODAY);
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setRefDate(date);
+  };
+
+  const handleMonthChange = (date: Date) => {
+    setRefDate((current) => new Date(date.getFullYear(), date.getMonth(), Math.min(current.getDate(), 28)));
+  };
+
   return (
     <div className="bg-[#f8fafc] relative w-full min-h-[calc(100vh+24px)]" data-name="AGENDA - MÊS">
       <Container />
@@ -3254,6 +3595,9 @@ export default function AgendaMes({ onDayClick, onViewDetails, initialView = "me
         refDate={refDate}
         onPrev={handlePrev}
         onNext={handleNext}
+        onToday={handleToday}
+        onDateSelect={handleDateSelect}
+        onMonthChange={handleMonthChange}
       />
       <TopBar />
       <div className="fixed bg-white content-stretch flex flex-col h-[745px] items-start left-[24px] rounded-[16px] top-[24px] w-[200px] z-20" data-name="Sidebar - Admin">

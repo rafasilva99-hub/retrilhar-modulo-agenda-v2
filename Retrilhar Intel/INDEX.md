@@ -29,11 +29,14 @@ Manter uma memoria de produto persistida, versionada e navegavel, alinhada com o
 | PRD | [[10-prd/README]] | Entrada consolidada de escopo e fontes canonicas. |
 | Agenda | [[20-modulos/agenda]] | Agenda administrativa, atividades, reservas, mapa de vagas e atualizacoes. |
 | Afiliados | [[20-modulos/afiliados-vendedores]] | Painel de afiliados, gestao de afiliados e vendedores. |
+| Sala de Negocios | [[20-modulos/sala-de-negocios]] | Site externo de entrada do afiliado: landing, cadastro e estados. |
+| Detalhes da Atividade | [[20-modulos/detalhes-atividade]] | Execucao em campo: participantes, check-in, conclusao. |
 | Produtos | [[20-modulos/produtos]] | Catalogo, cadastro/edicao e comunicacao de produto. |
 | Vendas | [[20-modulos/vendas]] | Central comercial, pedidos, PDV e detalhes. |
 | Fluxo operacional | [[30-fluxos/fluxo-documentacao-maestri]] | Como Maestri, Bibliotecario, workers e Obsidian se conectam. |
 | Decisoes | [[40-decisoes/DEC-0001-obsidian-como-memoria]] | Decisoes firmes com fonte e impacto. |
 | Planejamento | [[50-planejamento/roadmap-documentacao-viva]] | Fases de consolidacao da intel. |
+| Plano de acao | [[50-planejamento/plano-acao-2026-07-13-a-08-31]] | Checklist de entregas, gates e cronograma ate 31/08. |
 | Reunioes | [[60-reunioes/README]] | Indice das transcricoes e proximo fluxo de ingestao. |
 | Cronologia | [[60-reunioes/cronologia-canonica]] | Linha do tempo reconciliada entre vault local e Claude Project. |
 | Inbox | [[_inbox/README]] | Propostas e duvidas antes de virar verdade consolidada. |

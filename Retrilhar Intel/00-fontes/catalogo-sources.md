@@ -86,6 +86,12 @@ origem: NotebookLM exports em ../Sources/
 - [Styling](../Sources/styling.md.html)
 - [Guia Claude Code Pro](../Sources/guia-claude-code-pro.md.html)
 
+## Fontes recebidas fora do NotebookLM
+
+- **Plano de Ação e Checklist de Entregas 13/07 a 31/08/2026** (docx). Recebido via Claude em 21/07. Fonte canonica de status (entregue / em andamento / pendente), prioridades, gates e riscos do ciclo julho-agosto. Arquivo bruto versionado em `Sources/Plano_de_Acao_2026-07-13_a_08-31.docx` para fechar a trilha de auditoria.
+- **RNPN 002 Modulo Painel de Operacoes** (Project Knowledge do Claude). Documento de necessidades do cliente com perfis de Gestor Operacional e Lider de Operacao. **FATO** verificado em 21/07: e documento diferente do RPP002 (complementa, nao substitui).
+- **FATO** verificado em 21/07: `RPP002 PAINEL OPERACIONAL` e `RPP002 PAINEL DE OPERACOES` no Project Knowledge sao byte-identicos (mesmo md5). Tratar `RPP002 PAINEL OPERACIONAL` como canonico.
+
 ## Pendencias do catalogo
 
 - Identificar o conteudo dos arquivos `Texto colado*.html`, porque seus titulos de metadata sao genericos.

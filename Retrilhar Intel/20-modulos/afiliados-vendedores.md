@@ -1,54 +1,83 @@
 ---
 tipo: modulo
 modulo: afiliados-vendedores
-status: curadoria-inicial
+status: em-execucao
 owner: bibliotecario
 atualizado: 2026-07-21
 fontes:
+  - Plano de Ação e Checklist de Entregas 13/07 a 31/08 (docx, ingerido 21/07)
+  - PRD do Módulo de Afiliados
   - ../Sources/Bloco_3_Vendedores_Afiliados.md.html
-  - ../Sources/Mo%CC%81dulo_%20Central%20de%20Vendas.docx.html
+  - Conversa Claude "Avaliação de transcrição Retrilhar 08/07"
+  - Conversa Claude "Arquitetura do módulo de afiliados e configurações"
 ---
 
-# Modulo Afiliados e Vendedores
+# Módulo Afiliados e Vendedores
 
-## Fontes principais
+## Visão de produto
 
-- [Bloco 3 - Vendedores e Afiliados](../Sources/Bloco_3_Vendedores_Afiliados.md.html)
-- [Modulo Central de Vendas](../Sources/Mo%CC%81dulo_%20Central%20de%20Vendas.docx.html)
-- [Alinhamento Retrilhar - 25/03](../Sources/Alinhamento%20Retrilhar%20-%2025_03.docx.html)
+O afiliado é uma pessoa física que se vincula a operadoras de turismo, mantém um código próprio de indicação e recebe comissão sobre as vendas originadas por ele. O Painel de Afiliados é a área logada onde o afiliado acompanha indicações, ganhos, produtos permitidos e configurações. A entrada de novos afiliados acontece pela Sala de Negócios (ver [[sala-de-negocios]]).
 
-## Fatos confirmados
+- **FATO** (Bloco 3): Vendedores e Afiliados são módulos separados, mas compartilham lógica de listagem, cadastro, performance e comissões.
+- **DECISÃO** (PRD / reuniões): na V1 o modelo de entrada é o afiliado se candidatando à agência, e não a agência convidando o afiliado. Todo copy e fluxo deve refletir essa inversão.
+- **FATO** (08/07, Cristiano): a pessoa vira usuária do sistema antes de virar afiliada; existe um estado "sem perfil de afiliado". A comissão desejada é informada no próprio cadastro do perfil.
 
-- **FATO**: Vendedores e Afiliados aparecem como modulos separados, mas compartilham logica de listagem, cadastro, performance e comissoes.
-- **FATO**: O afiliado e descrito como pessoa fisica que faz contrato com empresas, mantendo o mesmo codigo e enviando para lojas diferentes.
-- **FATO**: Essa definicao impacta visualizacoes por empresa/organizacao quando a mesma pessoa atua como afiliada de multiplas empresas.
-- **FATO**: O Bloco 3 identifica tarefas de Vendedores: Lista e Novo, Detalhes.
-- **FATO**: O Bloco 3 identifica tarefas de Afiliados: Lista e Novo, Detalhes.
+## Status das entregas (fonte: Plano de Ação 13/07 a 31/08)
 
-## Diferenca operacional
-
-| Perfil | Papel | Implicacao de UI |
+| Status | Plataforma | Entrega |
 | --- | --- | --- |
-| Vendedor | Opera vendas internamente ou comercialmente para a empresa. | Gestao de performance, metas, comissoes e pedidos. |
-| Afiliado | Pessoa fisica com codigo recorrente usado em diferentes lojas/empresas. | Painel precisa organizar indicacoes, links, ganhos e contexto por organizacao. |
+| ✅ Entregue | Web | Home de início com código, atalhos, KPIs e indicações recentes |
+| ✅ Entregue | Web | Área de indicações com KPIs e listagem geral |
+| ✅ Entregue | Web | Área de ganhos com KPIs, comissões por organização e extratos |
+| ✅ Entregue | Web | Área de produtos e links permitidos para venda e solicitações de filiação |
+| ✅ Entregue | Web | Configurações: perfil, recebimento, organizações, senha e notificações |
+| ✅ Entregue | Web | Ajuda e suporte com FAQ e contato com a Retrilhar |
+| 🟧 Em andamento | Web | Refinamentos finais de UI e consistência entre páginas (conclusão funcional 17/07) |
+| 🟧 Em andamento | Web | Conectar navegação, estados essenciais e protótipo para handoff (congelar até 17/07) |
 
-## Relacao com codigo atual
+**Gate 0 (17/07)**: Painel de Afiliados e Sala de Negócios organizados, prototipados e sem decisão estrutural aberta.
 
-- Worktree de frente: `/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar-afiliados-front-worktree`
-- Branch: `work/afiliados-front`
-- Portal desktop: `Preview front - Afiliados`
-- Portal mobile: `Preview front - Afiliados Mobile`
-- **ATENCAO**: neste worktree limpo, `src/modules/gestor-afiliados/**` ainda nao existe. Ha indicios de trabalho relacionado no checkout principal, mas ele precisa ser promovido com gate antes de virar base.
+## Ciclo de vida do afiliado no painel
 
-## Pendencias abertas
+**DECISÃO** (protótipo Home v3, validado como modelo de estados): o painel adapta a home ao estágio do afiliado.
 
-- **PENDENTE**: Extrair detalhadamente as tarefas de Afiliados: Lista e Novo / Detalhes.
-- **PENDENTE**: Mapear quais requisitos do painel de afiliado ja estao implementados em `src/modules/afiliados/**`.
-- **PENDENTE**: Decidir como promover a gestao de afiliados do checkout principal para `work/afiliados-front`.
-- **PENDENTE**: Consolidar nomenclatura de UI: usar `afiliação`; evitar introduzir `contrato` ou `vínculo` na interface sem decisao especifica.
+```mermaid
+stateDiagram-v2
+    [*] --> M0: Usuário sem perfil de afiliado
+    M0 --> M1: Envia candidatura à agência
+    M1 --> M2: Candidatura aprovada
+    M1 --> M0: Candidatura rejeitada
+    M2 --> M3: Primeiras vendas registradas
+    M3 --> M3: Operação madura (KPIs, indicações, banner de código)
 
-## Fluxo recomendado para melhorias
+    note right of M1
+        M1 = aguardando resposta da agência
+    end note
+    note right of M2
+        M2 = afiliação ativa, zero vendas
+    end note
+```
 
-1. Worker Afiliados le esta nota antes de alterar o painel.
-2. Se a tarefa envolver gestao de afiliados ausente no worktree, o Maestro precisa criar um gate de promocao antes da implementacao.
-3. Bibliotecario atualiza esta nota apos cada validacao desktop/mobile.
+- **PROPOSTA** (protótipo): após a aprovação da agência, o afiliado confirma as condições antes de a afiliação nascer (aprovação tratada como proposta). **PENDENTE**: validar com Cristiano se a aprovação cria vínculo direto ou exige essa confirmação.
+- **PENDENTE**: regras após candidatura rejeitada (recandidatura permitida? prazo?) não estão definidas.
+
+## Regras de negócio consolidadas
+
+- **DECISÃO**: formas de recebimento seguem estrutura um-para-muitos ("Formas de recebimento"): um afiliado pode ter múltiplas formas cadastradas.
+- **DECISÃO**: a listagem de indicações é ancorada no pedido/carrinho, com colunas confirmadas: comprador, organização, pedido, atividade, valor e comissão.
+- **FATO** (Bloco 3): o mesmo afiliado pode atuar para múltiplas empresas com o mesmo código; ganhos e produtos precisam de contexto por organização.
+- **DECISÃO** (08/07): aceite ou recusa de oportunidades sem contraproposta na V1; negociação de condições é visão futura.
+- **DECISÃO** de nomenclatura: usar "afiliação" na interface; não introduzir "contrato" ou "vínculo" sem decisão específica.
+
+## Pendências abertas
+
+- **PENDENTE (alta, HP16)**: a candidatura é à agência como um todo ou a produtos específicos? Dono: Cristiano.
+- **PENDENTE**: fluxo de confirmação pós-aprovação (ver diagrama acima). Dono: Cristiano.
+- **PENDENTE**: os quatro valores de status "condicionante" estão com Matheus (backend do módulo).
+- **PENDENTE**: impacto em cascata do modelo de candidatura sobre copy da landing, onboarding e boards da Sala de Negócios.
+- **ATENÇÃO**: qualquer reabertura de escopo após o congelamento de 17/07 entra como correção bloqueadora ou vai para o backlog (regra de proteção do plano).
+
+## Vendedores
+
+- **FATO** (Bloco 3): tarefas identificadas: Lista e Novo, Detalhes.
+- **PENDENTE**: Vendedores não aparece no plano de ação de julho/agosto; fica fora do ciclo atual salvo decisão nova.

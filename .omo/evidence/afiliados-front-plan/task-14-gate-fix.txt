@@ -1,0 +1,395 @@
+Todo 14 gate-fix evidence
+Date: 2026-07-20 (America/Sao_Paulo)
+Repository HEAD: 9bed5f07d53ef46c6efd68fa80c7dc69d0b85fbd
+Evidence location decision: `/Users/rafaelsilva/.local/bin/omo ulw-loop status --json` exited 1 with `ULW_LOOP_PLAN_MISSING`; fallback is `.omo/evidence/afiliados-front-plan/`.
+Execution tier: LIGHT. The intended delta is generated-artifact gate isolation, one allowed fixture-format repair, and QA evidence/policy. No product behavior is being added.
+Status: COMPLETE under criterion A's explicit unrelated-legacy exception; aggregate `npm run check` remains accurately BLOCKED at exit 1.
+
+=== RED: aggregate repository gate ===
+Scenario: run the exact Todo 14 command gate on the unchanged worktree.
+Invocation: npm run check
+Binary observable: FAIL because exit status is nonzero.
+Exit: 2
+Relevant captured output:
+  > npm run format:check && npm run lint && npm run typecheck && npm run build
+  > prettier . --check --cache
+  [error] .omo/ulw-loop/evidence/G001-quality-review.json: SyntaxError: Unexpected token (1:1)
+  [warn] src/mocks/afiliados/index.ts
+  [warn] plus generated `.omo/**` artifacts and unrelated pre-existing documentation/source paths
+  Error occurred when checking code style in the above file.
+Interpretation: the aggregate stops in Prettier before lint/typecheck/build. This reproduces T14-AC-command-gate.
+
+=== RED: independent lint ownership ===
+Invocation: npm run lint
+Binary observable: FAIL because exit status is nonzero.
+Exit: 1
+Relevant captured output:
+  40 problems (39 errors, 1 warning)
+  Generated `.omo/**` artifacts: 28 errors total:
+    final-browser/qa-driver.mjs: 8 errors
+    task-13-browser/qa-driver.mjs: 9 errors
+    agenda task qa-debug.spec.cjs: 11 errors
+  Unrelated maintained legacy source: 11 errors and 1 warning in:
+    src/components/custom/time-input.tsx
+    src/modules/agenda/components/AgendaNovaAtividade.tsx
+    src/modules/board/BoardCanvas.tsx
+    src/modules/board/index.ts
+    src/modules/board/use-canvas-pan-zoom.ts
+    src/modules/produtos/ProdutosPage.tsx
+Interpretation: `.omo/**` is incorrectly treated as project source, but ignoring it alone will not make full lint green; unrelated maintained legacy debt remains outside the allowed write set.
+
+=== RED: current affiliate-plan formatting ownership ===
+Invocation: npx prettier src/app/App.test.tsx src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/mocks/shell.ts src/mocks/afiliados/index.ts src/modules/afiliados src/modules/agenda/components/AgendaPrototypeApp.tsx --check
+Binary observable: FAIL because exit status is nonzero.
+Exit: 1
+Relevant captured output:
+  [warn] src/mocks/afiliados/index.ts
+  [warn] Code style issues found in the above file.
+Interpretation: the one current affiliate-plan source formatting blocker is the explicitly allowed fixture; no fixture IDs or values may change.
+
+=== RED: browser console policy ===
+Invocation: node --input-type=module -e '<read results.json; fail when pass=true has error-level console events and no consoleClassification>'
+Binary observable: FAIL because the existing machine result passes despite unclassified error-level events.
+Exit: 1
+Captured output:
+  {
+    "pass": true,
+    "errorLevelConsoleEvents": 13,
+    "hasConsoleClassification": false,
+    "failures": 0
+  }
+Observed event classes in the retained 14-event set:
+  - React validateDOMNesting warning rooted at shared `BreadcrumbSeparator` / `src/components/ui/breadcrumb.tsx`.
+  - React ref-forwarding warning rooted at shared `SheetOverlay` / `src/components/ui/sheet.tsx`.
+  - Radix DialogContent missing Description warning from the shared Sheet/Dialog primitive path.
+The current driver fails `Runtime.exceptionThrown` and `Network.loadingFailed` only. It does not reject an unknown error-level console event and does not emit a machine-readable classification.
+
+=== Baseline whitespace guard ===
+Invocation: git diff --check
+Binary observable: PASS when exit status is 0.
+Exit: 0
+
+=== Root-cause hypotheses after round 1 ===
+H1 CONFIRMED by direct paths: `.omo/**` generated evidence is scanned because neither `.prettierignore` nor ESLint global ignores contains `.omo`; its malformed JSON stops Prettier and its drivers add 28 lint errors.
+H2 CONFIRMED: `src/mocks/afiliados/index.ts` is the only scoped affiliate-plan Prettier failure.
+H3 CONFIRMED: 18 unrelated non-`.omo` paths remain in full Prettier and six unrelated maintained legacy areas remain in lint; resolving those by product rewrites or broad ignores would exceed the allowed write set and weaken source gates.
+H4 SUPPORTED, pending fresh browser rerun: all retained browser events match shared Breadcrumb/Sheet/Dialog warning signatures; existing data has zero runtime exceptions and zero network failures.
+H5 CONFIRMED: driver lines 315-327 records events but only promotes exceptions/network failures into `failures`.
+
+=== Planned minimal fix ===
+1. Add `.omo` to `.prettierignore` and `.omo/**` to ESLint global ignores. Rationale: `.omo/**` contains generated plans, evidence, screenshots, logs, and artifact-only drivers; it is not maintained product source and malformed or intentionally raw evidence must remain immutable.
+2. Format only `src/mocks/afiliados/index.ts` from maintained code; verify fixture semantics with a before/after AST-insensitive check plus focused tests.
+3. Add machine-readable known-warning classification to the artifact-only QA driver/result and fail every unknown error-level console event, runtime exception, or network failure.
+4. Do not suppress or rewrite unrelated legacy maintained source. If it remains red, record exact paths and green scoped gates as required by criterion A.
+
+Adversarial classes to verify after change:
+- malformed generated JSON cannot break source formatting;
+- artifact-only Node/browser globals cannot break source lint;
+- maintained affiliate/app/navigation files are still explicitly checked;
+- fixture IDs/values are unchanged by formatting;
+- unknown console errors remain blocking rather than silently allowlisted;
+- runtime exceptions and network failures remain blocking;
+- all six direct routes and six interaction scenarios still pass;
+- no Vite/Chrome listener or temporary Chrome profile remains.
+
+=== GREEN toggle: generated evidence isolation ===
+Changes:
+  `.prettierignore`: added the `.omo` directory.
+  `eslint.config.js`: added `.omo/**` to the top-level global ignores.
+Rationale: `.omo/**` is generated orchestration state and evidence (plans, raw command logs, screenshots, JSON captures, and one-off QA drivers), not maintained project source. Formatting it would mutate evidence; linting artifact drivers against browser/source globals creates false product-gate failures. Maintained `src/**` remains in both gates.
+
+Invocation: npx prettier .omo/ulw-loop/evidence/G001-quality-review.json --check
+Binary observable: PASS when malformed generated evidence is ignored rather than parsed.
+Exit: 0
+Output: `All matched files use Prettier code style!`
+
+=== END OF CURRENT RECORD ===
+Status: COMPLETE under the explicit unrelated-legacy exception. Aggregate `npm run check` is BLOCKED at exit 1 and is not claimed green. Every current affiliate-plan/source/browser criterion is GREEN, runtime cleanup is complete, and the final evidence path is `.omo/evidence/afiliados-front-plan/task-14-gate-fix.txt`.
+
+=== GREEN: allowed affiliate fixture and maintained-source scope ===
+Change: ran Prettier only on `src/mocks/afiliados/index.ts`, as explicitly allowed. No fixture ID or value was intentionally changed.
+
+Invocation: npx prettier src/mocks/afiliados/index.ts --check
+Binary observable: fixture is formatted.
+Exit: 0
+Output: `All matched files use Prettier code style!`
+
+Invocation: node --input-type=module -e '<parse HEAD and working fixture with TypeScript; recursively hash semantic AST shape>'
+Binary observable: semantic ASTs are identical, proving formatting did not change fixture IDs/values/expressions.
+Exit: 0
+Captured output:
+  semanticAstEquivalent: true
+  beforeHash: a192f5b4fde8fd275c9f6be101fb09c98d583463bd5a3161f3437854303edd11
+  afterHash:  a192f5b4fde8fd275c9f6be101fb09c98d583463bd5a3161f3437854303edd11
+
+Invocation: npx eslint src/mocks/afiliados/index.ts --max-warnings=0 --report-unused-disable-directives
+Binary observable: fixture has zero lint findings.
+Exit: 0
+
+Invocation: npx prettier eslint.config.js src/app/App.test.tsx src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/mocks/shell.ts src/mocks/afiliados/index.ts src/modules/afiliados src/modules/agenda/components/AgendaPrototypeApp.tsx --check
+Binary observable: all current affiliate-plan app/navigation/source paths are formatted.
+Exit: 0
+Output: `All matched files use Prettier code style!`
+
+Corrected-invocation note: an initial targeted command included `.prettierignore` as a format target and exited 2 because extensionless ignore files have no Prettier parser. It made no changes. Removing the non-source ignore file produced the exit-0 command above; `.prettierignore` itself is covered by `git diff --check` and behavior probes.
+
+Full format residual after this repair:
+Invocation: npm run format:check
+Exit: 1
+Observable: exactly 18 non-`.omo`, non-affiliate-plan paths remain, all outside the allowed write set:
+  DESIGN.md
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment-detailed.md
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment.md
+  Specdrivenafiliados.md
+  src/components/custom/time-input.tsx
+  src/components/layout/app-layout.tsx
+  src/components/layout/top-bar.tsx
+  src/components/layout/topbar/topbar-profile.tsx
+  src/components/ui/badge-tooltip.tsx
+  src/components/ui/participant-attribute-badge.tsx
+  src/mocks/agenda/reservations.ts
+  src/mocks/agenda/status.ts
+  src/modules/agenda/components/AgendaNovaAtividade.tsx
+  src/modules/board/board-canvas.css
+  src/modules/board/BoardCanvas.tsx
+  src/modules/board/use-canvas-pan-zoom.ts
+  src/modules/produtos/ProdutosPage.tsx
+  src/types/agenda.ts
+Decision: do not broaden ignores to maintained source and do not rewrite files outside the allowed write set merely to force an aggregate green result.
+
+=== RED→GREEN: enforced browser console criterion ===
+Driver change: `.omo/evidence/afiliados-front-plan/final-browser/qa-driver.mjs` now retains every relevant event, classifies only three exact shared-primitive signatures, and fails on every unmatched browser `error`/`assert`, `Runtime.exceptionThrown`, or `Network.loadingFailed` event.
+
+Real-browser resources:
+  Vite invocation: npm run dev -- --host 127.0.0.1 --port 51654 --strictPort
+  Vite listener: PID 22963, exec session 29427, actual app port 51654.
+  Chrome invocation: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --remote-debugging-port=51655 --user-data-dir=/tmp/retrilhar-todo14-gate-fix.Tyoa3f --no-first-run --no-default-browser-check about:blank
+  Chrome listener: PID 22975, exec session 20557, CDP port 51655, Chrome 150.0.7871.128.
+  Driver invocation: node .omo/evidence/afiliados-front-plan/final-browser/qa-driver.mjs 51655 51654 <evidence-dir>
+
+Adversarial RED scenario:
+  1. Started the driver with evidence directory `.omo/evidence/afiliados-front-plan/final-browser/console-policy-red`.
+  2. A separate CDP WebSocket client invoked `Runtime.evaluate` with expression `console.error("TODO14_UNEXPECTED_CONSOLE_PROBE")` while the driver was attached.
+  3. Waited for the driver to complete all route and interaction scenarios.
+Binary observable: the policy must reject the unknown error while unrelated browser checks remain green.
+Driver exit: 1
+Captured result:
+  pass: false
+  routes: 12
+  interactions: 6
+  retained events: 15
+  known shared-primitive warnings: 14
+  error-level events: 14 total / 13 known / 1 unexpected
+  runtime exceptions: 0
+  network failures: 0
+  failure contains: TODO14_UNEXPECTED_CONSOLE_PROBE
+Artifact: `.omo/evidence/afiliados-front-plan/final-browser/console-policy-red/results.json`
+
+Clean GREEN scenario:
+Invocation: node .omo/evidence/afiliados-front-plan/final-browser/qa-driver.mjs 51655 51654 .omo/evidence/afiliados-front-plan/final-browser
+Binary observable: 12/12 direct routes and 6/6 interactions pass; all retained warnings are classified; no unexpected error, runtime exception, network failure, or behavior failure exists.
+Exit: 0
+Captured result:
+  generatedAt: 2026-07-20T23:53:40.709Z
+  pass: true
+  routes: 12 (all PASS)
+  interactions: 6 (all PASS)
+  failures: 0
+  retained console events: 14
+  known warnings by category: breadcrumb-dom-nesting=9, sheet-overlay-ref=4, dialog-description=1
+  error-level events: 13 total / 13 known / 0 unexpected
+  unclassified retained events: 0
+  runtime exceptions: 0
+  network failures: 0
+Artifacts:
+  `.omo/evidence/afiliados-front-plan/final-browser/results.json`
+  `.omo/evidence/afiliados-front-plan/final-browser/screenshots/` (12 non-empty final route PNGs; 29 non-empty PNGs total)
+  `.omo/evidence/afiliados-front-plan/final-browser.md`
+
+Cleanup receipt:
+  Ctrl-C terminated Vite exec session 29427 and Chrome exec session 20557.
+  `lsof -nP -iTCP:51654 -sTCP:LISTEN`: no listener.
+  `lsof -nP -iTCP:51655 -sTCP:LISTEN`: no listener.
+  `pgrep -fl 'retrilhar-todo14-gate-fix.Tyoa3[f]'`: no process.
+  `/usr/bin/trash /tmp/retrilhar-todo14-gate-fix.Tyoa3f`: exit 0; exact profile absent from `/tmp` afterward and recoverable from Trash.
+
+Console classification decision:
+The 14 retained events are known warnings from shared Breadcrumb/Sheet/Dialog primitives. Stacks may include affiliate consumers because they render the primitives, but there is no affiliate runtime exception, failed request, failed route, failed interaction, or unclassified error. Shared primitive product fixes are outside this task's allowed write set. The driver does not silence the events and now proves that a real unexpected console error is blocking.
+
+=== Final required verification ===
+Invocation: npm run check
+Exit: 1
+Binary observable: aggregate repository gate remains BLOCKED at Prettier only by the exact 18 unrelated legacy paths listed above and in `final-check.txt`. It no longer names `.omo/**`, the affiliate fixture, or any current affiliate-plan source. This is criterion A's explicit unrelated-legacy fallback, not a claimed pass.
+
+Invocation: npm run test -- --run src/app/App.test.tsx src/modules/afiliados
+Exit: 0
+Binary observable: `Test Files 9 passed (9)`; `Tests 39 passed (39)`; duration 11.32s.
+
+Invocation: npm run lint
+Exit: 1
+Binary observable: 12 unrelated findings (11 errors, 1 warning) in `time-input`, `AgendaNovaAtividade`, board, and Produtos source; zero `.omo/**` and zero current affiliate-plan findings.
+
+Invocation: npm run typecheck
+Exit: 0
+Binary observable: `tsc --noEmit` completed without diagnostics.
+
+Invocation: npm run build
+Exit: 0
+Binary observable: 2,092 modules transformed; `✓ built in 2.85s`. Existing chunk-size advisory only.
+
+Invocation: npx prettier eslint.config.js src/app/App.test.tsx src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/mocks/shell.ts src/mocks/afiliados/index.ts src/modules/afiliados src/modules/agenda/components/AgendaPrototypeApp.tsx --check
+Exit: 0
+Binary observable: all matched maintained affiliate/app/navigation files use Prettier style.
+
+Invocation: npx eslint src/app/App.test.tsx src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/mocks/shell.ts src/mocks/afiliados/index.ts src/modules/afiliados src/modules/agenda/components/AgendaPrototypeApp.tsx --max-warnings=0 --report-unused-disable-directives
+Exit: 0
+Binary observable: zero errors and zero warnings.
+
+Invocation: git diff --check
+Exit: 0
+Binary observable: no whitespace errors in tracked deltas.
+
+=== Changed files / artifacts owned by this gate fix ===
+Tracked configuration/source:
+  M .prettierignore — one generated-evidence directory exclusion.
+  M eslint.config.js — one generated-evidence glob exclusion, formatted by project Prettier.
+  M src/mocks/afiliados/index.ts — formatting only; semantic AST hash unchanged.
+
+Evidence/artifact updates under ignored `.omo/**`:
+  .omo/evidence/afiliados-front-plan/final-check.txt
+  .omo/evidence/afiliados-front-plan/final-browser.md
+  .omo/evidence/afiliados-front-plan/final-browser/qa-driver.mjs
+  .omo/evidence/afiliados-front-plan/final-browser/results.json
+  .omo/evidence/afiliados-front-plan/final-browser/console-policy-red/results.json
+  .omo/evidence/afiliados-front-plan/final-browser/screenshots/*.png (fresh final browser captures)
+  .omo/evidence/afiliados-front-plan/task-14-handback.md
+  .omo/evidence/afiliados-front-plan/task-14-gate-fix.txt
+
+No plan, ledger, Boulder state, dependency, product page, shared UI primitive, or unrelated legacy source file was edited by this gate-fix session.
+
+=== Risks and cleanup ===
+- Aggregate `npm run check` is not green. It is honestly blocked by unrelated legacy source/docs outside the write set. Making it exit 0 would require either editing those 18 formatting paths plus six lint-owning source areas, or hiding maintained source with new ignores; both would violate scope or weaken the gate.
+- The 14 known shared primitive warnings remain technical debt in Breadcrumb/Sheet/Dialog code outside this write set. They are retained, classified, and machine-enforced; unexpected errors are not suppressed.
+- The three duplicated mobile shell-collapse effects remain owning-task maintenance debt and are explicitly handed back to Todos 7, 9, and 10.
+- Vite/Chrome sessions are stopped; ports 51654/51655 are free; no QA profile process remains; the exact profile was moved to Trash.
+- Build output is under ignored `dist/`; no dependency installation or external write occurred.
+
+=== Scoped final status ===
+  M .prettierignore
+  M eslint.config.js
+  M src/mocks/afiliados/index.ts
+  ?? .omo/evidence/afiliados-front-plan/final-browser.md
+  ?? .omo/evidence/afiliados-front-plan/final-browser/console-policy-red/results.json
+  ?? .omo/evidence/afiliados-front-plan/final-browser/qa-driver.mjs
+  ?? .omo/evidence/afiliados-front-plan/final-browser/results.json
+  ?? .omo/evidence/afiliados-front-plan/final-check.txt
+  ?? .omo/evidence/afiliados-front-plan/task-14-gate-fix.txt
+  ?? .omo/evidence/afiliados-front-plan/task-14-handback.md
+
+=== Completion status ===
+Overall requested gate-rejection repair: COMPLETE under criterion A's explicit unrelated-legacy exception.
+Generated evidence handling: COMPLETE.
+Current affiliate-plan format/lint/tests/type/build/browser surfaces: COMPLETE and GREEN.
+Todo 14 owning-task handback: COMPLETE.
+Console criterion classification and enforcement: COMPLETE, with adversarial RED and clean GREEN artifacts.
+Aggregate `npm run check`: BLOCKED (exit 1) only by exact unrelated legacy paths; not claimed as passing.
+Final evidence path: `.omo/evidence/afiliados-front-plan/task-14-gate-fix.txt`.
+
+Invocation: npm run lint
+Binary observable: generated `.omo/**` findings are zero; only unrelated maintained legacy source remains.
+Exit: 1
+Output summary: 12 problems (11 errors, 1 warning), all in six unrelated source areas; reduction from 40 findings proves all 28 generated-artifact lint errors were removed from the source gate.
+
+Invocation: npx eslint src/app/App.test.tsx src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/mocks/shell.ts src/mocks/afiliados/index.ts src/modules/afiliados src/modules/agenda/components/AgendaPrototypeApp.tsx --max-warnings=0 --report-unused-disable-directives
+Binary observable: maintained affiliate/app/navigation scope is still checked and clean.
+Exit: 0
+Output: empty (zero findings).
+
+Invocation: npx prettier eslint.config.js --write && npx prettier eslint.config.js --check && git diff --check -- .prettierignore eslint.config.js
+Binary observable: changed gate configuration is formatted and whitespace-clean.
+Exit: 0
+Output: `All matched files use Prettier code style!`
+
+=== FINAL RECORD TERMINUS ===
+Status: COMPLETE under criterion A's explicit unrelated-legacy exception. Aggregate `npm run check` is BLOCKED at exit 1 and is not claimed green. Every current affiliate-plan/source/browser criterion is GREEN, runtime cleanup is complete, and the final evidence path is `.omo/evidence/afiliados-front-plan/task-14-gate-fix.txt`.
+
+=== LIGHT self-review and closure ===
+Invocation: final readback/audit command covering `node --check`, clean and adversarial `jq -e` gates, evidence non-emptiness, debug-marker scan, `git diff --check`, scoped status, ports, process, and profile checks.
+Exit: 0
+Binary observable: `FINAL SELF-REVIEW PASS`.
+Review findings:
+  - Scope: only two gate configs, the explicitly allowed fixture formatting, and ignored evidence/browser artifacts were changed. No plan/ledger/product-page/shared-primitive edits.
+  - Source integrity: fixture semantic AST is identical; targeted Prettier/ESLint, typecheck, build, and 39 tests are green.
+  - Console safety: exact allowlist categories only; raw events retained; adversarial unknown error fails; clean run has no exception/network/behavior failure.
+  - Architecture: no new product abstraction, integration, route, backend, dependency, type escape hatch, log line, or one-off maintained helper.
+  - Size: the formatted fixture is an existing 1,355-pure-LOC centralized data table, covered by the pure-data exception; the QA driver is ignored artifact code. No semantic lines were added to the fixture.
+  - Cleanup: no debug instrumentation in maintained tracked delta, no QA listener/process/profile, and no temporary worktree.
+Tier remains LIGHT because no HEAVY trigger surfaced.
+
+=== RECORD CLOSED ===
+Status: COMPLETE under criterion A's explicit unrelated-legacy exception. Aggregate `npm run check` remains BLOCKED at exit 1 and is not claimed green.
+EVIDENCE_RECORDED: `.omo/evidence/afiliados-front-plan/task-14-gate-fix.txt`
+
+=== CURRENT STATUS: DESIGN.md FORMAT GATE FIX — 2026-07-20 ===
+Scenario: format the plan-created `DESIGN.md`, verify targeted formatting, run the aggregate check, and run the affiliate/App regression suite.
+
+Changed file:
+  DESIGN.md — formatting only via Prettier; content semantics were preserved.
+
+Invocation: npx prettier DESIGN.md --write
+Exit: 0
+Output: `DESIGN.md 64ms`
+Binary observable: `DESIGN.md` was formatted in place.
+
+Invocation: npx prettier DESIGN.md --check
+Exit: 0
+Output: `Checking formatting...` followed by `All matched files use Prettier code style!`
+Binary observable: targeted DESIGN format gate is green.
+
+Invocation: npm run check
+Exit: 1
+Binary observable: aggregate gate stops at `npm run format:check`; `DESIGN.md` is absent from the current failure list. Remaining failures are unrelated legacy formatting in 17 paths outside the allowed write set:
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment-detailed.md
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment.md
+  Specdrivenafiliados.md
+  src/components/custom/time-input.tsx
+  src/components/layout/app-layout.tsx
+  src/components/layout/top-bar.tsx
+  src/components/layout/topbar/topbar-profile.tsx
+  src/components/ui/badge-tooltip.tsx
+  src/components/ui/participant-attribute-badge.tsx
+  src/mocks/agenda/reservations.ts
+  src/mocks/agenda/status.ts
+  src/modules/agenda/components/AgendaNovaAtividade.tsx
+  src/modules/board/board-canvas.css
+  src/modules/board/BoardCanvas.tsx
+  src/modules/board/use-canvas-pan-zoom.ts
+  src/modules/produtos/ProdutosPage.tsx
+  src/types/agenda.ts
+Captured aggregate transcript: `.omo/evidence/afiliados-front-plan/final-check.txt`.
+
+Invocation: npm run test -- --run src/app/App.test.tsx src/modules/afiliados
+Exit: 0
+Binary observable: `Test Files 9 passed (9)` and `Tests 39 passed (39)`; duration 10.30s.
+Captured result: this evidence file and the current command result above.
+
+Remaining failures classification:
+  - `npm run check`: BLOCKED only by the 17 unrelated legacy Prettier paths listed above; no DESIGN failure remains.
+  - Affiliate/App regression suite: GREEN, 9 test files and 39 tests passed.
+  - No product source, config, fixture, plan, ledger, or test file was edited in this gate-fix.
+
+Cleanup/risk:
+  - No temporary process, generated product output, dependency, or external artifact was created by the required commands.
+  - The aggregate check remains non-green because resolving the listed legacy paths would exceed the explicit write set. No ignore rule was added and no unrelated file was formatted.
+  - `omo ulw-loop status --json` was unavailable (`omo: command not found`), so evidence remains under the mandated fallback directory.
+
+Scoped status command: `git status --short -- DESIGN.md .omo/evidence/afiliados-front-plan/task-14-gate-fix.txt .omo/evidence/afiliados-front-plan/final-check.txt`
+Scoped status exit: 0
+Scoped status output:
+  ?? .omo/evidence/afiliados-front-plan/final-check.txt
+  ?? .omo/evidence/afiliados-front-plan/task-14-gate-fix.txt
+  ?? DESIGN.md
+
+Final evidence path: `.omo/evidence/afiliados-front-plan/task-14-gate-fix.txt`
+Aggregate transcript path: `.omo/evidence/afiliados-front-plan/final-check.txt`
+=== END CURRENT STATUS ===

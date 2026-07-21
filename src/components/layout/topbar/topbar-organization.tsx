@@ -32,20 +32,33 @@ const defaultWorkspaceOrganizations: WorkspaceOrganization[] = [
   },
 ];
 
-const affiliateWorkspaceOrganizations: WorkspaceOrganization[] = [
-  {
-    id: "org-elias",
-    name: "EliasTurismo",
-    code: "eliasturismo",
-    page: "agendaDia",
-  },
-];
-
 export function TopBarOrganization({ organization, mobile, onNavigate }: TopBarOrganizationProps) {
-  const workspaceOrganizations =
-    organization.id === "org-afiliado-temp"
-      ? affiliateWorkspaceOrganizations
-      : defaultWorkspaceOrganizations;
+  const isAffiliatePanel = organization.id === "org-afiliado-temp";
+
+  if (isAffiliatePanel) {
+    return (
+      <div
+        aria-label={`${organization.name}, visão consolidada`}
+        className={cn(
+          "border-sidebar-border bg-background relative flex h-14 items-center gap-3 rounded-2xl border px-4 shadow-sm",
+          mobile ? "flex-1" : "max-w-[20em] shrink-0"
+        )}
+      >
+        <Avatar className="size-8 shrink-0">
+          <AvatarImage src={organization.img || undefined} />
+          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+            {getInitials(organization.name)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="hidden min-w-0 flex-1 flex-col items-start text-left @[600px]/topbar:flex">
+          <p className="text-foreground w-full truncate text-sm font-normal">{organization.name}</p>
+          <p className="text-muted-foreground text-xs font-normal">Visão consolidada</p>
+        </div>
+      </div>
+    );
+  }
+
+  const workspaceOrganizations = defaultWorkspaceOrganizations;
 
   const trigger = (
     <Button
@@ -93,7 +106,12 @@ export function TopBarOrganization({ organization, mobile, onNavigate }: TopBarO
               <p className="text-primary truncate text-sm font-medium">{organization.name}</p>
               <p className="text-primary/60 truncate text-xs">{organization.code}</p>
             </div>
-            <Button variant="outline" size="icon" className="size-8 shrink-0 rounded-lg">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8 shrink-0 rounded-lg"
+              aria-label={`Configurações de ${organization.name}`}
+            >
               <HugeiconsIcon icon={Settings01Icon} size={14} />
             </Button>
           </div>

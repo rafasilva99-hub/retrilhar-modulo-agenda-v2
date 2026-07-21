@@ -1,0 +1,14 @@
+{
+  "base": "http://127.0.0.1:4173",
+  "waitAfterOpenMs": 650,
+  "artifacts": [
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/desktop-afiliados-detail-settled.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/desktop-indicacoes-detail-settled.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/desktop-ganhos-detail-settled.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/desktop-config-destination-edit-settled.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/mobile-afiliados-detail-settled.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/mobile-indicacoes-detail-settled.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/mobile-ganhos-detail-settled.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run7-settled/mobile-config-destination-edit-settled.png"
+  ]
+}

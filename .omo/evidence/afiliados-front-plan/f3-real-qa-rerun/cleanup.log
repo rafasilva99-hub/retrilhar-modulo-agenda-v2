@@ -1,0 +1,9 @@
+VITE_STOP: Ctrl-C sent to sessions 56867 and 65233
+CHROME_STOP: Ctrl-C sent to sessions 88839 and 15526
+POST_STOP_HTTP: PASS curl failed, server unavailable
+POST_STOP_LISTENER: PASS no listener on 4173
+POST_STOP_CDP: PASS isolated Chrome CDP unavailable
+POST_STOP_CDP_LISTENER: PASS no listener on 9222
+GIT_STATUS_SCOPED:
+?? .omo/evidence/afiliados-front-plan/f3-real-qa-rerun.md
+?? .omo/evidence/afiliados-front-plan/f3-real-qa-rerun/

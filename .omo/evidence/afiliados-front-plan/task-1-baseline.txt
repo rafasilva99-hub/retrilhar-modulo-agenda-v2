@@ -1,0 +1,57 @@
+Todo 1 baseline evidence
+Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+Plan: .omo/plans/afiliados-front-plan.md
+Captured: 2026-07-20 America/Sao_Paulo
+
+Worktree policy
+================
+- Evidence-only worker; no product files, plan checkboxes, state ledgers, source, tests, package files, or docs edited.
+- No temporary worktree was created. The sole worktree remains the repository root; no cleanup was required.
+- The `omo ulw-loop status --json` helper was unavailable (`omo: command not found`), so the plan-mandated fallback evidence directory was used.
+
+Exact baseline commands and outputs
+===================================
+
+$ pwd
+/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+
+$ git status --short --branch
+## main...origin/main
+?? .omo/boulder.json
+?? .omo/drafts/
+?? .omo/plans/afiliados-front-plan.md
+?? Specdrivenafiliados.md
+
+$ git worktree list
+/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2    9bed5f07 [main]
+
+$ npm --version
+11.12.1
+
+$ node --version
+v25.9.0
+
+$ if git status --short -- Specdrivenafiliados.md | grep -q '^??'; then echo 'Specdrivenafiliados.md: untracked'; else echo 'Specdrivenafiliados.md: tracked-or-modified'; fi
+Specdrivenafiliados.md: untracked
+
+$ if test ! -f .git/index.lock; then echo 'index-lock: absent'; else echo 'index-lock: present'; fi
+index-lock: absent
+
+Adversarial classes
+===================
+- dirty_worktree: applicable; baseline status records untracked `.omo/boulder.json`, `.omo/drafts/`, `.omo/plans/afiliados-front-plan.md`, and `Specdrivenafiliados.md`.
+- stale_state: applicable; baseline HEAD is `9bed5f07` on `main`, and `git worktree list` records one worktree.
+- misleading_success_output: applicable; the final exact `test -d ... && test -s ...` check below proves the artifact exists and is non-empty.
+- hung_or_long_commands: not applicable; all requested commands are short and local.
+- malformed input, prompt injection, cancel/resume, flaky tests, repeated interruptions: not applicable; this is a single fixed command/evidence capture with no external input or retry loop.
+- failing-first product proof: not applicable; this Todo only captures baseline/evidence state and makes no product change.
+
+Cleanup
+=======
+- No temporary files or worktrees were created; no cleanup was needed.
+
+Final artifact verification
+===========================
+
+$ test -d .omo/evidence/afiliados-front-plan && test -s .omo/evidence/afiliados-front-plan/task-1-baseline.txt && echo 'evidence-file: present-nonempty'
+evidence-file: present-nonempty

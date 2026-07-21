@@ -1,0 +1,21 @@
+Invocation: npm run dev -- --host 127.0.0.1 --port 51654 --strictPort
+Vite PID: 13783
+Invocation: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --remote-debugging-port=51655 --user-data-dir=/tmp/retrilhar-final-chrome.2o8R7H --no-first-run --no-default-browser-check about:blank
+Chrome PID: 13815
+App port: 51654
+CDP port: 51655
+Profile: /tmp/retrilhar-final-chrome.2o8R7H
+
+---RELAUNCH---
+Vite PID: 13922
+Chrome PID: 13952
+Profile: /tmp/retrilhar-final-chrome.YlvuSC
+
+---PTY RELAUNCH---
+Vite PTY session: 82812
+Chrome PTY session: 84278
+Profile: /tmp/retrilhar-final-chrome-qa.RitZYg
+COMMAND   PID        USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    14031 rafaelsilva   21u  IPv4 0x3f8dee134f000f4d      0t0  TCP 127.0.0.1:51654 (LISTEN)
+COMMAND     PID        USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+Google    14042 rafaelsilva   54u  IPv4 0x456f8b6851210ce1      0t0  TCP 127.0.0.1:51655 (LISTEN)

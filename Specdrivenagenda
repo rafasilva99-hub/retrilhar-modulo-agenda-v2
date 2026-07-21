@@ -1,0 +1,148 @@
+# [RETRILHAR] [AGENDA] Spec-driven do módulo de agenda
+
+Fontes desta versão: RPP002 Painel Operacional (máquina de estados, seção 3.6), transcrições 25/03, 08/04 e 15/07, prints da nova UI da agenda e das telas atuais de referência (lista de reservas e auditoria). Nada aqui foi inventado. O que não tem fonte vai marcado como PROPOSTA, INFERÊNCIA ou A VALIDAR.
+
+## 0. Legenda epistêmica
+
+FATO (fonte citada), DECISÃO FIRME (cliente confirmou), INFERÊNCIA (raciocínio nosso), PROPOSTA (design a validar), PENDENTE (falta confirmar), ATENÇÃO (conflito ou risco).
+
+---
+
+## 1. Guardrail do módulo (vai em .claude/rules/agenda.md)
+
+Agenda é refatoração, não construção do zero. Isso muda o guardrail: toda spec carrega uma seção de estado (atual, alvo, invariantes) e o que já funciona não pode quebrar.
+
+Invariantes que o executor obedece:
+
+1. Três eixos de estado paralelos por reserva: Situação operacional, Financeiro (pagamento) e Seguro. Eles evoluem em trilhas separadas e se influenciam só por gatilhos definidos. Confirmada não é o mesmo que paga. Nunca colapsar os três eixos na mesma tag na UI. FATO (RPP002 3.6; Transcrição 08/04).
+2. Situação da reserva, estados válidos: Rascunho, Aguardando Pagamento, Agendada, Confirmada, Check-in Realizado, Realizada, Cancelada, Expirada, No Show. Só as transições da tabela do RPP002 são permitidas. Transição não listada é bloqueada com erro claro. FATO (RPP002 3.6).
+3. Reversibilidade embutida: Cancelada volta para Confirmada, Realizada volta para Confirmada, check-in pode ser desfeito. O No Show é neutro e reversível, com ações remarcar, confirmar e cancelar, voltando para Confirmada, Cancelada ou Agendada. Não é ação destrutiva e não gera consequência financeira automática. FATO (RPP002 3.6).
+4. Concluir em massa move as reservas com Check-in Realizado para Realizada. FATO (RPP002, diagrama de transições).
+5. Toda transição gera histórico imutável (log de auditoria) com estado anterior, estado novo, autor, data e hora, e motivo quando aplicável. Cancelamento exige motivo obrigatório, sem exceção. FATO (RPP002 3.6).
+6. A nova UI da home complementa o mapa de vagas, não substitui. FATO (Transcrição 15/07).
+7. Distinção de eixo na home: as categorias do calendário (Confirmadas, Pendentes, Lotadas, Bloqueadas) são status de atividade, não de reserva. Não confundir com a situação da reserva. FATO (print) mais INFERÊNCIA sobre a distinção.
+8. Seguro é máquina própria (Não Contratado, Pendente de Aprovação, Contratado, Erro na Contratação, Cancelado). A UI mostra o ícone de status do seguro nas listagens de participantes. FATO (RPP002 3.6).
+
+Restrições técnicas herdadas da constituição (valem para todo o projeto):
+
+9. Vite mais React, roteado por hash (rotas de teste como #agenda, #agendaDia, #atualizacoes, #novaAtividade). Não introduzir Next.js, App Router, RSC, next/link, next/image, better-auth, OpenAPI SDK, Sentry, PWA, service worker nem fetch ou cliente HTTP em código mantido.
+10. Mock-only: dados vêm de fixtures em `src/mocks` ou serviços mockados em `src/modules/**/services`. Não há dados reais.
+11. `Retrilhar Admin` é referência de padrão e permanece somente leitura. `src/imports/**` é legado do Figma Make atrás de adapters, refatorar gradualmente.
+12. HugeIcons, shadcn/ui, tokens Tailwind semânticos, componentes de layout do protótipo, design system (Helvetica Neue, azul primário `#1E40AF`, fills semânticos, traços HugeIcons).
+13. Copy: sem travessão nem meia-risca em lugar nenhum, diacríticos corretos, nenhum dado inventado.
+
+Nota: o guardrail de agenda que já existe está correto, mas escopado só para agenda. A parte comum (itens 9 a 13) sobe para a constituição do projeto, e este arquivo fica só com o que é específico de agenda (itens 1 a 8 mais as rotas por hash).
+
+---
+
+## 2. Backlog de specs (com prontidão)
+
+### O que já temos e vamos refinar
+
+| Spec | Estado | Prontidão | Observação |
+| --- | --- | --- | --- |
+| Home da agenda: refino visual mais hover nos eventos com resumo | Construído | EXECUTAVEL | UI construída. O hover com dados resumidos é PROPOSTA de design. |
+| Detalhes da atividade: cenários de exceção | Construído, faltam exceções | EXECUTAVEL (parcial) | Só "atividade cancelada sem participantes" está confirmada. As demais exceções observadas nos prints estão em A VALIDAR (seção 3). |
+| Responsividade mobile das funcionalidades restantes de detalhes | Baseline pronto | EXECUTAVEL | Já prontos: página principal, bottom menu (resumo, equipe, comunicados como bottom sheet) e cenários de QR code. Faltam as demais funcionalidades (conclusão, lista de participantes, filtros). |
+
+### O que não temos e vamos construir
+
+| Spec | Prontidão | Observação |
+| --- | --- | --- |
+| Lista de reservas | EXECUTAVEL | Referência é a plataforma atual (print). Colunas e filtros são FATO. Inclui a melhoria de checkbox por reserva para exportação seletiva. |
+| Exportar CSV com seleção por checkbox | EXECUTAVEL | Melhoria decidida pela equipe. Exporta os dados das reservas selecionadas. |
+| Importar dados | BLOQUEADO | Uso não confirmado, aguardando cliente (seção 3). |
+| Auditoria | EXECUTAVEL (com decisão de UX) | Recomendação na seção 4. |
+| Conclusão de atividades do dia | EXECUTAVEL | Spec exemplar na seção 5. |
+
+---
+
+## 3. Pendências
+
+P-A · Importação de dados. PENDENTE.
+Uso não confirmado. Você já perguntou ao cliente e aguarda resposta. Bloqueia só a spec de importar, o resto segue. FATO (você registrou a pergunta ao cliente).
+
+P-B · Cenários de exceção de detalhes além de "cancelada sem participantes". A VALIDAR.
+Os prints mostram outros candidatos: vagas excedidas (220/200), participantes que precisam de atenção médica, seguro pendente, atividade não iniciada. Confirmar quais entram como exceção a estruturar agora. Observados nos prints, não confirmados como escopo.
+
+P-C · Decisão de check-in pendente na conclusão do dia. A VALIDAR.
+No individual, o modal pergunta se realiza check-in automático dos pendentes ou marca como não compareceu. No dia inteiro, isso é uma decisão por atividade ou uma decisão agregada que vale para o dia todo? Trava o comportamento central da spec da seção 5.
+
+---
+
+## 4. Recomendação de UX: Auditoria (PROPOSTA)
+
+Dividir por escopo, em vez de drawer para tudo.
+
+O log global (histórico de todas as reservas, os milhares de registros com filtros por data, produto e reserva, com paginação) fica como fluxo ou página dedicada. Volume mais filtros mais paginação não cabem num drawer, e o uso é de auditoria e conferência de valores.
+
+O histórico de uma reserva específica vira drawer, aberto a partir da linha da reserva na lista. Ele mostra as transições dos três eixos (situação, financeiro, seguro) ao longo do tempo. Como o histórico imutável é registrado por reserva na fonte (FATO, RPP002 3.6), o drawer por reserva é o lugar natural dele no dia a dia, e a página global cobre a auditoria formal.
+
+O botão azul da reserva que hoje redireciona para os dados do usuário passa a abrir esse drawer de histórico da reserva, mantendo o operador no contexto.
+
+---
+
+## 5. Spec exemplar completa
+
+# [RETRILHAR] [AGENDA] Conclusão de atividades do dia
+
+## Objetivo
+Concluir de uma vez todas as atividades de um dia, reaproveitando a estrutura do drawer de conclusão individual já implementado. A ação engloba todas as atividades daquele dia.
+
+## Estado
+- Atual: o drawer de conclusão individual existe, com resumo dos participantes (compareceram, não compareceram, cancelaram, total esperado), horários reais, observações, pergunta de intercorrência (não ou sim) e o modal de check-in pendente (realizar check-in automático ou marcar como não compareceu). O botão "Concluir Atividades do Dia" já existe na tela Atividades do Dia. FATO (prints).
+- Alvo: implementar o fluxo do dia, que aplica a conclusão a todas as atividades do dia.
+- Invariantes: reversibilidade e neutralidade do No Show; os três eixos evoluem separados (concluir mexe na Situação, não dispara Financeiro nem Seguro fora dos gatilhos); toda transição vira histórico; concluir em massa move Check-in Realizado para Realizada; só transições da tabela do RPP002 são válidas.
+
+## Contrato de dados (mock)
+- Dia: data e lista de atividades. Cada atividade: nome, horário, situação da atividade (Não Iniciada, Em Andamento, Concluída), contagem de participantes (total, check-in realizado, a fazer check-in, cancelados), equipe responsável.
+- Fonte: fixtures em `src/mocks`, sem backend.
+
+## Referência de design
+- Drawer de conclusão individual (prints). No mobile, bottom sheet, coerente com o baseline mobile já pronto.
+- Figma: (node a preencher).
+
+## Comportamento (núcleo)
+- Escopo de ação: só atividades ainda não concluídas do dia (Não Iniciada e Em Andamento). As já concluídas ficam de fora. PROPOSTA.
+- Para cada atividade com check-in pendente, aplica a mesma decisão do modal individual: realizar check-in automático dos pendentes ou marcar como não compareceu (No Show). PONTO DE DECISÃO: essa escolha é uma por atividade ou uma decisão agregada que vale para o dia todo? A VALIDAR (é o principal).
+- Resumo agregado do dia: total de atividades, total esperado, e a soma de compareceram, não compareceram e cancelaram. PROPOSTA espelhando o resumo individual.
+- Intercorrência e observação: como o incidente é de uma atividade, o provável é registrar por atividade, com um atalho de "tudo certo no dia" quando não houve nenhuma. Liga ao conceito de fechamento do dia (FATO, Transcrição 08/04: o operador declara que deu tudo certo, sem observação e sem incidente). PROPOSTA.
+- Transições resultantes: concluir move as reservas com Check-in Realizado para Realizada; os pendentes viram check-in automático (Confirmada para Check-in para Realizada) ou No Show, conforme a decisão. FATO (RPP002) aplicado.
+
+## Critérios de aceite
+
+### Determinístico (checável por máquina)
+- [ ] Compila, lint e tipos passam.
+- [ ] Todos os estados renderizam: gatilho, resumo agregado, decisão de pendentes, sucesso, sucesso parcial e erro.
+- [ ] Nenhuma transição inválida (respeita a tabela do RPP002).
+- [ ] Nenhum fetch ou cliente HTTP. Dados só do mock.
+
+### Fidelidade (Figma mais render)
+- [ ] Tokens do design system aplicados.
+- [ ] A estrutura de drawer espelha a do individual. No mobile, vira bottom sheet coerente com o baseline já pronto.
+
+### Comportamento (UX)
+- [ ] Só atividades não concluídas entram na ação.
+- [ ] Marcar como não compareceu resulta em No Show, reversível e sem consequência financeira automática.
+- [ ] Concluir em massa move Check-in Realizado para Realizada.
+- [ ] Cada mudança registra histórico por reserva.
+- [ ] Atividade com zero participantes (ex. cancelada sem participantes) não trava o fluxo do dia.
+
+## Bordas e decisão
+- Decisão de check-in pendente por atividade versus agregada para o dia. A VALIDAR (principal).
+- Atividade Não Iniciada ao fim do dia: conclui, marca todos como não compareceram, ou pula. A VALIDAR.
+- Sucesso parcial: algumas atividades concluem e outra falha. Precisa de estado de erro por atividade, sem abortar o dia inteiro. PROPOSTA.
+- Atividade Em Andamento no momento da conclusão do dia. A VALIDAR.
+
+## Fora de escopo
+- Lógica financeira (estorno, diferença de tarifa) além dos gatilhos já definidos.
+- Backend real.
+
+## Status epistêmico
+- FATO: drawer individual e botão existem; transições da máquina de estados; No Show reversível; concluir em massa move para Realizada; fechamento do dia declara tudo certo.
+- PROPOSTA: escopo de ação, resumo agregado, tratamento de intercorrência por atividade.
+- A VALIDAR: decisão de pendentes por atividade versus dia, não iniciada ao fim do dia, sucesso parcial, atividade em andamento.
+
+---
+
+Nota sobre o gate para este módulo: a camada adversarial deve procurar especificamente por transições de estado que não estejam na tabela do RPP002 e por colapso dos três eixos numa mesma tag, porque é onde o executor tende a inventar. Os itens A VALIDAR são o segundo foco do revisor.

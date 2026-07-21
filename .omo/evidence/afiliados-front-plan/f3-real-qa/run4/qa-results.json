@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-07-21T00:37:14.204Z",
+  "base": "http://127.0.0.1:4173",
+  "scenarios": [
+    {
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "desktop",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-indicacoes-interactions",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#indicacoes at 1280x800; fill Juliana; click Pagas; click Copiar and wait for Copiado; open João detail; close; click Voltar para afiliados.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:1:516)\n    at async [stdin]:3:926\n    at async test ([stdin]:1:1339)\n    at async [stdin]:3:1"
+    },
+    {
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "desktop",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-ganhos-interactions",
+      "criterion": "ganhos org filter/detail/related link",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ganhos at 1280x800; choose Vertaco Aventuras; open João commission detail; click Ver indicação relacionada.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:1:516)\n    at async clk ([stdin]:1:656)\n    at async [stdin]:4:428\n    at async test ([stdin]:1:1339)\n    at async [stdin]:4:1"
+    },
+    {
+      "kind": "navigation",
+      "route": "configuracoes",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-configuracoes-interactions",
+      "criterion": "configuracoes Alterar destino/cash no-op/count update",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#configuracoes at 1280x800; click visible Formas de recebimento; verify Dinheiro lacks Alterar destino; change first destination to Conta da empresa; confirm counts/status.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: status feedback absent\n    at [stdin]:5:1188\n    at async test ([stdin]:1:1339)\n    at async [stdin]:5:1"
+    },
+    {
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "mobile",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-indicacoes-interactions",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#indicacoes at 390x844; fill Juliana; click Pagas; click Copiar and wait for Copiado; open João detail; close; click Voltar para afiliados.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:1:516)\n    at async [stdin]:3:926\n    at async test ([stdin]:1:1339)\n    at async [stdin]:3:1"
+    },
+    {
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 390x844; networkidle + 180ms"
+    },
+    {
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "mobile",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-ganhos-interactions",
+      "criterion": "ganhos org filter/detail/related link",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ganhos at 390x844; choose Vertaco Aventuras; open João commission detail; click Ver indicação relacionada.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:1:516)\n    at async clk ([stdin]:1:656)\n    at async [stdin]:4:428\n    at async test ([stdin]:1:1339)\n    at async [stdin]:4:1"
+    },
+    {
+      "kind": "navigation",
+      "route": "configuracoes",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-configuracoes-interactions",
+      "criterion": "configuracoes Alterar destino/cash no-op/count update",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#configuracoes at 390x844; click visible Formas de recebimento; verify Dinheiro lacks Alterar destino; change first destination to Conta da empresa; confirm counts/status.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: status feedback absent\n    at [stdin]:5:1188\n    at async test ([stdin]:1:1339)\n    at async [stdin]:5:1"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "viewport": "desktop",
+      "errors": [
+        {
+          "type": "console",
+          "text": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <li> li \n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:4173/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:4173/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        },
+        {
+          "type": "console",
+          "text": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s \n\nCheck the render method of `Primitive.div.SlotClone`. \n    at SheetOverlay (http://127.0.0.1:4173/src/components/ui/sheet.tsx:56:3)\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at DialogPortal (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:2008:11)\n    at SheetPortal (http://127.0.0.1:4173/src/components/ui/sheet.tsx:47:27)\n    at SheetContent (http://127.0.0.1:4173/src/components/ui/sheet.tsx:81:3)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Dialog (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1948:5)\n    at Sheet (http://127.0.0.1:4173/src/components/ui/sheet.tsx:23:21)\n    at div\n    at FormasRecebimentoContent (http://127.0.0.1:4173/src/modules/afiliados/ConfiguracoesPage.tsx:1090:39)\n    at div\n    at div\n    at main\n    at div\n    at div\n    at ConfiguracoesPage (http://127.0.0.1:4173/src/modules/afiliados/ConfiguracoesPage.tsx:2249:45)\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "errors": [
+        {
+          "type": "console",
+          "text": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <li> li \n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:4173/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:4173/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        },
+        {
+          "type": "console",
+          "text": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s \n\nCheck the render method of `Primitive.div.SlotClone`. \n    at SheetOverlay (http://127.0.0.1:4173/src/components/ui/sheet.tsx:56:3)\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at DialogPortal (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:2008:11)\n    at SheetPortal (http://127.0.0.1:4173/src/components/ui/sheet.tsx:47:27)\n    at SheetContent (http://127.0.0.1:4173/src/components/ui/sheet.tsx:81:3)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Dialog (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1948:5)\n    at Sheet (http://127.0.0.1:4173/src/components/ui/sheet.tsx:23:21)\n    at div\n    at FormasRecebimentoContent (http://127.0.0.1:4173/src/modules/afiliados/ConfiguracoesPage.tsx:1090:39)\n    at div\n    at main\n    at div\n    at div\n    at ConfiguracoesPage (http://127.0.0.1:4173/src/modules/afiliados/ConfiguracoesPage.tsx:2249:45)\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        }
+      ]
+    }
+  ],
+  "artifactPaths": [
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run4/desktop-indicacoes-search-tab-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run4/desktop-ganhos-org-filter.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run4/desktop-config-receiving-before.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run4/mobile-indicacoes-search-tab-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run4/mobile-ganhos-org-filter.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run4/mobile-config-receiving-before.png"
+  ]
+}

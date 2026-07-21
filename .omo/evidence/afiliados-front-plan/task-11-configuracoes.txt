@@ -1,0 +1,189 @@
+TASK
+Todo 11 from .omo/plans/afiliados-front-plan.md: refine settings, receiving destinations, and affiliations at #configuracoes.
+
+ATTEMPT DIRECTORY RESOLUTION
+Command: omo ulw-loop status --json
+Exit: 127
+Output: zsh:1: command not found: omo
+Result: no active attempt directory was available; evidence uses the required fallback .omo/evidence/afiliados-front-plan/.
+
+SOURCE REFERENCES VERIFIED
+- .omo/plans/afiliados-front-plan.md:260-271 — Todo 11 behavior and browser acceptance scenario.
+- Specdrivenafiliados.md:75-125 — existing destination selection, read-only receiving type, cash not applicable, usage badges, removal edge, and no bank integration.
+- src/mocks/afiliados/index.ts:1008-1050 — destinations and receiving assignments.
+- src/mocks/afiliados/index.ts:1132-1136 — affiliation statuses.
+- src/modules/afiliados/services/afiliados-mock-service.ts:164-183 — immutable assignment and usage-count helpers.
+- src/modules/afiliados/types.ts:1-31 — shared affiliate types.
+
+IMPLEMENTATION OBSERVABLES
+- Existing receiving destinations are cloned into section-local state; no fixture is mutated.
+- Non-cash rows open an Alterar destino sheet with existing destinations as radio choices.
+- Forma de recebimento is disabled/read-only; the affiliate can only choose a destination.
+- Confirming delegates the immutable update to assignReceivingDestination and recalculates badges with countDestinationUsage.
+- Cash/Dinheiro displays Não se aplica and renders no Alterar destino action.
+- Destination deletion is disabled when usage is greater than zero; the default destination is also protected.
+- Minhas afiliações uses visible afiliação terminology and maps Ativa/Inativa to Ativo/Inativo labels.
+- The notification label was changed from forbidden visible terminology to Convite de afiliação; profile and security behavior were preserved.
+- No fetch, HTTP client, backend, authentication, bank integration, Next.js concept, or receiving-type mutation was added.
+
+CHANGED FILES
+- src/modules/afiliados/ConfiguracoesPage.tsx
+  Final SHA-256: 0a0341543458ad88f553fad6a497556c16b532fa83889c628e4bd90af6957846
+- src/modules/afiliados/ConfiguracoesPage.test.tsx
+  Final SHA-256: e3d37fed533c87b2fbdcec41239fdd693f2f80edcf975cfc3faea68ea8173fe0
+- .omo/evidence/afiliados-front-plan/task-11-configuracoes-browser.md
+- .omo/evidence/afiliados-front-plan/task-11-configuracoes.txt
+No service, type, fixture, shared component, route, plan, Boulder, or other screen file was edited by this task.
+
+TDD HISTORY
+1. Characterization command:
+   npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx
+   Exit 0; 1 file / 1 test passed before behavior cases were added.
+2. Correct RED command after the behavior tests existed:
+   npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx --reporter=dot
+   Exit 1; characterization passed and 3 behavior tests failed because the destination sheet, destination action accessibility, and refined affiliation labels did not yet exist.
+3. Final focused command:
+   npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx --reporter=dot
+   Exit 0; 1 file / 4 tests passed.
+   Binary coverage: cash no-op and two non-cash triggers; disabled receiving type; destination reassignment; usage 2 -> 1/1; in-use removal aria-disabled; preferred afiliação copy; three active labels.
+   Artifact: src/modules/afiliados/ConfiguracoesPage.test.tsx and this evidence file.
+
+REQUIRED AGGREGATE TEST COMMAND
+Command: npm run test -- --run src/app/App.test.tsx src/modules/afiliados
+Exit: 1
+Result: 9 test files: 8 passed, 1 failed. 34 tests: 33 passed, 1 failed.
+Only failure: src/app/App.test.tsx:47 in App hash routing expected the obsolete literal "Extrato de comissoes" while the separately owned Ganhos screen renders "Extrato de comissões". ConfiguracoesPage.test.tsx passed in this run. App.test.tsx is modified by another worker and is outside this task's allowed write set, so it was not changed.
+Shared warning in the command: invalid nested breadcrumb li elements in another screen/shared layout; outside this write set.
+Artifact: this evidence file, plus focused green test artifact above.
+
+ADDITIONAL FLAKINESS PROBE
+Command: npm run test -- --run src/modules/afiliados --reporter=dot
+Exit: 1
+Result: 28 passed, 2 timed out at the repository-wide 5 s limit (AfiliadosPage and ProdutosLinksPage) under concurrent module load. The same tests completed in the required aggregate run. This is classified as shared-suite timing flakiness, not a Configuracoes failure.
+
+STATIC AND BUILD VERIFICATION
+- npm run typecheck
+  Exit 0; tsc --noEmit produced no diagnostics.
+- npm run build
+  Exit 0; Vite transformed 2092 modules and produced dist successfully. Existing large-chunk warning only.
+- npx eslint src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx
+  Exit 0; no output.
+- npx prettier --check src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx
+  Exit 0; all matched files use Prettier style.
+- git diff --check -- src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx
+  Exit 0; no whitespace errors.
+
+FORBIDDEN-CONCEPT SCAN
+Exact command:
+rg -n "fetch\(|axios|contrato|vínculo|mock|fake" src/modules/afiliados/ConfiguracoesPage.tsx
+Exit: 0
+Output:
+60:} from "@/mocks/afiliados";
+65:} from "./services/afiliados-mock-service";
+Classification: both matches are internal import paths allowed by the mock-only repository contract. There are zero fetch/axios/backend matches and zero visible contrato, vínculo, mock, or fake copy matches.
+
+BROWSER QA
+Persistent artifact: .omo/evidence/afiliados-front-plan/task-11-configuracoes-browser.md
+Status: PASS in real Chrome at 1280x900, 768x900, and 390x844.
+Binary observables include destination change, immutable cancel, usage-count update, cash no-op, in-use deletion guard, affiliation labels, no horizontal overflow, and screenshot hashes.
+
+ADVERSARIAL CLASSES
+- malformed_input: not applicable; the changed action has no free-text input and only accepts typed existing destination IDs.
+- prompt_injection: not applicable; all content comes from trusted local fixtures and no remote/user-authored prompt is consumed.
+- cancellation_resume: PASS; choosing an alternate destination then Cancelar preserved Vertaco and usage counts.
+- stale_state: PASS for the required active-section flow; fresh browser targets reset fixtures and the immediate local reassignment remained consistent across row, success status, and both usage badges. Section-local state intentionally resets if that section is unmounted.
+- dirty_worktree: PASS; target was clean before editing (baseline SHA-256 0feaf0b4d291eb0ae1b0e05fa791714d9543defa34a383c11271dbd2a9e30066), and unrelated modified/untracked files were preserved.
+- hung_long_command: PASS for focused test, typecheck, build, and both browser scripts; all terminated. The shared aggregate suite also terminated and reported its out-of-scope assertion.
+- flaky_test: shared module stress run exposed two unrelated 5 s timeouts; the focused Configuracoes suite passed repeatedly and the required aggregate run had no Configuracoes failure.
+- misleading_success: PASS; browser assertions checked destination text, two exact usage badges, cash row action count, disabled input DOM state, and deletion aria-disabled in addition to the success message.
+- repeated_interruptions: not applicable to this synchronous local-only action; no request, timer, persistence, or background operation is started.
+
+SCOPED WORKTREE STATUS BEFORE EVIDENCE WRITE
+ M src/modules/afiliados/ConfiguracoesPage.tsx
+?? src/modules/afiliados/ConfiguracoesPage.test.tsx
+The shared worktree also contained other workers' App/Afiliados/Ajuda/Ganhos/Indicacoes/Produtos changes and untracked plan/service/component artifacts. None were altered or reverted.
+
+SCOPED FINAL WORKTREE STATUS
+ M src/modules/afiliados/ConfiguracoesPage.tsx
+?? .omo/evidence/afiliados-front-plan/task-11-configuracoes-browser.md
+?? .omo/evidence/afiliados-front-plan/task-11-configuracoes.txt
+?? src/modules/afiliados/ConfiguracoesPage.test.tsx
+
+RISKS AND CLEANUP
+- Known shared warning: SheetOverlay does not forward its ref. This predates the task, also appears in other affiliate sheets, and lives in src/components/ui/sheet.tsx outside the write set.
+- ConfiguracoesPage.tsx remains an existing oversized module. Extraction would require shared/new component files outside the caller's isolated write set, so no scope-expanding refactor was made.
+- Receiving changes are intentionally synchronous/local and reset when FormasRecebimentoContent unmounts; persistence/backend work is explicitly out of scope.
+- Vite/Chrome processes, ports 5177/9333, temporary Chrome profile, CDP reports, and screenshots were cleaned after observables and hashes were recorded.
+
+DONECLAIM
+Status: IMPLEMENTATION_DONE; REQUIRED_AGGREGATE_VERIFICATION_BLOCKED_BY_OUT_OF_SCOPE_APP_TEST.
+Implemented criteria: complete.
+Focused tests: PASS (4/4).
+Typecheck/lint/build: PASS.
+Browser QA: PASS.
+Required aggregate command: BLOCKED (33/34 pass; sole failure belongs to modified src/app/App.test.tsx / Ganhos copy owned by another worker).
+Final evidence path: .omo/evidence/afiliados-front-plan/task-11-configuracoes.txt
+
+--- CURRENT ATTEMPT: T11-AFFILIATION-STATUSES ---
+Timestamp: 2026-07-20 18:04:50 -03
+Status: IMPLEMENTATION_DONE; focused gate PASS; aggregate suite has unrelated shared timeouts.
+Attempt directory resolution: `omo ulw-loop status --json` exited 127 (`omo: command not found`); fallback required by the task was used: `.omo/evidence/afiliados-front-plan/`.
+
+CHANGE AND RATIONALE
+- Allowed product change: `src/modules/afiliados/ConfiguracoesPage.tsx`.
+  The screen now derives a local `affiliationStatusTaxonomy` with `Ativa`, `Pendente`, `Inativa`, and `Desativado`, handles the fourth status in the existing class/label helpers, and renders a visible `Status de afiliação` legend. The legend uses source values in `data-status` and user-facing labels `Ativo`, `Pendente`, `Inativo`, and `Desativado`.
+  No disabled organization row was invented: fixtures remain the source for the three organization rows, while the local taxonomy supplies status coverage absent from fixture rows. The explanatory copy distinguishes an afiliação marked `Desativado` from a global affiliate block.
+- Allowed test change: `src/modules/afiliados/ConfiguracoesPage.test.tsx`.
+  The focused affiliation test now asserts the four rendered labels and the exact four source status values in DOM order. The existing receiving tests remain unchanged and still exercise cash no-op, read-only receiving type, reassignment/count updates, and in-use removal blocking.
+- Allowed evidence change: `.omo/evidence/afiliados-front-plan/task-11-configuracoes.txt`.
+- Fixture guard: `git status --short -- src/mocks/afiliados/index.ts src/modules/afiliados/types.ts src/modules/afiliados/services` exited 0 and returned no fixture path. The returned untracked service/type paths are shared pre-existing worktree state and were not edited.
+- SHA-256 after implementation: `src/modules/afiliados/ConfiguracoesPage.tsx` = `d07e35e67f3e435fa0d56e2d81b17eeebc84197d1e271172cdd2f97c07dccf40`; `src/modules/afiliados/ConfiguracoesPage.test.tsx` = `fe546e60c50ce299b685c880700544edd69eacd21660ed029ecc773304f79f2f`.
+
+TDD AND TEST RESULTS
+1. RED scenario: after the status assertions were added, `npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx` exited 1. Vitest reported 4 tests with 1 failure; the new assertion expected four `Ativo` nodes and observed three because the status legend was not yet rendered. This was the intended missing-coverage failure.
+2. GREEN required focused scenario: `npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx` exited 0. Binary result: 1 test file passed, 4 tests passed. The artifact is this evidence record plus the exercised test file.
+3. Required aggregate scenario: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados` exited 1 after termination. Binary result: 9 files, 5 passed and 4 failed; 34 tests, 29 passed and 5 timed out at the repository 5-second limit. The timed-out tests were in `AfiliadosPage.test.tsx`, `GanhosPage.test.tsx`, two `IndicacoesPage.test.tsx` cases, and `ProdutosLinksPage.test.tsx`; `ConfiguracoesPage.test.tsx` passed. The run also emitted pre-existing nested breadcrumb `<li>` and SheetOverlay ref warnings. No out-of-scope test or product file was changed.
+
+STATIC VERIFICATION
+- `npm run typecheck` exited 0; `tsc --noEmit` produced no diagnostics.
+- `npm run build` exited 0; Vite transformed 2092 modules. Existing large-chunk warning only.
+- `npx eslint src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx` exited 0 with no output.
+- `npx prettier --check src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx` exited 0; all matched files use Prettier style.
+- `git diff --check -- src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx` exited 0.
+
+REQUESTED SEARCHES
+- `rg -n "Desativado|Ativa|Pendente|Inativa" src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx` exited 0. Observable: the screen contains the four-value taxonomy and all four switch cases; the test contains the four labels and exact `["Ativa", "Pendente", "Inativa", "Desativado"]` assertion. Relevant source lines: 86, 133-153, 1015; relevant test lines: 119 and 129.
+- `rg -n "fetch\(|axios|contrato|vínculo|mock|fake" src/modules/afiliados/ConfiguracoesPage.tsx` exited 0 with only internal imports at lines 60 (`@/mocks/afiliados`) and 65 (`afiliados-mock-service`). Classification: allowed implementation-path matches only; no fetch/axios/backend/auth/network code and no visible forbidden copy.
+- Scoped `git status --short -- src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx .omo/evidence/afiliados-front-plan/task-11-configuracoes.txt` exited 0:
+  ` M src/modules/afiliados/ConfiguracoesPage.tsx`, `?? src/modules/afiliados/ConfiguracoesPage.test.tsx`, `?? .omo/evidence/afiliados-front-plan/task-11-configuracoes.txt`.
+
+FRESH BROWSER / VISUAL SMOKE
+Invocation: `node --input-type=module -` using the existing CDP page on `http://127.0.0.1:5175/#configuracoes`; for 1280x900, 768x900, and 390x844 it clicked the visible `Minhas afiliações` control, selected the visible `ul[aria-label="Status de afiliação"]`, checked DOM state, and captured PNGs. Exit 0.
+- 1280x900: visible list rect `720x21` at `(376,447)`; values `Ativa,Pendente,Inativa,Desativado`; labels `Ativo,Pendente,Inativo,Desativado`; `containsDesativado=true`; horizontal overflow `false`. Artifact: `/tmp/t11-configuracoes-status-1280.png` (60,670 bytes).
+- 768x900: visible list rect `400x21` at `(304,463)`; same four values/labels; `containsDesativado=true`; horizontal overflow `false`. Artifact: `/tmp/t11-configuracoes-status-768.png` (58,063 bytes).
+- 390x844: visible list rect `310x21` at `(40,451)`; same four values/labels; `containsDesativado=true`; horizontal overflow `false`. Artifact: `/tmp/t11-configuracoes-status-390-section.png` (41,786 bytes).
+- `view_image` inspection of the 1280 and 390 PNGs confirmed the new legend is rendered in the existing card/token language, with visible green/amber/gray/red badges and no clipping. The first probe selected a hidden duplicate list; it was corrected to select the visible list before these PASS observations.
+
+ADVERSARIAL CLASSES
+- `malformed_input`: PASS by construction; the new coverage is a fixed typed taxonomy with no free-text or network input.
+- `prompt_injection`: not applicable; the changed screen consumes only trusted local fixtures and local constants.
+- `cancellation_resume`: existing receiving behavior was preserved; focused tests still pass the receiving reassignment, read-only type, cash no-op, count update, and removal-block scenarios. The status legend has no asynchronous action.
+- `stale_state`: PASS for this change; the taxonomy is immutable module-local data and the focused test renders a fresh screen. No fixture mutation was introduced.
+- `dirty_worktree`: PASS for the requested write set; scoped status lists only the two target files and this evidence file. Other shared changes were left untouched.
+- `hung_long_command`: focused test, typecheck, build, lint, format, diff check, and CDP capture terminated. The exact aggregate invocation also terminated but reported the shared 5-second timeouts above.
+- `flaky_test`: aggregate module timeouts are unrelated to `ConfiguracoesPage`; the focused suite passed 4/4 in the final sequential run.
+- `misleading_success`: PASS; both the focused test and fresh CDP probe assert exact source values, exact visible labels, visible list geometry, `Desativado`, and no horizontal overflow.
+- `repeated_interruptions`: not applicable; no request, timer, persistence, or background operation was added.
+
+CLEANUP / RISKS
+- No fixture, service, shared type, component, route, plan, ledger, or other evidence file was edited. The existing shared dev servers/CDP session were reused and not killed; temporary screenshots remain only under `/tmp` as the browser artifacts named above.
+- Known pre-existing risk: the aggregate suite has unrelated 5-second timeouts and DOM/ref warnings in other affiliate screens/shared components. The build retains its pre-existing large-chunk warning.
+- TypeScript LSP diagnostics were unavailable because the `typescript` language server is not installed and prior installation was declined; `npm run typecheck` and the focused ESLint pass are the executable substitutes.
+- Independent visual-QA subagent tooling was not exposed in this session; direct CDP DOM assertions plus `view_image` inspection were used and recorded.
+
+FINAL EVIDENCE PATH
+`.omo/evidence/afiliados-front-plan/task-11-configuracoes.txt`
+
+DONECLAIM (CURRENT)
+Changed files: `src/modules/afiliados/ConfiguracoesPage.tsx`, `src/modules/afiliados/ConfiguracoesPage.test.tsx`, and this allowed evidence file only.
+Result: T11-AFFILIATION-STATUSES fixed with visible `Desativado` coverage and four-status focused assertions; receiving behavior remains green. Focused tests/typecheck/build/lint/format/diff checks PASS. Aggregate command executed and recorded with unrelated shared-suite timeouts.

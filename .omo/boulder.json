@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "active_work_id": "afiliados-front-plan",
+  "works": {
+    "afiliados-front-plan": {
+      "work_id": "afiliados-front-plan",
+      "active_plan": ".omo/plans/afiliados-front-plan.md",
+      "plan_name": "afiliados-front-plan",
+      "session_ids": [
+        "codex:019f80ba-38b0-7623-99d4-f84d9bfa0b74"
+      ],
+      "status": "active",
+      "worktree_path": null
+    }
+  }
+}

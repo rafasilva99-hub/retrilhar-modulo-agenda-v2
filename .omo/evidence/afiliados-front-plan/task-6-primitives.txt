@@ -1,0 +1,172 @@
+Todo 6: shared affiliate UI primitives
+Date: 2026-07-20
+Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+
+Context and scope
+------------------
+Implemented only the Todo 6 write set. Screen adoption was intentionally left for Todos 7-12.
+The active-attempt lookup was attempted with `omo ulw-loop status --json`, but this installation
+does not expose the `omo` command (`zsh: command not found: omo`), so this evidence was recorded
+under `.omo/evidence/` as instructed by the fallback rule.
+
+Changed files
+-------------
+- src/modules/afiliados/components/affiliate-link-card.tsx
+- src/modules/afiliados/components/affiliate-primitives.test.tsx
+- src/modules/afiliados/components/affiliate-stat-card.tsx
+- src/modules/afiliados/components/copy-button.tsx
+- src/modules/afiliados/components/empty-state.tsx
+- src/modules/afiliados/components/index.ts
+- src/modules/afiliados/components/organization-filter.tsx
+- src/modules/afiliados/components/section-heading.tsx
+- src/modules/afiliados/components/status-badges.tsx
+
+Implemented surface
+-------------------
+- `SectionHeading`: optional HugeIcons icon, description, and action slot.
+- `AffiliateStatCard` / `AffiliateKpiCard`: affiliate wrapper over `CardStats`.
+- `AffiliateStatusBadge`, `CommissionStatusBadge`, and `OrderStatusBadge`: typed semantic
+  status maps with Portuguese labels and HugeIcons.
+- `CopyButton`: shared `Button` wrapper with clipboard success/failure feedback.
+- `OrganizationFilter` / `OrganizationFilterSelect`: controlled organization `Select` with an
+  all-organizations option and accessible trigger label.
+- `AffiliateEmptyState` / `EmptyState`: dashed `Card` empty surface with icon, description, and
+  optional action.
+- `AffiliateLinkRow` and `AffiliateLinkCard`: reusable link display/copy surfaces using
+  `DataList`, `Card`, `CopyButton`, `SectionHeading`, `cn`, and HugeIcons.
+- `index.ts`: maintained public export surface for the primitives and their prop types.
+- `affiliate-primitives.test.tsx`: focused DOM/component harness covering all eight requested
+  pattern groups plus successful clipboard feedback.
+
+Source references consulted
+---------------------------
+- `src/modules/afiliados/AfiliadosPage.tsx:110-128` section heading, `247-260` KPI card,
+  `310-345` order/commission status maps, `866-969` affiliate code/copy surface, and
+  `999-1007` empty state.
+- `src/modules/afiliados/ProdutosLinksPage.tsx:36-56` section heading and `362-400` repeated
+  code/link rows and copy actions.
+- `src/modules/afiliados/GanhosPage.tsx:103-162` KPI and section heading patterns plus
+  `269-350` DataList status details.
+- `src/components/custom/data-list.tsx:1-78` and `src/components/custom/cards/stats.tsx:1-83`.
+- `src/components/ui/button.tsx:7-103`, `card.tsx:5-89`, `badge.tsx`, and `select.tsx`.
+- `DESIGN.md` sections 2-8 for semantic tokens, Helvetica Neue, HugeIcons, spacing, card/status
+  anatomy, accessibility, and the accepted debt boundary.
+- `AGENTS.md`, `CLAUDE.md`, and `.claude/rules/afiliados.md` for write-set, hash-route,
+  mock-only, terminology, and icon guardrails.
+
+Verification commands and results
+---------------------------------
+1. Exact required test scenario:
+
+   Command:
+   `npm run test -- --run src/modules/afiliados`
+
+   Result: exit 0.
+   Captured output:
+   `Test Files  2 passed (2)`
+   `Tests       9 passed (9)`
+   `Duration    2.17s (transform 172ms, setup 155ms, import 1.33s, tests 138ms, environment 1.10s)`
+   Binary observable: the focused primitive harness rendered heading/stat/status/filter/empty/link
+   surfaces and asserted the clipboard call plus `Copiado` feedback; the existing affiliate service
+   tests also passed.
+
+2. Exact forbidden-import guard:
+
+   Command:
+   `rg -n "lucide-react|from \"@/components/ui/.+buttonVariants" src/modules/afiliados/components`
+
+   Result: no matches; captured `rg_exit_status=1` (the expected no-match status).
+
+3. Targeted primitive export/import/type surface:
+
+   Command:
+   `rg -n '^(export (type )?\\{|export \\{|function (SectionHeading|AffiliateStatCard|AffiliateStatusBadge|CommissionStatusBadge|OrderStatusBadge|CopyButton|OrganizationFilter|AffiliateEmptyState|AffiliateLinkRow|AffiliateLinkCard))' src/modules/afiliados/components`
+
+   Result: matched every requested runtime primitive and the central `index.ts` exports, including
+   `SectionHeading`, `AffiliateStatCard`, all three status badges, `CopyButton`, both organization
+   filter names, both empty-state names, both affiliate-link names, and their prop/status types.
+
+4. Component quality gates:
+
+   - `npx prettier --check src/modules/afiliados/components`: exit 0, all files formatted.
+   - `npx eslint src/modules/afiliados/components --max-warnings=0`: exit 0.
+   - `npm run typecheck`: exit 0.
+   - `npm run build`: exit 0; Vite transformed 2079 modules and emitted the production bundle.
+   - TypeScript no-excuse script was attempted with Node because Bun is unavailable; it could not
+     resolve the skill script's `typescript` import from its home directory. Project `tsc` and
+     ESLint remained green; no no-excuse syntax (`any`, assertions, enum, non-null assertion, or
+     catch) was added to the changed components.
+
+5. Scoped worktree proof:
+
+   Command:
+   `git status --short -- src/modules/afiliados/components`
+
+   Result:
+   `?? src/modules/afiliados/components/`
+   This confirms the only scoped change is the new component directory; unrelated worker changes
+   were not reverted or included.
+
+6. Visible-copy and dependency references:
+
+   - `rg -n -i '\\b(mock|fake|test)\\b' src/modules/afiliados/components --glob '!*.test.tsx'`:
+     no word-level visible-copy matches, exit status 1. The source-only `mocks` import is an
+     implementation name, not rendered UI text.
+   - Dependency grep confirmed `Button`, `Card`, `Badge`, `Select`, `DataList`, `CardStats`,
+     `cn`, `@hugeicons/react`, and `@hugeicons/core-free-icons` imports in the maintained files.
+
+Global check note
+-----------------
+`npm run check` was also run. It exited 2 before lint/typecheck because the shared repository has
+pre-existing out-of-scope formatting failures, including malformed untrusted evidence file
+`.omo/ulw-loop/evidence/G001-quality-review.json` (`SyntaxError: Unexpected token`, line 1), many
+legacy files, and existing plan/evidence files. No out-of-scope file was changed to make this
+Todo pass. The isolated format, lint, typecheck, test, and build gates above are green.
+
+Adversarial classes
+-------------------
+- malformed input: not applicable; primitives accept typed internal props and do not parse external
+  input. `npm run typecheck` exit 0 is the boundary proof.
+- prompt injection: not applicable; no external content, network, or file input is consumed.
+- cancel/resume: not applicable; no resumable or long-running flow was introduced.
+- stale state: not applicable; no cache or generated source is used by the primitives.
+- dirty worktree: probed with the scoped `git status --short`; the new directory is isolated and
+  unrelated dirty files are preserved.
+- long external commands: `npm run test -- --run src/modules/afiliados` and `npm run build` both
+  completed with exit 0 and no process was left running.
+- flaky tests: applicable to clipboard feedback; the test uses a deterministic resolved promise,
+  `waitFor`, and was green in the final run (9/9 tests).
+- misleading success output: probed by combining test DOM assertions, typecheck, lint, build,
+  exact no-match exit status, and scoped status. The global `npm run check` failure was recorded,
+  not hidden.
+- mid-operation interrupts: not applicable; no destructive action or persistent external write was
+  performed.
+
+Cleanup and risks
+-----------------
+- No Vite server, browser session, port, temporary worktree, or background QA process was started;
+  no teardown was required.
+- No commit was created, no `src/components/ui/**` file was edited, and no screen file was
+  rewritten.
+- Browser visual QA could not be captured because no browser-control/Playwright tool is exposed in
+  this session and the explicit Todo boundary does not mount the new primitives on a route. The
+  focused Vitest harness is the available fresh DOM/showcase evidence; screen-level adoption and
+  browser QA remain for later screen Todos.
+- The primitives intentionally remain unadopted until the screen owners consume the index exports.
+
+DoneClaim
+---------
+task: Todo 6, extract shared affiliate UI primitives from repeated inline patterns
+status: complete
+changed_files: the nine files listed above, all under `src/modules/afiliados/components/**`
+tests: `npm run test -- --run src/modules/afiliados` exit 0, 2 files and 9 tests passed;
+  `npm run typecheck`, scoped ESLint, scoped Prettier, and `npm run build` exit 0
+grep: forbidden `lucide-react` and UI-internal `buttonVariants` imports have no matches; targeted
+  export grep lists all requested primitive names and prop/status types
+risks: primitives are not adopted by screens yet by design; global `npm run check` is blocked by
+  unrelated malformed/legacy formatting outside the write set
+cleanup: no QA processes or ports created; no commit made; unrelated worktree changes preserved
+manual_qa: fresh DOM showcase test in `affiliate-primitives.test.tsx`; real browser capture is
+  deferred because no browser tool is available and no route adoption is in scope for Todo 6
+
+EVIDENCE_RECORDED: .omo/evidence/afiliados-front-plan/task-6-primitives.txt

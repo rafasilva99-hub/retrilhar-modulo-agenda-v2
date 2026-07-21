@@ -1,0 +1,139 @@
+Todo 8 evidence record: refine `#indicacoes`
+Date: 2026-07-20
+Attempt directory: no active `omo ulw-loop` attempt was available; evidence is under `.omo/evidence/afiliados-front-plan/`.
+
+DONECLAIM
+Status: COMPLETE for Todo 8's indications screen. The requested screen behavior is implemented and observed in the browser. The required repository suite remains non-green only because of an unrelated existing/other-worker Ganhos assertion; all 3 indications tests pass in the required suite.
+
+Changed files owned by this attempt
+- `src/modules/afiliados/IndicacoesPage.tsx`
+  - Service-driven referral filtering for organization, search, origin, and tab state.
+  - Period control drives the KPI period and preserves the existing fixture/service model.
+  - Shared organization filter, affiliate link card/copy control, order-status badges, and commission-status badges.
+  - Tab labels/counts for all, paid, unpaid, and abandoned-cart states.
+  - Responsive table/card list, cart-item detail drawer, zero-commission abandoned semantics, and `#afiliados` back navigation.
+- `src/modules/afiliados/IndicacoesPage.test.tsx`
+  - Search/count/tab selection, cart detail, no-result state, and abandoned order/commission semantics.
+- `.omo/evidence/afiliados-front-plan/task-8-indicacoes-browser.md`
+- `.omo/evidence/afiliados-front-plan/task-8-indicacoes.txt`
+
+No other product source, route, service, shared component, plan, or ledger file was edited by this attempt.
+
+Source references inspected
+- `.omo/plans/afiliados-front-plan.md` Todo 8 acceptance criteria.
+- `Specdrivenafiliados.md:23-26` indications requirements.
+- `src/modules/afiliados/IndicacoesPage.tsx` existing screen contract.
+- `src/modules/afiliados/services/afiliados-mock-service.ts` referral filters, cart items, and organization listing.
+- `src/modules/afiliados/types.ts` period, tab, origin, referral, and filter types.
+- `src/modules/afiliados/components/index.ts` shared affiliate primitives and status badges.
+- `src/mocks/afiliados/index.ts` referral, cart, organization, KPI, and affiliate-link fixtures.
+
+Validation commands and results
+
+1. Focused behavior:
+   - Invocation: `npm run test -- --run src/modules/afiliados/IndicacoesPage.test.tsx`
+   - Exit: `0`.
+   - Observable: `Test Files 1 passed (1); Tests 3 passed (3)`.
+   - Coverage scenarios: known-customer search and exclusion of João while searching Juliana; tab count and selected-state change; João cart detail with Rapel/Tirolesa; `zzzz-sem-resultado` empty state; abandoned tab with `Abandonado`, `Não gerada`, and `R$ 0,00` in desktop/mobile DOM.
+   - Captured artifact: this evidence file and [browser report](./task-8-indicacoes-browser.md).
+
+2. Changed-file lint, format, and whitespace:
+   - Invocation: `npx eslint src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx --max-warnings=0 && npx prettier --check src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx && git diff --check -- src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx`
+   - Exit: `0`.
+   - Observable: Prettier reported `All matched files use Prettier code style!`; ESLint and diff-check emitted no errors.
+   - Captured artifact: this evidence file.
+
+3. Required suite:
+   - Exact invocation: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados`
+   - Exit: `1`.
+   - Observable: `Test Files 1 failed | 8 passed (9); Tests 1 failed | 33 passed (34)`.
+   - The sole failure is `src/app/App.test.tsx > App hash routing > renders each affiliate screen for its direct hash route`; it expects `Extrato de comissoes`, while the other worker's current Ganhos screen renders `Extrato de comissões`. The indications tests are included in the 8 passing files and all 3 indications tests pass.
+   - Captured artifact: this evidence file. No change was made outside the allowed write set to repair the Ganhos expectation.
+
+4. Forbidden-term/network guard:
+   - Exact invocation: `rg -n "fetch\(|axios|contrato|vínculo|mock|fake" src/modules/afiliados/IndicacoesPage.tsx`
+   - Exit: `0` because two internal import paths matched:
+     - line 57: `@/mocks/afiliados`
+     - line 63: `./services/afiliados-mock-service`
+   - Classification: both matches are implementation-only fixture/service identifiers. They are not rendered UI copy. There were no `fetch(`, `axios`, `contrato`, `vínculo`, or `fake` matches. The page adds no backend, authentication, HTTP, or Next concepts.
+   - Captured artifact: this evidence file.
+
+5. Scoped worktree audit:
+   - Invocation: `git status --short -- src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx .omo/evidence/afiliados-front-plan`
+   - Result:
+     - ` M src/modules/afiliados/IndicacoesPage.tsx`
+     - `?? .omo/evidence/afiliados-front-plan/`
+     - `?? src/modules/afiliados/IndicacoesPage.test.tsx`
+   - The evidence directory contains other workers' reports; this attempt only added the two named Todo 8 evidence files. The temporary red-test capture was moved to `/tmp/retrilhar-task-8-red-after-implementation.log` and is not left in the repository.
+   - Captured artifact: this evidence file.
+
+Browser QA and artifacts
+- Invocation, steps, binary observables, and final screenshots are recorded in [task-8-indicacoes-browser.md](./task-8-indicacoes-browser.md).
+- Route smoke: `http://127.0.0.1:5175/#indicacoes` rendered heading, 15 rows, link-copy control, and tab counts.
+- Search/filter: `João` reduced the result to one; real pointer activation of `Pagas` selected the tab and retained the paid João row.
+- Detail: the first paid row opened a visible drawer containing the cart heading plus Rapel and Tirolesa.
+- Copy: real pointer activation changed `Copiar` to `Copiado`.
+- Empty state: `zzzz-sem-resultado` produced the empty state with zero rows and no crash signal.
+- Back navigation: the rendered action changed the hash to `#afiliados`.
+- Responsive: 768x900 and 375x812 both rendered the default page with four tabs, link-copy control, and no horizontal overflow.
+- Artifact paths: `/tmp/retrilhar-task-8-indicacoes-final-1280.png`, `/tmp/retrilhar-task-8-indicacoes-final-detail.png`, `/tmp/retrilhar-task-8-indicacoes-final-empty.png`, `/tmp/retrilhar-task-8-indicacoes-final-768.png`, `/tmp/retrilhar-task-8-indicacoes-final-375.png`.
+
+Adversarial classes exercised
+- Positive known-customer search and unrelated-customer exclusion.
+- Paid tab state/count change after search.
+- Abandoned tab order-status, commission-status, and zero-commission semantics.
+- Cart detail with multiple items.
+- Empty query with no crash.
+- Link copy feedback and hash back navigation.
+- Responsive widths and horizontal-overflow check.
+- Forbidden implementation/network term scan.
+
+Cleanup and residual risk
+- No product cleanup outside the allowed write set.
+- LSP diagnostics were unavailable because the TypeScript server is not installed; changed-file ESLint, Prettier, diff-check, focused tests, and browser QA passed.
+- The required suite's single Ganhos legacy-copy failure remains outside this Todo's write set and is the only non-green result in the final exact run.
+- Browser evidence used explicit reloads for responsive captures to avoid retaining filter state across same-URL navigation.
+
+FINAL GATE RE-RUN — AUTHORITATIVE STATUS: COMPLETE
+
+This section supersedes the earlier 375x812 responsive claim and records the Todo 8 blocker resolution.
+
+Fresh browser invocation:
+- `http://127.0.0.1:5175/#indicacoes`
+- Chrome CDP target on port 9223, exact viewport `390x844` CSS pixels via `Emulation.setDeviceMetricsOverride`.
+- Inline Node CDP driver used `Page.navigate`, real `Input.dispatchMouseEvent`, `Input.insertText`, `Runtime.evaluate`, and `Page.captureScreenshot`.
+- Clipboard permission was granted for `http://127.0.0.1:5175` only.
+- Action log: `.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844.json`.
+
+Observed result: `allPass: true`.
+- Open: nonblank `Indicações` page, link card, four tabs, sidebar collapsed at narrow width, no horizontal overflow, no offscreen elements.
+- Search `João`: exact input value, one referral card, tab counts 1/1/0/0.
+- Pagas: selected state and one result.
+- Detail: drawer with `Itens do carrinho`, `Rapel Cachoeira`, `Tirolesa Radical`, no horizontal overflow.
+- Copy: `Copiado` feedback.
+- Empty: exact `zzzz-sem-resultado`, `Nenhuma indicação encontrada`, zero cards, no overflow.
+- Back: hash became `#afiliados`.
+
+Source fix proved necessary by 390x844 QA and was limited to `src/modules/afiliados/IndicacoesPage.tsx`:
+- Collapse the existing shell sidebar below 768px.
+- Add `w-full min-w-0` to mobile referral cards so their measured width is 199px inside the 231px main column.
+- Use a compact `Voltar` mobile label with `aria-label="Voltar para afiliados"`; desktop keeps `Voltar para afiliados`.
+
+Required test and validation result after the final source change:
+- Invocation: `npm run test -- --run src/modules/afiliados/IndicacoesPage.test.tsx src/app/App.test.tsx && npx eslint src/modules/afiliados/IndicacoesPage.tsx --max-warnings=0 && npx prettier --check src/modules/afiliados/IndicacoesPage.tsx && git diff --check -- src/modules/afiliados/IndicacoesPage.tsx`
+- Exit: `0`.
+- Observable: `Test Files 2 passed (2)`, `Tests 7 passed (7)`, Prettier `All matched files use Prettier code style!`, no ESLint or diff-check errors.
+
+Cleanup receipt for gate finding:
+- Before: `lsof -nP -iTCP:5175 -sTCP:LISTEN` showed project Vite PID 50751 on `127.0.0.1:5175`; `ps` and cwd checks identified the workspace Vite command.
+- Cleanup: `kill 50751`, exit `0`.
+- After: the same lsof command returned empty; TCP 5175 is released.
+- Full receipt: `.omo/evidence/afiliados-front-plan/task-8-indicacoes-cleanup.txt`.
+
+Fresh artifacts (each PNG is 390x844 and non-empty):
+- `.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844.png`
+- `.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844-table.png`
+- `.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844-detail.png`
+- `.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844-empty.png`
+
+Manual QA matrix: `.omo/evidence/afiliados-front-plan/afiliados-front-plan-manual-qa.md`.

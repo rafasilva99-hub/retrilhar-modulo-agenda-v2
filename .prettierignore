@@ -3,6 +3,7 @@ node_modules
 coverage
 .vite
 .playwright-mcp
+.omo
 package-lock.json
 
 # Figma exports are intentionally noisy and should not gate hand-written changes.

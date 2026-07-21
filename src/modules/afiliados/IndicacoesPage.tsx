@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  ArrowLeft01Icon,
   Copy02Icon,
-  FilterHorizontalIcon,
   MoneyBag02Icon,
   Search01Icon,
   ShoppingBag01Icon,
@@ -9,7 +9,7 @@ import {
   UserStar01Icon,
   Wallet02Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 import {
   DataList,
@@ -30,7 +30,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Table,
   TableBody,
@@ -39,576 +45,585 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import {
   affiliateGeneralLink,
-  affiliateOrganizations,
-  type AfiliadoPeriod,
-  type AfiliadoReferral,
-  type CommissionStatus,
-  getFilteredIndicacoes,
+  affiliateOrgLinks,
+  affiliateReferrals,
   getIndicacoesKpis,
-  getReferralCartItems,
-  type OrderStatus,
   organizationMap,
   originLabels,
-  type ReferralOrigin,
 } from "@/mocks/afiliados";
 
-// ---------------------------------------------------------------------------
-// Period options — maps UI labels to internal AfiliadoPeriod values
-// ---------------------------------------------------------------------------
+import {
+  filterReferrals,
+  getReferralCartItems,
+  listAffiliateOrganizations,
+} from "./services/afiliados-mock-service";
+import {
+  AffiliateEmptyState,
+  AffiliateLinkCard,
+  AffiliateStatCard,
+  CommissionStatusBadge,
+  OrderStatusBadge,
+  OrganizationFilter,
+} from "./components";
+import type {
+  AfiliadoPeriod,
+  AfiliadoReferral,
+  IndicacoesTab,
+  ReferralFilters,
+  ReferralOrigin,
+} from "./types";
 
-type PeriodOption = {
-  value: string;
-  label: string;
-  internalPeriod: AfiliadoPeriod;
-};
+const organizations = listAffiliateOrganizations();
 
-const periodOptions: PeriodOption[] = [
+const periodOptions = [
   { value: "7d", label: "Últimos 7 dias", internalPeriod: "semana" },
   { value: "30d", label: "Últimos 30 dias", internalPeriod: "mes" },
   { value: "month", label: "Este mês", internalPeriod: "mes" },
   { value: "12m", label: "Últimos 12 meses", internalPeriod: "ano" },
   { value: "all", label: "Todo o período", internalPeriod: "ano" },
-];
+] as const satisfies readonly { value: string; label: string; internalPeriod: AfiliadoPeriod }[];
 
-function getPeriodLabel(value: string): string {
-  return periodOptions.find((p) => p.value === value)?.label ?? "Últimos 30 dias";
+const tabOptions = [
+  { value: "todas", label: "Todas" },
+  { value: "pagas", label: "Pagas" },
+  { value: "nao-pagas", label: "Não pagas" },
+  { value: "carrinhos-abandonados", label: "Carrinhos abandonados" },
+] as const satisfies readonly { value: IndicacoesTab; label: string }[];
+
+const originOptions = [
+  { value: "all", label: "Todas as origens" },
+  { value: "link-geral", label: "Link geral" },
+  { value: "link-org", label: "Link da organização" },
+  { value: "link-produto", label: "Link de produto" },
+  { value: "cupom", label: "Cupom" },
+] as const satisfies readonly { value: "all" | ReferralOrigin; label: string }[];
+
+type PeriodValue = (typeof periodOptions)[number]["value"];
+type OriginFilter = (typeof originOptions)[number]["value"];
+
+function isPeriodValue(value: string): value is PeriodValue {
+  return periodOptions.some((option) => option.value === value);
 }
 
-function getInternalPeriod(value: string): AfiliadoPeriod {
-  return periodOptions.find((p) => p.value === value)?.internalPeriod ?? "mes";
+function isOriginFilter(value: string): value is OriginFilter {
+  return originOptions.some((option) => option.value === value);
 }
 
-// ---------------------------------------------------------------------------
-// Label maps
-// ---------------------------------------------------------------------------
-
-const commissionStatusLabel: Record<CommissionStatus, string> = {
-  "nao-gerada": "Não gerada",
-  "a-receber": "A receber",
-  quitada: "Quitada",
-};
-
-const orderStatusLabel: Record<OrderStatus, string> = {
-  Pago: "Pago",
-  "Aguardando pagamento": "Aguardando pagamento",
-  Cancelado: "Cancelado",
-  Abandonado: "Abandonado",
-};
-
-// ---------------------------------------------------------------------------
-// Status badge helpers
-// ---------------------------------------------------------------------------
-
-function orderStatusBadgeClass(status: OrderStatus): string {
-  switch (status) {
-    case "Pago":
-      return "bg-[#dcfce7] text-[#166534] border-transparent";
-    case "Aguardando pagamento":
-      return "bg-[#ffedd5] text-[#9a3412] border-transparent";
-    case "Cancelado":
-      return "bg-[#fee2e2] text-[#991b1b] border-transparent";
-    case "Abandonado":
-      return "bg-[#fef3c7] text-[#92400e] border-transparent";
-  }
+function isIndicacoesTab(value: string): value is IndicacoesTab {
+  return tabOptions.some((option) => option.value === value);
 }
 
-function commissionStatusBadgeClass(status: CommissionStatus): string {
-  switch (status) {
-    case "quitada":
-      return "bg-[#dcfce7] text-[#166534] border-transparent";
-    case "a-receber":
-      return "bg-[#ffedd5] text-[#9a3412] border-transparent";
-    case "nao-gerada":
-      return "bg-gray-100 text-gray-500 border-transparent";
-  }
+function getInternalPeriod(value: PeriodValue): AfiliadoPeriod {
+  return periodOptions.find((option) => option.value === value)?.internalPeriod ?? "mes";
 }
 
-// ---------------------------------------------------------------------------
-// KPI Card
-// ---------------------------------------------------------------------------
-
-interface KpiCardProps {
-  title: string;
-  value: string;
-  icon: IconSvgElement;
-  detail?: string;
-  periodLabel?: string;
+function shiftDate(isoDate: string, days: number): string {
+  const date = new Date(`${isoDate}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
 }
 
-function KpiCard({ title, value, icon, detail, periodLabel }: KpiCardProps) {
-  return (
-    <Card className="h-[114px] gap-0 py-0 shadow-none">
-      <CardContent className="h-full p-[1.25em]">
-        <div className="flex h-full items-start justify-between gap-[0.75em]">
-          <div className="flex h-full flex-col justify-between">
-            <span className="text-muted-foreground text-xs leading-tight font-medium">{title}</span>
-            <p className="mt-[0.25em] text-2xl leading-none tracking-tight">{value}</p>
-            {detail ? (
-              <span className="text-muted-foreground mt-[0.25em] block text-xs">{detail}</span>
-            ) : periodLabel ? (
-              <span className="text-muted-foreground mt-[0.25em] block text-xs">{periodLabel}</span>
-            ) : null}
-          </div>
-          <div className="bg-primary/10 flex size-[2.5em] shrink-0 items-center justify-center rounded-lg">
-            <HugeiconsIcon icon={icon} size={20} className="text-primary" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+function shiftMonths(isoDate: string, months: number): string {
+  const date = new Date(`${isoDate}T12:00:00Z`);
+  date.setUTCMonth(date.getUTCMonth() + months);
+  return date.toISOString().slice(0, 10);
+}
+
+function latestReferralDate(): string {
+  return affiliateReferrals.reduce(
+    (latest, referral) => (referral.purchaseDate > latest ? referral.purchaseDate : latest),
+    ""
   );
 }
 
-// ---------------------------------------------------------------------------
-// Date formatting
-// ---------------------------------------------------------------------------
+function isReferralInPeriod(purchaseDate: string, period: PeriodValue): boolean {
+  if (period === "all") return true;
 
-function formatDateFull(iso: string): string {
-  const [y, m, d] = iso.split("-");
-  return `${d}/${m}/${y}`;
+  const referenceDate = latestReferralDate();
+  const startDate = (() => {
+    switch (period) {
+      case "7d":
+        return shiftDate(referenceDate, -6);
+      case "30d":
+        return shiftDate(referenceDate, -29);
+      case "month":
+        return `${referenceDate.slice(0, 7)}-01`;
+      case "12m":
+        return shiftMonths(referenceDate, -12);
+    }
+  })();
+
+  return purchaseDate >= startDate && purchaseDate <= referenceDate;
 }
 
-function formatDateWithTime(iso: string, time?: string): string {
-  const formatted = formatDateFull(iso);
-  return time ? `${formatted} às ${time}` : formatted;
+function formatDate(iso: string, time?: string): string {
+  const date = new Intl.DateTimeFormat("pt-BR").format(new Date(`${iso}T00:00:00`));
+  return time ? `${date} às ${time}` : date;
 }
 
-function CartItemsPreview({ referral }: { referral: AfiliadoReferral }) {
-  const cartItems = getReferralCartItems(referral);
-  const itemCount = cartItems.length;
-
-  return (
-    <span className="text-foreground text-sm">
-      {itemCount} {itemCount === 1 ? "item" : "itens"}
-    </span>
-  );
+function linkForOrganization(organizationId: string): string {
+  return organizationId === "all"
+    ? affiliateGeneralLink
+    : (affiliateOrgLinks[organizationId] ?? affiliateGeneralLink);
 }
 
-// ---------------------------------------------------------------------------
-// Detail drawer (Sheet-based)
-// ---------------------------------------------------------------------------
-
-function originBadgeVariant(
-  origin: ReferralOrigin
-): "default" | "secondary" | "outline" | "destructive" {
-  switch (origin) {
-    case "cupom":
-      return "secondary";
-    case "link-geral":
-      return "outline";
-    case "link-org":
-    case "link-produto":
-      return "default";
-  }
+function cartCount(referral: AfiliadoReferral): string {
+  const count = getReferralCartItems(referral).length;
+  return `${count} ${count === 1 ? "item" : "itens"}`;
 }
 
 function ReferralDetailDrawer({
   referral,
   onClose,
 }: {
-  referral: AfiliadoReferral | null;
-  onClose: () => void;
+  readonly referral: AfiliadoReferral | null;
+  readonly onClose: () => void;
 }) {
-  const org = referral ? organizationMap[referral.organizationId] : null;
   const cartItems = referral ? getReferralCartItems(referral) : [];
+  const organization = referral ? organizationMap[referral.organizationId] : undefined;
+  const commission = referral?.orderStatus === "Abandonado" ? "R$ 0,00" : referral?.commission;
 
   return (
-    <Sheet open={!!referral} onOpenChange={(open) => !open && onClose()}>
+    <Sheet open={Boolean(referral)} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-lg">
-        <SheetHeader>
+        <SheetHeader className="border-border border-b">
           <SheetTitle>Detalhe da indicação</SheetTitle>
+          <SheetDescription>Informações do pedido e dos itens indicados.</SheetDescription>
         </SheetHeader>
-
-        {referral && (
-          <div className="flex flex-col gap-0 px-6 pb-6">
-            <DataList orientation="horizontal" size="sm" className="gap-4">
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Comprador</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {referral.customer}
+        {referral ? (
+          <div className="flex flex-col gap-5 px-6 pb-6">
+            <div>
+              <p className="text-foreground text-base font-medium">{referral.customer}</p>
+              <p className="text-muted-foreground mt-1 text-xs">{referral.orderId}</p>
+            </div>
+            <DataList orientation="horizontal" size="sm" className="gap-3">
+              <DataListItem className="justify-between gap-4">
+                <DataListLabel>Organização</DataListLabel>
+                <DataListValue className="text-right font-medium">
+                  {organization?.name}
                 </DataListValue>
               </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Organização</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {org?.name ?? "-"}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Origem</DataListLabel>
+              <DataListItem className="justify-between gap-4">
+                <DataListLabel>Origem</DataListLabel>
                 <DataListValue>
-                  <Badge variant={originBadgeVariant(referral.origin)}>
-                    {originLabels[referral.origin]}
-                  </Badge>
+                  <Badge variant="secondary">{originLabels[referral.origin]}</Badge>
                 </DataListValue>
               </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Pedido</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {referral.orderId}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Data da compra</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {formatDateWithTime(referral.purchaseDate, referral.time)}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="items-start justify-between gap-4 py-2">
-                <DataListLabel className="text-sm">Itens do carrinho</DataListLabel>
-                <DataListValue className="flex min-w-0 flex-col gap-2 text-right text-sm">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="min-w-0">
-                      <p className="truncate font-medium">{item.product}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {formatDateFull(item.activityDate)}
-                        {item.quantity
-                          ? ` · ${item.quantity} ${item.quantity === 1 ? "pessoa" : "pessoas"}`
-                          : ""}
-                      </p>
-                    </div>
-                  ))}
+              <DataListItem className="justify-between gap-4">
+                <DataListLabel>Data da compra</DataListLabel>
+                <DataListValue className="text-right font-medium">
+                  {formatDate(referral.purchaseDate, referral.time)}
                 </DataListValue>
               </DataListItem>
             </DataList>
-
-            <Separator className="my-4" />
-
-            <DataList orientation="horizontal" size="sm" className="gap-4">
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Valor da venda</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
+            <div className="bg-muted/30 rounded-xl border p-4">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-foreground text-sm font-medium">Itens do carrinho</h3>
+                <span className="text-muted-foreground text-xs">
+                  {cartItems.length} {cartItems.length === 1 ? "item" : "itens"}
+                </span>
+              </div>
+              <ul className="mt-3 flex flex-col gap-3">
+                {cartItems.map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex min-w-0 items-start justify-between gap-4 text-sm"
+                  >
+                    <span className="min-w-0 font-medium">{item.product}</span>
+                    <span className="text-muted-foreground shrink-0 text-right text-xs">
+                      {formatDate(item.activityDate)}
+                      {item.quantity
+                        ? ` · ${item.quantity} ${item.quantity === 1 ? "pessoa" : "pessoas"}`
+                        : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Separator />
+            <DataList orientation="horizontal" size="sm" className="gap-3">
+              <DataListItem className="justify-between gap-4">
+                <DataListLabel>Valor da venda</DataListLabel>
+                <DataListValue className="text-right font-medium">
                   {referral.purchaseValue}
                 </DataListValue>
               </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Status do pedido</DataListLabel>
+              <DataListItem className="justify-between gap-4">
+                <DataListLabel>Status do pedido</DataListLabel>
                 <DataListValue>
-                  <Badge variant="outline" className={orderStatusBadgeClass(referral.orderStatus)}>
-                    {orderStatusLabel[referral.orderStatus]}
-                  </Badge>
+                  <OrderStatusBadge status={referral.orderStatus} />
                 </DataListValue>
               </DataListItem>
-            </DataList>
-
-            <Separator className="my-4" />
-
-            <DataList orientation="horizontal" size="sm" className="gap-4">
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Comissão</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {referral.orderStatus === "Abandonado" ? "R$ 0,00" : referral.commission}
-                </DataListValue>
+              <DataListItem className="justify-between gap-4">
+                <DataListLabel>Comissão</DataListLabel>
+                <DataListValue className="text-right font-medium">{commission}</DataListValue>
               </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Status da comissão</DataListLabel>
+              <DataListItem className="justify-between gap-4">
+                <DataListLabel>Status da comissão</DataListLabel>
                 <DataListValue>
-                  <Badge
-                    variant="outline"
-                    className={commissionStatusBadgeClass(referral.commissionStatus)}
-                  >
-                    {commissionStatusLabel[referral.commissionStatus]}
-                  </Badge>
+                  <CommissionStatusBadge status={referral.commissionStatus} />
                 </DataListValue>
               </DataListItem>
-
-              {referral.commissionRule && (
-                <DataListItem className="justify-between py-2">
-                  <DataListLabel className="text-sm">Regra de comissão</DataListLabel>
-                  <DataListValue className="text-right text-sm font-medium">
+              {referral.commissionRule ? (
+                <DataListItem className="justify-between gap-4">
+                  <DataListLabel>Regra de comissão</DataListLabel>
+                  <DataListValue className="max-w-[15rem] text-right font-medium">
                     {referral.commissionRule}
                   </DataListValue>
                 </DataListItem>
-              )}
+              ) : null}
             </DataList>
           </div>
-        )}
+        ) : null}
       </SheetContent>
     </Sheet>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Indicacoes Page
-// ---------------------------------------------------------------------------
+function ReferralList({
+  referrals,
+  onSelect,
+}: {
+  readonly referrals: readonly AfiliadoReferral[];
+  readonly onSelect: (referral: AfiliadoReferral) => void;
+}) {
+  return (
+    <>
+      <div className="bg-card hidden overflow-hidden rounded-2xl border shadow-sm md:block">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead>Comprador / pedido</TableHead>
+              <TableHead>Organização</TableHead>
+              <TableHead>Origem</TableHead>
+              <TableHead>Data</TableHead>
+              <TableHead>Itens</TableHead>
+              <TableHead>Valor</TableHead>
+              <TableHead>Comissão</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {referrals.map((referral) => (
+              <TableRow
+                key={referral.id}
+                tabIndex={0}
+                aria-label={`Abrir detalhe da indicação de ${referral.customer}`}
+                className={cn(
+                  "focus-visible:bg-muted/60 focus-visible:ring-ring cursor-pointer focus-visible:ring-2 focus-visible:outline-none",
+                  referral.orderStatus === "Abandonado" && "opacity-60"
+                )}
+                onClick={() => onSelect(referral)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onSelect(referral);
+                  }
+                }}
+              >
+                <TableCell>
+                  <div className="flex min-w-40 flex-col gap-0.5">
+                    <span className="text-foreground truncate text-sm font-medium">
+                      {referral.customer}
+                    </span>
+                    <span className="text-muted-foreground text-xs">{referral.orderId}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-sm">
+                  {organizationMap[referral.organizationId]?.name}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="secondary" className="text-xs">
+                    {originLabels[referral.origin]}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-sm">
+                  {formatDate(referral.purchaseDate, referral.time)}
+                </TableCell>
+                <TableCell className="text-sm">{cartCount(referral)}</TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1 text-sm">
+                    <span className="font-medium">{referral.purchaseValue}</span>
+                    <OrderStatusBadge status={referral.orderStatus} />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1 text-sm">
+                    <span className="font-medium">
+                      {referral.orderStatus === "Abandonado" ? "R$ 0,00" : referral.commission}
+                    </span>
+                    <CommissionStatusBadge status={referral.commissionStatus} />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="grid gap-2 md:hidden">
+        {referrals.map((referral) => (
+          <button
+            key={referral.id}
+            type="button"
+            className={cn(
+              "bg-card hover:bg-muted/40 focus-visible:ring-ring w-full min-w-0 rounded-2xl border p-4 text-left shadow-sm transition-colors focus-visible:ring-3",
+              referral.orderStatus === "Abandonado" && "opacity-60"
+            )}
+            onClick={() => onSelect(referral)}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{referral.customer}</p>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {referral.orderId} · {organizationMap[referral.organizationId]?.name}
+                </p>
+              </div>
+              <OrderStatusBadge status={referral.orderStatus} />
+            </div>
+            <div className="mt-4 flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-muted-foreground text-xs">
+                  {originLabels[referral.origin]} · {cartCount(referral)}
+                </p>
+                <p className="mt-1 truncate text-sm">{referral.product}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-medium">{referral.purchaseValue}</p>
+                <p className="text-muted-foreground mt-1 text-xs">{referral.commission}</p>
+                <CommissionStatusBadge status={referral.commissionStatus} className="mt-1" />
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
 
 export function IndicacoesPage() {
   const [search, setSearch] = useState("");
   const [selectedOrg, setSelectedOrg] = useState("all");
-  const [selectedPeriod, setSelectedPeriod] = useState("30d");
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodValue>("30d");
+  const [selectedOrigin, setSelectedOrigin] = useState<OriginFilter>("all");
+  const [activeTab, setActiveTab] = useState<IndicacoesTab>("todas");
   const [selectedReferral, setSelectedReferral] = useState<AfiliadoReferral | null>(null);
-  const [linkCopied, setLinkCopied] = useState(false);
 
-  const internalPeriod = getInternalPeriod(selectedPeriod);
-  const periodLabel = getPeriodLabel(selectedPeriod);
-  const activeTab = "todas";
-  const kpis = getIndicacoesKpis(internalPeriod, selectedOrg);
-  const referrals = getFilteredIndicacoes(selectedOrg, activeTab, search, "all");
+  useEffect(() => {
+    if (window.innerWidth >= 768) return;
 
-  const hasActiveFilters = search !== "" || selectedOrg !== "all";
+    const collapseButton = document.querySelector<HTMLButtonElement>(
+      'aside button[title="Encolher menu"]'
+    );
+    collapseButton?.click();
+  }, []);
 
-  function clearFilters() {
+  const kpis = getIndicacoesKpis(getInternalPeriod(selectedPeriod), selectedOrg);
+  const referralsInPeriod = filterReferrals(affiliateReferrals).filter((referral) =>
+    isReferralInPeriod(referral.purchaseDate, selectedPeriod)
+  );
+  const filters: Omit<ReferralFilters, "tab"> = {
+    organizationId: selectedOrg,
+    search,
+    origin: selectedOrigin,
+  };
+  const referrals = filterReferrals(referralsInPeriod, { ...filters, tab: activeTab });
+  const getCount = (tab: IndicacoesTab) =>
+    filterReferrals(referralsInPeriod, { ...filters, tab }).length;
+  const hasActiveFilters =
+    Boolean(search.trim()) ||
+    selectedOrg !== "all" ||
+    selectedOrigin !== "all" ||
+    selectedPeriod !== "30d";
+  const selectedLink = linkForOrganization(selectedOrg);
+
+  const clearFilters = () => {
     setSearch("");
     setSelectedOrg("all");
-  }
+    setSelectedOrigin("all");
+    setSelectedPeriod("30d");
+    setActiveTab("todas");
+  };
 
-  async function handleCopyLink() {
-    try {
-      await navigator.clipboard.writeText(affiliateGeneralLink);
-      setLinkCopied(true);
-      window.setTimeout(() => setLinkCopied(false), 1800);
-    } catch {
-      // ignore
-    }
-  }
+  const goBack = () => {
+    window.location.hash = "#afiliados";
+  };
 
   return (
     <AppPage
       title="Indicações"
-      breadcrumb={[
-        {
-          title: "Inicio",
-          onClick: () => {
-            window.location.hash = "#afiliados";
-          },
-        },
-      ]}
-      onBack={() => {
-        window.location.hash = "#afiliados";
-      }}
+      description="Acompanhe pedidos, carrinhos e comissões gerados pelos seus links."
+      actions={
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          aria-label="Voltar para afiliados"
+          onClick={goBack}
+        >
+          <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
+          <span className="md:hidden">Voltar</span>
+          <span className="hidden md:inline">Voltar para afiliados</span>
+        </Button>
+      }
+      breadcrumb={[{ title: "Afiliados", onClick: goBack }]}
     >
       <div className="flex flex-col gap-6">
-        {/* KPI row */}
-        <div className="grid grid-cols-1 gap-[1em] sm:grid-cols-2 lg:grid-cols-5">
-          <KpiCard
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <AffiliateStatCard
             title="Indicações originadas"
-            value={String(kpis.indicacoesOriginadasQtd)}
-            icon={UserStar01Icon}
+            value={kpis.indicacoesOriginadasQtd}
             detail={`${kpis.indicacoesOriginadasValor} em valor`}
-            periodLabel={periodLabel}
+            icon={<HugeiconsIcon icon={UserStar01Icon} size={16} />}
           />
-          <KpiCard
+          <AffiliateStatCard
             title="Vendas pagas"
-            value={String(kpis.vendasPagasQtd)}
-            icon={MoneyBag02Icon}
+            value={kpis.vendasPagasQtd}
             detail={`${kpis.vendasPagasValor} em valor`}
-            periodLabel={periodLabel}
+            icon={<HugeiconsIcon icon={MoneyBag02Icon} size={16} />}
           />
-          <KpiCard
+          <AffiliateStatCard
             title="Carrinhos abandonados"
-            value={String(kpis.carrinhosAbandonadosQtd)}
-            icon={ShoppingBag01Icon}
+            value={kpis.carrinhosAbandonadosQtd}
             detail={`${kpis.carrinhosAbandonadosValor} em valor`}
-            periodLabel={periodLabel}
+            icon={<HugeiconsIcon icon={ShoppingBag01Icon} size={16} />}
           />
-          <KpiCard
+          <AffiliateStatCard
             title="Via cupom"
-            value={String(kpis.viaCupomQtd)}
-            icon={Ticket02Icon}
+            value={kpis.viaCupomQtd}
             detail={`${kpis.viaCupomValor} em valor`}
-            periodLabel={periodLabel}
+            icon={<HugeiconsIcon icon={Ticket02Icon} size={16} />}
           />
-          <KpiCard
+          <AffiliateStatCard
             title="Comissão gerada"
             value={kpis.comissaoGerada}
-            icon={Wallet02Icon}
-            periodLabel={periodLabel}
+            detail={periodOptions.find((option) => option.value === selectedPeriod)?.label}
+            icon={<HugeiconsIcon icon={Wallet02Icon} size={16} />}
           />
         </div>
 
-        {/* Filter bar */}
-        <div className="flex items-center gap-[0.75em]">
-          <div className="relative flex-1 md:max-w-[20em]">
-            <HugeiconsIcon
-              icon={Search01Icon}
-              size={16}
-              className="text-muted-foreground absolute top-1/2 left-[0.75em] -translate-y-1/2"
-            />
-            <Input
-              placeholder="Pesquisar..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-[2.25em]"
-            />
-          </div>
+        <AffiliateLinkCard
+          title="Link de afiliado"
+          description={
+            selectedOrg === "all"
+              ? "Compartilhe seu link geral entre as organizações."
+              : "Link geral desta organização."
+          }
+          links={[
+            {
+              id: selectedOrg,
+              label: selectedOrg === "all" ? "Link geral" : "Link da organização",
+              value: selectedLink,
+            },
+          ]}
+        />
 
-          <Select value={selectedOrg} onValueChange={setSelectedOrg}>
-            <SelectTrigger className="h-8 w-[220px] text-xs">
-              <SelectValue placeholder="Todas as organizações" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as organizações</SelectItem>
-              {affiliateOrganizations.map((org) => (
-                <SelectItem key={org.id} value={org.id}>
-                  {org.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="h-8 w-[220px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {periodOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div className="ml-auto hidden md:block">
-            <Button variant="outline">
-              <HugeiconsIcon icon={FilterHorizontalIcon} size={16} />
-              Filtros
-            </Button>
-          </div>
-        </div>
-
-        {/* Referral table */}
-        {referrals.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <HugeiconsIcon
-              icon={UserStar01Icon}
-              size={48}
-              className="text-muted-foreground/40 mb-4"
-            />
-            <p className="text-foreground text-base font-medium">
-              Nenhuma indicação neste período
-            </p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Compartilhe seu link para começar a receber comissões
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-4"
-              onClick={handleCopyLink}
+        <Card className="rounded-2xl shadow-none">
+          <CardContent className="flex flex-col gap-4 p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative min-w-[14rem] flex-1">
+                <HugeiconsIcon
+                  icon={Search01Icon}
+                  size={16}
+                  className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+                  aria-hidden="true"
+                />
+                <Input
+                  aria-label="Pesquisar indicações"
+                  placeholder="Pesquisar por comprador ou produto"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <OrganizationFilter
+                organizations={organizations}
+                value={selectedOrg}
+                onValueChange={setSelectedOrg}
+              />
+              <Select
+                value={selectedPeriod}
+                onValueChange={(value) => {
+                  if (isPeriodValue(value)) setSelectedPeriod(value);
+                }}
+              >
+                <SelectTrigger className="h-8 w-[180px] text-xs" aria-label="Período">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {periodOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={selectedOrigin}
+                onValueChange={(value) => {
+                  if (isOriginFilter(value)) setSelectedOrigin(value);
+                }}
+              >
+                <SelectTrigger className="h-8 w-[180px] text-xs" aria-label="Origem">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {originOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {hasActiveFilters ? (
+                <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
+                  Limpar filtros
+                </Button>
+              ) : null}
+            </div>
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) => {
+                if (isIndicacoesTab(value)) setActiveTab(value);
+              }}
             >
-              <HugeiconsIcon icon={Copy02Icon} size={14} />
-              {linkCopied ? "Link copiado!" : "Copiar meu link de afiliado"}
-            </Button>
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" className="mt-2" onClick={clearFilters}>
-                Limpar filtros
-              </Button>
-            )}
-          </div>
-        ) : (
-          <section className="rounded-2xl border border-[#EEF0F4] bg-white shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)]">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-muted-foreground text-xs font-medium">
-                    Comprador / ID do pedido
-                  </TableHead>
-                  <TableHead className="text-muted-foreground text-xs font-medium">Organização</TableHead>
-                  <TableHead className="text-muted-foreground text-xs font-medium">
-                    Data do pedido
-                  </TableHead>
-                  <TableHead className="text-muted-foreground text-xs font-medium">
-                    Itens (Qtde.)
-                  </TableHead>
-                  <TableHead className="text-muted-foreground text-xs font-medium">Valor</TableHead>
-                  <TableHead className="text-muted-foreground text-xs font-medium">Comissão</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {referrals.map((referral) => {
-                  const org = organizationMap[referral.organizationId];
-                  const isAbandoned = referral.orderStatus === "Abandonado";
-                  const displayCommission = isAbandoned ? "R$ 0,00" : referral.commission;
+              <TabsList
+                variant="line"
+                className="w-full justify-start overflow-x-auto rounded-none border-b p-0"
+              >
+                {tabOptions.map((option) => (
+                  <TabsTrigger key={option.value} value={option.value}>
+                    {option.label}
+                    <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-[11px]">
+                      {getCount(option.value)}
+                    </span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <TabsContent value={activeTab} className="mt-4">
+                <ReferralList referrals={referrals} onSelect={setSelectedReferral} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
-                  return (
-                    <TableRow
-                      key={referral.id}
-                      className={cn(
-                        "cursor-pointer",
-                        isAbandoned && "opacity-60"
-                      )}
-                      onClick={() => setSelectedReferral(referral)}
-                    >
-                      {/* Comprador */}
-                      <TableCell>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-foreground truncate text-sm font-medium">
-                            {referral.customer}
-                          </span>
-                          <span className="text-muted-foreground text-xs">
-                            {referral.orderId}
-                          </span>
-                        </div>
-                      </TableCell>
-
-                      {/* Organização */}
-                      <TableCell>
-                        <span className="text-foreground text-sm">
-                          {org?.name ?? "-"}
-                        </span>
-                      </TableCell>
-
-                      {/* Pedido */}
-                      <TableCell>
-                        <span className="text-foreground text-sm">
-                          {formatDateWithTime(referral.purchaseDate, referral.time)}
-                        </span>
-                      </TableCell>
-
-                      {/* Atividade */}
-                      <TableCell>
-                        <CartItemsPreview referral={referral} />
-                      </TableCell>
-
-                      {/* Valor */}
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-foreground text-sm font-medium">
-                            {referral.purchaseValue}
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className={cn("w-fit text-[11px]", orderStatusBadgeClass(referral.orderStatus))}
-                          >
-                            {orderStatusLabel[referral.orderStatus]}
-                          </Badge>
-                        </div>
-                      </TableCell>
-
-                      {/* Comissão */}
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <span className="text-foreground text-sm font-medium">
-                            {displayCommission}
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className={cn("w-fit text-[11px]", commissionStatusBadgeClass(referral.commissionStatus))}
-                          >
-                            {commissionStatusLabel[referral.commissionStatus]}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </section>
-        )}
+        {referrals.length === 0 ? (
+          <AffiliateEmptyState
+            title="Nenhuma indicação encontrada"
+            description="Ajuste os filtros ou compartilhe seu link para começar a receber indicações."
+            icon={Copy02Icon}
+            action={
+              hasActiveFilters ? (
+                <Button type="button" variant="outline" size="sm" onClick={clearFilters}>
+                  Limpar filtros
+                </Button>
+              ) : null
+            }
+          />
+        ) : null}
       </div>
-
-      {/* Detail drawer */}
       <ReferralDetailDrawer referral={selectedReferral} onClose={() => setSelectedReferral(null)} />
     </AppPage>
   );

@@ -1,0 +1,94 @@
+F3 console warning fix evidence
+Date: 2026-07-20
+Status: DONE for the requested warning fix; repository-wide pre-existing quality failures are recorded below.
+
+Evidence location
+- Requested artifact: .omo/evidence/afiliados-front-plan/f3-console-warning-fix.txt
+- OMO attempt lookup: `omo ulw-loop status --json` was unavailable (`command not found`), so this requested plan evidence directory was used.
+
+Warning source confirmed from trusted runtime artifacts
+- `.omo/evidence/afiliados-front-plan/f3-real-qa.md:88`: IndicacoesPage replay emitted `validateDOMNesting`; stack named `BreadcrumbSeparator` in `src/components/ui/breadcrumb.tsx` nested under `BreadcrumbItem` from `src/components/layout/app-page.tsx`.
+- `.omo/evidence/afiliados-front-plan/f3-real-qa.md:89`: affiliate sheet replay emitted `Function components cannot be given refs`; stack named `SheetOverlay` in `src/components/ui/sheet.tsx` through Radix `Primitive.div.SlotClone`.
+- `run5/qa-results.json` recorded both warnings on desktop and mobile. The original F3 verdict was REJECT only for console cleanliness; route and interaction checks passed.
+
+Changed files
+- `src/components/layout/app-page.tsx:31-46`: breadcrumb separators are rendered as direct siblings of `BreadcrumbItem` via `Fragment`, preserving the existing separator component and visual order.
+- `src/components/ui/sheet.tsx:27-42`: `SheetOverlay` now uses `React.forwardRef` and passes the received ref to `SheetPrimitive.Overlay`; no console suppression was added.
+- `src/modules/afiliados/AfiliadosPage.tsx:33-40,399-403`: added a visually hidden `SheetDescription` to the affiliate referral sheet. The first live probe found Radix's missing-description warning; `sr-only` preserves visible sheet behavior.
+- `src/components/layout/app-page.test.tsx`: regression test for direct breadcrumb list siblings, absence of nested `li`, and absence of `validateDOMNesting`.
+- `src/components/ui/sheet.test.tsx`: regression test for an open Sheet and absence of the function-component ref warning.
+
+Red -> green evidence
+- Red invocation: `npm run test -- --run src/components/layout/app-page.test.tsx src/components/ui/sheet.test.tsx`
+- Red exit status: `1`
+- Red observable: breadcrumb test reported `expected [] to have a length of 2 but got +0`; Sheet test reported `Function components cannot be given refs` at `src/components/ui/sheet.tsx:45:3`.
+- Green invocation: `npm run test -- --run src/components/layout/app-page.test.tsx src/components/ui/sheet.test.tsx src/modules/afiliados/AfiliadosPage.test.tsx`
+- Green exit status: `0`
+- Green observable: `Test Files 3 passed (3)`; `Tests 4 passed (4)`.
+
+Required verification
+- Scenario: requested affiliate/App regression suite.
+  Invocation: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados`
+  Exit status: `0`
+  Observable: `Test Files 9 passed (9)`; `Tests 43 passed (43)`.
+- Scenario: TypeScript static validation.
+  Invocation: `npm run typecheck`
+  Exit status: `0`
+  Observable: `tsc --noEmit` completed with no diagnostics.
+- Scenario: targeted formatting for all changed TypeScript files.
+  Invocation: `npx prettier --check src/components/layout/app-page.tsx src/components/layout/app-page.test.tsx src/components/ui/sheet.tsx src/components/ui/sheet.test.tsx src/modules/afiliados/AfiliadosPage.tsx`
+  Exit status: `0`
+  Observable: `All matched files use Prettier code style!`
+- Scenario: targeted lint for all changed TypeScript files.
+  Invocation: `npx eslint src/components/layout/app-page.tsx src/components/layout/app-page.test.tsx src/components/ui/sheet.tsx src/components/ui/sheet.test.tsx src/modules/afiliados/AfiliadosPage.tsx --max-warnings=0 --report-unused-disable-directives`
+  Exit status: `0`
+  Observable: no output and no diagnostics.
+- Scenario: production build.
+  Invocation: `npm run build`
+  Exit status: `0`
+  Observable: `2092 modules transformed`; `built in 2.94s`. Vite emitted only the existing chunk-size advisory.
+
+Browser smoke and binary warning verification
+- Browser: real Playwright Chromium 1.61.1, headless because no headed display/browser connector was available; no project dependency or manifest was changed. Server was the existing Vite process for this workspace at `http://127.0.0.1:5173`.
+- Exact invocation: `npm exec --yes --package=playwright -- node --input-type=module -` with stdin driver that used `page.goto(...#indicacoes)`, waited for `networkidle` and visible `Indicações`, inspected `[data-slot="breadcrumb-list"]`, captured `browser-indicacoes.png`, navigated to `#afiliados`, opened the João referral row, waited for `Detalhe da indicação`, waited until all `getAnimations()` were finished, captured `browser-sheet.png`, clicked `Fechar aba`, and waited for the dialog to be hidden.
+- Viewport: `1280x800`.
+- Breadcrumb observable: `nestedLiCount=0`; `directSeparatorCount=1` for the real affiliate route; `directChildTags=["LI","LI","LI"]`.
+- Sheet observable: `sheetOpened=true`; `sheetClosed=true`.
+- Console observable: `reactWarnings=[]`; `pageErrors=[]`. All remaining console messages were Vite debug connection messages and the standard React DevTools info message. No `validateDOMNesting`, `Function components cannot be given refs`, `SheetOverlay`, `BreadcrumbSeparator`, or missing-Description warning remained.
+- Captured artifacts:
+  - `.omo/evidence/afiliados-front-plan/f3-console-warning-fix/browser-indicacoes.png`
+  - `.omo/evidence/afiliados-front-plan/f3-console-warning-fix/browser-sheet.png`
+
+Adversarial classes exercised
+- Invalid list nesting: direct-child tags and `li li` query checked on `#indicacoes`.
+- Ref-bearing Radix slot: opened a real affiliate Sheet, not only the unit wrapper.
+- Interaction lifecycle: Sheet opened, reached settled animation state, and closed through the user-visible `Fechar aba` control.
+- Accessibility warning path: affiliate referral Sheet was opened with a real `SheetDescription` and the live console was checked for all React/Radix warnings.
+- Browser runtime errors: `pageErrors` collection was empty.
+
+Repository-wide checks and scope risks
+- `npm run check` exit status `1` at its first `format:check` stage. Prettier reported 18 files, including unrelated existing docs/modules and the temporary debug journal; targeted changed-file Prettier passed. No global reformat was performed.
+- `npm run lint` exit status `1` with 11 errors and 1 warning in unrelated pre-existing files (`src/components/custom/time-input.tsx`, `src/modules/agenda/components/AgendaNovaAtividade.tsx`, `src/modules/board/*`, and `src/modules/produtos/ProdutosPage.tsx`). Targeted changed-file ESLint passed.
+- `npm run test -- --run` exit status `1` because the pre-existing untracked evidence fixture `.omo/evidence/agenda-front-plan/task-8-fix-agenda-mobile-content/qa-debug.spec.cjs` requires unavailable `playwright/test`; otherwise `18 passed` test files and `69 passed` tests. The requested suite passed independently.
+- Programming no-excuse script attempt: `node --experimental-strip-types /Users/rafaelsilva/.codex/plugins/cache/sisyphuslabs/omo/4.19.0/skills/programming/scripts/typescript/check-no-excuse-rules.ts <changed files>` exited `1` because `typescript` cannot be resolved from the skill-owned script location; Bun is not installed. `npm run typecheck` and targeted ESLint are the authoritative successful static gates.
+- No backend, fetch, auth, Next.js, icon package, console suppression, or broad UI rewrite was introduced.
+
+Scoped git status after implementation
+```
+ M src/components/layout/app-page.tsx
+ M src/components/ui/sheet.tsx
+ M src/modules/afiliados/AfiliadosPage.tsx
+?? .omo/evidence/afiliados-front-plan/f3-console-warning-fix.txt
+?? .omo/evidence/afiliados-front-plan/f3-console-warning-fix/browser-indicacoes.png
+?? .omo/evidence/afiliados-front-plan/f3-console-warning-fix/browser-sheet.png
+?? src/components/layout/app-page.test.tsx
+?? src/components/ui/sheet.test.tsx
+```
+`src/modules/afiliados/AfiliadosPage.tsx` was already modified in the initial worktree snapshot; this attempt added only the `SheetDescription` import/element. Other pre-existing dirty files were left untouched.
+
+Cleanup and risk
+- No temporary browser script or debugger statement was left behind; the browser driver was provided over stdin.
+- `.debug-journal.md` was a temporary debugging artifact and was removed after this evidence file was read back. The two PNGs and this TXT are retained as QA evidence.
+- Residual risk: browser smoke was desktop-only and headless; the original F3 logs already covered mobile, while the shared fixes are covered by tests and the desktop live replay.
+
+Final evidence path: `.omo/evidence/afiliados-front-plan/f3-console-warning-fix.txt`

@@ -1,0 +1,35 @@
+Todo: 4
+Task 4 route smoke mutation proof (RED)
+Scenario: prove the affiliate smoke test detects a broken #produtosLinks route mapping.
+Invocation: npm run test -- --run src/app/App.test.tsx
+Temporary mutation in src/app/App.test.tsx: changed only the produtosLinks route entry at line 11 from
+  { hash: "produtosLinks", expectedText: "Link geral (nível 1)" }
+to
+  { hash: "agenda", expectedText: "Link geral (nível 1)" }
+This maps the product-links check to the valid agenda route while preserving the product-links-specific observable.
+
+Result: exit code 1.
+
+Captured command output (relevant Vitest output):
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/app/App.test.tsx
+
+ RUN  v4.1.8 /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+
+ ❯ src/app/App.test.tsx (4 tests | 1 failed) 1726ms
+     × renders each affiliate screen for its direct hash route 1169ms
+
+ FAIL  src/app/App.test.tsx > App hash routing > renders each affiliate screen for its direct hash route
+AssertionError: expected 'Agendamentos HojeReservas confirmadas…' to contain 'Link geral (nível 1)'
+  at src/app/App.test.tsx:47:43
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+ Start at  16:15:55
+ Duration  7.44s (transform 1.34s, setup 77ms, import 4.83s, tests 1.73s, environment 678ms)
+
+Binary observable: the affiliate route smoke test failed nonzero on the deliberately broken produtosLinks mapping; the other three tests passed.
+
+Cleanup: restored the temporary route entry exactly. No production file was edited.
+Task risk: verification-only mutation had no runtime impact; the principal risk was a false RED caused by an impossible marker, which this route-mapping mutation removes.
+Evidence path: .omo/evidence/afiliados-front-plan/task-4-route-smoke-red.txt

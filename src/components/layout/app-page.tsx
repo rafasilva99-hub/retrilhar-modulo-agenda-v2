@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
 import {
   Breadcrumb,
@@ -28,20 +28,22 @@ function BreadcrumbItems({ items, hasTitle }: { items: BreadcrumbEntry[]; hasTit
       {items.map((item, index) => {
         const showSeparator = index < items.length - 1 || hasTitle;
         return (
-          <BreadcrumbItem key={`${item.title}-${index}`}>
-            {item.onClick ? (
-              <button
-                type="button"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                onClick={item.onClick}
-              >
-                {item.title}
-              </button>
-            ) : (
-              <BreadcrumbPage>{item.title}</BreadcrumbPage>
-            )}
+          <Fragment key={`${item.title}-${index}`}>
+            <BreadcrumbItem>
+              {item.onClick ? (
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={item.onClick}
+                >
+                  {item.title}
+                </button>
+              ) : (
+                <BreadcrumbPage>{item.title}</BreadcrumbPage>
+              )}
+            </BreadcrumbItem>
             {showSeparator && <BreadcrumbSeparator />}
-          </BreadcrumbItem>
+          </Fragment>
         );
       })}
     </>

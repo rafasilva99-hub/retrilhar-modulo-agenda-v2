@@ -1,0 +1,287 @@
+F4 SCOPE-FIDELITY FIX — EVIDENCE RECORD
+Date: 2026-07-20 (America/Sao_Paulo)
+Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+Final evidence path: .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+ATTEMPT DIRECTORY RESOLUTION
+
+Invocation:
+  omo ulw-loop status --json
+Result:
+  exit 127
+  zsh:1: command not found: omo
+Decision:
+  No active attempt directory could be resolved, so the requested fallback under
+  .omo/evidence/ is used.
+
+CHANGED FILES
+
+  DESIGN.md
+  src/components/layout/topbar/topbar-organization.tsx
+  src/modules/afiliados/ConfiguracoesPage.tsx
+  src/modules/afiliados/ConfiguracoesPage.test.tsx
+  src/modules/afiliados/AjudaPage.tsx
+  src/modules/afiliados/AjudaPage.test.tsx
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+No fixture, service, plan, ledger, backend, HTTP, or unrelated product file was edited
+for this fix.
+
+SOURCE-BACKED RATIONALE AND BINARY OBSERVABLES
+
+F4-1 — Consolidated affiliate shell
+Scenario:
+  Open the affiliate shell at #afiliados and inspect the topbar organization area.
+Implementation:
+  organization.id === "org-afiliado-temp" renders a static labeled container with
+  "Visão consolidada". It contains no trigger, dropdown, switch action, or alternate
+  organization. The normal shell branch still renders "Trocar empresa" and can enter
+  the affiliate panel.
+Binary observable:
+  Affiliate route: consolidated label present; "Trocar empresa" absent;
+  "EliasTurismo" absent; organization buttons count = 0.
+  Non-affiliate source branch still contains "Trocar empresa".
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+F4-2 — Confirmed affiliation taxonomy
+Scenario:
+  Open Configurações > Minhas afiliações.
+Implementation:
+  Visible taxonomy is exactly Ativo, Inativo, Desativado. Source fixture states are
+  adapted locally: Ativa -> Ativo, Inativa -> Inativo, and Pendente -> null. Pending
+  data is omitted, not silently reclassified, because P-A leaves invitation direction
+  unresolved and the confirmed taxonomy excludes pending.
+Binary observable:
+  Status list data-status values equal ["Ativo", "Inativo", "Desativado"] and no
+  visible text matches /pendente/i.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+F4-3 — Ajuda terminology, including FAQ 5
+Scenario:
+  Search for and expand the multi-organization FAQ and "O que acontece se meu link
+  expirar?".
+Implementation:
+  formatFaqAnswer replaces the known phrases with grammatically correct afiliação
+  wording and applies plural/singular case-insensitive fallback replacements at render
+  time. Fixtures are not mutated.
+Binary observable:
+  Visible text includes "sua afiliação com a organização estiver ativa" and
+  "Caso a afiliação seja encerrada"; no rendered text matches /vínculo/i.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+F4-4 — Unresolved invitation notification
+Scenario:
+  Open Configurações > Notificações.
+Implementation:
+  The unresolved invitation preference row is hidden rather than renamed into a new
+  product decision. The two neutral/manual notification preferences remain.
+Binary observable:
+  Exactly 2 visible switches; no visible text matches /convite/i; no source match for
+  "Convite de afiliação" in the allowed implementation/test files.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+F4-5 — Receiving destination fallback accepted debt
+Scenario:
+  Open destination reassignment for an affiliate without destinoId.
+Implementation retained:
+  receiving.destinoId -> local default destination -> first local destination -> empty.
+Accepted debt:
+  DESIGN.md records the behavior as prototype-only, identifies affected affiliates,
+  cites Specdrivenafiliados.md:112,126 as A VALIDAR, and gives the owner-confirmed
+  selection rule plus focused-test update as the exit condition.
+Binary observable:
+  DESIGN.md contains the accepted-debt row and ConfiguracoesPage.tsx keeps the bounded
+  local fallback; no network behavior was added.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+TEST-FIRST RECEIPTS
+
+Focused RED invocation:
+  npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx src/modules/afiliados/AjudaPage.test.tsx
+Result:
+  exit 1; 3 expected failures exposed the previous behavior:
+  FAQ 5 still rendered the legacy relationship term, the settings taxonomy exposed
+  four statuses, and notifications exposed three switches.
+
+Focused GREEN invocation after the minimal fixes:
+  npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx src/modules/afiliados/AjudaPage.test.tsx
+Result:
+  exit 0; 2 files passed; 10 tests passed.
+
+REQUIRED FINAL VERIFICATION
+
+1. Affiliate/App/module suite
+Invocation:
+  npm run test -- --run src/modules/afiliados/ConfiguracoesPage.test.tsx src/modules/afiliados/AjudaPage.test.tsx src/app/App.test.tsx src/modules/afiliados
+Result:
+  exit 0
+  Test Files  9 passed (9)
+  Tests       43 passed (43)
+  Duration    14.76s
+Binary observable:
+  All named test targets completed with zero failures.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+2. TypeScript
+Invocation:
+  npm run typecheck
+Result:
+  exit 0
+  tsc --noEmit
+Binary observable:
+  Compiler emitted no diagnostics.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+3. Formatting
+Invocation:
+  npx prettier DESIGN.md src/components/layout/topbar/topbar-organization.tsx src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx src/modules/afiliados/AjudaPage.tsx src/modules/afiliados/AjudaPage.test.tsx --check
+Result:
+  exit 0
+  Checking formatting...
+  All matched files use Prettier code style!
+Binary observable:
+  Every named file passed Prettier's check mode.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+4. Forbidden/scope-sensitive term scan
+Invocation:
+  rg -n "Trocar empresa|EliasTurismo|Pendente|vínculo|Convite de afiliação" src/components/layout/topbar/topbar-organization.tsx src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx src/modules/afiliados/AjudaPage.tsx src/modules/afiliados/AjudaPage.test.tsx
+Result:
+  exit 0
+  src/components/layout/topbar/topbar-organization.tsx:79: "Trocar empresa"
+  src/modules/afiliados/ConfiguracoesPage.tsx:148: case "Pendente"
+  src/modules/afiliados/AjudaPage.tsx:64,66,69-72: legacy terms as formatter inputs
+  src/modules/afiliados/AjudaPage.test.tsx:40,56: negative visibility assertions
+Classification:
+  "Trocar empresa" is visible only in the preserved non-affiliate shell branch.
+  "Pendente" is a non-visible fixture compatibility input mapped to null.
+  AjudaPage legacy terms are non-visible sanitizer inputs.
+  AjudaPage.test legacy terms are negative assertions.
+  "EliasTurismo": no matches.
+  "Convite de afiliação": no matches.
+Binary observable:
+  Every remaining match is non-affiliate, non-visible transformation input, or a
+  test-negative; both prohibited concrete choices have zero matches.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+5. Whitespace integrity
+Invocation:
+  git diff --check -- DESIGN.md src/components/layout/topbar/topbar-organization.tsx src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx src/modules/afiliados/AjudaPage.tsx src/modules/afiliados/AjudaPage.test.tsx .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+Result:
+  exit 0; no output.
+Binary observable:
+  No tracked diff contains whitespace errors.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+ADDITIONAL BUILD CHECK
+
+Invocation:
+  npm run build
+Result:
+  exit 0; 2,092 modules transformed and production output built.
+Residual warning:
+  Vite reported the existing main chunk above 500 kB; this F4 change does not add a
+  dependency or broaden bundle architecture.
+
+ADVERSARIAL AND VISUAL QA
+
+Runtime invocation:
+  npm run dev -- --host 127.0.0.1 --port 4174 --strictPort
+Browser exercise:
+  Stable headless Chrome CDP at 127.0.0.1:9334. Routes/states exercised at 375x844,
+  768x900, and 1280x800:
+    #afiliados affiliate shell
+    #configuracoes Minhas afiliações
+    #configuracoes Notificações
+    #ajuda FAQ 5 expanded
+Binary observables at all three widths:
+  affiliate consolidated container = true
+  affiliate switch copy = false
+  EliasTurismo = false
+  affiliate organization buttons = 0
+  pending visible = false
+  status labels = Ativo, Inativo, Desativado
+  invitation visible = false
+  notification switches = 2
+  FAQ legacy relationship term visible = false
+  FAQ corrected active/ended sentences = true
+  browser errors = []
+Visual artifacts inspected during QA:
+  12 non-empty PNG captures (4 states x 3 widths), byte sizes:
+    375px: 51998, 40402, 25593, 49222
+    768px: 87280, 56263, 40037, 67435
+    1280px: 115152, 58078, 41336, 70716
+  Temporary PNGs were removed after inspection to respect the user's single-evidence-file
+  write set; the durable observable record is this file.
+Review verdicts:
+  Independent F4 implementation review: PASS, high confidence, no product blocker.
+  Independent scoped visual review of all 12 captures: PASS, high confidence, no F4
+  blocker. No pixel reference was supplied, so review covered responsive integrity,
+  hierarchy, visibility contracts, and obvious clipping in the changed surfaces.
+Artifact:
+  .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+
+CLEANUP AND RISKS
+
+Cleanup receipts:
+  Temporary QA directory /tmp/retrilhar-f4-qa.bvrD4e removed.
+  Vite port 4174 released.
+  Chrome CDP port 9334 released.
+
+Bounded residual risks:
+  - ConfiguracoesPage.tsx remains an inherited oversized module (1,240 pure LOC).
+    Splitting it is outside this minimal F4 write scope.
+  - At tablet width, an existing affiliate-code banner outside the allowed write set
+    truncates its code. The scoped visual reviewer confirmed this is not an F4 blocker.
+  - The production build retains its pre-existing main-chunk size warning.
+  - No LSP server was installed in this environment; the required repository typecheck
+    passed with zero diagnostics.
+  - The optional external no-excuse checker could not resolve its TypeScript dependency
+    from the skill installation. This was not a required gate; repository tests,
+    typecheck, formatting, build, runtime DOM probes, and visual review all completed.
+
+SCOPED GIT STATUS
+
+Invocation:
+  git status --short -- DESIGN.md src/components/layout/topbar/topbar-organization.tsx src/modules/afiliados/ConfiguracoesPage.tsx src/modules/afiliados/ConfiguracoesPage.test.tsx src/modules/afiliados/AjudaPage.tsx src/modules/afiliados/AjudaPage.test.tsx .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+Result:
+  exit 0
+   M src/components/layout/topbar/topbar-organization.tsx
+   M src/modules/afiliados/AjudaPage.tsx
+   M src/modules/afiliados/ConfiguracoesPage.tsx
+  ?? .omo/evidence/afiliados-front-plan/f4-scope-fix.txt
+  ?? DESIGN.md
+  ?? src/modules/afiliados/AjudaPage.test.tsx
+  ?? src/modules/afiliados/ConfiguracoesPage.test.tsx
+Interpretation:
+  The scoped output contains exactly the six requested source/test/design files and this
+  evidence artifact. The repository was already shared and dirty; unrelated status was
+  intentionally excluded from this scoped receipt and left untouched.
+
+FINAL SOURCE READBACK RECEIPT
+
+The six changed source/test/design files were read back after final validation. Their
+SHA-256 values remained identical before and after evidence creation, proving no
+concurrent writer changed an allowed product file during the final verification window:
+  f64bab8e78b6b7b76977a8e81efca66efd37bf05082ff706fa8475fbe142bf42  DESIGN.md
+  f1f073b884bc1cbd4ed89770226c3cbdb4a1ffab65609db6ab072f8482efaa1b  src/components/layout/topbar/topbar-organization.tsx
+  aa536a921e53b00066925a03f589fdffd24c87e6ed44cf2f723fc4b375f140ea  src/modules/afiliados/ConfiguracoesPage.tsx
+  fc6db2bf1e8172b4390782d5acfbbb2b00397036ded771989443de5fddd45c90  src/modules/afiliados/ConfiguracoesPage.test.tsx
+  3d4545a2114e8b4c3815324953ccfdd12499cc11b5c89c94c1e498bee7ee3e9f  src/modules/afiliados/AjudaPage.tsx
+  ec1318185751a7a30b408002a6815fd22952031e2f8a22d30859505aeeb36591  src/modules/afiliados/AjudaPage.test.tsx
+
+FINAL STATUS
+
+DONE — all five F4 findings are addressed within the allowed write set, every required
+verification command passes, remaining term matches are classified, and temporary QA
+processes/artifacts are cleaned.

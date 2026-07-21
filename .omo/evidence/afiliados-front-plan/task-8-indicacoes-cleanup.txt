@@ -1,0 +1,24 @@
+Todo 8 Vite cleanup receipt
+Date: 2026-07-20
+
+Process identity check before cleanup:
+- `ps -p 50751 -o pid=,ppid=,user=,command=` identified PID 50751 as the workspace Vite process: `node .../node_modules/.bin/vite --host 127.0.0.1`.
+- `lsof -a -p 50751 -d cwd -Fn` identified the cwd as `/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2`.
+
+Before invocation:
+`lsof -nP -iTCP:5175 -sTCP:LISTEN`
+
+Before output:
+`node    50751 rafaelsilva ... TCP 127.0.0.1:5175 (LISTEN)`
+
+Cleanup invocation:
+`kill 50751`
+
+Cleanup exit:
+`0`
+
+After invocation:
+`lsof -nP -iTCP:5175 -sTCP:LISTEN || true`
+
+After output:
+empty; no process listens on TCP 5175.

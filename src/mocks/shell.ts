@@ -43,7 +43,7 @@ export const shellNavItems: ShellNavItem[] = [
   { title: "Vendas", icon: Money01Icon, enabled: false },
   { title: "Clientes", icon: UserGroupIcon, enabled: false },
   { title: "Produtos", page: "produtos", icon: PackageIcon },
-  { title: "Afiliados", icon: UserStar01Icon, enabled: false },
+  { title: "Afiliados", page: "afiliados", icon: UserStar01Icon },
   { title: "Relatórios", icon: AnalyticsUpIcon, enabled: false },
 ];
 

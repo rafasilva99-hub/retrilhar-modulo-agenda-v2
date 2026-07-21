@@ -1,0 +1,79 @@
+## main baseline 2026-07-20T17:18:22-03:00
+
+### git status --short --branch
+## main...origin/main
+ M src/app/App.test.tsx
+ M src/modules/afiliados/AfiliadosPage.tsx
+ M src/modules/afiliados/AjudaPage.tsx
+ M src/modules/afiliados/ConfiguracoesPage.tsx
+ M src/modules/afiliados/GanhosPage.tsx
+ M src/modules/afiliados/IndicacoesPage.tsx
+ M src/modules/afiliados/ProdutosLinksPage.tsx
+?? .claude/rules/afiliados.md
+?? .omo/boulder.json
+?? .omo/drafts/
+?? .omo/evidence/
+?? .omo/plans/afiliados-front-plan.md
+?? .omo/plans/agenda-front-plan.md
+?? .omo/start-work/
+?? AGENTS.md
+?? DESIGN.md
+?? Specdrivenafiliados.md
+?? Specdrivenagenda
+?? src/modules/afiliados/AfiliadosPage.test.tsx
+?? src/modules/afiliados/AjudaPage.test.tsx
+?? src/modules/afiliados/ConfiguracoesPage.test.tsx
+?? src/modules/afiliados/GanhosPage.test.tsx
+?? src/modules/afiliados/IndicacoesPage.test.tsx
+?? src/modules/afiliados/ProdutosLinksPage.test.tsx
+?? src/modules/afiliados/components/
+?? src/modules/afiliados/services/
+?? src/modules/afiliados/types.ts
+
+### git worktree list
+/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2    9bed5f07 [main]
+
+### boulder
+{
+  "schema_version": 2,
+  "active_work_id": "afiliados-front-plan",
+  "works": {
+    "afiliados-front-plan": {
+      "work_id": "afiliados-front-plan",
+      "active_plan": ".omo/plans/afiliados-front-plan.md",
+      "plan_name": "afiliados-front-plan",
+      "session_ids": [
+        "codex:019f80ba-38b0-7623-99d4-f84d9bfa0b74"
+      ],
+      "status": "active",
+      "worktree_path": null
+    }
+  }
+}
+
+### index lock
+no .git/index.lock
+
+## agenda worktree baseline 2026-07-20T17:18:22-03:00
+
+### path
+/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar-agenda-front-worktree
+
+### git status --short --branch
+## work/agenda-front
+?? .omo/boulder.json
+?? .omo/drafts/
+?? .omo/plans/agenda-front-plan.md
+?? AGENTS.md
+?? DESIGN.md
+?? Specdrivenagenda
+
+### git worktree list
+/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2    9bed5f07 [main]
+/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar-agenda-front-worktree    9bed5f07 [work/agenda-front]
+
+### copied artifacts
+-rw-r--r--@ 1 rafaelsilva  staff    375 Jul 20 17:18 ../Retrilhar-agenda-front-worktree/.omo/boulder.json
+-rw-r--r--@ 1 rafaelsilva  staff  18138 Jul 20 17:18 ../Retrilhar-agenda-front-worktree/.omo/drafts/agenda-front-plan.md
+-rw-r--r--@ 1 rafaelsilva  staff  18947 Jul 20 17:18 ../Retrilhar-agenda-front-worktree/.omo/plans/agenda-front-plan.md
+-rw-r--r--@ 1 rafaelsilva  staff  12275 Jul 20 17:18 ../Retrilhar-agenda-front-worktree/Specdrivenagenda

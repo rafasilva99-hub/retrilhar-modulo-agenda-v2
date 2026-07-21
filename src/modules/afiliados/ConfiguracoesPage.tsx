@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -53,23 +54,22 @@ import {
   affiliateCode,
   affiliateProfileData,
   affiliationReceivings,
-  type FormaRecebimento,
   notificationPreferences,
   organizationMap,
-  type ReceivingDestination,
   receivingDestinations,
 } from "@/mocks/afiliados";
+
+import {
+  assignReceivingDestination,
+  countDestinationUsage,
+} from "./services/afiliados-mock-service";
+import type { AffiliationReceiving, FormaRecebimento, ReceivingDestination } from "./types";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type SettingsSection =
-  | "perfil"
-  | "bancarios"
-  | "afiliacoes"
-  | "seguranca"
-  | "notificacoes";
+type SettingsSection = "perfil" | "bancarios" | "afiliacoes" | "seguranca" | "notificacoes";
 
 interface SectionDef {
   id: SettingsSection;
@@ -77,6 +77,14 @@ interface SectionDef {
   label: string;
   description: string;
 }
+
+type DestinationChange = {
+  readonly organizationId: string;
+  readonly destinationId: string;
+};
+
+const affiliationStatusTaxonomy = ["Ativo", "Inativo", "Desativado"] as const;
+type AffiliationStatus = (typeof affiliationStatusTaxonomy)[number];
 
 const sections: SectionDef[] = [
   {
@@ -95,7 +103,7 @@ const sections: SectionDef[] = [
     id: "afiliacoes",
     icon: UserGroupIcon,
     label: "Minhas afiliações",
-    description: "Organizações vinculadas",
+    description: "Organizações e status da afiliação",
   },
   {
     id: "seguranca",
@@ -120,16 +128,27 @@ function formatDate(iso: string): string {
   return `${d}/${m}/${y}`;
 }
 
-function affiliationStatusClass(status: string): string {
+function affiliationStatusClass(status: AffiliationStatus): string {
+  switch (status) {
+    case "Ativo":
+      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+    case "Inativo":
+      return "bg-gray-100 text-gray-500 border-gray-200";
+    case "Desativado":
+      return "bg-red-50 text-red-700 border-red-200";
+  }
+}
+
+function toConfirmedAffiliationStatus(
+  status: (typeof affiliateAffiliations)[number]["status"]
+): AffiliationStatus | null {
   switch (status) {
     case "Ativa":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      return "Ativo";
     case "Pendente":
-      return "bg-amber-50 text-amber-700 border-amber-200";
+      return null;
     case "Inativa":
-      return "bg-gray-100 text-gray-500 border-gray-200";
-    default:
-      return "";
+      return "Inativo";
   }
 }
 
@@ -186,7 +205,7 @@ function PerfilContent() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold tracking-tight">Meu Perfil</h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Suas informações pessoais e dados da conta
           </p>
         </div>
@@ -194,7 +213,7 @@ function PerfilContent() {
           <Button
             variant="outline"
             size="sm"
-            className="hidden gap-[0.375em] shrink-0 md:inline-flex"
+            className="hidden shrink-0 gap-[0.375em] md:inline-flex"
             onClick={() => setEditing(true)}
           >
             <HugeiconsIcon icon={PencilEdit01Icon} size={14} />
@@ -207,8 +226,8 @@ function PerfilContent() {
         <CardContent className="space-y-[1em]">
           <div className="flex items-center gap-[1.25em]">
             <div className="group relative cursor-not-allowed">
-              <Avatar className="size-[4.5em] border border-border">
-                <AvatarFallback className="bg-primary/10 text-primary font-bold text-[1.25em]">
+              <Avatar className="border-border size-[4.5em] border">
+                <AvatarFallback className="bg-primary/10 text-primary text-[1.25em] font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -271,9 +290,7 @@ function PerfilContent() {
                     <Input
                       className="flex-1"
                       value={form.document}
-                      onChange={(e) =>
-                        setForm((prev) => ({ ...prev, document: e.target.value }))
-                      }
+                      onChange={(e) => setForm((prev) => ({ ...prev, document: e.target.value }))}
                     />
                   </div>
                 </div>
@@ -294,25 +311,25 @@ function PerfilContent() {
             <>
               <div className="grid grid-cols-1 gap-[1.25em] md:grid-cols-2">
                 <div className="space-y-[0.25em]">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
                     Nome completo
                   </span>
                   <p className="text-sm">{affiliateProfileData.name}</p>
                 </div>
                 <div className="space-y-[0.25em]">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
                     E-mail
                   </span>
                   <p className="text-sm">{affiliateProfileData.email}</p>
                 </div>
                 <div className="space-y-[0.25em]">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
                     Telefone
                   </span>
                   <p className="text-sm">{affiliateProfileData.phone}</p>
                 </div>
                 <div className="space-y-[0.25em]">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
                     Documento ({affiliateProfileData.documentType})
                   </span>
                   <p className="text-sm">{affiliateProfileData.document}</p>
@@ -320,8 +337,8 @@ function PerfilContent() {
               </div>
 
               {/* Código de afiliado */}
-              <div className="border-t border-[#f5f5f5] pt-[1em] !mb-0">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <div className="!mb-0 border-t border-[#f5f5f5] pt-[1em]">
+                <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
                   Código de afiliado
                 </span>
                 <div className="mt-1.5 flex items-center gap-3">
@@ -364,11 +381,19 @@ function PerfilContent() {
 function formaRecebimentoBadge(forma: FormaRecebimento) {
   switch (forma) {
     case "Split de pagamento":
-      return { bg: "bg-[#dcfce7]", text: "text-[#166534]", desc: "Comissão liquidada na hora da venda" };
+      return {
+        bg: "bg-[#dcfce7]",
+        text: "text-[#166534]",
+        desc: "Comissão liquidada na hora da venda",
+      };
     case "Transferência bancária":
       return { bg: "bg-[#dbeafe]", text: "text-[#1e40af]", desc: "Repasse feito pela organização" };
     case "Dinheiro":
-      return { bg: "bg-[#fef3c7]", text: "text-[#92400e]", desc: "Acerto presencial com a organização" };
+      return {
+        bg: "bg-[#fef3c7]",
+        text: "text-[#92400e]",
+        desc: "Acerto presencial com a organização",
+      };
   }
 }
 
@@ -421,7 +446,7 @@ function DestinationDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+      <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
         <SheetHeader>
           <SheetTitle>{isEdit ? "Editar destino" : "Adicionar destino"}</SheetTitle>
           <SheetDescription>
@@ -503,10 +528,7 @@ function DestinationDrawer({
 
           <div className="space-y-[0.5em]">
             <Label className="text-muted-foreground">Nome do titular</Label>
-            <Input
-              value={form.titular}
-              onChange={(e) => updateField("titular", e.target.value)}
-            />
+            <Input value={form.titular} onChange={(e) => updateField("titular", e.target.value)} />
           </div>
 
           <div className="space-y-[0.5em]">
@@ -539,7 +561,7 @@ function DestinationDrawer({
               checked={form.padrao}
               onCheckedChange={(checked) => updateField("padrao", checked === true)}
             />
-            <Label htmlFor="dest-padrao" className="text-sm font-normal cursor-pointer">
+            <Label htmlFor="dest-padrao" className="cursor-pointer text-sm font-normal">
               Definir como destino padrão
             </Label>
           </div>
@@ -565,6 +587,26 @@ function DestinationDrawer({
 function FormasRecebimentoContent() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingDest, setEditingDest] = useState<ReceivingDestination | undefined>();
+  const [destinations, setDestinations] = useState<ReceivingDestination[]>(() =>
+    receivingDestinations.map((destination) => ({ ...destination }))
+  );
+  const [receivings, setReceivings] = useState<AffiliationReceiving[]>(() =>
+    affiliationReceivings.map((receiving) => ({ ...receiving }))
+  );
+  const [destinationChange, setDestinationChange] = useState<DestinationChange | null>(null);
+  const [destinationError, setDestinationError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const activeAffiliations = affiliateAffiliations.filter(
+    (affiliation) => affiliation.status === "Ativa"
+  );
+  const usageCounts = countDestinationUsage(receivings);
+  const selectedReceiving = destinationChange
+    ? receivings.find((receiving) => receiving.organizationId === destinationChange.organizationId)
+    : undefined;
+  const selectedOrganization = destinationChange
+    ? organizationMap[destinationChange.organizationId]
+    : undefined;
 
   const handleAddDestination = () => {
     setEditingDest(undefined);
@@ -576,16 +618,53 @@ function FormasRecebimentoContent() {
     setDrawerOpen(true);
   };
 
-  const activeAffiliations = affiliateAffiliations.filter((a) => a.status === "Ativa");
+  const handleOpenDestinationChange = (receiving: AffiliationReceiving) => {
+    const destinationId =
+      receiving.destinoId ??
+      destinations.find((destination) => destination.padrao)?.id ??
+      destinations.at(0)?.id ??
+      "";
 
-  const destUsageCount = (destId: string) =>
-    affiliationReceivings.filter((r) => r.destinoId === destId).length;
+    setDestinationChange({ organizationId: receiving.organizationId, destinationId });
+    setDestinationError(null);
+    setSuccessMessage(null);
+  };
+
+  const handleConfirmDestinationChange = () => {
+    if (!destinationChange) return;
+
+    const destination = destinations.find((item) => item.id === destinationChange.destinationId);
+    if (!destination) {
+      setDestinationError("Selecione um destino para continuar.");
+      return;
+    }
+
+    setReceivings((current) =>
+      assignReceivingDestination(
+        current,
+        destinationChange.organizationId,
+        destinationChange.destinationId
+      )
+    );
+    setSuccessMessage(
+      `Destino de ${organizationMap[destinationChange.organizationId]?.name ?? destinationChange.organizationId} atualizado para ${destination.apelido}.`
+    );
+    setDestinationError(null);
+    setDestinationChange(null);
+  };
+
+  const handleDeleteDestination = (destination: ReceivingDestination) => {
+    const usageCount = usageCounts[destination.id] ?? 0;
+    if (usageCount > 0 || destination.padrao) return;
+
+    setDestinations((current) => current.filter((item) => item.id !== destination.id));
+  };
 
   return (
     <div className="space-y-[1.5em]">
       <div>
         <h2 className="text-lg font-semibold tracking-tight">Formas de recebimento</h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Onde e como você recebe suas comissões de cada organização
         </p>
       </div>
@@ -593,11 +672,12 @@ function FormasRecebimentoContent() {
       {/* ── Bloco A: Como você recebe de cada organização ── */}
       <div className="space-y-[0.75em]">
         <div>
-          <h3 className="text-sm font-medium text-foreground">
+          <h3 className="text-foreground text-sm font-medium">
             Como você recebe de cada organização
           </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            A forma de recebimento é definida no acordo com cada organização. Para alterá-la, fale com a organização.
+          <p className="text-muted-foreground mt-0.5 text-xs">
+            A forma de recebimento é definida no acordo com cada organização. Para alterá-la, fale
+            com a organização.
           </p>
         </div>
 
@@ -606,13 +686,13 @@ function FormasRecebimentoContent() {
             <div className="flex flex-col">
               {activeAffiliations.map((affiliation, index) => {
                 const org = organizationMap[affiliation.organizationId];
-                const receiving = affiliationReceivings.find(
+                const receiving = receivings.find(
                   (r) => r.organizationId === affiliation.organizationId
                 );
                 const forma = receiving?.forma ?? "Transferência bancária";
                 const badge = formaRecebimentoBadge(forma);
                 const linkedDest = receiving?.destinoId
-                  ? receivingDestinations.find((d) => d.id === receiving.destinoId)
+                  ? destinations.find((d) => d.id === receiving.destinoId)
                   : null;
 
                 return (
@@ -625,7 +705,7 @@ function FormasRecebimentoContent() {
                       index > 0 && "border-t border-[#f5f5f5]"
                     )}
                   >
-                    <div className="flex flex-col gap-1 min-w-0">
+                    <div className="flex min-w-0 flex-col gap-1">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-[#252b37]">
                           {org?.name ?? affiliation.organizationId}
@@ -640,19 +720,24 @@ function FormasRecebimentoContent() {
                           {forma}
                         </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">{badge.desc}</span>
+                      <span className="text-muted-foreground text-xs">{badge.desc}</span>
                       {linkedDest ? (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground text-xs">
                           {linkedDest.apelido} - {linkedDest.banco} {linkedDest.contaMascarada}
                         </span>
                       ) : forma !== "Dinheiro" ? (
-                        <span className="text-xs text-amber-600">Nenhum destino vinculado</span>
+                        <span className="text-xs text-amber-600">Nenhum destino selecionado</span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">Não se aplica</span>
+                        <span className="text-muted-foreground text-xs">Não se aplica</span>
                       )}
                     </div>
-                    {forma !== "Dinheiro" && (
-                      <Button variant="outline" size="sm" className="shrink-0 self-start md:self-center">
+                    {forma !== "Dinheiro" && receiving && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="shrink-0 self-start md:self-center"
+                        onClick={() => handleOpenDestinationChange(receiving)}
+                      >
                         Alterar destino
                       </Button>
                     )}
@@ -663,40 +748,56 @@ function FormasRecebimentoContent() {
           </CardContent>
         </Card>
 
+        {successMessage ? (
+          <p
+            role="status"
+            className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700"
+          >
+            <HugeiconsIcon icon={CheckmarkCircle01Icon} size={14} aria-hidden="true" />
+            {successMessage}
+          </p>
+        ) : null}
       </div>
 
       {/* ── Bloco B: Meus destinos de recebimento ── */}
       <div className="space-y-[0.75em]">
         <div>
-          <h3 className="text-sm font-medium text-foreground">Meus destinos de recebimento</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h3 className="text-foreground text-sm font-medium">Meus destinos de recebimento</h3>
+          <p className="text-muted-foreground mt-0.5 text-xs">
             Contas onde suas comissões podem ser depositadas. Você pode cadastrar mais de uma.
           </p>
         </div>
 
         <div className="flex flex-col gap-3">
-          {receivingDestinations.map((dest) => {
-            const usageCount = destUsageCount(dest.id);
+          {destinations.map((dest) => {
+            const usageCount = usageCounts[dest.id] ?? 0;
+            const removalDisabled = usageCount > 0 || dest.padrao;
+            const removalLabel =
+              usageCount > 0
+                ? "Excluir: destino em uso"
+                : dest.padrao
+                  ? "Excluir: destino padrão"
+                  : "Excluir";
             return (
               <Card key={dest.id} className="rounded-2xl shadow-none">
                 <CardContent>
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex flex-col gap-1.5 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex min-w-0 flex-col gap-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-medium text-[#252b37]">{dest.apelido}</span>
                         {dest.padrao && (
-                          <Badge className="bg-primary/10 text-primary border-transparent text-[10px] px-1.5 py-0 h-4">
+                          <Badge className="bg-primary/10 text-primary h-4 border-transparent px-1.5 py-0 text-[10px]">
                             Padrão
                           </Badge>
                         )}
                         {usageCount > 0 && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
+                          <Badge variant="outline" className="h-4 px-1.5 py-0 text-[10px]">
                             Em uso por {usageCount}{" "}
                             {usageCount === 1 ? "organização" : "organizações"}
                           </Badge>
                         )}
                       </div>
-                      <div className="grid grid-cols-1 gap-x-6 gap-y-0.5 text-xs text-muted-foreground md:grid-cols-2">
+                      <div className="text-muted-foreground grid grid-cols-1 gap-x-6 gap-y-0.5 text-xs md:grid-cols-2">
                         <span>
                           {dest.banco} ({dest.codigoBanco})
                         </span>
@@ -710,7 +811,12 @@ function FormasRecebimentoContent() {
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon-sm" className="shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          className="shrink-0"
+                          aria-label={`Ações de ${dest.apelido}`}
+                        >
                           <HugeiconsIcon icon={MoreVerticalCircle01Icon} size={16} />
                         </Button>
                       </DropdownMenuTrigger>
@@ -725,9 +831,14 @@ function FormasRecebimentoContent() {
                             Definir como padrão
                           </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem className="text-destructive focus:text-destructive">
+                        <DropdownMenuItem
+                          disabled={removalDisabled}
+                          aria-label={removalLabel}
+                          className="text-destructive focus:text-destructive"
+                          onSelect={() => handleDeleteDestination(dest)}
+                        >
                           <HugeiconsIcon icon={Delete01Icon} size={14} />
-                          Excluir
+                          {removalLabel}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -744,27 +855,131 @@ function FormasRecebimentoContent() {
         </Button>
       </div>
 
-      <DestinationDrawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        destination={editingDest}
-      />
+      <Sheet
+        open={destinationChange !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDestinationChange(null);
+            setDestinationError(null);
+          }
+        }}
+      >
+        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Alterar destino</SheetTitle>
+            <SheetDescription>
+              Escolha uma conta cadastrada para receber as comissões de {selectedOrganization?.name}
+              .
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="flex flex-col gap-5 px-6 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="receiving-type" className="text-muted-foreground">
+                Forma de recebimento
+              </Label>
+              <Input
+                id="receiving-type"
+                value={selectedReceiving?.forma ?? ""}
+                disabled
+                className="bg-muted/50"
+              />
+              <p className="text-muted-foreground text-xs">
+                Definida pela organização. Você pode alterar somente o destino.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-muted-foreground">Destino de recebimento</Label>
+              <RadioGroup
+                aria-label="Destino de recebimento"
+                value={destinationChange?.destinationId ?? ""}
+                onValueChange={(destinationId) => {
+                  setDestinationChange((current) =>
+                    current ? { ...current, destinationId } : current
+                  );
+                  setDestinationError(null);
+                }}
+              >
+                {destinations.map((destination) => {
+                  const optionId = `receiving-destination-${destination.id}`;
+                  return (
+                    <Label
+                      key={destination.id}
+                      htmlFor={optionId}
+                      className="border-border has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5 flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors"
+                    >
+                      <RadioGroupItem
+                        id={optionId}
+                        value={destination.id}
+                        aria-label={`${destination.apelido}, ${destination.banco}, conta ${destination.contaMascarada}`}
+                        className="mt-0.5"
+                      />
+                      <span className="min-w-0 flex-1 space-y-1">
+                        <span className="flex items-center gap-2">
+                          <span className="text-foreground text-sm font-medium">
+                            {destination.apelido}
+                          </span>
+                          {destination.padrao ? (
+                            <Badge className="bg-primary/10 text-primary h-4 border-transparent px-1.5 py-0 text-[10px]">
+                              Padrão
+                            </Badge>
+                          ) : null}
+                        </span>
+                        <span className="text-muted-foreground block text-xs">
+                          {destination.banco} · {destination.tipoConta} · Conta{" "}
+                          {destination.contaMascarada}
+                        </span>
+                      </span>
+                    </Label>
+                  );
+                })}
+              </RadioGroup>
+              {destinationError ? (
+                <p role="alert" className="text-destructive text-xs">
+                  {destinationError}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          <SheetFooter className="flex-row justify-end gap-2 px-6 pb-6">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDestinationChange(null);
+                setDestinationError(null);
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmDestinationChange}>Confirmar alteração</Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      <DestinationDrawer open={drawerOpen} onOpenChange={setDrawerOpen} destination={editingDest} />
     </div>
   );
 }
 
 function AfiliacoesContent() {
+  const confirmedAffiliations = affiliateAffiliations.flatMap((affiliation) => {
+    const status = toConfirmedAffiliationStatus(affiliation.status);
+    return status ? [{ ...affiliation, status }] : [];
+  });
+
   return (
     <div className="space-y-[1em]">
       <div>
         <h2 className="text-lg font-semibold tracking-tight">Minhas afiliações</h2>
-        <p className="text-sm text-muted-foreground">Organizações vinculadas à sua conta</p>
+        <p className="text-muted-foreground text-sm">Afiliações da sua conta por organização</p>
       </div>
 
       <Card className="rounded-4xl shadow-none">
         <CardContent>
           <div className="flex flex-col">
-            {affiliateAffiliations.map((affiliation, index) => {
+            {confirmedAffiliations.map((affiliation, index) => {
               const org = organizationMap[affiliation.organizationId];
               return (
                 <div
@@ -772,7 +987,7 @@ function AfiliacoesContent() {
                   className={cn(
                     "flex items-center justify-between py-3",
                     index === 0 && "pt-0",
-                    index === affiliateAffiliations.length - 1 && "pb-0",
+                    index === confirmedAffiliations.length - 1 && "pb-0",
                     index > 0 && "border-t border-[#f5f5f5]"
                   )}
                 >
@@ -780,7 +995,7 @@ function AfiliacoesContent() {
                     <span className="text-sm text-[#252b37]">
                       {org?.name ?? affiliation.organizationId}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       Desde {formatDate(affiliation.since)}
                     </span>
                   </div>
@@ -790,6 +1005,33 @@ function AfiliacoesContent() {
                 </div>
               );
             })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-4xl shadow-none">
+        <CardContent>
+          <div className="space-y-2">
+            <div>
+              <h3 className="text-foreground text-sm font-medium">Status de afiliação</h3>
+              <p className="text-muted-foreground text-xs">
+                Desativado representa a afiliação desativada; bloqueios globais do afiliado são
+                tratados separadamente.
+              </p>
+            </div>
+            <ul aria-label="Status de afiliação" className="flex flex-wrap gap-2">
+              {affiliationStatusTaxonomy.map((status) => (
+                <li key={status}>
+                  <Badge
+                    data-status={status}
+                    variant="outline"
+                    className={affiliationStatusClass(status)}
+                  >
+                    {status}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
           </div>
         </CardContent>
       </Card>
@@ -815,7 +1057,7 @@ function SegurancaContent() {
     <div className="space-y-[1em]">
       <div>
         <h2 className="text-lg font-semibold tracking-tight">Segurança</h2>
-        <p className="text-sm text-muted-foreground">Senha e configurações de acesso</p>
+        <p className="text-muted-foreground text-sm">Senha e configurações de acesso</p>
       </div>
 
       <Card className="rounded-4xl shadow-none">
@@ -829,9 +1071,7 @@ function SegurancaContent() {
                     type="password"
                     placeholder="Digite a nova senha"
                     value={passwordForm.nova}
-                    onChange={(e) =>
-                      setPasswordForm((prev) => ({ ...prev, nova: e.target.value }))
-                    }
+                    onChange={(e) => setPasswordForm((prev) => ({ ...prev, nova: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-[0.5em]">
@@ -862,7 +1102,7 @@ function SegurancaContent() {
             <div className="flex items-center justify-between">
               <div className="space-y-[0.25em]">
                 <span className="text-sm text-[#252b37]">Senha</span>
-                <p className="text-xs text-muted-foreground">Última alteração há 3 meses</p>
+                <p className="text-muted-foreground text-xs">Última alteração há 3 meses</p>
               </div>
               <Button variant="outline" size="sm" onClick={() => setChangingPassword(true)}>
                 Alterar senha
@@ -882,7 +1122,7 @@ function NotificacoesContent() {
     <div className="space-y-[1em]">
       <div>
         <h2 className="text-lg font-semibold tracking-tight">Notificações</h2>
-        <p className="text-sm text-muted-foreground">Gerencie suas preferências de alerta</p>
+        <p className="text-muted-foreground text-sm">Gerencie suas preferências de alerta</p>
       </div>
 
       <Card className="rounded-4xl shadow-none">
@@ -891,7 +1131,7 @@ function NotificacoesContent() {
             <div className="flex items-center justify-between pb-3">
               <div className="space-y-[0.25em]">
                 <span className="text-sm text-[#252b37]">Produto novo no escopo</span>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Receba quando houver novo produto disponível
                 </p>
               </div>
@@ -905,28 +1145,12 @@ function NotificacoesContent() {
             <div className="flex items-center justify-between border-t border-[#f5f5f5] py-3">
               <div className="space-y-[0.25em]">
                 <span className="text-sm text-[#252b37]">Comissão quitada</span>
-                <p className="text-xs text-muted-foreground">
-                  Receba quando uma comissão for paga
-                </p>
+                <p className="text-muted-foreground text-xs">Receba quando uma comissão for paga</p>
               </div>
               <Switch
                 checked={notifPrefs.comissaoQuitada}
                 onCheckedChange={(checked) =>
                   setNotifPrefs((prev) => ({ ...prev, comissaoQuitada: checked }))
-                }
-              />
-            </div>
-            <div className="flex items-center justify-between border-t border-[#f5f5f5] pt-3 pb-0">
-              <div className="space-y-[0.25em]">
-                <span className="text-sm text-[#252b37]">Convite de vínculo</span>
-                <p className="text-xs text-muted-foreground">
-                  Receba quando uma organização enviar convite
-                </p>
-              </div>
-              <Switch
-                checked={notifPrefs.conviteVinculo}
-                onCheckedChange={(checked) =>
-                  setNotifPrefs((prev) => ({ ...prev, conviteVinculo: checked }))
                 }
               />
             </div>
@@ -976,16 +1200,26 @@ export function ConfiguracoesPage() {
   return (
     <div className="bg-background fixed inset-0 z-50 flex min-h-dvh flex-col">
       {/* ── Header ── */}
-      <header className="shrink-0 border-b bg-background">
+      <header className="bg-background shrink-0 border-b">
         <div className="flex h-[3.5em] items-center px-[0.75em]">
           {/* Mobile back button */}
           <div className="md:hidden">
             {mobileShowContent ? (
-              <Button variant="ghost" size="icon-sm" onClick={handleMobileBack}>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Voltar para a lista de configurações"
+                onClick={handleMobileBack}
+              >
                 <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
               </Button>
             ) : (
-              <Button variant="ghost" size="icon-sm" onClick={handleClose}>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Voltar para Afiliados"
+                onClick={handleClose}
+              >
                 <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
               </Button>
             )}
@@ -994,7 +1228,7 @@ export function ConfiguracoesPage() {
           {/* Desktop: logo + breadcrumb */}
           <div className="hidden items-center gap-[0.75em] md:flex">
             <a
-              className="inline-flex items-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="focus-visible:ring-primary inline-flex items-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               href="#afiliados"
             >
               <img
@@ -1003,8 +1237,8 @@ export function ConfiguracoesPage() {
                 src="/src/assets/retrilhar-logo.png"
               />
             </a>
-            <div className="h-[1.25em] w-px bg-border" />
-            <span className="text-sm text-muted-foreground">Configurações</span>
+            <div className="bg-border h-[1.25em] w-px" />
+            <span className="text-muted-foreground text-sm">Configurações</span>
           </div>
 
           {/* Mobile breadcrumb */}
@@ -1013,16 +1247,16 @@ export function ConfiguracoesPage() {
               <>
                 <button
                   type="button"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground focus-visible:ring-ring rounded-sm text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   onClick={handleMobileBack}
                 >
                   Configurações
                 </button>
-                <span className="text-sm text-muted-foreground">/</span>
-                <span className="text-sm font-medium text-foreground">{activeDef.label}</span>
+                <span className="text-muted-foreground text-sm">/</span>
+                <span className="text-foreground text-sm font-medium">{activeDef.label}</span>
               </>
             ) : (
-              <span className="text-sm font-medium text-foreground">Configurações</span>
+              <span className="text-foreground text-sm font-medium">Configurações</span>
             )}
           </div>
 
@@ -1046,15 +1280,15 @@ export function ConfiguracoesPage() {
             <button
               key={section.id}
               type="button"
-              className="flex items-center gap-[0.875em] rounded-xl border border-border/50 bg-card p-[0.875em] text-left transition-colors active:bg-muted/50"
+              className="border-border/50 bg-card active:bg-muted/50 focus-visible:ring-ring flex items-center gap-[0.875em] rounded-xl border p-[0.875em] text-left transition-colors focus-visible:ring-2 focus-visible:outline-none"
               onClick={() => handleSelectSection(section.id)}
             >
-              <div className="flex size-[2.5em] shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <div className="bg-primary/10 flex size-[2.5em] shrink-0 items-center justify-center rounded-lg">
                 <HugeiconsIcon icon={section.icon} size={18} className="text-primary" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-foreground">{section.label}</p>
-                <p className="text-xs text-muted-foreground">{section.description}</p>
+                <p className="text-foreground text-sm font-medium">{section.label}</p>
+                <p className="text-muted-foreground text-xs">{section.description}</p>
               </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1062,7 +1296,7 @@ export function ConfiguracoesPage() {
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
-                className="shrink-0 text-muted-foreground/40"
+                className="text-muted-foreground/40 shrink-0"
                 stroke="currentColor"
                 strokeWidth="1.5"
                 strokeLinecap="round"
@@ -1078,7 +1312,7 @@ export function ConfiguracoesPage() {
       {/* ── Mobile: section content ── */}
       <div
         className={cn(
-          "flex-1 overflow-y-auto bg-muted/30 md:hidden",
+          "bg-muted/30 flex-1 overflow-y-auto md:hidden",
           !mobileShowContent && "hidden"
         )}
       >
@@ -1090,7 +1324,7 @@ export function ConfiguracoesPage() {
       </div>
 
       {/* ── Desktop: sidebar nav + content ── */}
-      <div className="hidden flex-1 min-h-0 md:flex">
+      <div className="hidden min-h-0 flex-1 md:flex">
         {/* Left nav */}
         <nav className="flex w-[15em] shrink-0 flex-col gap-[0.125em] overflow-y-auto border-r px-[0.75em] py-[1.25em]">
           {sections.map((section) => (
@@ -1098,9 +1332,9 @@ export function ConfiguracoesPage() {
               key={section.id}
               type="button"
               className={cn(
-                "flex items-center gap-[0.5em] rounded-lg px-[0.75em] py-[0.5em] text-left text-sm transition-colors",
+                "focus-visible:ring-ring flex items-center gap-[0.5em] rounded-lg px-[0.75em] py-[0.5em] text-left text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
                 activeSection === section.id
-                  ? "bg-primary/10 font-medium text-primary"
+                  ? "bg-primary/10 text-primary font-medium"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
               onClick={() => setActiveSection(section.id)}
@@ -1112,7 +1346,7 @@ export function ConfiguracoesPage() {
         </nav>
 
         {/* Right content */}
-        <main className="flex-1 overflow-y-auto bg-muted/30">
+        <main className="bg-muted/30 flex-1 overflow-y-auto">
           <div className="mx-auto max-w-4xl px-[2.5em] py-[2em]">
             <div className="max-w-3xl">
               <ActiveContent />

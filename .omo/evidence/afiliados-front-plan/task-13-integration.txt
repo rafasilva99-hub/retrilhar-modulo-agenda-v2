@@ -1,0 +1,49 @@
+Todo 13 integration evidence
+
+Baseline:
+- Command: npm run test -- --run src/app/App.test.tsx src/modules/afiliados
+- Exit: 0
+- Result: Test Files 9 passed (9); Tests 34 passed (34); Duration 32.94s
+
+RED:
+- Command: npm run test -- --run src/app/App.test.tsx
+- Exit: 1
+- Result after selector/harness cleanup: Test Files 1 failed (1); Tests 2 failed, 7 passed (9)
+- Failed assertions:
+  - manager sidebar Afiliados kept hash #agenda instead of #afiliados
+  - global search Afiliados kept hash #agenda instead of #afiliados
+
+GREEN:
+- Command: npm run test -- --run src/app/App.test.tsx
+- Exit: 0
+- Result: Test Files 1 passed (1); Tests 9 passed (9); Duration 19.92s
+- Command: npm run test -- --run src/app/App.test.tsx src/modules/afiliados
+- Exit: 0
+- Result: Test Files 9 passed (9); Tests 39 passed (39); Duration 31.76s
+- Command: npm run test -- --run src/app/App.test.tsx
+- Exit: 0
+- Result: Test Files 1 passed (1); Tests 9 passed (9); Duration 8.72s
+
+Diagnostics:
+- Command: npm run typecheck
+- Exit: 0
+- Result: tsc --noEmit passed
+- Command: npx prettier --check src/app/App.test.tsx src/mocks/shell.ts src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/ConfiguracoesPage.tsx
+- Exit: 0
+- Result: All matched files use Prettier code style
+- Command: npx eslint --max-warnings=0 --report-unused-disable-directives src/app/App.test.tsx src/mocks/shell.ts src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/ConfiguracoesPage.tsx
+- Exit: 0
+- Result: no diagnostics
+- Command: git diff --check
+- Exit: 0
+- Result: no whitespace errors
+
+Forbidden term grep:
+- Command: rg -n "contrato|vínculo|mock" src/modules/afiliados --glob '*.tsx'
+- Exit: 0
+- Result: no rendered-copy violations found. Matches are technical imports/service names using mocks, test setup/assertions, or AjudaPage source normalization that replaces "vínculo" before rendering.
+
+Notes:
+- TypeScript LSP was unavailable; hook reported server not installed and prior user declined installation.
+- Browser QA was intentionally not run by this worker per Todo 13 assignment.
+- Existing dirty worker changes in affiliate screens were preserved.

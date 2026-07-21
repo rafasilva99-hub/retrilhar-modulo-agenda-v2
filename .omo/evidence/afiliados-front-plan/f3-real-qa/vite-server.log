@@ -1,0 +1,18 @@
+
+> @figma/my-make-file@0.0.1 dev
+> vite --host 127.0.0.1 --port 4173
+
+
+  VITE v6.3.5  ready in 269 ms
+
+  ➜  Local:   http://127.0.0.1:4173/
+  ➜  press h + enter to show help
+[BABEL] Note: The code generator has deoptimised the styling of /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/src/imports/AgendaAtualizacoes/AgendaAtualizacoes.tsx as it exceeds the max of 500KB.
+9:38:33 PM [vite] (client) page reload src/modules/afiliados/ConfiguracoesPage.test.tsx
+9:38:33 PM [vite] (client) page reload src/modules/afiliados/AjudaPage.test.tsx
+9:39:45 PM [vite] (client) hmr update /src/components/layout/topbar/topbar-organization.tsx, /src/styles/index.css
+9:39:45 PM [vite] (client) hmr update /src/modules/afiliados/ConfiguracoesPage.tsx, /src/styles/index.css
+9:39:45 PM [vite] (client) hmr update /src/modules/afiliados/AjudaPage.tsx, /src/styles/index.css
+9:40:08 PM [vite] (client) hmr update /src/modules/afiliados/ConfiguracoesPage.tsx, /src/styles/index.css
+9:40:26 PM [vite] (client) hmr update /src/modules/afiliados/AjudaPage.tsx, /src/styles/index.css
+9:40:44 PM [vite] (client) hmr update /src/modules/afiliados/AjudaPage.tsx, /src/styles/index.css

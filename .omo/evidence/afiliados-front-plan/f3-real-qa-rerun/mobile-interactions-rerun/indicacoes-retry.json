@@ -1,0 +1,15 @@
+{
+  "scenarioId": "F3-I-04",
+  "criterion": "indications search/tab/detail/copy/back",
+  "surface": "browser UI",
+  "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #indicacoes; click Copiar; search Juliana; select Pagas; open Juliana row; click Close; click back",
+  "verdict": "PASS",
+  "artifact": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions-rerun/mobile-indicacoes-detail-retry.png",
+  "copyFeedback": true,
+  "search": "Juliana",
+  "paidTab": true,
+  "detailOpened": true,
+  "closed": true,
+  "returnedHash": "#afiliados",
+  "runtimeWarningsOrErrors": []
+}

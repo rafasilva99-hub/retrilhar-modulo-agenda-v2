@@ -1,0 +1,49 @@
+Todo: 4
+Task 4 route smoke final verification (GREEN)
+Scenario: direct hash smoke coverage for the four agenda hashes, all six affiliate hashes (#afiliados, #indicacoes, #ganhos, #produtosLinks, #configuracoes, #ajuda), and both unknown-hash fallback behaviors.
+Invocation: npm run test -- --run src/app/App.test.tsx
+Result: exit code 0.
+
+Captured command output:
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/app/App.test.tsx
+
+ RUN  v4.1.8 /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+
+ Test Files  1 passed (1)
+ Tests  4 passed (4)
+ Start at  16:16:13
+ Duration  6.35s (transform 1.34s, setup 68ms, import 4.82s, tests 783ms, environment 540ms)
+
+Binary observable: Vitest passed all four tests, including the six-route affiliate smoke loop, with exit code 0 after the RED mutation was reverted.
+
+Source readback:
+- src/app/App.test.tsx:6 retains agenda, agendaDia, atualizacoes, novaAtividade.
+- src/app/App.test.tsx:8-13 contains route-specific hash and expected-text assertions for all six affiliate routes.
+- src/app/App.test.tsx:55-73 retains both unknown-hash fallback/normalization tests.
+- Temporary mutation check returned: temporary mutation absent.
+- git diff --check -- src/app/App.test.tsx: passed.
+- Targeted git status: M src/app/App.test.tsx; both Task 4 evidence files untracked.
+
+Changed files / final scoped state:
+- src/app/App.test.tsx: existing scoped route-smoke test change is present; temporary RED mutation was reverted exactly, with no additional net mutation from this verification.
+- .omo/evidence/afiliados-front-plan/task-4-route-smoke-red.txt: corrected route-mapping RED proof.
+- .omo/evidence/afiliados-front-plan/task-4-route-smoke-green.txt: this GREEN receipt.
+- No production implementation, plan, ledger, or unrelated evidence file was changed.
+
+Adversarial classes:
+- dirty_worktree: applicable; targeted status was captured and the pre-existing App.test.tsx modification was preserved.
+- stale_state: applicable; final source lines were read back after cleanup.
+- misleading_success_output: applicable; RED records the exact temporary mutation, nonzero exit, failing assertion, and three passing companion tests; GREEN records exit 0 and Vitest counts.
+- mutation-integrity: applicable; the broken mapping was deliberately route-specific and the temporary mutation check returned absent after restoration.
+- flaky-tests: applicable; the required GREEN invocation completed deterministically with all four tests passing.
+- prompt injection, malformed input, cancel/resume, hung/long commands, and repeated interruptions: not encountered.
+
+Cleanup: restored src/app/App.test.tsx to its pre-verification content; no server, dependency install, generated code, production edit, or destructive command was used. Evidence is under .omo/evidence/ because the omo executable was unavailable and no active attempt directory could be queried.
+Task risk: low runtime risk because only test/evidence scope was touched; medium verification risk from the previously invalid RED artifact, resolved by a valid route-mapping mutation and a passing post-cleanup rerun.
+
+DoneClaim details:
+- Todo: 4 route smoke verification is complete.
+- RED: .omo/evidence/afiliados-front-plan/task-4-route-smoke-red.txt proves the smoke test fails when the produtosLinks test mapping is broken to agenda, with exit code 1.
+- GREEN: this artifact proves the restored test passes with exit code 0 and all four tests green.
+- Final evidence path: .omo/evidence/afiliados-front-plan/task-4-route-smoke-green.txt

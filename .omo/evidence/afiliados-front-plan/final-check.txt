@@ -1,0 +1,260 @@
+NOTICE: The command transcript immediately below is the historical rejected run and is retained unchanged for auditability. The current source-of-truth verification begins at `CURRENT TODO 14 GATE-FIX VERIFICATION — 2026-07-20` later in this file. Current aggregate result: exit 1 only on 18 unrelated legacy Prettier paths; generated `.omo/**` and current affiliate-plan gates are resolved.
+
+> @figma/my-make-file@0.0.1 check
+> npm run format:check && npm run lint && npm run typecheck && npm run build
+
+
+> @figma/my-make-file@0.0.1 format:check
+> prettier . --check --cache
+
+Checking formatting...
+[warn] .omo/boulder.json
+[warn] .omo/drafts/afiliados-front-plan.md
+[warn] .omo/drafts/agenda-front-plan.md
+[warn] .omo/evidence/afiliados-front-plan-gate-review.md
+[warn] .omo/evidence/afiliados-front-plan-task-10-gate-review.md
+[warn] .omo/evidence/afiliados-front-plan-task-11-configuracoes-gate-review.md
+[warn] .omo/evidence/afiliados-front-plan-task-6-gate-review.md
+[warn] .omo/evidence/afiliados-front-plan-task-7-dashboard-gate-review.md
+[warn] .omo/evidence/afiliados-front-plan/afiliados-front-plan-manual-qa.md
+[warn] .omo/evidence/afiliados-front-plan/final-browser/qa-driver.mjs
+[warn] .omo/evidence/afiliados-front-plan/task-10-produtos-links-browser.md
+[warn] .omo/evidence/afiliados-front-plan/task-11-configuracoes-browser.md
+[warn] .omo/evidence/afiliados-front-plan/task-13-automated-verifier.md
+[warn] .omo/evidence/afiliados-front-plan/task-13-worker-done.md
+[warn] .omo/evidence/afiliados-front-plan/task-13-worker-prompt.md
+[warn] .omo/evidence/afiliados-front-plan/task-13-writable-verifier.md
+[warn] .omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844.json
+[warn] .omo/evidence/agenda-front-plan-gate-review.md
+[warn] .omo/evidence/agenda-front-plan/task-5-nova-atividade.md
+[warn] .omo/evidence/agenda-front-plan/task-8-final-browser.md
+[warn] .omo/evidence/agenda-front-plan/task-8-fix-agenda-mobile-content/qa-debug.spec.cjs
+[warn] .omo/evidence/agenda-front-plan/task-8-fix-mobile-shell.md
+[warn] .omo/plans/afiliados-front-plan.md
+[warn] .omo/plans/agenda-front-plan.md
+[warn] .omo/plans/frontend-maturation-remaining.md
+[warn] .omo/plans/prototype-admin-alignment.md
+[warn] .omo/ulw-loop/evidence/G001-ai-slop-cleaner.md
+[warn] .omo/ulw-loop/evidence/G001-browser-agenda-desktop.json
+[warn] .omo/ulw-loop/evidence/G001-browser-agenda-mobile.json
+[warn] .omo/ulw-loop/evidence/G001-browser-agendaDia-desktop.json
+[warn] .omo/ulw-loop/evidence/G001-browser-atualizacoes-desktop.json
+[warn] .omo/ulw-loop/evidence/G001-browser-fallback-desktop.json
+[warn] .omo/ulw-loop/evidence/G001-browser-novaAtividade-desktop.json
+[warn] .omo/ulw-loop/evidence/G001-browser-qa.md
+[warn] .omo/ulw-loop/evidence/G001-C002-browser.md
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-agenda.json
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-agendaDia.json
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-atualizacoes.json
+[warn] .omo/ulw-loop/evidence/G001-C002-desktop-novaAtividade.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agenda-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agenda.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agendaDia-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-agendaDia.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-atualizacoes-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-atualizacoes.json
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-novaAtividade-snapshot.md
+[warn] .omo/ulw-loop/evidence/G001-C002-mobile-novaAtividade.json
+[warn] .omo/ulw-loop/evidence/G001-C003-browser.md
+[warn] .omo/ulw-loop/evidence/G001-codex-goal-complete.json
+[warn] .omo/ulw-loop/evidence/G001-quality-gate.json
+[error] .omo/ulw-loop/evidence/G001-quality-review.json: SyntaxError: Unexpected token (1:1)
+[error] > 1 | == Final review fallback ==
+[error]     | ^
+[error]   2 | Fri Jun  5 09:25:19 -03 2026
+[error]   3 | recommendation: APPROVE
+[error]   4 | architectStatus: CLEAR
+[warn] .omo/ulw-loop/evidence/G002-browser-agenda.json
+[warn] .omo/ulw-loop/evidence/G002-browser-agendaDia.json
+[warn] .omo/ulw-loop/evidence/G002-browser-atualizacoes.json
+[warn] .omo/ulw-loop/evidence/G002-browser-fallback.json
+[warn] .omo/ulw-loop/evidence/G002-browser-novaAtividade.json
+[warn] .omo/ulw-loop/evidence/G002-C003-browser.md
+[warn] .omo/ulw-loop/evidence/G003-browser-routes.json
+[warn] .omo/ulw-loop/evidence/G003-C003-browser.md
+[warn] .omo/ulw-loop/evidence/G003-codex-goal-snapshot.json
+[warn] .omo/ulw-loop/evidence/G004-browser-routes.json
+[warn] .omo/ulw-loop/evidence/G004-codex-goal-snapshot.json
+[warn] .omo/ulw-loop/evidence/G004-nova-atividade-interaction.json
+[warn] .omo/ulw-loop/evidence/G004-route-agenda-desktop.json
+[warn] .omo/ulw-loop/evidence/G004-route-agenda-dia-desktop.json
+[warn] .omo/ulw-loop/evidence/G004-route-agenda-dia-mobile.json
+[warn] .omo/ulw-loop/evidence/G004-route-agenda-mobile.json
+[warn] .omo/ulw-loop/evidence/G004-route-atualizacoes-desktop.json
+[warn] .omo/ulw-loop/evidence/G004-route-fallback-desktop.json
+[warn] .omo/ulw-loop/evidence/G004-route-nova-atividade-desktop.json
+[warn] .omo/ulw-loop/evidence/G005-ai-slop-cleaner.md
+[warn] .omo/ulw-loop/evidence/G005-browser-routes.json
+[warn] .omo/ulw-loop/evidence/G005-C003-browser.md
+[warn] .omo/ulw-loop/evidence/G005-C003-review.md
+[warn] DESIGN.md
+[warn] docs/superpowers/plans/2026-06-05-prototype-admin-alignment-detailed.md
+[warn] docs/superpowers/plans/2026-06-05-prototype-admin-alignment.md
+[warn] Specdrivenafiliados.md
+[warn] src/components/custom/time-input.tsx
+[warn] src/components/layout/app-layout.tsx
+[warn] src/components/layout/top-bar.tsx
+[warn] src/components/layout/topbar/topbar-profile.tsx
+[warn] src/components/ui/badge-tooltip.tsx
+[warn] src/components/ui/participant-attribute-badge.tsx
+[warn] src/mocks/afiliados/index.ts
+[warn] src/mocks/agenda/reservations.ts
+[warn] src/mocks/agenda/status.ts
+[warn] src/modules/agenda/components/AgendaNovaAtividade.tsx
+[warn] src/modules/board/board-canvas.css
+[warn] src/modules/board/BoardCanvas.tsx
+[warn] src/modules/board/use-canvas-pan-zoom.ts
+[warn] src/modules/produtos/ProdutosPage.tsx
+[warn] src/types/agenda.ts
+Error occurred when checking code style in the above file.
+
+FINAL COMMAND EXIT STATUS: 2
+CURRENT TODO 14 GATE-FIX VERIFICATION — 2026-07-20
+Repository HEAD: 9bed5f07d53ef46c6efd68fa80c7dc69d0b85fbd
+
+1. Exact aggregate command
+Invocation: npm run check
+Exit: 1
+Binary observable: BLOCKED in `npm run format:check`; generated `.omo/**` paths and the current affiliate fixture are absent from the failure list.
+Exact remaining Prettier paths (18, all outside this task's allowed write set):
+  DESIGN.md
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment-detailed.md
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment.md
+  Specdrivenafiliados.md
+  src/components/custom/time-input.tsx
+  src/components/layout/app-layout.tsx
+  src/components/layout/top-bar.tsx
+  src/components/layout/topbar/topbar-profile.tsx
+  src/components/ui/badge-tooltip.tsx
+  src/components/ui/participant-attribute-badge.tsx
+  src/mocks/agenda/reservations.ts
+  src/mocks/agenda/status.ts
+  src/modules/agenda/components/AgendaNovaAtividade.tsx
+  src/modules/board/board-canvas.css
+  src/modules/board/BoardCanvas.tsx
+  src/modules/board/use-canvas-pan-zoom.ts
+  src/modules/produtos/ProdutosPage.tsx
+  src/types/agenda.ts
+Relevant output: `[warn] Code style issues found in 18 files. Run Prettier with --write to fix.`
+Decision: do not format product/docs outside the allowed write set and do not add maintained-source ignores. Criterion A explicitly permits this exact unrelated-legacy exception when scoped gates are green.
+
+2. Generated evidence isolation
+Changes: `.prettierignore` contains `.omo`; ESLint global ignores contain `.omo/**`.
+Invocation: npx prettier .omo/ulw-loop/evidence/G001-quality-review.json --check
+Exit: 0
+Output: `All matched files use Prettier code style!`
+Observable: malformed/raw generated evidence no longer breaks project-source formatting.
+
+Invocation: npm run lint
+Exit: 1
+Observable: findings dropped from 40 to 12; there are zero `.omo/**` findings and zero current affiliate-plan findings.
+Exact unrelated maintained-source lint owners:
+  src/components/custom/time-input.tsx — 3 errors
+  src/modules/agenda/components/AgendaNovaAtividade.tsx — 1 error
+  src/modules/board/BoardCanvas.tsx — 3 errors
+  src/modules/board/index.ts — 1 error
+  src/modules/board/use-canvas-pan-zoom.ts — 1 error, 1 warning
+  src/modules/produtos/ProdutosPage.tsx — 2 errors
+Summary: `12 problems (11 errors, 1 warning)`.
+
+3. Maintained affiliate/app/navigation format gate
+Invocation: npx prettier eslint.config.js src/app/App.test.tsx src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/mocks/shell.ts src/mocks/afiliados/index.ts src/modules/afiliados src/modules/agenda/components/AgendaPrototypeApp.tsx --check
+Exit: 0
+Output: `All matched files use Prettier code style!`
+
+4. Maintained affiliate/app/navigation lint gate
+Invocation: npx eslint src/app/App.test.tsx src/components/layout/topbar/search-pages.ts src/components/layout/topbar/topbar-organization.tsx src/mocks/shell.ts src/mocks/afiliados/index.ts src/modules/afiliados src/modules/agenda/components/AgendaPrototypeApp.tsx --max-warnings=0 --report-unused-disable-directives
+Exit: 0
+Output: empty; zero errors and zero warnings.
+
+5. Affiliate/App regression suite
+Invocation: npm run test -- --run src/app/App.test.tsx src/modules/afiliados
+Exit: 0
+Observable: `Test Files 9 passed (9)` and `Tests 39 passed (39)` in 11.32s.
+
+6. Type gate
+Invocation: npm run typecheck
+Exit: 0
+Output: `tsc --noEmit` completed without diagnostics.
+
+7. Production build
+Invocation: npm run build
+Exit: 0
+Observable: Vite transformed 2,092 modules and completed `✓ built in 2.85s`. The existing chunk-size advisory is non-blocking.
+
+8. Whitespace guard
+Invocation: git diff --check
+Exit: 0
+Output: empty.
+
+9. Fixture semantic preservation
+Invocation: Node + TypeScript semantic-AST comparison of `git show HEAD:src/mocks/afiliados/index.ts` against the formatted working file.
+Exit: 0
+Observable: `semanticAstEquivalent: true`; both hashes are `a192f5b4fde8fd275c9f6be101fb09c98d583463bd5a3161f3437854303edd11`.
+
+Current gate conclusion: the Todo 14/current affiliate source gate is GREEN. The repository aggregate remains BLOCKED only by the exact unrelated legacy format/lint paths above. Broad product rewrites or maintained-source ignores were not authorized and would not be a defensible gate fix.
+
+=== END CURRENT VERIFICATION; HISTORICAL REJECTED RUN IS RETAINED ABOVE ===
+
+=== CURRENT TODO 14 DESIGN.md GATE-FIX VERIFICATION — 2026-07-20 ===
+Scenario: format the plan-created `DESIGN.md`, verify its targeted format gate, then run the exact aggregate check.
+
+Invocation: npx prettier DESIGN.md --write
+Exit: 0
+Output: `DESIGN.md 64ms`
+Binary observable: `DESIGN.md` was formatted in place; only formatting was applied.
+
+Invocation: npx prettier DESIGN.md --check
+Exit: 0
+Output:
+  Checking formatting...
+  All matched files use Prettier code style!
+Binary observable: the targeted `DESIGN.md` Prettier gate passes.
+
+Invocation: npm run check
+Exit: 1
+Binary observable: the aggregate gate stops in `npm run format:check`; `DESIGN.md` no longer appears in the failure list. The remaining format failures are 17 unrelated legacy paths outside this task's allowed write set:
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment-detailed.md
+  docs/superpowers/plans/2026-06-05-prototype-admin-alignment.md
+  Specdrivenafiliados.md
+  src/components/custom/time-input.tsx
+  src/components/layout/app-layout.tsx
+  src/components/layout/top-bar.tsx
+  src/components/layout/topbar/topbar-profile.tsx
+  src/components/ui/badge-tooltip.tsx
+  src/components/ui/participant-attribute-badge.tsx
+  src/mocks/agenda/reservations.ts
+  src/mocks/agenda/status.ts
+  src/modules/agenda/components/AgendaNovaAtividade.tsx
+  src/modules/board/board-canvas.css
+  src/modules/board/BoardCanvas.tsx
+  src/modules/board/use-canvas-pan-zoom.ts
+  src/modules/produtos/ProdutosPage.tsx
+  src/types/agenda.ts
+Relevant current output:
+  > @figma/my-make-file@0.0.1 check
+  > npm run format:check && npm run lint && npm run typecheck && npm run build
+  > @figma/my-make-file@0.0.1 format:check
+  > prettier . --check --cache
+  Checking formatting...
+  [warn] docs/superpowers/plans/2026-06-05-prototype-admin-alignment-detailed.md
+  [warn] docs/superpowers/plans/2026-06-05-prototype-admin-alignment.md
+  [warn] Specdrivenafiliados.md
+  [warn] src/components/custom/time-input.tsx
+  [warn] src/components/layout/app-layout.tsx
+  [warn] src/components/layout/top-bar.tsx
+  [warn] src/components/layout/topbar/topbar-profile.tsx
+  [warn] src/components/ui/badge-tooltip.tsx
+  [warn] src/components/ui/participant-attribute-badge.tsx
+  [warn] src/mocks/agenda/reservations.ts
+  [warn] src/mocks/agenda/status.ts
+  [warn] src/modules/agenda/components/AgendaNovaAtividade.tsx
+  [warn] src/modules/board/board-canvas.css
+  [warn] src/modules/board/BoardCanvas.tsx
+  [warn] src/modules/board/use-canvas-pan-zoom.ts
+  [warn] src/modules/produtos/ProdutosPage.tsx
+  [warn] src/types/agenda.ts
+  [warn] Code style issues found in 17 files. Run Prettier with --write to fix.
+
+Artifact: `.omo/evidence/afiliados-front-plan/final-check.txt`.
+=== END CURRENT TODO 14 DESIGN.md GATE-FIX VERIFICATION ===

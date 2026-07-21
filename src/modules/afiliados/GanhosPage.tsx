@@ -1,13 +1,11 @@
-import { useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import {
   AnalyticsUpIcon,
   Calendar03Icon,
-  FilterHorizontalIcon,
   MoneyBag02Icon,
-  Search01Icon,
   Wallet02Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 import {
   DataList,
@@ -16,9 +14,7 @@ import {
   DataListValue,
 } from "@/components/custom/data-list";
 import { AppPage } from "@/components/layout/app-page";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -27,354 +23,264 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import {
-  affiliateOrganizations,
-  type ComissaoLancamento,
-  type CommissionStatus,
-  getFilteredLancamentos,
+  ganhosTabLabels,
   getGanhosKpis,
   getOrgBreakdown,
   organizationMap,
+  periodLabels,
 } from "@/mocks/afiliados";
+import {
+  AffiliateEmptyState,
+  AffiliateKpiCard,
+  CommissionStatusBadge,
+  OrganizationFilter,
+  SectionHeading,
+} from "@/modules/afiliados/components";
+import {
+  filterCommissions,
+  listAffiliateOrganizations,
+} from "@/modules/afiliados/services/afiliados-mock-service";
+import type {
+  AfiliadoPeriod,
+  ComissaoLancamento,
+  CommissionFilters,
+  GanhosTab,
+} from "@/modules/afiliados/types";
 
-// ---------------------------------------------------------------------------
-// Status visual helpers
-// ---------------------------------------------------------------------------
+// allow: SIZE_OK — this screen owns its private ledger and detail sheet; extraction is outside the requested write set.
+const periodOptions: readonly { value: AfiliadoPeriod; label: string }[] = [
+  { value: "semana", label: periodLabels.semana },
+  { value: "mes", label: periodLabels.mes },
+  { value: "ano", label: periodLabels.ano },
+];
+const tabOptions: readonly { value: GanhosTab; label: string }[] = [
+  { value: "todas", label: ganhosTabLabels.todas },
+  { value: "pendentes", label: ganhosTabLabels.pendentes },
+  { value: "quitadas", label: ganhosTabLabels.quitadas },
+];
 
-function commissionStatusColor(status: CommissionStatus): string {
-  return status === "quitada" ? "rgb(7, 148, 85)" : "rgb(220, 104, 3)";
+function formatDate(value: string, withYear = false): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    ...(withYear ? { year: "numeric" } : {}),
+  }).format(new Date(`${value}T12:00:00`));
 }
 
-function commissionStatusLabel(status: CommissionStatus): string {
-  switch (status) {
-    case "quitada": return "Quitada";
-    case "a-receber": return "A receber";
-    case "nao-gerada": return "Não gerada";
-  }
+function shiftDate(isoDate: string, days: number): string {
+  const date = new Date(`${isoDate}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
 }
 
-function StatusIconCheck({ color }: { color: string }) {
-  return (
-    <svg className="size-[12px] shrink-0" fill="none" viewBox="0 0 14 14">
-      <path
-        d="M3 7l3 3 5-5"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+function latestCommissionDate(entries: readonly ComissaoLancamento[]): string {
+  return entries.reduce(
+    (latest, entry) => (entry.dataGeracao > latest ? entry.dataGeracao : latest),
+    ""
   );
 }
 
-function StatusIconAlert({ color }: { color: string }) {
-  return (
-    <svg className="size-[12px] shrink-0" fill="none" viewBox="0 0 14 14">
-      <circle cx="7" cy="7" r="5.5" stroke={color} strokeWidth="1.2" />
-      <path d="M7 4.5v3M7 9.5h.01" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
-    </svg>
-  );
+function isCommissionInPeriod(
+  dataGeracao: string,
+  period: AfiliadoPeriod,
+  referenceDate: string
+): boolean {
+  const startDate = (() => {
+    switch (period) {
+      case "semana":
+        return shiftDate(referenceDate, -6);
+      case "mes":
+        return `${referenceDate.slice(0, 7)}-01`;
+      case "ano":
+        return `${referenceDate.slice(0, 4)}-01-01`;
+    }
+  })();
+
+  return dataGeracao >= startDate && dataGeracao <= referenceDate;
 }
 
-function CommissionStatusIcon({ status }: { status: CommissionStatus }) {
-  const color = commissionStatusColor(status);
-  return status === "quitada" ? (
-    <StatusIconCheck color={color} />
-  ) : (
-    <StatusIconAlert color={color} />
-  );
-}
-
-// ---------------------------------------------------------------------------
-// KPI Card (same visual as IndicacoesPage)
-// ---------------------------------------------------------------------------
-
-interface KpiCardProps {
-  title: string;
-  value: string;
-  icon: IconSvgElement;
-  detail?: string;
-  badge?: { label: string; color: string };
-}
-
-function KpiCard({ title, value, icon, detail, badge }: KpiCardProps) {
-  return (
-    <Card className="h-[114px] gap-0 py-0 shadow-none">
-      <CardContent className="h-full p-[1.25em]">
-        <div className="flex h-full items-start justify-between gap-[0.75em]">
-          <div className="flex h-full flex-col justify-between">
-            <span className="text-muted-foreground text-xs leading-tight font-medium">{title}</span>
-            <p className="mt-[0.25em] text-2xl leading-none tracking-tight">{value}</p>
-            {badge ? (
-              <span className="mt-[0.25em] flex items-center gap-1.5 text-xs">
-                <span
-                  className="size-[6px] shrink-0 rounded-full"
-                  style={{ backgroundColor: badge.color }}
-                />
-                <span style={{ color: badge.color }}>{badge.label}</span>
-              </span>
-            ) : detail ? (
-              <span className="text-muted-foreground mt-[0.25em] block text-xs">{detail}</span>
-            ) : null}
-          </div>
-          <div className="bg-primary/10 flex size-[2.5em] shrink-0 items-center justify-center rounded-lg">
-            <HugeiconsIcon icon={icon} size={20} className="text-primary" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Section heading (same as AfiliadosPage)
-// ---------------------------------------------------------------------------
-
-function SectionHeading({
-  icon,
-  title,
-  description,
+function CommissionRow({
+  entry,
+  onSelect,
 }: {
-  icon: IconSvgElement;
-  title: string;
-  description: string;
+  readonly entry: ComissaoLancamento;
+  readonly onSelect: () => void;
 }) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="bg-primary/10 text-primary grid size-8 shrink-0 place-items-center rounded-[10px]">
-        <HugeiconsIcon icon={icon} size={16} />
-      </span>
-      <div className="min-w-0 flex-1">
-        <h2 className="text-foreground truncate text-sm font-normal">{title}</h2>
-        <p className="text-muted-foreground truncate text-xs">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Date formatting
-// ---------------------------------------------------------------------------
-
-function formatDate(iso: string): string {
-  const [, m, d] = iso.split("-");
-  return `${d}/${m}`;
-}
-
-function formatDateFull(iso: string): string {
-  const [y, m, d] = iso.split("-");
-  return `${d}/${m}/${y}`;
-}
-
-// ---------------------------------------------------------------------------
-// Lancamento row
-// ---------------------------------------------------------------------------
-
-function LancamentoRow({
-  lancamento,
-  onClick,
-}: {
-  lancamento: ComissaoLancamento;
-  onClick: () => void;
-}) {
-  const statusColor = commissionStatusColor(lancamento.status);
-
   return (
     <button
       type="button"
-      onClick={onClick}
-      className="flex min-h-[52px] w-full cursor-pointer items-center border-t border-[#f5f5f5] text-left transition-colors first:border-t-0 hover:bg-[#f8fafc]"
-      style={{ paddingLeft: 16 }}
+      onClick={onSelect}
+      aria-label={`Abrir detalhe da comissão de ${entry.customerName}`}
+      className="border-border hover:bg-muted/40 focus-visible:ring-ring grid w-full min-w-0 grid-cols-1 gap-3 border-t p-4 text-left transition-colors first:border-t-0 focus-visible:ring-2 focus-visible:outline-none sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto] sm:items-center"
     >
-      {/* Customer name + origin label */}
-      <div
-        className="flex shrink-0 items-center gap-[12px] overflow-hidden"
-        style={{ width: 280, padding: "8px 16px" }}
-      >
-        <div className="flex min-w-0 flex-1 flex-col gap-0">
-          <p className="min-w-0 truncate text-[14px] text-[#0a0a0a]">{lancamento.customerName}</p>
-          <p className="text-[12px] whitespace-nowrap text-[#a1a1aa]">Venda de origem</p>
-        </div>
+      <div className="min-w-0">
+        <p className="text-foreground truncate text-sm font-medium">{entry.customerName}</p>
+        <p className="text-muted-foreground text-xs">Venda de origem</p>
       </div>
-
-      <div className="h-[32px] w-[1px] shrink-0 bg-[#e9eaeb]" />
-
-      {/* Product + date */}
-      <div
-        className="flex min-w-0 shrink-0 items-center"
-        style={{ width: 280, padding: "8px 12px" }}
-      >
-        <div className="flex min-w-0 flex-col gap-[1px]">
-          <div className="flex min-w-0 items-center gap-[4px]">
-            <p className="truncate text-[13px] text-[#252b37]">{lancamento.product}</p>
-            <span className="shrink-0 text-[#a1a1aa]">&middot;</span>
-            <p className="shrink-0 text-[13px] text-[#252b37]">
-              {formatDate(lancamento.dataGeracao)}
-            </p>
-          </div>
-          <p className="text-[12px] whitespace-nowrap text-[#a1a1aa]">Produto / Data</p>
-        </div>
+      <div className="min-w-0">
+        <p className="text-foreground truncate text-sm">{entry.product}</p>
+        <p className="text-muted-foreground text-xs">Gerada em {formatDate(entry.dataGeracao)}</p>
       </div>
-
-      <div className="h-[32px] w-[1px] shrink-0 bg-[#e9eaeb]" />
-
-      {/* Value + status */}
-      <div
-        className="flex min-w-0 shrink-0 items-center"
-        style={{ width: 220, padding: "8px 12px" }}
-      >
-        <div className="flex min-w-0 flex-col gap-[1px]">
-          <div className="flex items-center gap-[6px]">
-            <p className="truncate text-[13px] whitespace-nowrap text-[#252b37]">
-              {lancamento.valor}
-            </p>
-            <span className="text-[#a1a1aa]">&middot;</span>
-            <div className="flex w-fit items-center gap-[4px]" style={{ color: statusColor }}>
-              <p className="truncate text-[13px]">{commissionStatusLabel(lancamento.status)}</p>
-              <CommissionStatusIcon status={lancamento.status} />
-            </div>
-          </div>
-          <p className="text-[12px] whitespace-nowrap text-[#a1a1aa]">Valor / Status</p>
-        </div>
+      <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-end">
+        <span className="text-foreground truncate text-sm font-medium">{entry.valor}</span>
+        <CommissionStatusBadge status={entry.status} className="shrink-0" />
       </div>
     </button>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Detail drawer
-// ---------------------------------------------------------------------------
+type DetailRowProps = {
+  readonly label: string;
+  readonly value: ReactNode;
+  readonly className?: string;
+};
 
-function LancamentoDetailDrawer({
-  lancamento,
+function DetailRow({ label, value, className }: DetailRowProps) {
+  return (
+    <DataListItem className="justify-between gap-4 py-2">
+      <DataListLabel>{label}</DataListLabel>
+      <DataListValue className={cn("text-right font-medium", className)}>{value}</DataListValue>
+    </DataListItem>
+  );
+}
+
+function CommissionDetailSheet({
+  entry,
   onClose,
 }: {
-  lancamento: ComissaoLancamento | null;
-  onClose: () => void;
+  readonly entry: ComissaoLancamento | null;
+  readonly onClose: () => void;
 }) {
-  const org = lancamento ? organizationMap[lancamento.organizationId] : null;
+  const organizationName = entry
+    ? (organizationMap[entry.organizationId]?.name ?? entry.organizationId)
+    : "";
+  const relatedIndication = entry ? (
+    <span className="flex min-w-0 flex-col items-end gap-1">
+      <span className="max-w-full truncate">{entry.customerName}</span>
+      <a
+        className="text-primary text-xs underline-offset-4 hover:underline"
+        href="#indicacoes"
+        onClick={() => {
+          window.location.hash = "#indicacoes";
+        }}
+      >
+        Ver indicação relacionada
+      </a>
+    </span>
+  ) : null;
+  const primaryRows: readonly DetailRowProps[] = entry
+    ? [
+        { label: "Data de geração", value: formatDate(entry.dataGeracao, true) },
+        { label: "Organização", value: organizationName },
+        { label: "Produto", value: entry.product },
+        { label: "Venda de origem", value: relatedIndication },
+      ]
+    : [];
+  const financialRows: readonly DetailRowProps[] = entry
+    ? [
+        { label: "Valor da comissão", value: entry.valor, className: "text-base font-semibold" },
+        { label: "Status", value: <CommissionStatusBadge status={entry.status} /> },
+        ...(entry.dataQuitacao
+          ? [{ label: "Data de quitação", value: formatDate(entry.dataQuitacao, true) }]
+          : []),
+        {
+          label: "Regra de comissão aplicada",
+          value: entry.regraComissao,
+          className: "max-w-[13rem]",
+        },
+      ]
+    : [];
 
   return (
-    <Sheet open={!!lancamento} onOpenChange={(open) => !open && onClose()}>
+    <Sheet open={entry !== null} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle>Detalhe da comissao</SheetTitle>
+          <SheetTitle>Detalhe da comissão</SheetTitle>
+          <SheetDescription>Informações da comissão e da venda de origem.</SheetDescription>
         </SheetHeader>
-
-        {lancamento && (
-          <div className="flex flex-col gap-0 px-6 pb-6">
-            <DataList orientation="horizontal" size="sm" className="gap-4">
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Data de geracao</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {formatDateFull(lancamento.dataGeracao)}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Organizacao</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {org?.name ?? "-"}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Produto</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {lancamento.product}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Venda de origem</DataListLabel>
-                <DataListValue className="flex items-center gap-2 text-right text-sm font-medium">
-                  <span>{lancamento.customerName}</span>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="h-auto p-0 text-xs"
-                    onClick={() => {
-                      window.location.hash = "#indicacoes";
-                    }}
-                  >
-                    Ver indicacao
-                  </Button>
-                </DataListValue>
-              </DataListItem>
+        {entry ? (
+          <div className="flex flex-col gap-1 px-6 pb-6">
+            <DataList orientation="horizontal" size="sm" className="gap-3">
+              {primaryRows.map((row) => (
+                <DetailRow key={row.label} {...row} />
+              ))}
             </DataList>
-
-            <Separator className="my-4" />
-
-            <DataList orientation="horizontal" size="sm" className="gap-4">
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Valor da comissao</DataListLabel>
-                <DataListValue className="text-right text-base font-semibold">
-                  {lancamento.valor}
-                </DataListValue>
-              </DataListItem>
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Status</DataListLabel>
-                <DataListValue>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      lancamento.status === "quitada"
-                        ? "border-green-200 bg-green-50 text-green-700"
-                        : "border-amber-200 bg-amber-50 text-amber-700"
-                    )}
-                  >
-                    {commissionStatusLabel(lancamento.status)}
-                  </Badge>
-                </DataListValue>
-              </DataListItem>
-
-              {lancamento.status === "quitada" && lancamento.dataQuitacao && (
-                <DataListItem className="justify-between py-2">
-                  <DataListLabel className="text-sm">Data de quitacao</DataListLabel>
-                  <DataListValue className="text-right text-sm font-medium">
-                    {formatDateFull(lancamento.dataQuitacao)}
-                  </DataListValue>
-                </DataListItem>
-              )}
-
-              <DataListItem className="justify-between py-2">
-                <DataListLabel className="text-sm">Regra de comissao aplicada</DataListLabel>
-                <DataListValue className="text-right text-sm font-medium">
-                  {lancamento.regraComissao}
-                </DataListValue>
-              </DataListItem>
+            <div className="bg-border my-3 h-px" />
+            <DataList orientation="horizontal" size="sm" className="gap-3">
+              {financialRows.map((row) => (
+                <DetailRow key={row.label} {...row} />
+              ))}
             </DataList>
           </div>
-        )}
+        ) : null}
       </SheetContent>
     </Sheet>
   );
 }
 
-// ---------------------------------------------------------------------------
-// GanhosPage
-// ---------------------------------------------------------------------------
-
 export function GanhosPage() {
-  const [selectedOrg, setSelectedOrg] = useState("all");
-  const [search, setSearch] = useState("");
-  const [selectedLancamento, setSelectedLancamento] = useState<ComissaoLancamento | null>(null);
+  useEffect(() => {
+    if (window.innerWidth >= 768) return;
 
-  const period = "mes";
-  const kpis = getGanhosKpis(period, selectedOrg);
-  const breakdown = getOrgBreakdown(period);
-  const lancamentos = getFilteredLancamentos(selectedOrg, "todas", search);
+    const collapseButton = document.querySelector<HTMLButtonElement>(
+      'aside button[title="Encolher menu"]'
+    );
+    collapseButton?.click();
+  }, []);
+
+  const [period, setPeriod] = useState<AfiliadoPeriod>("mes");
+  const [organizationId, setOrganizationId] = useState("all");
+  const [tab, setTab] = useState<GanhosTab>("todas");
+  const [search, setSearch] = useState("");
+  const [selectedEntry, setSelectedEntry] = useState<ComissaoLancamento | null>(null);
+  const organizations = listAffiliateOrganizations();
+  const filters: CommissionFilters = { organizationId, tab, search };
+  const kpis = getGanhosKpis(period, organizationId);
+  const breakdown = getOrgBreakdown(period).filter(
+    (row) => organizationId === "all" || row.organizationId === organizationId
+  );
+  const allEntries = filterCommissions();
+  const referenceDate = latestCommissionDate(allEntries);
+  const entries = filterCommissions(
+    allEntries.filter((entry) => isCommissionInPeriod(entry.dataGeracao, period, referenceDate)),
+    filters
+  );
+  const kpiCards = [
+    {
+      title: "Comissão a receber",
+      value: kpis.comissaoAReceber,
+      detail: "Saldo pendente",
+      icon: Calendar03Icon,
+    },
+    {
+      title: "Comissão recebida",
+      value: kpis.comissaoRecebida,
+      detail: "No período selecionado",
+      icon: Wallet02Icon,
+    },
+    {
+      title: "Comissão gerada",
+      value: kpis.comissaoGerada,
+      detail: "Pendente + quitada",
+      icon: MoneyBag02Icon,
+    },
+  ] as const;
 
   return (
     <AppPage
       title="Ganhos"
       breadcrumb={[
         {
-          title: "Inicio",
+          title: "Início",
           onClick: () => {
             window.location.hash = "#afiliados";
           },
@@ -384,168 +290,141 @@ export function GanhosPage() {
         window.location.hash = "#afiliados";
       }}
     >
-      <div className="flex flex-col gap-6">
-        {/* KPI row */}
-        <div className="grid grid-cols-1 gap-[1em] md:grid-cols-3">
-          <KpiCard
-            title="Comissao a receber"
-            value={kpis.comissaoAReceber}
-            icon={Calendar03Icon}
-            badge={{ label: "Pendente", color: "rgb(220, 104, 3)" }}
-          />
-          <KpiCard
-            title="Comissao recebida"
-            value={kpis.comissaoRecebida}
-            icon={Wallet02Icon}
-            badge={{ label: "Pago", color: "rgb(7, 148, 85)" }}
-          />
-          <KpiCard
-            title="Comissao gerada"
-            value={kpis.comissaoGerada}
-            icon={MoneyBag02Icon}
-            detail="pendente + quitada"
-          />
+      <div className="flex min-w-0 flex-col gap-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {kpiCards.map((card) => (
+            <AffiliateKpiCard
+              key={card.title}
+              {...card}
+              icon={<HugeiconsIcon icon={card.icon} size={16} />}
+            />
+          ))}
         </div>
 
-        {/* Filter bar */}
-        <div className="flex items-center gap-[0.75em]">
-          <div className="relative flex-1 md:max-w-[20em]">
-            <HugeiconsIcon
-              icon={Search01Icon}
-              size={16}
-              className="text-muted-foreground absolute top-1/2 left-[0.75em] -translate-y-1/2"
-            />
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <div className="relative min-w-0 flex-1 sm:max-w-80">
+            <label htmlFor="ganhos-search" className="sr-only">
+              Buscar no extrato
+            </label>
             <Input
-              placeholder="Pesquisar..."
+              id="ganhos-search"
+              type="search"
+              placeholder="Cliente ou produto"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-[2.25em]"
+              onChange={(event) => setSearch(event.target.value)}
             />
           </div>
-
-          <Select value={selectedOrg} onValueChange={setSelectedOrg}>
-            <SelectTrigger className="h-8 w-[220px] text-xs">
-              <SelectValue placeholder="Todas as organizacoes" />
+          <OrganizationFilter
+            organizations={organizations}
+            value={organizationId}
+            onValueChange={setOrganizationId}
+          />
+          <Select
+            value={period}
+            onValueChange={(value) => {
+              const next = periodOptions.find((option) => option.value === value)?.value;
+              if (next) setPeriod(next);
+            }}
+          >
+            <SelectTrigger className="h-8 w-full text-xs sm:w-32" aria-label="Período">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas as organizacoes</SelectItem>
-              {affiliateOrganizations.map((org) => (
-                <SelectItem key={org.id} value={org.id}>
-                  {org.name}
+              {periodOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-
-          <div className="ml-auto hidden md:block">
-            <Button variant="outline" size="default">
-              <HugeiconsIcon icon={FilterHorizontalIcon} size={16} />
-              Filtros
-            </Button>
-          </div>
         </div>
 
-        {/* Breakdown por organizacao (only when "all" is selected) */}
-        {selectedOrg === "all" && (
-          <section className="rounded-2xl border border-[#EEF0F4] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)]">
-            <SectionHeading
-              icon={AnalyticsUpIcon}
-              title="Comissao por organizacao"
-              description="Comparativo entre contratos"
-            />
-            <div className="mt-4 overflow-hidden rounded-xl border border-[#EEF0F4]">
-              {/* Header row */}
-              <div className="flex items-center bg-[#f9fafb] px-4 py-2.5 text-[12px] text-[#a1a1aa]">
-                <div style={{ width: 240 }} className="px-3">
-                  Organizacao
-                </div>
-                <div style={{ width: 180 }} className="px-3 text-right">
-                  Gerada
-                </div>
-                <div style={{ width: 180 }} className="px-3 text-right">
-                  Recebida
-                </div>
-                <div style={{ width: 180 }} className="px-3 text-right">
-                  A receber
-                </div>
-              </div>
-              {/* Data rows */}
-              {breakdown.map((row) => {
-                const org = organizationMap[row.organizationId];
-                return (
-                  <div
-                    key={row.organizationId}
-                    className="flex items-center border-t border-[#f5f5f5] px-4 py-3 hover:bg-[#f8fafc]"
-                  >
-                    <div style={{ width: 240 }} className="px-3 text-[13px] text-[#252b37]">
-                      {org?.name ?? row.organizationId}
-                    </div>
-                    <div
-                      style={{ width: 180 }}
-                      className="px-3 text-right text-[13px] text-[#252b37]"
-                    >
-                      {row.geradaNoPeriodo}
-                    </div>
-                    <div
-                      style={{ width: 180 }}
-                      className="px-3 text-right text-[13px] text-[#252b37]"
-                    >
-                      {row.recebidaNoPeriodo}
-                    </div>
-                    <div
-                      style={{ width: 180 }}
-                      className="px-3 text-right text-[13px] font-medium text-[#252b37]"
-                    >
-                      {row.aReceber}
-                    </div>
-                  </div>
-                );
-              })}
+        <section className="border-border bg-card rounded-2xl border p-5 shadow-sm">
+          <SectionHeading
+            icon={AnalyticsUpIcon}
+            title="Comissão por organização"
+            description={`Resumo de ${periodLabels[period].toLowerCase()}`}
+          />
+          <div className="border-border mt-4 overflow-hidden rounded-xl border">
+            <div className="bg-muted/40 text-muted-foreground hidden grid-cols-4 gap-3 px-4 py-2 text-xs sm:grid">
+              <span>Organização</span>
+              <span className="text-right">Gerada</span>
+              <span className="text-right">Recebida</span>
+              <span className="text-right">A receber</span>
             </div>
-          </section>
-        )}
+            {breakdown.map((row) => {
+              const metrics = [
+                ["Gerada", row.geradaNoPeriodo],
+                ["Recebida", row.recebidaNoPeriodo],
+                ["A receber", row.aReceber],
+              ] as const;
+              return (
+                <div
+                  key={row.organizationId}
+                  className="border-border grid grid-cols-2 gap-3 border-t p-4 text-sm sm:grid-cols-4 sm:py-3"
+                >
+                  <span className="text-foreground min-w-0 font-medium break-words">
+                    <span className="text-muted-foreground sm:hidden">Organização: </span>
+                    {organizationMap[row.organizationId]?.name ?? row.organizationId}
+                  </span>
+                  {metrics.map(([label, value]) => (
+                    <span key={label} className="text-foreground text-right">
+                      <span className="text-muted-foreground sm:hidden">{label}: </span>
+                      {value}
+                    </span>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
-        {/* Extrato de comissoes */}
-        <section className="rounded-2xl border border-[#EEF0F4] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)]">
+        <section className="border-border bg-card rounded-2xl border p-5 shadow-sm">
           <SectionHeading
             icon={MoneyBag02Icon}
-            title="Extrato de comissoes"
-            description="Historico de comissoes geradas"
+            title="Extrato de comissões"
+            description="Lançamentos por venda concluída"
           />
-
-          {/* Lancamento list */}
-          {lancamentos.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <HugeiconsIcon
-                icon={MoneyBag02Icon}
-                size={48}
-                className="text-muted-foreground/40 mb-4"
-              />
-              <p className="text-foreground text-base font-medium">Nenhuma comissao encontrada</p>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Tente ajustar os filtros ou o periodo selecionado
-              </p>
-            </div>
-          ) : (
-            <div className="mt-4 overflow-hidden rounded-xl border border-[#EEF0F4]">
-              {lancamentos.map((lancamento) => (
-                <LancamentoRow
-                  key={lancamento.id}
-                  lancamento={lancamento}
-                  onClick={() => setSelectedLancamento(lancamento)}
+          <div
+            className="bg-muted mt-4 flex min-w-0 flex-wrap gap-1 rounded-xl p-1"
+            role="tablist"
+            aria-label="Status das comissões"
+          >
+            {tabOptions.map((option) => (
+              <Button
+                key={option.value}
+                type="button"
+                variant={tab === option.value ? "secondary" : "ghost"}
+                size="sm"
+                role="tab"
+                aria-selected={tab === option.value}
+                onClick={() => setTab(option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
+          {entries.length > 0 ? (
+            <div className="border-border mt-4 overflow-hidden rounded-xl border">
+              {entries.map((entry) => (
+                <CommissionRow
+                  key={entry.id}
+                  entry={entry}
+                  onSelect={() => setSelectedEntry(entry)}
                 />
               ))}
             </div>
+          ) : (
+            <AffiliateEmptyState
+              className="mt-4"
+              icon={MoneyBag02Icon}
+              title="Nenhuma comissão encontrada"
+              description="Tente ajustar a organização, o período ou a busca."
+            />
           )}
         </section>
-
       </div>
-
-      {/* Detail drawer */}
-      <LancamentoDetailDrawer
-        lancamento={selectedLancamento}
-        onClose={() => setSelectedLancamento(null)}
-      />
+      <CommissionDetailSheet entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
     </AppPage>
   );
 }

@@ -1,0 +1,97 @@
+Todo 5: extract affiliate mock service and types without backend coupling
+Date: 2026-07-20
+Evidence root: .omo/evidence/afiliados-front-plan/
+Attempt directory: the requested `omo ulw-loop status --json` command was unavailable (`omo: command not found`), so evidence was recorded under the plan fallback directory.
+
+Source references read
+- `CLAUDE.md`
+- `AGENTS.md`
+- `.claude/rules/agenda-fidelity.md`
+- `.claude/rules/afiliados.md`
+- `Specdrivenafiliados.md:18-33` and `Specdrivenafiliados.md:75-125`
+- `src/mocks/afiliados/index.ts:6-123` for fixture types, `:126-152` for organizations and links, `:159-467` for referrals, `:738-843` for referral helpers, `:922-967` for commissions, `:982-1101` for receiving and product-scope fixtures
+- Existing screen imports from `@/mocks/afiliados` in `AfiliadosPage.tsx`, `IndicacoesPage.tsx`, `GanhosPage.tsx`, `ProdutosLinksPage.tsx`, `ConfiguracoesPage.tsx`, and `AjudaPage.tsx`
+
+Changed files, limited to Todo 5 write set
+- `src/modules/afiliados/types.ts`
+- `src/modules/afiliados/services/afiliados-mock-service.ts`
+- `src/modules/afiliados/services/afiliados-mock-service.test.ts`
+- No affiliate screen imports were changed. `src/mocks/afiliados/index.ts` was not edited.
+
+Implementation observables
+- `types.ts` re-exports the existing affiliate fixture types and adds strict filter/state contracts.
+- `afiliados-mock-service.ts` is synchronous and fixture-backed. It provides organization filtering, referral filtering, commission filtering, product scope lookup, immutable receiving-destination assignment, destination usage counts, and copied product-request local state.
+- Query results and nested product/referral data are copied before return; receiving assignment returns new records; product request state returns a new `Set`. Cash receiving remains `destinoId: null`.
+- Service size is 218 LOC, below the 250 LOC ceiling. No fixture IDs or values were changed.
+
+RED/GREEN verification
+
+1. Initial TDD seam proof
+Command: `npm run test -- --run src/modules/afiliados`
+Result: exit 1 before the service existed. Vitest reported `Failed to resolve import "./afiliados-mock-service"`; this was the intended missing-module red state.
+
+2. Required mutation proof
+Mutation: temporarily changed the final service-test expectation for `dest-2` usage from `1` to `2` in `src/modules/afiliados/services/afiliados-mock-service.test.ts`.
+Command: `npm run test -- --run src/modules/afiliados`
+Result: exit 1, binary failure. Vitest reported `1 failed | 8 passed (9)` and showed expected `{ "dest-2": 2 }` versus received `{ "dest-2": 1 }` in `counts destination usage from the current local assignments`.
+Cleanup: restored the expectation to `dest-2: 1` before the green run; readback confirmed the restored value.
+
+3. Required final green run
+Command: `npm run test -- --run src/modules/afiliados`
+Result: exit 0. Vitest reported `Test Files 2 passed (2)` and `Tests 9 passed (9)`.
+Artifact: this evidence file records the command, exit status, and relevant output summary.
+
+4. Additional changed-file gates
+- Command: `npm run typecheck`
+  Result: exit 0 (`tsc --noEmit`).
+- Command: `npx eslint src/modules/afiliados/types.ts src/modules/afiliados/services/afiliados-mock-service.ts src/modules/afiliados/services/afiliados-mock-service.test.ts`
+  Result: exit 0, no output.
+- Command: `npx prettier --check src/modules/afiliados/types.ts src/modules/afiliados/services/afiliados-mock-service.ts src/modules/afiliados/services/afiliados-mock-service.test.ts`
+  Result: exit 0, all three files matched Prettier style.
+- Readback command: `wc -l src/modules/afiliados/types.ts src/modules/afiliados/services/afiliados-mock-service.ts src/modules/afiliados/services/afiliados-mock-service.test.ts`
+  Result: `48`, `218`, and `100` LOC respectively.
+
+Backend-coupling guardrail
+
+Exact required command: `rg -n "fetch\(|axios|http" src/modules/afiliados src/mocks/afiliados`
+Result: exit 0 because matches exist, but all captured matches are literal fixture/link URLs, an existing SVG `xmlns="http://www.w3.org/2000/svg"`, and a parallel worker's fixture-link assertion. No match is `fetch(`, `axios`, or an HTTP client call.
+
+Maintained Todo 5 implementation proof: `rg -n "fetch\(|axios|http" src/modules/afiliados/types.ts src/modules/afiliados/services`
+Result: exit 1 with empty output. The new types/service/test files contain no fetch, axios, or HTTP coupling.
+
+Scoped worktree status
+Command: `git status --short --untracked-files=all -- src/modules/afiliados/types.ts src/modules/afiliados/services/afiliados-mock-service.ts src/modules/afiliados/services/afiliados-mock-service.test.ts`
+Result:
+```
+?? src/modules/afiliados/services/afiliados-mock-service.test.ts
+?? src/modules/afiliados/services/afiliados-mock-service.ts
+?? src/modules/afiliados/types.ts
+```
+No unrelated affiliate component files were changed by this Todo. Existing unrelated/parallel work remains preserved.
+
+Adversarial classes
+- `misleading_success_output` applicable: the mutated destination expectation produced a nonzero exit and a concrete expected-versus-received assertion before cleanup.
+- `stale_state` applicable: tests assert the original receiving assignment and fixture product-request flag remain unchanged after local updates; implementation returns copied arrays/objects/sets.
+- `dirty_worktree` applicable: scoped status was captured; only the three intended untracked files appear in this task scope, and pre-existing/parallel files were not touched.
+- `flaky_tests` applicable: new tests are synchronous, deterministic, and use no timers, network, random values, or async polling; the final run passed 9/9.
+- `malformed_input` not applicable: no external input parser or trust boundary was added; helpers consume existing typed fixture values.
+- `prompt_injection` not applicable: no external text or agent-generated content enters the service.
+- `cancel_resume`, `long_external_command`, and `mid_operation_interruptions` not applicable: no async, long-running, or persistent operation was introduced.
+
+Cleanup and risk notes
+- Mutation was reverted before the final green run.
+- No dev server, browser, timer, network process, or temporary external resource was started, so no process cleanup was required.
+- TypeScript LSP diagnostics were unavailable because the configured TypeScript server is not installed and prior installation was declined; `npm run typecheck`, targeted ESLint, Prettier, and the required Vitest run are the executable diagnostics used instead.
+- Existing screens still import fixtures directly by design; later screen todos can adopt this boundary without compatibility edits in Todo 5.
+
+DoneClaim
+- Task: Todo 5, affiliate mock service and types boundary.
+- Changed files: the three files listed above only.
+- RED: required mutation failed with exit 1 and 1 failing assertion.
+- GREEN: required module suite passed with exit 0, 2 files and 9 tests passing.
+- Guardrail: exact broad grep matches only accepted URLs/SVG namespace; narrowed maintained service grep had zero matches.
+- Risks: no backend coupling or fixture mutation; screen adoption remains for later plan todos.
+- Cleanup: mutation restored; no runtime resources left running.
+- Evidence artifact: `.omo/evidence/afiliados-front-plan/task-5-service-tests.txt`
+
+EVIDENCE_RECORDED: .omo/evidence/afiliados-front-plan/task-5-service-tests.txt

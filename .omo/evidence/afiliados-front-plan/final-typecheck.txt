@@ -1,0 +1,6 @@
+
+> @figma/my-make-file@0.0.1 typecheck
+> tsc --noEmit
+
+
+FINAL TYPECHECK EXIT STATUS: 0

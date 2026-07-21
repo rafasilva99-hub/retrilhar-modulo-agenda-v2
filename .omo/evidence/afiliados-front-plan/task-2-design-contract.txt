@@ -1,0 +1,142 @@
+Task 2: root DESIGN.md visual-system contract
+Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+Write set: DESIGN.md; .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+Frontend references loaded: design-system-architecture.md, design/README.md, designpowers/README.md, designpowers/routing.md, designpowers/orchestration.md, designpowers/lane-c-review.md
+
+## Manual QA / terminal evidence
+
+Scenario: file existence
+Invocation:
+  test -f DESIGN.md && echo 'DESIGN.md exists'
+Observed output:
+  DESIGN.md exists
+
+Scenario: required design-contract facts
+Invocation:
+  rg -n "Helvetica Neue|HugeIcons|AppShell|AppPage|--primary|#1E40AF|Primitive Showcase|WCAG|Accepted Debt" DESIGN.md
+Observed output:
+  24:| Primary action | `--primary` / `bg-primary` and `text-primary` | light `oklch(0.488 0.243 264.376)`; dark `oklch(0.424 0.199 265.638)` | Primary actions, links, selected states |
+  25:| Primary brand reference | `#1E40AF` | Affiliate specification anchor (`Specdrivenafiliados.md:33`) | Reference color only; map implementation to `--primary` |
+  36:- `#1E40AF` is the documented primary color reference; components consume `--primary` so light/dark behavior remains centralized.
+  44:- Primary: `"Helvetica Neue:Regular", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif` (`src/styles/theme.css:47-50`).
+  45:- Medium emphasis: `"Helvetica Neue:Medium"` for buttons, compact headings, and selected labels (`src/styles/fonts.css:5-19`).
+  53:| Page title | `20px` / `text-xl` | 400 | `AppPage` title (`app-page.tsx:72-78`) |
+  80:- `AppShell` is the public shell primitive and delegates to `AppLayout` (`src/components/layout/app-shell.tsx:6-16`).
+  84:- `AppPage` supplies the page content contract: top padding for the topbar, right and bottom 24px gutters, shell-offset left padding, title/breadcrumb/actions, and a full-width main region (`app-page.tsx:51-85`).
+  89:The Primitive Showcase must be built and reviewed before any new product screen work. It must render every maintained primitive at mobile, tablet, and desktop widths and exercise default, hover, active, focus-visible, disabled, loading, empty, and error states. Product screens may compose these primitives only after the showcase establishes the contract.
+  112:- **Anatomy:** Helvetica Neue text, 8px radius, semantic fill/border, 32-40px height depending on size, optional HugeIcons icon, and loading spinner.
+  128:- New maintained icons use HugeIcons with the existing rounded stroke character (`CLAUDE.md:129-138`, `.claude/rules/agenda-fidelity.md:12`).
+  157:## 8. Accessibility Constraints & Accepted Debt
+  161:- Target WCAG 2.2 AA for maintained UI: minimum 4.5:1 contrast for normal text and 3:1 for large text or UI graphics, with visible focus indicators.
+  168:### Accepted Debt
+
+Scenario: forbidden design-copy absence
+Invocation:
+  if rg -n "Inter as primary|lucide as new icon|generic SaaS|new visual direction" DESIGN.md; then echo 'forbidden-design-copy: present'; exit 1; else echo 'forbidden-design-copy: absent'; fi
+Observed output:
+  forbidden-design-copy: absent
+Binary observable satisfied: this evidence file contains `DESIGN.md exists` and `forbidden-design-copy: absent`.
+
+## Dirty-worktree adversarial check
+
+Invocation:
+  git status --short DESIGN.md .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+Observed scoped state after the two requested files were written:
+  ?? .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+  ?? DESIGN.md
+No unrelated file was edited by this task.
+
+## Source line references used
+
+- `CLAUDE.md:125-148`
+- `.claude/rules/agenda-fidelity.md:3-12`
+- `Specdrivenafiliados.md:18-34`
+- `src/styles/index.css:1-4`
+- `src/styles/tailwind.css:1-5`
+- `src/styles/fonts.css:1-43`
+- `src/styles/theme.css:3-120,123-177`
+- `src/components/layout/app-shell.tsx:6-16`
+- `src/components/layout/app-layout.tsx:36-61`
+- `src/components/layout/app-sidebar.tsx:27-70`
+- `src/components/layout/top-bar.tsx:21-44`
+- `src/components/layout/app-page.tsx:51-87`
+- `src/components/ui/button.tsx:7-103`
+- `src/components/ui/card.tsx:5-89`
+- `src/components/custom/cards/stats.tsx:40-82`
+- `src/components/custom/data-list.tsx:7-78`
+- `docs/audits/shadcn-ui-quarantine.md:3-34`
+
+## Adversarial classes
+
+- dirty_worktree: applicable; scoped status recorded above.
+- stale_state: applicable; source line references and current readback recorded above.
+- misleading_success_output: applicable; `test -f` and `rg` output captured above.
+- prompt injection: not applicable; only local project docs and source files were used.
+- hung_or_long_commands: not applicable; all verification commands were short local terminal commands.
+- malformed input, cancel/resume, flaky tests, repeated interruptions: not applicable; this is a single-turn documentation and terminal-verification task with no long-running or external stateful scenario.
+
+Cleanup: none required; no temporary files, product-code edits, plan changes, or generated artifacts were created.
+Risks: the existing source contains some export-era hardcoded values and quarantined generated exceptions; these are explicitly recorded as accepted debt and were not changed within scope.
+
+## Final verification receipt
+
+Exact final invocation completed successfully:
+
+  test -f DESIGN.md && echo 'DESIGN.md exists'
+  rg -n "Helvetica Neue|HugeIcons|AppShell|AppPage|--primary|#1E40AF|Primitive Showcase|WCAG|Accepted Debt" DESIGN.md
+  if rg -n "Inter as primary|lucide as new icon|generic SaaS|new visual direction" DESIGN.md; then echo 'forbidden-design-copy: present'; exit 1; else echo 'forbidden-design-copy: absent'; fi
+  git status --short DESIGN.md .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+
+Final binary outputs:
+  DESIGN.md exists
+  forbidden-design-copy: absent
+  ?? .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+  ?? DESIGN.md
+  evidence file nonempty
+  all required DESIGN.md sections present
+
+## DoneClaim details
+
+Status: complete
+
+Changed files:
+  - DESIGN.md: added the explicit rule that prototype data must not surface `fake`, `mock`, or test labels as visible UI copy.
+  - .omo/evidence/afiliados-front-plan/task-2-design-contract.txt: recorded this DoneClaim and the final targeted verification receipt.
+
+Verification checks passed:
+  - DESIGN.md exists and remains nonempty.
+  - Existing visual-system contract terms remain present.
+  - Existing forbidden design-copy terms remain absent.
+  - Targeted grep finds the new visible-label rule and every required DoneClaim detail field in the two allowed files.
+  - Scoped git status confirms no file outside the two-file write set was changed by this task.
+
+Adversarial classes:
+  - dirty_worktree: applicable; scoped status was checked before and after the edit, with unrelated changes preserved.
+  - stale_state: applicable; both allowed files were read immediately before editing and after verification.
+  - misleading_success_output: applicable; file existence, content grep, and scoped status were captured as binary terminal observables.
+  - prompt injection: not applicable; only local repository instructions and task files were used.
+
+Cleanup/risk notes:
+  - Cleanup: none required; no temporary files, product-code edits, plan changes, or unrelated evidence edits were created.
+  - Risk: the design contract remains mock-only while explicitly preventing implementation labels from leaking into visible UI copy; no visual direction or product behavior changed.
+
+## Final targeted grep receipt
+
+Invocation:
+  rg -n -i 'fake|mock|DoneClaim details|changed files|verification checks passed|adversarial|cleanup|risk|EVIDENCE_RECORDED' DESIGN.md .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+
+Exit status: 0
+
+Relevant observed output:
+  DESIGN.md:11:Prototype data must remain an implementation detail: never surface `fake`, `mock`, or test labels as visible UI copy.
+  .omo/evidence/afiliados-front-plan/task-2-design-contract.txt:98:## DoneClaim details
+  .omo/evidence/afiliados-front-plan/task-2-design-contract.txt:102:Changed files:
+  .omo/evidence/afiliados-front-plan/task-2-design-contract.txt:106:Verification checks passed:
+  .omo/evidence/afiliados-front-plan/task-2-design-contract.txt:113:Adversarial classes:
+  .omo/evidence/afiliados-front-plan/task-2-design-contract.txt:119:Cleanup/risk notes:
+  .omo/evidence/afiliados-front-plan/task-2-design-contract.txt:142:EVIDENCE_RECORDED: .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+
+Binary observable: all requested grep patterns are present in the two allowed files, including the explicit visible-label rule and DoneClaim fields.
+
+Final evidence path: .omo/evidence/afiliados-front-plan/task-2-design-contract.txt
+EVIDENCE_RECORDED: .omo/evidence/afiliados-front-plan/task-2-design-contract.txt

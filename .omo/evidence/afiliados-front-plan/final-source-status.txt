@@ -1,0 +1,65 @@
+COMMAND: git status --short --branch
+## main...origin/main
+ M src/app/App.test.tsx
+ M src/components/layout/topbar/search-pages.ts
+ M src/components/layout/topbar/topbar-organization.tsx
+ M src/mocks/shell.ts
+ M src/modules/afiliados/AfiliadosPage.tsx
+ M src/modules/afiliados/AjudaPage.tsx
+ M src/modules/afiliados/ConfiguracoesPage.tsx
+ M src/modules/afiliados/GanhosPage.tsx
+ M src/modules/afiliados/IndicacoesPage.tsx
+ M src/modules/afiliados/ProdutosLinksPage.tsx
+ M src/modules/agenda/components/AgendaPrototypeApp.tsx
+?? .claude/rules/afiliados.md
+?? .omo/boulder.json
+?? .omo/drafts/
+?? .omo/evidence/
+?? .omo/plans/afiliados-front-plan.md
+?? .omo/plans/agenda-front-plan.md
+?? .omo/start-work/
+?? AGENTS.md
+?? DESIGN.md
+?? Specdrivenafiliados.md
+?? Specdrivenagenda
+?? src/modules/afiliados/AfiliadosPage.test.tsx
+?? src/modules/afiliados/AjudaPage.test.tsx
+?? src/modules/afiliados/ConfiguracoesPage.test.tsx
+?? src/modules/afiliados/GanhosPage.test.tsx
+?? src/modules/afiliados/IndicacoesPage.test.tsx
+?? src/modules/afiliados/ProdutosLinksPage.test.tsx
+?? src/modules/afiliados/components/
+?? src/modules/afiliados/services/
+?? src/modules/afiliados/types.ts
+
+COMMAND: git diff --check
+GIT DIFF CHECK EXIT STATUS: 0
+
+QA-TOUCHED SOURCE FILES:
+src/modules/afiliados/AfiliadosPage.tsx
+src/modules/afiliados/GanhosPage.tsx
+src/modules/afiliados/ProdutosLinksPage.tsx
+src/modules/afiliados/components/organization-filter.tsx
+
+PURE NONCOMMENT NONBLANK LOC (QA-touched source files):
+    1556
+
+SOURCE LINE REFERENCES:
+     1	import { useEffect, useState } from "react";
+   747	  useEffect(() => {
+   750	    const collapseButton = document.querySelector<HTMLButtonElement>(
+   751	      'aside button[title="Encolher menu"]'
+   753	    collapseButton?.click();
+     1	import { type ReactNode, useEffect, useState } from "react";
+   199	  useEffect(() => {
+   202	    const collapseButton = document.querySelector<HTMLButtonElement>(
+   203	      'aside button[title="Encolher menu"]'
+   205	    collapseButton?.click();
+     2	import { useEffect, useState } from "react";
+   241	  useEffect(() => {
+   244	    const collapseButton = document.querySelector<HTMLButtonElement>(
+   245	      'aside button[title="Encolher menu"]'
+   247	    collapseButton?.click();
+    29	  allLabel = "Todas as organizações",
+    37	    <div className={cn("flex min-w-0 flex-wrap items-center gap-2", className)}>
+    41	          className="h-8 w-full max-w-[220px] min-w-0 text-xs"

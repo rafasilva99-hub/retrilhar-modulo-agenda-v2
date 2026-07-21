@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useState } from "react";
+import { type CSSProperties, lazy, type ReactNode, Suspense, useCallback, useState } from "react";
 
 import ContextoMissao from "@/app/components/ContextoMissao";
 import { IntroTeste } from "@/app/components/IntroTeste";
@@ -81,6 +81,10 @@ function isAgendaViewMode(v: string | null): v is AgendaViewMode {
   return v === "mes" || v === "semana" || v === "dia";
 }
 
+function AffiliatePreviewFrame({ children }: { children: ReactNode }) {
+  return <div style={{ "--shell-offset": "24px" } as CSSProperties}>{children}</div>;
+}
+
 function AgendaPrototypeApp() {
   const agenda = useAgendaPrototypeNavigation();
   const navigateAfterActivityCancelled = agenda.handleActivityCancelled;
@@ -152,13 +156,29 @@ function AgendaPrototypeApp() {
         );
       }
       case "afiliados":
-        return <AfiliadosPage />;
+        return (
+          <AffiliatePreviewFrame>
+            <AfiliadosPage />
+          </AffiliatePreviewFrame>
+        );
       case "indicacoes":
-        return <IndicacoesPage />;
+        return (
+          <AffiliatePreviewFrame>
+            <IndicacoesPage />
+          </AffiliatePreviewFrame>
+        );
       case "ganhos":
-        return <GanhosPage />;
+        return (
+          <AffiliatePreviewFrame>
+            <GanhosPage />
+          </AffiliatePreviewFrame>
+        );
       case "produtosLinks":
-        return <ProdutosLinksPage />;
+        return (
+          <AffiliatePreviewFrame>
+            <ProdutosLinksPage />
+          </AffiliatePreviewFrame>
+        );
       case "configuracoes":
         return <ConfiguracoesPage />;
       case "ajuda":

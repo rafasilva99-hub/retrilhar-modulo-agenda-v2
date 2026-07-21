@@ -1,0 +1,50 @@
+## Todo 2 agenda rule verification
+
+Scenario: positive acceptance command
+
+Command:
+```sh
+test -f .claude/rules/agenda.md && rg -n "Três eixos|Situação operacional|Financeiro|Seguro|No Show|histórico imutável|Cancelamento exige motivo|#agenda" .claude/rules/agenda.md
+```
+
+Output:
+```text
+8:- Cada reserva mantém três eixos de estado paralelos: **Situação operacional**, **Financeiro**
+9:  (pagamento) e **Seguro**. Eles evoluem em trilhas separadas e só se influenciam por gatilhos
+13:  Confirmada, Check-in Realizado, Realizada, Cancelada, Expirada e No Show. Só são permitidas as
+17:  para Confirmada e o check-in pode ser desfeito. No Show é neutro e reversível, com ações de
+18:  remarcar, confirmar e cancelar, retornando para Confirmada, Cancelada ou Agendada. No Show não
+21:- Toda transição gera histórico imutável, com estado anterior, estado novo, autor, data, hora e
+22:  motivo quando aplicável. Cancelamento exige motivo obrigatório, sem exceção.
+26:- Seguro é uma máquina própria, com os estados Não Contratado, Pendente de Aprovação,
+34:- Preserve as rotas de teste existentes: `#agenda`, `#agendaDia`, `#atualizacoes` e
+```
+
+Exit status: `0`
+
+Scenario: forbidden-rule-copy negative check
+
+Command:
+```sh
+rg -n "backend obrigatório|fetch obrigatório|colapsar.*tag" .claude/rules/agenda.md
+```
+
+Output: empty
+
+Exit status: `1` (expected: no matches)
+
+Scenario: existing fidelity rule preservation
+
+Command:
+```sh
+test -f .claude/rules/agenda-fidelity.md
+```
+
+Exit status: `0`
+
+Targeted status captured after verification:
+```text
+?? .claude/rules/agenda.md
+?? .omo/plans/agenda-front-plan.md
+?? .omo/start-work/ledger.jsonl
+```

@@ -1,0 +1,360 @@
+{
+  "generatedAt": "2026-07-21T00:33:15.019Z",
+  "base": "http://127.0.0.1:4173",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "routes": [
+    "afiliados",
+    "indicacoes",
+    "ganhos",
+    "produtosLinks",
+    "configuracoes",
+    "ajuda"
+  ],
+  "scenarios": [
+    {
+      "scenarioId": "desktop-afiliados-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 1280x800; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-afiliados-base.png"
+      ],
+      "started": "2026-07-21T00:33:04.265Z",
+      "finished": "2026-07-21T00:33:05.511Z"
+    },
+    {
+      "scenarioId": "desktop-indicacoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 1280x800; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: {\"text\":\"Afiliados\\nIndicações\\nIndicações\\n\\nAcompanhe pedidos, carrinhos e comissões gerados pelos seus links.\\n\\nVoltar para afiliados\\nIndicações originadas\\nR$ 189.350 em valor\\n145\\nVendas pagas\\nR$ 156.890 em valor\\n118\\nCarrinhos abandonados\\nR$ 28.750 em valor\\n23\\nVia cupom\\nR$ 38.640 em valor\\n31\\nComissão gerada\\nÚltimos 30 dias\\nR$ 11.340\\nLink de afiliado\\n\\nCompartilhe seu link geral entre as organizações.\\n\\nLink geral\\nhttps://retrilhar.com.br/ref/katiely-pinheiro\\nCopiar\\nTodas as organizações\\nÚltimos 30 dias\\nTodas as origens\\nTodas\\n15\\nPagas\\n7\\nNão pagas\\n5\\nCarrinhos abandonados\\n3\\nComprador / pedido\\tOrganização\\tOrigem\\tData\\tItens\\tValor\\tComissão\\n\\nJoão Pedro da Silva Oliveira\\nPED-2931-001\\n\\tCerrado Experience\\tLink de produto\\t05/07/2026 às 14:32\\t3 itens\\t\\nR$ 5.679,99\\nPago\\n\\t\\nR$ 568,00\\nQuitada\\n\\n\\nMaria Eduarda Santos Pereira\\nPED-2931-002\\n\\tVertaco Aventuras\\tCupom\\t04/07/2026 às 09:15\\t1 item\\t\\nR$ 1.890,00\\nAguardando pagamento\\n\\t\\nR$ 189,00\\nNão gerada\\n\\n\\nCarlos Eduardo Ferreira Lima\\nPED-2931-003\\n\\tTrilheiras de Brasília\\tLink da org\\t03/07/2026 às 16:48\\t2 itens\\t\\nR$ 3.250,00\\nPago\\n\\t\\nR$ 325,00\\nQuitada\\n\\n\\nJuliana Aparecida de Lima\\nPED-2931-004\\n\\tCerrado Experience\\tLink geral\\t02/07/2026 às 11:20\\t1 item\\t\\nR$ 2.450,00\\nPago\\n\\t\\nR$ 245,00\\nA receber\\n\\n\\nAmanda Cristina Miranda Souza\\nPED-2931-005\\n\\tVertaco Aventuras\\tLink de produto\\t01/07/2026 às 08:05\\t1 item\\t\\nR$ 4.120,00\\nPago\\n\\t\\nR$ 412,00\\nQuitada\\n\\n\\nPedro Henrique Barbosa Costa\\nPED-2931-006\\n\\tCerrado Experience\\tCupom\\t30/06/2026 às 17:40\\t1 item\\t\\nR$ 890,00\\nAguardando pagamento\\n\\t\\nR$ 89,00\\nNão gerada\\n\\n\\nAmauri dos Santos Lopes\\nPED-2931-007\\n\\tTrilheiras de Brasília\\tLink da org\\t29/06/2026 às 10:12\\t1 item\\t\\nR$ 6.340,00\\nPago\\n\\t\\nR$ 634,00\\nQuitada\\n\\n\\nFernanda Beatriz Costa Almeida\\nPED-2931-008\\n\\tCerrado Experience\\tLink de produto\\t28/06/2026 às 13:55\\t1 item\\t\\nR$ 1.230,00\\nPago\\n\\t\\nR$ 123,00\\nQuitada\\n\\n\\nRicardo Augusto Alves Monteiro\\nPED-2931-009\\n\\tVertaco Aventuras\\tLink geral\\t27/06/2026 às 15:30\\t1 item\\t\\nR$ 780,00\\nPago\\n\\t\\nR$ 78,00\\nA receber\\n\\n\\nLuciana Martins de Oliveira\\nPED-2931-010\\n\\tCerrado Experience\\tLink de produto\\t06/07/2026 às 10:45\\t1 item\\t\\nR$ 2.340,00\\nCancelado\\n\\t\\nR$ 234,00\\nNão gerada\\n\\n\\nThiago Rezende Souza\\nPED-2931-011\\n\\tVertaco Aventuras\\tCupom\\t05/07/2026 às 18:20\\t1 item\\t\\nR$ 1.560,00\\nCancelado\\n\\t\\nR$ 156,00\\nNão gerada\\n\\n\\nBeatriz Helena Campos\\nPED-2931-012\\n\\tTrilheiras de Brasília\\tLink geral\\t04/07/2026 às 12:10\\t2 itens\\t\\nR$ 1.890,00\\nAbandonado\\n\\t\\nR$ 0,00\\nNão gerada\\n\\n\\nGabriel Augusto de Freitas\\nPED-2931-013\\n\\tCerrado Experience\\tLink de produto\\t03/07/2026 às 20:05\\t1 item\\t\\nR$ 3.450,00\\nAbandonado\\n\\t\\nR$ 0,00\\nNão gerada\\n\\n\\nCamila Rodrigues de Almeida\\nPED-2931-014\\n\\tTrilheiras de Brasília\\tLink da org\\t01/07/2026 às 07:30\\t1 item\\t\\nR$ 4.780,00\\nAbandonado\\n\\t\\nR$ 0,00\\nNão gerada\\n\\n\\nFelipe Augusto Nascimento\\nPED-2931-015\\n\\tCerrado Experience\\tLink geral\\t28/06/2026 às 14:15\\t1 item\\t\\nR$ 670,00\\nCancelado\\n\\t\\nR$ 67,00\\nNão gerada\\nInício\\nIndicações\\nGanhos\\nProdutos e Links\\nEncolher menu\\nBuscar...\\nPD\\n\\nPainel de Afiliado\\n\\nTrocar empresa\\n\\nKP\",\"docWidth\":1280,\"bodyWidth\":1280,\"viewport\":1280,\"overflow\":[{\"tag\":\"TABLE\",\"text\":\"Comprador / pedidoOrganizaçãoOrigemDataItensValorComissãoJoão Pedro da Silva OliveiraPED-2931-001Cer\",\"left\":277,\"right\":1306},{\"tag\":\"THEAD\",\"text\":\"Comprador / pedidoOrganizaçãoOrigemDataItensValorComissão\",\"left\":277,\"right\":1306},{\"tag\":\"TR\",\"text\":\"Comprador / pedidoOrganizaçãoOrigemDataItensValorComissão\",\"left\":277,\"right\":1306},{\"tag\":\"TH\",\"text\":\"Comissão\",\"left\":1185,\"right\":1306},{\"tag\":\"TBODY\",\"text\":\"João Pedro da Silva OliveiraPED-2931-001Cerrado ExperienceLink de produto05/07/2026 às 14:323 itensR\",\"left\":277,\"right\":1306},{\"tag\":\"TR\",\"text\":\"João Pedro da Silva OliveiraPED-2931-001Cerrado ExperienceLink de produto05/07/2026 às 14:323 itensR\",\"left\":277,\"right\":1306},{\"tag\":\"TD\",\"text\":\"R$ 568,00Quitada\",\"left\":1185,\"right\":1306},{\"tag\":\"DIV\",\"text\":\"R$ 568,00Quitada\",\"left\":1197,\"right\":1294},{\"tag\":\"SPAN\",\"text\":\"R$ 568,00\",\"left\":1197,\"right\":1294},{\"tag\":\"TR\",\"text\":\"Maria Eduarda Santos PereiraPED-2931-002Vertaco AventurasCupom04/07/2026 às 09:151 itemR$ 1.890,00Ag\",\"left\":277,\"right\":1306}]}\n    at baseCheck ([stdin]:15:346)\n    at async [stdin]:18:348\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:18:27)",
+      "started": "2026-07-21T00:33:05.511Z",
+      "finished": "2026-07-21T00:33:05.707Z"
+    },
+    {
+      "scenarioId": "desktop-ganhos-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 1280x800; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ganhos-base.png"
+      ],
+      "started": "2026-07-21T00:33:05.707Z",
+      "finished": "2026-07-21T00:33:05.942Z"
+    },
+    {
+      "scenarioId": "desktop-produtosLinks-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 1280x800; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-produtosLinks-base.png"
+      ],
+      "started": "2026-07-21T00:33:05.942Z",
+      "finished": "2026-07-21T00:33:06.174Z"
+    },
+    {
+      "scenarioId": "desktop-configuracoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 1280x800; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-configuracoes-base.png"
+      ],
+      "started": "2026-07-21T00:33:06.174Z",
+      "finished": "2026-07-21T00:33:06.383Z"
+    },
+    {
+      "scenarioId": "desktop-ajuda-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 1280x800; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-base.png"
+      ],
+      "started": "2026-07-21T00:33:06.383Z",
+      "finished": "2026-07-21T00:33:06.616Z"
+    },
+    {
+      "scenarioId": "desktop-afiliados-interactions",
+      "criterion": "dashboard copy/detail/close",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#afiliados 1280x800: click Copiar; click referral João Pedro; assert detail cart items; click Fechar aba.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: detail remains open\n    at [stdin]:19:1194\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:19:1)",
+      "started": "2026-07-21T00:33:06.616Z",
+      "finished": "2026-07-21T00:33:07.391Z"
+    },
+    {
+      "scenarioId": "desktop-indicacoes-interactions",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#indicacoes 1280x800: fill search Juliana; click Pagas; copy affiliate link; open João detail; close; click Voltar para afiliados.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:8:113)\n    at async [stdin]:20:1114\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:20:1)",
+      "started": "2026-07-21T00:33:07.391Z",
+      "finished": "2026-07-21T00:33:07.896Z"
+    },
+    {
+      "scenarioId": "desktop-ganhos-interactions",
+      "criterion": "ganhos org filter/detail/related link",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ganhos 1280x800: select Vertaco Aventuras; open João commission; click Ver indicação relacionada.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "locator.count: InvalidSelectorError: Error while parsing selector `combobox[name=[object Object]]` - unexpected symbol \"[\" at position 14 during parsing attribute value\n    at syntaxError (<anonymous>:1756:11)\n    at readAttribute (<anonymous>:1888:7)\n    at parseAttributeSelector (<anonymous>:1901:28)\n    at Object.queryAll (<anonymous>:5158:22)\n    at InjectedScript._queryEngineAll (<anonymous>:6804:49)\n    at InjectedScript.querySelectorAll (<anonymous>:6791:30)\n    at eval (eval at evaluate (:303:30), <anonymous>:2:37)\n    at UtilityScript.evaluate (<anonymous>:305:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at vis ([stdin]:8:45)\n    at click ([stdin]:9:52)\n    at select ([stdin]:10:48)\n    at [stdin]:21:304\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:21:1)",
+      "started": "2026-07-21T00:33:07.896Z",
+      "finished": "2026-07-21T00:33:08.081Z"
+    },
+    {
+      "scenarioId": "desktop-produtos-links-interactions",
+      "criterion": "produtos/links copy general/org/product/request/disabled unavailable",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#produtosLinks 1280x800: copy general, select Trilheiras, copy organization and Passeio de Barco product, request Boia Cross Radical, select Cerrado and verify Rafting Rio das Velhas disabled.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "locator.count: InvalidSelectorError: Error while parsing selector `combobox[name=[object Object]]` - unexpected symbol \"[\" at position 14 during parsing attribute value\n    at syntaxError (<anonymous>:1756:11)\n    at readAttribute (<anonymous>:1888:7)\n    at parseAttributeSelector (<anonymous>:1901:28)\n    at Object.queryAll (<anonymous>:5158:22)\n    at InjectedScript._queryEngineAll (<anonymous>:6804:49)\n    at InjectedScript.querySelectorAll (<anonymous>:6791:30)\n    at eval (eval at evaluate (:303:30), <anonymous>:2:37)\n    at UtilityScript.evaluate (<anonymous>:305:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at vis ([stdin]:8:45)\n    at click ([stdin]:9:52)\n    at select ([stdin]:10:48)\n    at [stdin]:22:773\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:22:1)",
+      "started": "2026-07-21T00:33:08.081Z",
+      "finished": "2026-07-21T00:33:08.361Z"
+    },
+    {
+      "scenarioId": "desktop-configuracoes-interactions",
+      "criterion": "configuracoes Alterar destino/cash no-op/count update",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#configuracoes 1280x800: open Formas de recebimento; verify Dinheiro row has no Alterar destino; change first destination to Conta da empresa; confirm status/counts.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:8:113)\n    at async [stdin]:23:1284\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:23:1)",
+      "started": "2026-07-21T00:33:08.361Z",
+      "finished": "2026-07-21T00:33:09.033Z"
+    },
+    {
+      "scenarioId": "desktop-ajuda-interactions",
+      "criterion": "ajuda search hit/no-result/Fechar",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ajuda 1280x800: search comissões; expand matching FAQ; search semresultadozz; click Fechar.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-search-hit-open.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-no-result.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-close-afiliados.png"
+      ],
+      "started": "2026-07-21T00:33:09.033Z",
+      "finished": "2026-07-21T00:33:09.579Z"
+    },
+    {
+      "scenarioId": "mobile-afiliados-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 390x844; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: {\"text\":\"Oi Katiely,\\nbem-vinda de volta!\\n\\nConfira o resumo das suas indicações e valores\\n\\nSeu código de afiliado\\nKAT-2931\\nVer links por organização\\nCopiar\\nIndicações\\nR$ 189.350 originados · 118 pagas\\n145\\nCarrinhos abandonados\\nR$ 28.750 em valor\\n23\\nComissão recebida\\nÚltimos 30 dias\\nR$ 8.450\\nComissão a receber\\nSaldo total\\nR$ 2.890\\nIndicações\\nGanhos\\nProdutos e links\\nConfigurações\\nAjuda\\nTodas as organizações\\nÚltimos 30 dias\\nMinhas Indicações\\n\\nÚltimas indicações realizadas\\n\\nVer todas as indicações\\nComprador / ID do pedido\\tOrganização\\tData do pedido\\tItens (Qtde.)\\tValor\\tComissão\\n\\nJoão Pedro da Silva Oliveira\\nPED-2931-001\\n\\tCerrado Experience\\t05/07 às 14:32\\t3 itens\\t\\nR$ 5.679,99\\nPago\\n\\t\\nR$ 568,00\\nQuitada\\n\\n\\nMaria Eduarda Santos Pereira\\nPED-2931-002\\n\\tVertaco Aventuras\\t04/07 às 09:15\\t1 item\\t\\nR$ 1.890,00\\nAguardando pagamento\\n\\t\\nR$ 189,00\\nNão gerada\\n\\n\\nCarlos Eduardo Ferreira Lima\\nPED-2931-003\\n\\tTrilheiras de Brasília\\t03/07 às 16:48\\t2 itens\\t\\nR$ 3.250,00\\nPago\\n\\t\\nR$ 325,00\\nQuitada\\n\\n\\nJuliana Aparecida de Lima\\nPED-2931-004\\n\\tCerrado Experience\\t02/07 às 11:20\\t1 item\\t\\nR$ 2.450,00\\nPago\\n\\t\\nR$ 245,00\\nA receber\\n\\n\\nAmanda Cristina Miranda Souza\\nPED-2931-005\\n\\tVertaco Aventuras\\t01/07 às 08:05\\t1 item\\t\\nR$ 4.120,00\\nPago\\n\\t\\nR$ 412,00\\nQuitada\\n\\n\\nPedro Henrique Barbosa Costa\\nPED-2931-006\\n\\tCerrado Experience\\t30/06 às 17:40\\t1 item\\t\\nR$ 890,00\\nAguardando pagamento\\n\\t\\nR$ 89,00\\nNão gerada\\n\\n\\nAmauri dos Santos Lopes\\nPED-2931-007\\n\\tTrilheiras de Brasília\\t29/06 às 10:12\\t1 item\\t\\nR$ 6.340,00\\nPago\\n\\t\\nR$ 634,00\\nQuitada\\n\\n\\nFernanda Beatriz Costa Almeida\\nPED-2931-008\\n\\tCerrado Experience\\t28/06 às 13:55\\t1 item\\t\\nR$ 1.230,00\\nPago\\n\\t\\nR$ 123,00\\nQuitada\\n\\n\\nRicardo Augusto Alves Monteiro\\nPED-2931-009\\n\\tVertaco Aventuras\\t27/06 às 15:30\\t1 item\\t\\nR$ 780,00\\nPago\\n\\t\\nR$ 78,00\\nA receber\\nPD\\nKP\",\"docWidth\":390,\"bodyWidth\":390,\"viewport\":390,\"overflow\":[{\"tag\":\"TABLE\",\"text\":\"Comprador / ID do pedidoOrganizaçãoData do pedidoItens (Qtde.)ValorComissãoJoão Pedro da Silva Olive\",\"left\":145,\"right\":1019},{\"tag\":\"THEAD\",\"text\":\"Comprador / ID do pedidoOrganizaçãoData do pedidoItens (Qtde.)ValorComissão\",\"left\":145,\"right\":1019},{\"tag\":\"TR\",\"text\":\"Comprador / ID do pedidoOrganizaçãoData do pedidoItens (Qtde.)ValorComissão\",\"left\":145,\"right\":1019},{\"tag\":\"TH\",\"text\":\"Organização\",\"left\":371,\"right\":520},{\"tag\":\"TH\",\"text\":\"Data do pedido\",\"left\":520,\"right\":637},{\"tag\":\"TH\",\"text\":\"Itens (Qtde.)\",\"left\":637,\"right\":726},{\"tag\":\"TH\",\"text\":\"Valor\",\"left\":726,\"right\":903},{\"tag\":\"TH\",\"text\":\"Comissão\",\"left\":903,\"right\":1019},{\"tag\":\"TBODY\",\"text\":\"João Pedro da Silva OliveiraPED-2931-001Cerrado Experience05/07 às 14:323 itensR$ 5.679,99PagoR$ 568\",\"left\":145,\"right\":1019},{\"tag\":\"TR\",\"text\":\"João Pedro da Silva OliveiraPED-2931-001Cerrado Experience05/07 às 14:323 itensR$ 5.679,99PagoR$ 568\",\"left\":145,\"right\":1019}]}\n    at baseCheck ([stdin]:15:346)\n    at async [stdin]:18:348\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:18:27)",
+      "started": "2026-07-21T00:33:09.624Z",
+      "finished": "2026-07-21T00:33:10.588Z"
+    },
+    {
+      "scenarioId": "mobile-indicacoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 390x844; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: {\"text\":\"Afiliados\\nIndicações\\nIndicações\\n\\nAcompanhe pedidos, carrinhos e comissões gerados pelos seus links.\\n\\nVoltar\\nIndicações originadas\\nR$ 189.350 em valor\\n145\\nVendas pagas\\nR$ 156.890 em valor\\n118\\nCarrinhos abandonados\\nR$ 28.750 em valor\\n23\\nVia cupom\\nR$ 38.640 em valor\\n31\\nComissão gerada\\nÚltimos 30 dias\\nR$ 11.340\\nLink de afiliado\\n\\nCompartilhe seu link geral entre as organizações.\\n\\nLink geral\\nhttps://retrilhar.com.br/ref/katiely-pinheiro\\nCopiar\\nTodas as organizações\\nÚltimos 30 dias\\nTodas as origens\\nTodas\\n15\\nPagas\\n7\\nNão pagas\\n5\\nCarrinhos abandonados\\n3\\n\\nJoão Pedro da Silva Oliveira\\n\\nPED-2931-001 · Cerrado Experience\\n\\nPago\\n\\nLink de produto · 3 itens\\n\\nTrilha Pico do Itambé\\n\\nR$ 5.679,99\\n\\nR$ 568,00\\n\\nQuitada\\n\\nMaria Eduarda Santos Pereira\\n\\nPED-2931-002 · Vertaco Aventuras\\n\\nAguardando pagamento\\n\\nCupom · 1 item\\n\\nRapel Cachoeira\\n\\nR$ 1.890,00\\n\\nR$ 189,00\\n\\nNão gerada\\n\\nCarlos Eduardo Ferreira Lima\\n\\nPED-2931-003 · Trilheiras de Brasília\\n\\nPago\\n\\nLink da org · 2 itens\\n\\nPasseio de Barco\\n\\nR$ 3.250,00\\n\\nR$ 325,00\\n\\nQuitada\\n\\nJuliana Aparecida de Lima\\n\\nPED-2931-004 · Cerrado Experience\\n\\nPago\\n\\nLink geral · 1 item\\n\\nMergulho Noturno\\n\\nR$ 2.450,00\\n\\nR$ 245,00\\n\\nA receber\\n\\nAmanda Cristina Miranda Souza\\n\\nPED-2931-005 · Vertaco Aventuras\\n\\nPago\\n\\nLink de produto · 1 item\\n\\nTrilha Cachoeira Grande\\n\\nR$ 4.120,00\\n\\nR$ 412,00\\n\\nQuitada\\n\\nPedro Henrique Barbosa Costa\\n\\nPED-2931-006 · Cerrado Experience\\n\\nAguardando pagamento\\n\\nCupom · 1 item\\n\\nTirolesa Radical\\n\\nR$ 890,00\\n\\nR$ 89,00\\n\\nNão gerada\\n\\nAmauri dos Santos Lopes\\n\\nPED-2931-007 · Trilheiras de Brasília\\n\\nPago\\n\\nLink da org · 1 item\\n\\nCanionismo Serra Geral\\n\\nR$ 6.340,00\\n\\nR$ 634,00\\n\\nQuitada\\n\\nFernanda Beatriz Costa Almeida\\n\\nPED-2931-008 · Cerrado Experience\\n\\nPago\\n\\nLink de produto · 1 item\\n\\nEscalada Indoor\\n\\nR$ 1.230,00\\n\\nR$ 123,00\\n\\nQuitada\\n\\nRicardo Augusto Alves Monteiro\\n\\nPED-2931-009 · Vertaco Aventuras\\n\\nPago\\n\\nLink geral · 1 item\\n\\nStand-Up Paddle\\n\\nR$ 780,00\\n\\nR$ 78,00\\n\\nA receber\\n\\nLuciana Martins de Oliveira\\n\\nPED-2931-010 · Cerrado Experience\\n\\nCancelado\\n\\nLink de produto · 1 item\\n\\nTrilha Pico do Itambé\\n\\nR$ 2.340,00\\n\\nR$ 234,00\\n\\nNão gerada\\n\\nThiago Rezende Souza\\n\\nPED-2931-011 · Vertaco Aventuras\\n\\nCancelado\\n\\nCupom · 1 item\\n\\nRapel Cachoeira\\n\\nR$ 1.560,00\\n\\nR$ 156,00\\n\\nNão gerada\\n\\nBeatriz Helena Campos\\n\\nPED-2931-012 · Trilheiras de Brasília\\n\\nAbandonado\\n\\nLink geral · 2 itens\\n\\nPasseio de Barco\\n\\nR$ 1.890,00\\n\\nR$ 0,00\\n\\nNão gerada\\n\\nGabriel Augusto de Freitas\\n\\nPED-2931-013 · Cerrado Experience\\n\\nAbandonado\\n\\nLink de produto · 1 item\\n\\nMergulho Noturno\\n\\nR$ 3.450,00\\n\\nR$ 0,00\\n\\nNão gerada\\n\\nCamila Rodrigues de Almeida\\n\\nPED-2931-014 · Trilheiras de Brasília\\n\\nAbandonado\\n\\nLink da org · 1 item\\n\\nCanionismo Serra Geral\\n\\nR$ 4.780,00\\n\\nR$ 0,00\\n\\nNão gerada\\n\\nFelipe Augusto Nascimento\\n\\nPED-2931-015 · Cerrado Experience\\n\\nCancelado\\n\\nLink geral · 1 item\\n\\nTirolesa Radical\\n\\nR$ 670,00\\n\\nR$ 67,00\\n\\nNão gerada\\nPD\\nKP\",\"docWidth\":390,\"bodyWidth\":390,\"viewport\":390,\"overflow\":[{\"tag\":\"BUTTON\",\"text\":\"Não pagas5\",\"left\":335,\"right\":455},{\"tag\":\"SPAN\",\"text\":\"5\",\"left\":424,\"right\":442},{\"tag\":\"BUTTON\",\"text\":\"Carrinhos abandonados3\",\"left\":459,\"right\":662},{\"tag\":\"SPAN\",\"text\":\"3\",\"left\":631,\"right\":649}]}\n    at baseCheck ([stdin]:15:346)\n    at async [stdin]:18:348\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:18:27)",
+      "started": "2026-07-21T00:33:10.588Z",
+      "finished": "2026-07-21T00:33:10.785Z"
+    },
+    {
+      "scenarioId": "mobile-ganhos-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 390x844; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ganhos-base.png"
+      ],
+      "started": "2026-07-21T00:33:10.785Z",
+      "finished": "2026-07-21T00:33:11.012Z"
+    },
+    {
+      "scenarioId": "mobile-produtosLinks-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 390x844; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-produtosLinks-base.png"
+      ],
+      "started": "2026-07-21T00:33:11.012Z",
+      "finished": "2026-07-21T00:33:11.254Z"
+    },
+    {
+      "scenarioId": "mobile-configuracoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 390x844; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-configuracoes-base.png"
+      ],
+      "started": "2026-07-21T00:33:11.254Z",
+      "finished": "2026-07-21T00:33:11.470Z"
+    },
+    {
+      "scenarioId": "mobile-ajuda-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; affiliate route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 390x844; inspect text, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-base.png"
+      ],
+      "started": "2026-07-21T00:33:11.470Z",
+      "finished": "2026-07-21T00:33:11.689Z"
+    },
+    {
+      "scenarioId": "mobile-afiliados-interactions",
+      "criterion": "dashboard copy/detail/close",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#afiliados 390x844: click Copiar; click referral João Pedro; assert detail cart items; click Fechar aba.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: detail remains open\n    at [stdin]:19:1194\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:19:1)",
+      "started": "2026-07-21T00:33:11.689Z",
+      "finished": "2026-07-21T00:33:12.918Z"
+    },
+    {
+      "scenarioId": "mobile-indicacoes-interactions",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#indicacoes 390x844: fill search Juliana; click Pagas; copy affiliate link; open João detail; close; click Voltar para afiliados.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:8:113)\n    at async [stdin]:20:1114\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:20:1)",
+      "started": "2026-07-21T00:33:12.918Z",
+      "finished": "2026-07-21T00:33:13.432Z"
+    },
+    {
+      "scenarioId": "mobile-ganhos-interactions",
+      "criterion": "ganhos org filter/detail/related link",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ganhos 390x844: select Vertaco Aventuras; open João commission; click Ver indicação relacionada.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "locator.count: InvalidSelectorError: Error while parsing selector `combobox[name=[object Object]]` - unexpected symbol \"[\" at position 14 during parsing attribute value\n    at syntaxError (<anonymous>:1756:11)\n    at readAttribute (<anonymous>:1888:7)\n    at parseAttributeSelector (<anonymous>:1901:28)\n    at Object.queryAll (<anonymous>:5158:22)\n    at InjectedScript._queryEngineAll (<anonymous>:6804:49)\n    at InjectedScript.querySelectorAll (<anonymous>:6791:30)\n    at eval (eval at evaluate (:303:30), <anonymous>:2:37)\n    at UtilityScript.evaluate (<anonymous>:305:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at vis ([stdin]:8:45)\n    at click ([stdin]:9:52)\n    at select ([stdin]:10:48)\n    at [stdin]:21:304\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:21:1)",
+      "started": "2026-07-21T00:33:13.432Z",
+      "finished": "2026-07-21T00:33:13.617Z"
+    },
+    {
+      "scenarioId": "mobile-produtos-links-interactions",
+      "criterion": "produtos/links copy general/org/product/request/disabled unavailable",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#produtosLinks 390x844: copy general, select Trilheiras, copy organization and Passeio de Barco product, request Boia Cross Radical, select Cerrado and verify Rafting Rio das Velhas disabled.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "locator.count: InvalidSelectorError: Error while parsing selector `combobox[name=[object Object]]` - unexpected symbol \"[\" at position 14 during parsing attribute value\n    at syntaxError (<anonymous>:1756:11)\n    at readAttribute (<anonymous>:1888:7)\n    at parseAttributeSelector (<anonymous>:1901:28)\n    at Object.queryAll (<anonymous>:5158:22)\n    at InjectedScript._queryEngineAll (<anonymous>:6804:49)\n    at InjectedScript.querySelectorAll (<anonymous>:6791:30)\n    at eval (eval at evaluate (:303:30), <anonymous>:2:37)\n    at UtilityScript.evaluate (<anonymous>:305:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at vis ([stdin]:8:45)\n    at click ([stdin]:9:52)\n    at select ([stdin]:10:48)\n    at [stdin]:22:773\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:22:1)",
+      "started": "2026-07-21T00:33:13.617Z",
+      "finished": "2026-07-21T00:33:13.886Z"
+    },
+    {
+      "scenarioId": "mobile-configuracoes-interactions",
+      "criterion": "configuracoes Alterar destino/cash no-op/count update",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#configuracoes 390x844: open Formas de recebimento; verify Dinheiro row has no Alterar destino; change first destination to Conta da empresa; confirm status/counts.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at vis ([stdin]:8:113)\n    at async [stdin]:23:1284\n    at async scenario ([stdin]:16:80)\n    at async main ([stdin]:23:1)",
+      "started": "2026-07-21T00:33:13.886Z",
+      "finished": "2026-07-21T00:33:14.481Z"
+    },
+    {
+      "scenarioId": "mobile-ajuda-interactions",
+      "criterion": "ajuda search hit/no-result/Fechar",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ajuda 390x844: search comissões; expand matching FAQ; search semresultadozz; click Fechar.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-search-hit-open.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-no-result.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-close-afiliados.png"
+      ],
+      "started": "2026-07-21T00:33:14.481Z",
+      "finished": "2026-07-21T00:33:14.997Z"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "viewport": "desktop",
+      "errors": [
+        {
+          "type": "console",
+          "text": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <li> li \n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:4173/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:4173/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        },
+        {
+          "type": "console",
+          "text": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s \n\nCheck the render method of `Primitive.div.SlotClone`. \n    at SheetOverlay (http://127.0.0.1:4173/src/components/ui/sheet.tsx:56:3)\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at DialogPortal (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:2008:11)\n    at SheetPortal (http://127.0.0.1:4173/src/components/ui/sheet.tsx:47:27)\n    at SheetContent (http://127.0.0.1:4173/src/components/ui/sheet.tsx:81:3)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Dialog (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1948:5)\n    at Sheet (http://127.0.0.1:4173/src/components/ui/sheet.tsx:23:21)\n    at ReferralDetailSheet (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:555:3)\n    at main\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at AfiliadosPage (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:1368:3)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "errors": [
+        {
+          "type": "console",
+          "text": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <li> li \n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:4173/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:4173/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        },
+        {
+          "type": "console",
+          "text": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s \n\nCheck the render method of `Primitive.div.SlotClone`. \n    at SheetOverlay (http://127.0.0.1:4173/src/components/ui/sheet.tsx:56:3)\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at DialogPortal (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:2008:11)\n    at SheetPortal (http://127.0.0.1:4173/src/components/ui/sheet.tsx:47:27)\n    at SheetContent (http://127.0.0.1:4173/src/components/ui/sheet.tsx:81:3)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Dialog (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1948:5)\n    at Sheet (http://127.0.0.1:4173/src/components/ui/sheet.tsx:23:21)\n    at ReferralDetailSheet (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:555:3)\n    at main\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at AfiliadosPage (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:1368:3)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        }
+      ]
+    }
+  ],
+  "artifactPaths": [
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-afiliados-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ganhos-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-produtosLinks-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-configuracoes-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-afiliados-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-afiliados-detail-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-indicacoes-search-tab-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-produtos-general-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-config-receiving-before.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-search-hit-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-no-result.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/desktop-ajuda-close-afiliados.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ganhos-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-produtosLinks-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-configuracoes-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-afiliados-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-afiliados-detail-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-indicacoes-search-tab-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-produtos-general-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-config-receiving-before.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-search-hit-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-no-result.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run2/mobile-ajuda-close-afiliados.png"
+  ]
+}

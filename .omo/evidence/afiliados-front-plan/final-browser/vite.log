@@ -1,0 +1,9 @@
+
+> @figma/my-make-file@0.0.1 dev
+> vite --host 127.0.0.1 --port 51654 --strictPort
+
+
+  VITE v6.3.5  ready in 286 ms
+
+  ➜  Local:   http://127.0.0.1:51654/
+[BABEL] Note: The code generator has deoptimised the styling of /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/src/imports/AgendaAtualizacoes/AgendaAtualizacoes.tsx as it exceeds the max of 500KB.

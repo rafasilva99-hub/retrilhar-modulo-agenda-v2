@@ -1,0 +1,89 @@
+DoneClaim
+=========
+status: complete for Todo 9 scoped implementation; shared-suite failures are recorded below
+objective: refine the earnings screen at #ganhos without changing receiving-destination behavior or files owned by other workers
+
+Changed files (allowed write set only)
+--------------------------------------
+- src/modules/afiliados/GanhosPage.tsx
+- src/modules/afiliados/GanhosPage.test.tsx
+- .omo/evidence/afiliados-front-plan/task-9-ganhos.txt
+- .omo/evidence/afiliados-front-plan/task-9-ganhos-browser.md
+
+Scoped git status
+-----------------
+Invocation: `git status --short -- src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx .omo/evidence/afiliados-front-plan/task-9-ganhos.txt .omo/evidence/afiliados-front-plan/task-9-ganhos-browser.md`.
+Observable:
+```
+ M src/modules/afiliados/GanhosPage.tsx
+?? .omo/evidence/afiliados-front-plan/task-9-ganhos-browser.md
+?? .omo/evidence/afiliados-front-plan/task-9-ganhos.txt
+?? src/modules/afiliados/GanhosPage.test.tsx
+```
+The broader worktree also contains other workers' screen, test, instruction, plan, and service changes; none were reverted or edited by this task.
+
+Source references
+-----------------
+- src/modules/afiliados/GanhosPage.tsx:43-50, 124-181, 200-210, 250-381 — shared KPI/status/filter primitives, service-backed filtering, organization breakdown, ledger, detail sheet, and related indication link.
+- src/modules/afiliados/services/afiliados-mock-service.ts:66-73, 133-155 — organization listing and commission filter helpers.
+- src/modules/afiliados/types.ts:32-47 — organization and commission filter types.
+- src/modules/afiliados/components/index.ts:8-23 — shared KPI, organization-filter, empty-state, section-heading, and commission-status exports.
+- src/modules/afiliados/components/status-badges.tsx:104-120 — status badge receives the typed commission status configuration.
+- src/mocks/afiliados/index.ts:922-967 — commission fixture and KPI/breakdown source data.
+
+Acceptance evidence
+-------------------
+1. Service helpers/shared components/ledger/breakdown/detail/link:
+   - Scenario: render #ganhos and exercise the ledger, organization filter, detail drawer, and related link.
+   - Invocation: `npm run test -- --run src/modules/afiliados/GanhosPage.test.tsx`.
+   - Observable: exit 0; `1 passed` test file and `5 passed` tests. The tests assert the ledger row, period+organization+status filtering, drawer heading, `#indicacoes` navigation, all three status labels, and absent-search empty state.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos.txt` plus browser artifact `.omo/evidence/afiliados-front-plan/task-9-ganhos-browser.md`.
+2. Status semantics:
+   - Scenario: render `CommissionStatusBadge` for `nao-gerada`, `a-receber`, and `quitada`.
+   - Invocation: the `keeps each commission status semantically visible` test in `src/modules/afiliados/GanhosPage.test.tsx`.
+   - Observable: exit 0; DOM contains `Não gerada`, `A receber`, and `Quitada`.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos.txt`.
+3. Forbidden product/runtime concepts:
+   - Invocation: `rg -n "fetch\\(|axios|contrato|vínculo|mock|fake" src/modules/afiliados/GanhosPage.tsx`.
+   - Observable: exit 0 with only two internal import-path matches: `@/mocks/afiliados` and `@/modules/afiliados/services/afiliados-mock-service` (lines 40 and 51). No visible-copy, fetch, or axios match exists; `mock` is implementation naming only.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos.txt`.
+4. Required combined test scenario:
+   - Invocation: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados`.
+   - Observable: exit 1, with `29 passed` and `4 failed`. The Ganhos tests pass. The failures are outside this write set: the pre-existing modified `src/app/App.test.tsx` expects the unaccented string `Extrato de comissoes` while Ganhos correctly renders `Extrato de comissões`; two `IndicacoesPage.test.tsx` cases and one `ProdutosLinksPage.test.tsx` case time out in other workers' screens. No unowned file was changed to mask these failures.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos.txt`.
+5. Type/build gates:
+   - Invocation: `npm run typecheck`; observable: exit 0 (`tsc --noEmit`).
+   - Invocation: `npm run build`; observable: exit 0; Vite transformed 2092 modules and emitted the production bundle. Only the existing chunk-size warning was reported.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos.txt`.
+6. Changed-file quality gates:
+   - Invocation: `npx eslint src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx && npx prettier --check src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx`.
+   - Observable: exit 0; ESLint reported no findings and Prettier reported all files matched.
+   - `git diff --check -- src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx`: exit 0.
+   - The Bun no-excuse script was attempted but could not run because `bun` is not installed; a Node fallback was also blocked by the script's unavailable `typescript` module. The passing ESLint, Prettier, and project typecheck are the available changed-file gates.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos.txt`.
+7. Size guard:
+   - Invocation: `awk '!/^[[:space:]]*$/ && !/^[[:space:]]*(\\/\\/|#|--)/ { count++ } END { print count }' src/modules/afiliados/GanhosPage.tsx`.
+   - Observable: `370` pure lines. The screen began over the local 250-line heuristic and remains so because the user explicitly restricted the write set; the source contains a `SIZE_OK` note documenting that extracting private ledger/detail code would broaden scope.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos.txt`.
+8. Browser scenario:
+   - Exact URL, steps, DOM results, overflow measurements, visual inspection, and cleanup are recorded at `.omo/evidence/afiliados-front-plan/task-9-ganhos-browser.md`.
+   - Captured artifact: `.omo/evidence/afiliados-front-plan/task-9-ganhos-browser.md`.
+
+Adversarial classes checked
+---------------------------
+- dirty_worktree: scoped status was captured; unrelated worker changes were preserved.
+- stale_state: inspected the baseline GanhosPage before editing and re-read the final page/test files after formatting.
+- misleading_success_output: re-ran the focused test, typecheck, build, lint, format, guardrail scan, exact combined suite, and browser probe; claims above include exit codes and output counts.
+- malformed-input: absent search query `produto-inexistente` exercised the empty state; no parser boundary exists in this screen.
+- hung/long-running: commands were polled to completion; the combined suite's timeouts are explicitly recorded rather than treated as a pass.
+- flaky_test: the focused suite was rerun after the final source state and passed 5/5.
+- prompt-injection: no external instructions or untrusted repository report was used as authority.
+
+Cleanup and risk
+----------------
+- Stopped only the Vite server started for this attempt (port 5176) and the Chrome CDP process started for this attempt (port 9222). Ports 5173–5175 belonged to other workers and were not touched.
+- Removed only the temporary QA files/profiles created under `/tmp/retrilhar-ganhos-*`; verification reported no remaining listeners or temporary screenshots.
+- The only remaining risk is the mobile visual note in the browser artifact: the shared shell is fixed-width at 390px even though the document reports no horizontal overflow. Fixing that belongs outside the allowed GanhosPage write set.
+- No receiving-destination behavior was changed.
+
+Final status: scoped Todo 9 implementation complete; combined-suite blocker retained as an auditable external-worktree/test-state result.

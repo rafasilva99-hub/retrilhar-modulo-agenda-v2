@@ -1,0 +1,56 @@
+Task 7/12 route smoke assertion fix evidence
+
+Scope and baseline
+- Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+- Current-attempt lookup: `omo ulw-loop status --json` was unavailable in this shell (`command not found`); evidence was recorded in the mandated fallback directory `.omo/evidence/afiliados-front-plan/`.
+- Existing `src/app/App.test.tsx` changes from another worker were preserved. This task changed only the `#ganhos` expected text from `Extrato de comissoes` to the current user-visible, route-specific `Extrato de comissões`.
+
+Commands and results
+1. Baseline reproduction
+   Command: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados`
+   Result: exit 1. `src/app/App.test.tsx` failed because the rendered text contained `Extrato de comissões`, not obsolete `Extrato de comissoes`. An unrelated `src/modules/afiliados/AfiliadosPage.test.tsx` test also timed out. Observed summary: 2 failed files, 7 passed files; 2 failed tests, 32 passed tests out of 34.
+
+2. Aggregate verification after the fix
+   Command: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados`
+   Result: exit 1. The App route smoke no longer failed. The remaining failures were timeouts in other screen/component tests: `AfiliadosPage.test.tsx` (2), `AjudaPage.test.tsx` (1), `ConfiguracoesPage.test.tsx` (2), `GanhosPage.test.tsx` (3), `IndicacoesPage.test.tsx` (3), `ProdutosLinksPage.test.tsx` (3), and `components/affiliate-primitives.test.tsx` (1). Summary: 7 failed files, 2 passed files; 15 failed tests, 19 passed tests out of 34. This is classified as an external/other-screen test failure outside the permitted write set.
+
+3. Focused verification
+   Command: `npm run test -- --run src/app/App.test.tsx`
+   Result: exit 0. `Test Files 1 passed (1)` and `Tests 4 passed (4)`.
+   Binary observable: the direct route smoke passes, including the six affiliate hashes, all four agenda hashes, and both unknown-hash agenda fallback assertions.
+
+4. Repository check
+   Command: `npm run check`
+   Result: exit 2 during `prettier . --check --cache` because the pre-existing unrelated file `.omo/ulw-loop/evidence/G001-quality-review.json` is not valid JSON/Prettier input (`SyntaxError: Unexpected token (1:1)`). No product or test file was changed for this unrelated failure.
+
+5. Adversarial contract guard
+   Command: a shell guard checked absence of `Extrato de comissoes`, presence of `Extrato de comissões`, all six affiliate hashes, all four supported agenda hashes, and both fallback test names.
+   Result: exit 0. Output: obsolete copy absent; current Ganhos-specific copy present; six affiliate hashes present; four supported agenda hashes present; both agenda fallback assertions present.
+
+6. Diff/status checks
+   Commands: `git diff --check -- src/app/App.test.tsx`; `git status --short -- src/app/App.test.tsx .omo/evidence/afiliados-front-plan/task-7-12-route-test-fix.txt`
+   Result: diff check exit 0. Before this evidence file was created, status was exactly ` M src/app/App.test.tsx`. Final status after the evidence write was:
+   ` M src/app/App.test.tsx`
+   `?? .omo/evidence/afiliados-front-plan/task-7-12-route-test-fix.txt`
+
+Changed files
+- `src/app/App.test.tsx`: updated one `#ganhos` route smoke expected string; preserved all other route assertions and coverage.
+- `.omo/evidence/afiliados-front-plan/task-7-12-route-test-fix.txt`: this evidence artifact.
+
+Adversarial classes covered
+- Stale copy: rejects the obsolete unaccented spelling.
+- Route specificity: uses `Extrato de comissões`, a current heading unique to Ganhos, rather than generic shell text such as `Ganhos`.
+- Coverage regression: verifies six affiliate hashes, four agenda hashes, and both fallback assertions remain present.
+- Scope spill: only the two user-permitted paths were inspected for final status and only those paths are changed by this task.
+
+Cleanup and risk notes
+- No cleanup, dependency, screen, service, component, plan, or ledger edits were performed.
+- Existing React accessibility/DOM nesting warnings and the other affiliate screen timeouts remain outside scope.
+- LSP was unavailable because the TypeScript server is not installed and the prior installation was declined; focused Vitest verification passed.
+
+DoneClaim
+- status: DONE_FOR_SCOPED_FIX
+- details: `#ganhos` now asserts the current route-specific visible heading; focused route tests pass 4/4. The aggregate command was rerun and its remaining failures were classified as unrelated screen/component timeouts.
+- risk: aggregate suite is not globally green due those unrelated timeouts; repository check is not green due the pre-existing malformed evidence file.
+
+EVIDENCE_RECORDED: .omo/evidence/afiliados-front-plan/task-7-12-route-test-fix.txt

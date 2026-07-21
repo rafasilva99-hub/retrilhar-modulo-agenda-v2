@@ -1,0 +1,303 @@
+# F2 period-filter fix evidence
+
+Status: in progress
+Attempt directory: no active `omo ulw-loop` attempt was available; evidence is recorded under `.omo/evidence/afiliados-front-plan/`.
+Workspace: `/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2`
+
+## Scope and starting state
+
+Allowed write set for this attempt:
+
+- `src/modules/afiliados/IndicacoesPage.tsx`
+- `src/modules/afiliados/IndicacoesPage.test.tsx`
+- `src/modules/afiliados/GanhosPage.tsx`
+- `src/modules/afiliados/GanhosPage.test.tsx`
+- `.omo/evidence/afiliados-front-plan/f2-period-filter-fix.txt`
+
+The worktree was already dirty before this attempt. The targeted pages were already modified and the targeted tests were untracked; unrelated changes were preserved. No requested file had changed during this attempt before the red-test edit.
+
+Starting scoped status command:
+
+```text
+git status --short -- src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx .omo/evidence/afiliados-front-plan/f2-period-filter-fix.txt
+```
+
+Observed before this attempt's edits:
+
+```text
+ M src/modules/afiliados/GanhosPage.tsx
+ M src/modules/afiliados/IndicacoesPage.tsx
+?? src/modules/afiliados/GanhosPage.test.tsx
+?? src/modules/afiliados/IndicacoesPage.test.tsx
+```
+
+## Runtime and source observations
+
+Runtime manifest: Vite + React; `npm run test` invokes Vitest 4.1.8 under Node v25.9.0. The application is synchronous and fixture-backed.
+
+Observed source seam:
+
+- `IndicacoesPage.tsx` computes KPI state with `getIndicacoesKpis(getInternalPeriod(selectedPeriod), selectedOrg)` but calls `filterReferrals(affiliateReferrals, { organizationId, search, origin, tab })` without period.
+- `GanhosPage.tsx` computes KPI/breakdown state with `period` but calls `filterCommissions(undefined, { organizationId, tab, search })` without period.
+- Referral date source is `AfiliadoReferral.purchaseDate`; commission date source is `ComissaoLancamento.dataGeracao`.
+- Existing service filtering and commission statuses remain the source of truth for organization/search/tab/status semantics.
+
+## Hypotheses and distinguishing evidence
+
+1. H1, user-code logic: period state is omitted from the displayed collection projection. Distinguishing evidence: source calls above contain no date predicate; a period-only DOM test finds a date-out-of-range row before and after changing the selector. Fix: add a page-local date projection before existing service filters.
+2. H2, date-field choice: the correct referral date is `purchaseDate` and the correct commission date is `dataGeracao`, not activity/settlement dates. Distinguishing evidence: the fixture type declarations and rendered page labels use those exact fields. Fix: filter on the displayed transaction date fields.
+3. H3, period-boundary stability: using the host clock would make static fixture rows change as time moves, while the fixture set has a stable latest transaction date. Distinguishing evidence: the latest referral purchase and commission generation dates are both `2026-07-06`; period windows can be anchored to that existing fixture date and remain deterministic. Fix: derive boundaries from the latest date in the relevant fixture collection.
+
+## Baseline reproduction
+
+Scenario: run the two requested focused affiliate screen tests before adding the new period-only regression tests.
+
+Invocation: `npm run test -- --run src/modules/afiliados/IndicacoesPage.test.tsx src/modules/afiliados/GanhosPage.test.tsx`
+
+Exit status: `0`
+
+Captured output:
+
+```text
+Test Files  2 passed (2)
+Tests  8 passed (8)
+```
+
+Interpretation: the existing suite was green while its Ganhos period assertion combined period, organization, and status changes, so it did not prove that period constrained the displayed rows.
+
+## Artifacts to keep within the allowed write set
+
+- This evidence file: record red/green results, exact commands, observables, risks, and final status.
+- Target tests: period-only red regression cases.
+- Target pages: minimal period predicates using existing fixture date fields and existing service helpers.
+
+## Red phase
+
+Scenario: render each screen without changing organization, status, or search; change only the period selector.
+
+Invocation: `npm run test -- --run src/modules/afiliados/IndicacoesPage.test.tsx src/modules/afiliados/GanhosPage.test.tsx`
+
+Exit status: `1`
+
+Captured failure observables:
+
+```text
+FAIL src/modules/afiliados/GanhosPage.test.tsx > GanhosPage > filters displayed commission rows by period alone
+expected document not to contain element, found "Pedro Henrique Barbosa Costa"
+
+FAIL src/modules/afiliados/IndicacoesPage.test.tsx > IndicacoesPage > filters displayed referral rows by period alone
+expected 0 rows, received 2 rows for "Pedro Henrique Barbosa Costa" after selecting "Este mês"
+
+Test Files  2 failed (2)
+Tests  2 failed | 8 passed (10)
+```
+
+The first red run also surfaced the existing jsdom gap `candidate?.scrollIntoView is not a function` when opening Radix Select in Indicações. The allowed Indicações test file now installs the same no-op `HTMLElement.prototype.scrollIntoView` test shim already used by Ganhos; the subsequent red run above fails only on the period behavior.
+
+## QA artifacts planned before creation
+
+- Temporary Vite QA process on `127.0.0.1:5187`; cleanup: terminate only the PID started by this attempt and confirm the port is free.
+- Temporary Playwright script and screenshots under `/tmp/retrilhar-f2-period-filter-*`; cleanup: remove only those named temporary files/directories after read-back.
+- No temporary source instrumentation, debugger statements, or repository files outside the allowed write set.
+
+Browser setup observation: `node /tmp/retrilhar-f2-period-filter-qa.cjs` initially exited `1` before page navigation because Playwright reported that its Chromium executable was absent at `/Users/rafaelsilva/Library/Caches/ms-playwright/chromium_headless_shell-1223/...`. The planned remediation is `npx playwright install chromium`; this changes only the local Playwright browser cache, not the repository.
+
+## Implementation and rationale
+
+Changed files:
+
+- `src/modules/afiliados/IndicacoesPage.tsx`
+  - Added ISO-date period predicates based on `purchaseDate` and the latest existing referral fixture date.
+  - Applied the period projection before existing service filters for rows and tab counts.
+- `src/modules/afiliados/IndicacoesPage.test.tsx`
+  - Added a period-only test: `30d` starts with Pedro's June row; selecting only `Este mês` keeps João's July row, removes Pedro, and changes `Todas` to 10.
+  - Added the existing Radix Select jsdom `scrollIntoView` shim so the new selector interaction fails on the behavior under test rather than test-environment plumbing.
+- `src/modules/afiliados/GanhosPage.tsx`
+  - Added ISO-date period predicates based on `dataGeracao` and the latest existing commission fixture date.
+  - Applied the period projection before existing organization, search, and tab filtering. `nao-gerada`, `a-receber`, and `quitada` semantics remain in `filterCommissions` and the status badge.
+- `src/modules/afiliados/GanhosPage.test.tsx`
+  - Split the previous organization/status test from period coverage.
+  - Added a period-only test: default `Mês` excludes Pedro's June commission; selecting only `Ano` includes it alongside João.
+- `.omo/evidence/afiliados-front-plan/f2-period-filter-fix.txt`
+  - This record only.
+
+No service, type, fixture, plan, ledger, shared component, or other screen file was edited by this attempt. The period boundaries are deterministic for the fixture-backed prototype: latest referral/commission transaction date is `2026-07-06`; date comparisons use existing ISO fields rather than fabricated data or host-clock state.
+
+## Green verification
+
+### Focused period and status scenarios
+
+Scenario: run both changed screen test files, including the isolated period tests and existing status/detail/empty-state coverage.
+
+Invocation: `npm run test -- --run src/modules/afiliados/IndicacoesPage.test.tsx src/modules/afiliados/GanhosPage.test.tsx`
+
+Exit status: `0`
+
+Binary observable:
+
+```text
+Test Files  2 passed (2)
+Tests  10 passed (10)
+```
+
+Artifact: this evidence file, with test source at the changed test paths above.
+
+### Required aggregate route/module scenario
+
+Scenario: render App direct hashes and the complete affiliate module suite.
+
+Invocation: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados`
+
+Exit status: `0`
+
+Binary observable:
+
+```text
+Test Files  9 passed (9)
+Tests  43 passed (43)
+```
+
+Artifact: this evidence file.
+
+### Type safety
+
+Scenario: compile the maintained TypeScript project without emitting files.
+
+Invocation: `npm run typecheck`
+
+Exit status: `0`
+
+Binary observable: `tsc --noEmit` completed with no diagnostics.
+
+Artifact: this evidence file.
+
+### Formatting and lint
+
+Scenario: validate the exact four requested source/test files.
+
+Invocations:
+
+- `npx prettier src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx --check`
+- `npx eslint src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx --max-warnings=0 --report-unused-disable-directives`
+- `git diff --check -- src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/IndicacoesPage.test.tsx src/modules/afiliados/GanhosPage.tsx src/modules/afiliados/GanhosPage.test.tsx`
+
+Exit status: `0` for all three.
+
+Binary observables: Prettier printed `All matched files use Prettier code style!`; ESLint and diff-check printed no findings.
+
+Artifact: this evidence file.
+
+### Production build
+
+Scenario: build the current Vite/React application.
+
+Invocation: `npm run build`
+
+Exit status: `0`
+
+Binary observable: Vite transformed 2092 modules and printed `built in 3.03s`. The existing large-chunk warning remains; no build error occurred.
+
+Artifact: this evidence file.
+
+### Forbidden/network terminology scan
+
+Scenario: scan only the two maintained pages for the requested forbidden/backend terms.
+
+Invocation: `rg -n -i 'fetch\\(|axios|mock|vínculo|contrato' src/modules/afiliados/IndicacoesPage.tsx src/modules/afiliados/GanhosPage.tsx`
+
+Exit status: `0`
+
+Captured matches:
+
+```text
+src/modules/afiliados/GanhosPage.tsx:40:} from "@/mocks/afiliados";
+src/modules/afiliados/GanhosPage.tsx:51:} from "@/modules/afiliados/services/afiliados-mock-service";
+src/modules/afiliados/IndicacoesPage.tsx:57:} from "@/mocks/afiliados";
+src/modules/afiliados/IndicacoesPage.tsx:63:} from "./services/afiliados-mock-service";
+```
+
+Classification: all four are internal fixture/service identifiers. There are no `fetch(`, `axios`, `vínculo`, or `contrato` matches, and no visible forbidden terminology was added.
+
+Artifact: this evidence file.
+
+## Manual browser QA
+
+Scenario: use a real Playwright-controlled Chromium page at 1280x900, navigate through `#indicacoes` and `#ganhos`, change only the period selector, assert live DOM row counts, capture screenshots, and collect page errors.
+
+Invocation: `node /tmp/retrilhar-f2-period-filter-qa.cjs` after `npm run dev -- --host 127.0.0.1 --port 5187` and `npx playwright install chromium`.
+
+Exit status: `0`.
+
+Captured DOM observable:
+
+```json
+{
+  "indicacoes": {
+    "selectedPeriod": "Este mês",
+    "tabTodas": 10,
+    "julyReferral": "João Pedro da Silva Oliveira",
+    "juneReferralExcluded": "Pedro Henrique Barbosa Costa"
+  },
+  "ganhos": {
+    "defaultPeriod": "Mês",
+    "juneCommissionExcludedByDefault": "Pedro Henrique Barbosa Costa",
+    "selectedPeriod": "Ano",
+    "juneCommissionIncluded": "Pedro Henrique Barbosa Costa"
+  },
+  "pageErrors": []
+}
+```
+
+The two fresh screenshot captures were verified before cleanup with `file` and `stat`:
+
+```text
+/tmp/retrilhar-f2-period-filter-indicacoes.png: PNG image data, 1280 x 900, 8-bit/color RGB, non-interlaced
+/tmp/retrilhar-f2-period-filter-ganhos.png: PNG image data, 1280 x 900, 8-bit/color RGB, non-interlaced
+/tmp/retrilhar-f2-period-filter-indicacoes.png 116410 bytes
+/tmp/retrilhar-f2-period-filter-ganhos.png 102146 bytes
+```
+
+The screenshots were visually inspected with the local image viewer, then moved to `/Users/rafaelsilva/.Trash/` during cleanup. Their DOM results and binary capture validation are preserved in this evidence file; no temporary F2 files remain under `/tmp`.
+
+## Adversarial classes
+
+- Period-only isolation: no organization, status, search, or origin change in either new regression test.
+- Boundary separation: July rows remain in `Este mês`/`Mês`; June rows are excluded, then restored by `Ano`.
+- Existing semantics: paid, unpaid, abandoned, `nao-gerada`, `a-receber`, and `quitada` tests still pass.
+- Empty/error surface: absent search empty state remains green; browser page errors are `[]`.
+- Wrong date source risk: predicates use rendered transaction fields `purchaseDate` and `dataGeracao`.
+- Build/type/format risk: typecheck, production build, Prettier, ESLint, and diff check all pass.
+- Guardrail risk: targeted scan found only internal `mock` identifiers and no network/forbidden UI terms.
+- Dirty worktree/stale evidence: starting dirty state was captured; historical reports were not used as validation; final checks ran against current source.
+
+## Cleanup and risk
+
+Cleanup scenario: stop the Vite process started for this attempt, remove only named temporary QA files, and verify no listener or `/tmp/retrilhar-f2-period-filter*` artifact remains.
+
+Observables:
+
+- Vite process on `127.0.0.1:5187` was interrupted after QA; `lsof -nP -iTCP:5187 -sTCP:LISTEN` is empty.
+- `find /tmp -maxdepth 1 -name 'retrilhar-f2-period-filter*' -print` is empty.
+- Temporary scripts/screenshots/results were moved to the explicit user Trash directory for recoverable cleanup.
+- Playwright's browser cache was left installed for future local QA; no package manifest or lockfile changed.
+- Scoped final status is exactly:
+
+```text
+ M src/modules/afiliados/GanhosPage.tsx
+ M src/modules/afiliados/IndicacoesPage.tsx
+?? .omo/evidence/afiliados-front-plan/f2-period-filter-fix.txt
+?? src/modules/afiliados/GanhosPage.test.tsx
+?? src/modules/afiliados/IndicacoesPage.test.tsx
+```
+
+The broader pre-existing dirty worktree was preserved and not treated as this attempt's output. Existing desktop Indicações table width/content behavior remains outside this period-only fix and was not changed.
+
+Tooling note: the active tool surface did not expose an independent reviewer/subagent spawn capability. Direct Playwright execution, DOM assertions, screenshot read-back, and source/test gates were completed instead; no unavailable independent review is claimed as passed.
+
+## Final status
+
+Status: COMPLETE for the requested F2 period-filter blocker.
+
+Success criteria: period selectors now constrain displayed referral and commission rows, period-only tests fail on the old implementation and pass on the fix, commission status semantics remain intact, no maintained backend/forbidden UI copy was added, all requested commands pass, and manual browser QA observed the correct live DOM result.
+
+Final evidence path: `.omo/evidence/afiliados-front-plan/f2-period-filter-fix.txt`

@@ -1,0 +1,23 @@
+
+## mobile-agenda
+http://127.0.0.1:5197/#agenda
+"{\"hash\":\"#agenda\",\"innerWidth\":390,\"innerHeight\":844,\"bodyScrollWidth\":390,\"documentScrollWidth\":390,\"bodyScrollHeight\":844,\"documentScrollHeight\":844}"
+
+## mobile-agendaDia
+http://127.0.0.1:5197/#agendaDia
+"{\"hash\":\"#agendaDia\",\"innerWidth\":390,\"innerHeight\":844,\"bodyScrollWidth\":390,\"documentScrollWidth\":390,\"bodyScrollHeight\":844,\"documentScrollHeight\":844}"
+
+## mobile-doesNotExist
+http://127.0.0.1:5197/#agenda
+"{\"hash\":\"#agenda\",\"innerWidth\":390,\"innerHeight\":844,\"bodyScrollWidth\":390,\"documentScrollWidth\":390,\"bodyScrollHeight\":844,\"documentScrollHeight\":844}"
+
+## desktop-agenda
+http://127.0.0.1:5197/#agenda
+"{\"hash\":\"#agenda\",\"innerWidth\":1280,\"innerHeight\":800,\"bodyScrollWidth\":1280,\"documentScrollWidth\":1280}"
+
+## desktop-agendaDia
+http://127.0.0.1:5197/#agendaDia
+"{\"hash\":\"#agendaDia\",\"innerWidth\":1280,\"innerHeight\":800,\"bodyScrollWidth\":1280,\"documentScrollWidth\":1280}"
+No active sessions
+.omo/evidence/agenda-front-plan/task-8-fix-agenda-mobile-content/baseline-390-agenda.png:    PNG image data, 390 x 844, 8-bit/color RGB, non-interlaced
+.omo/evidence/agenda-front-plan/task-8-fix-agenda-mobile-content/baseline-390-agendaDia.png: PNG image data, 390 x 844, 8-bit/color RGB, non-interlaced

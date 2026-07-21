@@ -1,0 +1,347 @@
+{
+  "invocation": {
+    "command": "inline Node CDP script",
+    "browserTarget": "ws://127.0.0.1:9223/devtools/page/573F6D8679FC1DC7157C1C15475C3D20",
+    "route": "http://127.0.0.1:5175/#indicacoes",
+    "viewport": "390x844 CSS pixels",
+    "inputMode": "CDP Input.dispatchMouseEvent/Input.insertText",
+    "timestamp": "2026-07-20T21:08:41.175Z",
+    "clipboardPermission": "granted"
+  },
+  "artifacts": [
+    {
+      "path": "/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844.png",
+      "bytes": 48372
+    },
+    {
+      "path": "/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844-table.png",
+      "bytes": 56855
+    },
+    {
+      "path": "/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844-detail.png",
+      "bytes": 62802
+    },
+    {
+      "path": "/Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/afiliados-front-plan/task-8-indicacoes-390x844-empty.png",
+      "bytes": 38068
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "T8-390-open",
+      "invocation": "Navigate to http://127.0.0.1:5175/#indicacoes at 390x844",
+      "observable": {
+        "nonblank": true,
+        "heading": "Indicações",
+        "linkCard": true,
+        "sidebarCollapsed": true,
+        "mainRect": {
+          "left": 124,
+          "right": 355,
+          "width": 231
+        },
+        "tabs": [
+          {
+            "text": "Todas 15",
+            "selected": "true"
+          },
+          {
+            "text": "Pagas 7",
+            "selected": "false"
+          },
+          {
+            "text": "Não pagas 5",
+            "selected": "false"
+          },
+          {
+            "text": "Carrinhos abandonados 3",
+            "selected": "false"
+          }
+        ],
+        "horizontalOverflow": false,
+        "offscreen": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "T8-390-search",
+      "invocation": "Focus input[aria-label='Pesquisar indicações'], DOM select(), Input.insertText('João')",
+      "observable": {
+        "inputValue": "João",
+        "matchingCustomerVisible": true,
+        "mobileReferralCards": 1,
+        "tabs": [
+          {
+            "text": "Todas 1",
+            "selected": "true"
+          },
+          {
+            "text": "Pagas 1",
+            "selected": "false"
+          },
+          {
+            "text": "Não pagas 0",
+            "selected": "false"
+          },
+          {
+            "text": "Carrinhos abandonados 0",
+            "selected": "false"
+          }
+        ]
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "T8-390-paid-tab",
+      "invocation": "Pointer click on [role='tab'] whose label starts with 'Pagas'",
+      "observable": {
+        "activeTab": "Pagas 1",
+        "mobileReferralCards": 1,
+        "tabs": [
+          {
+            "text": "Todas 1",
+            "selected": "false"
+          },
+          {
+            "text": "Pagas 1",
+            "selected": "true"
+          },
+          {
+            "text": "Não pagas 0",
+            "selected": "false"
+          },
+          {
+            "text": "Carrinhos abandonados 0",
+            "selected": "false"
+          }
+        ]
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "T8-390-detail",
+      "invocation": "Pointer click on the visible mobile referral card containing 'João' and an order id",
+      "observable": {
+        "drawer": true,
+        "cartHeading": true,
+        "items": [
+          "Rapel Cachoeira",
+          "Tirolesa Radical"
+        ],
+        "viewport": {
+          "innerWidth": 390,
+          "innerHeight": 844,
+          "clientWidth": 390,
+          "clientHeight": 844
+        },
+        "horizontalOverflow": false
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "T8-390-copy",
+      "invocation": "Close drawer with Escape, then pointer click on button with exact text 'Copiar'",
+      "observable": {
+        "copyButtonCountBefore": 1,
+        "feedback": "Copiado"
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "T8-390-empty",
+      "invocation": "Select current search input, then Input.insertText('zzzz-sem-resultado')",
+      "observable": {
+        "inputValue": "zzzz-sem-resultado",
+        "emptyState": true,
+        "mobileReferralCards": 0,
+        "bodyTextLength": 693,
+        "horizontalOverflow": false,
+        "offscreen": []
+      },
+      "verdict": "PASS"
+    },
+    {
+      "id": "T8-390-back",
+      "invocation": "Pointer click on button[aria-label='Voltar para afiliados']",
+      "observable": {
+        "url": "http://127.0.0.1:5175/#afiliados",
+        "hash": "#afiliados"
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "final": {
+    "pageAtStart": {
+      "url": "http://127.0.0.1:5175/#indicacoes",
+      "viewport": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "clientWidth": 390,
+        "clientHeight": 844
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "mainRect": {
+        "left": 124,
+        "right": 355,
+        "width": 231
+      },
+      "sidebar": {
+        "collapsed": true,
+        "rect": {
+          "left": 24,
+          "right": 88,
+          "width": 64
+        }
+      },
+      "heading": "Indicações",
+      "bodyTextLength": 2806,
+      "hasLinkCopy": true,
+      "hasEmptyState": false,
+      "mobileReferralCards": 15,
+      "cardWidths": [
+        199,
+        199,
+        199
+      ],
+      "activeTab": "Todas 15",
+      "tabs": [
+        {
+          "text": "Todas 15",
+          "selected": "true"
+        },
+        {
+          "text": "Pagas 7",
+          "selected": "false"
+        },
+        {
+          "text": "Não pagas 5",
+          "selected": "false"
+        },
+        {
+          "text": "Carrinhos abandonados 3",
+          "selected": "false"
+        }
+      ],
+      "horizontalOverflow": false,
+      "offscreen": []
+    },
+    "detailAt390": {
+      "url": "http://127.0.0.1:5175/#indicacoes",
+      "viewport": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "clientWidth": 390,
+        "clientHeight": 844
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "mainRect": {
+        "left": 124,
+        "right": 355,
+        "width": 231
+      },
+      "sidebar": {
+        "collapsed": true,
+        "rect": {
+          "left": 24,
+          "right": 88,
+          "width": 64
+        }
+      },
+      "heading": "Indicações",
+      "bodyTextLength": 1219,
+      "hasLinkCopy": true,
+      "hasEmptyState": false,
+      "mobileReferralCards": 1,
+      "cardWidths": [
+        199
+      ],
+      "activeTab": "Pagas 1",
+      "tabs": [
+        {
+          "text": "Todas 1",
+          "selected": "false"
+        },
+        {
+          "text": "Pagas 1",
+          "selected": "true"
+        },
+        {
+          "text": "Não pagas 0",
+          "selected": "false"
+        },
+        {
+          "text": "Carrinhos abandonados 0",
+          "selected": "false"
+        }
+      ],
+      "horizontalOverflow": false,
+      "offscreen": []
+    },
+    "emptyAt390": {
+      "url": "http://127.0.0.1:5175/#indicacoes",
+      "viewport": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "clientWidth": 390,
+        "clientHeight": 844
+      },
+      "scroll": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "mainRect": {
+        "left": 124,
+        "right": 355,
+        "width": 231
+      },
+      "sidebar": {
+        "collapsed": true,
+        "rect": {
+          "left": 24,
+          "right": 88,
+          "width": 64
+        }
+      },
+      "heading": "Indicações",
+      "bodyTextLength": 693,
+      "hasLinkCopy": true,
+      "hasEmptyState": true,
+      "mobileReferralCards": 0,
+      "cardWidths": [],
+      "activeTab": "Pagas 0",
+      "tabs": [
+        {
+          "text": "Todas 0",
+          "selected": "false"
+        },
+        {
+          "text": "Pagas 0",
+          "selected": "true"
+        },
+        {
+          "text": "Não pagas 0",
+          "selected": "false"
+        },
+        {
+          "text": "Carrinhos abandonados 0",
+          "selected": "false"
+        }
+      ],
+      "horizontalOverflow": false,
+      "offscreen": []
+    },
+    "allPass": true
+  }
+}

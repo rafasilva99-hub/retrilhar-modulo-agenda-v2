@@ -1,0 +1,26 @@
+Final cleanup receipt — Todo 14
+Date: 2026-07-20
+
+Started surfaces:
+- Vite: `npm run dev -- --host 127.0.0.1 --port 51654 --strictPort` (actual app port 51654; PTY 82812)
+- Chrome/CDP: headless Chrome with `--remote-debugging-port=51655` (CDP port 51655; PTY 84278)
+
+Shutdown:
+- Sent Ctrl-C to PTY 82812: Vite stopped.
+- Sent Ctrl-C to PTY 84278: Chrome stopped.
+- Exact temporary profiles removed:
+  - `/tmp/retrilhar-final-chrome-qa.RitZYg` — exit 0
+  - `/tmp/retrilhar-final-chrome.2o8R7H` — exit 0
+  - `/tmp/retrilhar-final-chrome.YlvuSC` — exit 0
+
+Post-cleanup command:
+```sh
+for p in 51654 51655; do lsof -nP -iTCP:"$p" -sTCP:LISTEN; done
+```
+
+Post-cleanup result:
+- Port 51654: `lsof` exit 1, no listener.
+- Port 51655: `lsof` exit 1, no listener.
+- All three exact QA-created Chrome profiles: absent.
+
+Risk note: Chrome emitted unrelated headless/GCM/updater diagnostics while running; no product exception or network failure was recorded by the browser driver. No process or listener remains.

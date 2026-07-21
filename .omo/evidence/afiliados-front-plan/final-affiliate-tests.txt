@@ -1,0 +1,15 @@
+
+> @figma/my-make-file@0.0.1 test
+> vitest run --run src/app/App.test.tsx src/modules/afiliados
+
+
+ RUN  v4.1.8 /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+
+
+ Test Files  9 passed (9)
+      Tests  39 passed (39)
+   Start at  20:23:49
+   Duration  12.62s (transform 3.52s, setup 1.14s, import 38.37s, tests 13.21s, environment 11.45s)
+
+
+FINAL COMMAND EXIT STATUS: 0

@@ -1,0 +1,129 @@
+Task 3 evidence: Codex AGENTS.md and affiliate guardrail rule
+Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+Date: 2026-07-20
+
+## Source line references read before writing
+
+- `.omo/plans/afiliados-front-plan.md:139-152` Todo 3 scope, write set, acceptance, and QA.
+- `CLAUDE.md:8-35` architecture, mock source, HugeIcons, shadcn/layout preference, and hash routes.
+- `CLAUDE.md:109-148` existing-code inspection, token/icon/component guidance, and validation.
+- `.claude/rules/agenda-fidelity.md:3-12` mock-only Vite/React/hash and dependency guardrails.
+- `Specdrivenafiliados.md:11-33` affiliate invariants 1-15.
+- `Specdrivenafiliados.md:38-69` executable/blocked readiness split and P-A/P-B/P-C blockers.
+- `docs/audits/admin-alignment-readiness.md:32-54` prototype-only boundaries, mock/hash preservation, and evidence scope.
+
+## Attempt-directory check
+
+Invocation:
+
+    omo ulw-loop status --json
+
+Result: exit 127, `zsh: command not found: omo`. No active attempt directory was discoverable
+through the requested command. Per the plan fallback, evidence is recorded under
+`.omo/evidence/afiliados-front-plan/`.
+
+## Dirty-worktree adversarial check
+
+Invocation before documentation creation:
+
+    git status --short AGENTS.md .claude/rules/afiliados.md .omo/evidence/afiliados-front-plan/task-3-agents-rules.txt
+
+Result: empty output. The three target paths were absent before this task.
+
+Invocation after documentation and evidence creation:
+
+    git status --short AGENTS.md .claude/rules/afiliados.md .omo/evidence/afiliados-front-plan/task-3-agents-rules.txt
+
+Result:
+
+    ?? .claude/rules/afiliados.md
+    ?? .omo/evidence/afiliados-front-plan/task-3-agents-rules.txt
+    ?? AGENTS.md
+
+Only the requested write set is untracked; no unrelated path was changed.
+
+## Required verification
+
+Scenario: prove both rules files exist.
+
+Invocation:
+
+    test -f AGENTS.md && test -f .claude/rules/afiliados.md && echo 'rules-files: present'
+
+Result: exit 0
+
+    rules-files: present
+
+Scenario: prove required guardrails are present.
+
+Invocation:
+
+    rg -n "mock-only|hash|fetch|HugeIcons|worktree|token|afiliacao|afiliação|Sala de negocios|Home de primeiro acesso" AGENTS.md .claude/rules/afiliados.md
+
+Result: exit 0
+
+    AGENTS.md:6:  navigation on the existing hash routes. Do not migrate the shell to Next.js, App Router,
+    AGENTS.md:8:- This repository is mock-only. Fixtures in `src/mocks/**` and synchronous mock services in
+    AGENTS.md:10:  authentication, OpenAPI SDK, or `fetch`/HTTP calls in maintained product code.
+    AGENTS.md:13:- The existing hash navigation is part of the test contract. Preserve direct links such as
+    AGENTS.md:19:- Use HugeIcons through `@hugeicons/react` and `@hugeicons/core-free-icons`. Do not add a
+    AGENTS.md:26:- Reuse semantic project tokens and existing Helvetica Neue/font/layout conventions. Inspect
+    AGENTS.md:62:  dirty-worktree state is auditable.
+    AGENTS.md:68:  In affiliate UI copy, call the relationship `afiliação`. Do not require or introduce the UI
+    AGENTS.md:71:- Keep Home de primeiro acesso and Sala de negocios V1 outside implementation until their
+    .claude/rules/afiliados.md:4:`.claude/rules/agenda-fidelity.md`. It applies to the maintained affiliate module (`afiliacao`)
+    .claude/rules/afiliados.md:14:3. The UI calls the relationship `afiliação`. Do not use `contrato` or `vínculo` as UI terms.
+    .claude/rules/afiliados.md:15:4. Product scope per afiliação is either `todos os produtos` or `produtos específicos`. There
+    .claude/rules/afiliados.md:18:5. An afiliação with no enabled product does not generate commission.
+    .claude/rules/afiliados.md:24:   platform-wide affiliate ban and must not be confused with a single afiliação status.
+    .claude/rules/afiliados.md:30:11. Keep Vite + React with hash routing. Do not introduce Next.js, App Router, RSC, `fetch`, or
+    .claude/rules/afiliados.md:32:12. Keep the module mock-only: use fixtures under `src/mocks/**` or mock services under
+    .claude/rules/afiliados.md:34:13. Use HugeIcons, shadcn/ui, semantic Tailwind tokens, and the prototype's existing layout
+    .claude/rules/afiliados.md:37:    green/red/amber/blue/orange fills, and rounded HugeIcons stroke treatment.
+    .claude/rules/afiliados.md:49:- Solicitar afiliação de produtos (F5): the affiliate requests in the panel and an admin
+    .claude/rules/afiliados.md:59:- Home de primeiro acesso stays out of scope. It is blocked by P-A (the initial relationship
+    .claude/rules/afiliados.md:61:- Sala de negocios V1, including its landing and registration, stays out of scope. It is
+    .claude/rules/afiliados.md:71:- Preserve existing affiliate hashes: `#afiliados`, `#indicacoes`, `#ganhos`, `#produtosLinks`,
+
+Scenario: prove forbidden rule-copy terms are absent.
+
+Invocation:
+
+    if rg -n "Next.js migration|backend required|fetch required|lucide new package" AGENTS.md .claude/rules/afiliados.md; then echo 'forbidden-rules-copy: present'; exit 1; else echo 'forbidden-rules-copy: absent'; fi
+
+Result: exit 0
+
+    forbidden-rules-copy: absent
+
+Binary observables: `rules-files: present` and `forbidden-rules-copy: absent` are both
+present in this artifact; the required-term grep returned matching lines and exit 0.
+
+## Adversarial classes
+
+- `dirty_worktree`: applicable; targeted status was captured above and shows only the three requested untracked files.
+- `stale_state`: applicable; source line references used were captured above before writing.
+- `misleading_success_output`: applicable; file existence, grep output, exit statuses, and final readback were captured.
+- `prompt injection`: not applicable; inputs were local project instructions, plan, spec, and audit documentation only.
+- `hung_or_long_commands`: not applicable; all commands were short local checks.
+- `malformed input`: not applicable; no external or user-supplied structured input was processed.
+- `cancel/resume`: not applicable; this was one uninterrupted execution.
+- `flaky tests`: not applicable; no product tests were in scope for documentation-only changes.
+- `repeated interruptions`: not applicable; no interruption occurred.
+
+## Cleanup and risks
+
+- Cleanup: no server, dependency install, generated code, temporary file, or external process was started; no cleanup was required.
+- Risk: runtime behavior was not changed. `omo ulw-loop status --json` was unavailable because the `omo` executable is not on PATH; the documented fallback evidence directory was used.
+
+## Final readback
+
+`AGENTS.md`, `.claude/rules/afiliados.md`, and this evidence file were read back after writing.
+
+## DoneClaim details
+
+- Changed files: `AGENTS.md`, `.claude/rules/afiliados.md`, `.omo/evidence/afiliados-front-plan/task-3-agents-rules.txt`.
+- Verification checks passed: both rule files exist; required-term checks for mock-only, hash, fetch, HugeIcons, worktree, token, afiliação/afiliacao, blocked surfaces, and related guardrails returned matches with exit 0; forbidden backend-oriented rule-copy checks returned `forbidden-rules-copy: absent` with exit 0. Terms appearing only inside prohibitions are acceptable and were not treated as forbidden copies.
+- Adversarial classes considered: dirty worktree, stale state, misleading success output, prompt injection, hung/long commands, malformed input, cancel/resume, flaky tests, and repeated interruptions.
+- Cleanup/risk notes: no server, dependency install, generated code, temporary file, or external process was started; no cleanup was required. Runtime behavior was unchanged. The unavailable `omo` executable required the documented fallback evidence directory.
+- Final evidence path: `.omo/evidence/afiliados-front-plan/task-3-agents-rules.txt`.
+- EVIDENCE_RECORDED: `.omo/evidence/afiliados-front-plan/task-3-agents-rules.txt`

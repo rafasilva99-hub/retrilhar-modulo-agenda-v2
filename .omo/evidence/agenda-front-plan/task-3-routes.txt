@@ -1,0 +1,80 @@
+Task 3: agenda-only route and preview smoke tests
+Worktree: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar-agenda-front-worktree
+Attempt directory: unavailable (`omo ulw-loop status --json` is not installed); recorded under `.omo/evidence/`.
+
+Acceptance criterion: new agenda-only test file exists and covers every requested hash.
+Command:
+  test -s src/modules/agenda/agenda-route-smoke.test.tsx && test "$(rg -c '^    hash:' src/modules/agenda/agenda-route-smoke.test.tsx)" -eq 13 && test -z "$(git status --short -- src/app/App.test.tsx)" && echo 'new test exists; 13 hash cases present; App.test.tsx untouched'
+Exit status: 0
+Observable output:
+  new test exists; 13 hash cases present; App.test.tsx untouched
+The 13 route cases are explicit in `src/modules/agenda/agenda-route-smoke.test.tsx`: `#agenda`, `#agendaDia`, `#atualizacoes`, `#novaAtividade`, `#preview/agenda/mes`, `#preview/agenda/semana`, `#preview/agenda/dia`, `#preview/agendaDia`, `#preview/agendaDia/empty`, `#preview/atualizacoes/participantes`, `#preview/atualizacoes/visao-geral`, `#preview/atualizacoes/atualizacoes`, and `#doesNotExist` with expected fallback `#agenda`.
+
+Acceptance criterion: exact requested smoke scenario passes with route-specific assertions.
+Command:
+  npm run test -- --run src/modules/agenda/agenda-route-smoke.test.tsx
+Exit status: 0
+Captured output:
+  > @figma/my-make-file@0.0.1 test
+  > vitest run --run src/modules/agenda/agenda-route-smoke.test.tsx
+
+   RUN  v4.1.8 /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar-agenda-front-worktree
+
+   Test Files  1 passed (1)
+       Tests  14 passed (14)
+   Start at  17:29:21
+   Duration  9.70s (transform 1.62s, setup 82ms, import 5.28s, tests 3.50s, environment 689ms)
+Binary observables: supported hashes preserve their expected hash; unknown `#doesNotExist` normalizes to `#agenda`; each case asserts a route-specific heading, control, placeholder, or `data-name` marker rather than body length.
+
+Adversarial mutation proof: temporarily removed the `#preview/agendaDia/empty` case from the `routeCases` table, ran the targeted inventory test, then restored the case before the passing run above.
+Command while mutated:
+  npm run test -- --run src/modules/agenda/agenda-route-smoke.test.tsx --testNamePattern="keeps the complete agenda route inventory"
+Exit status: 1 (expected mutation failure)
+Captured output:
+  > @figma/my-make-file@0.0.1 test
+  > vitest run --run src/modules/agenda/agenda-route-smoke.test.tsx --testNamePattern=keeps the complete agenda route inventory
+
+   RUN  v4.1.8 /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar-agenda-front-worktree
+
+   ❯ src/modules/agenda/agenda-route-smoke.test.tsx (13 tests | 1 failed | 12 skipped) 13ms
+       × keeps the complete agenda route inventory 12ms
+
+  AssertionError: expected [ { hash: '#agenda', …(2) }, …(11) ] to have a length of 13 but got 12
+  - Expected
+  + Received
+  - 13
+  + 12
+  ❯ src/modules/agenda/agenda-route-smoke.test.tsx:120:24
+
+Restoration check: the final passing run reports 14 tests, and the source inventory reports `#preview/agendaDia/empty` at lines 76-81.
+
+TypeScript and file-quality checks after restoration:
+  Command: npm run typecheck
+  Exit status: 0
+  Output: tsc --noEmit completed with no diagnostics.
+  Command: npx eslint src/modules/agenda/agenda-route-smoke.test.tsx
+  Exit status: 0
+  Output: no output.
+  Command: npx prettier --check src/modules/agenda/agenda-route-smoke.test.tsx
+  Exit status: 0
+  Output: Checking formatting... / All matched files use Prettier code style!
+  Command: rg -n '\bany\b|@ts-ignore|@ts-expect-error' src/modules/agenda/agenda-route-smoke.test.tsx
+  Exit status: 1 for the search, wrapped guard command exit status: 0
+  Output: no forbidden TypeScript escape hatches
+
+Targeted worktree audit captured before evidence/plan/ledger writes:
+  ## work/agenda-front
+  ?? .claude/rules/agenda.md
+  ?? .omo/boulder.json
+  ?? .omo/drafts/
+  ?? .omo/evidence/
+  ?? .omo/plans/agenda-front-plan.md
+  ?? .omo/start-work/
+  ?? AGENTS.md
+  ?? DESIGN.md
+  ?? Specdrivenagenda
+  ?? src/modules/agenda/agenda-route-smoke.test.tsx
+  `git status --short -- src/app/App.test.tsx` produced no output.
+
+Allowed change artifact: `src/modules/agenda/agenda-route-smoke.test.tsx`.
+Evidence artifact: `.omo/evidence/agenda-front-plan/task-3-routes.txt`.

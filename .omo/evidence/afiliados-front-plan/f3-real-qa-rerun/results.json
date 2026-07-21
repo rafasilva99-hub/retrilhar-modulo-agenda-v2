@@ -1,0 +1,449 @@
+{
+  "generatedAt": "2026-07-21T01:09:56.752Z",
+  "baseUrl": "http://127.0.0.1:4173/",
+  "appPort": 4173,
+  "cdpPort": 9222,
+  "routeChecks": [
+    {
+      "scenario": "direct afiliados 1280x800",
+      "hash": "#afiliados",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#afiliados",
+        "h1": "Oi Katiely, bem-vinda de volta!",
+        "bodyTextLength": 1851,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 20,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-afiliados-1280x800.png",
+        "bytes": 119280,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 800,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct indicacoes 1280x800",
+      "hash": "#indicacoes",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#indicacoes",
+        "h1": "Indicações",
+        "bodyTextLength": 2920,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 19,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-indicacoes-1280x800.png",
+        "bytes": 98707,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 800,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct ganhos 1280x800",
+      "hash": "#ganhos",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#ganhos",
+        "h1": "Ganhos",
+        "bodyTextLength": 1329,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 22,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-ganhos-1280x800.png",
+        "bytes": 91135,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 800,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct produtosLinks 1280x800",
+      "hash": "#produtosLinks",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#produtosLinks",
+        "h1": "Produtos e Links",
+        "bodyTextLength": 3090,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 43,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-produtosLinks-1280x800.png",
+        "bytes": 95627,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 800,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct configuracoes 1280x800",
+      "hash": "#configuracoes",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#configuracoes",
+        "h1": "",
+        "bodyTextLength": 414,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 9,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-configuracoes-1280x800.png",
+        "bytes": 57845,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 800,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct ajuda 1280x800",
+      "hash": "#ajuda",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#ajuda",
+        "h1": "Como podemos ajudar?",
+        "bodyTextLength": 655,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 10,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-ajuda-1280x800.png",
+        "bytes": 68379,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 800,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct afiliados 390x844",
+      "hash": "#afiliados",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#afiliados",
+        "h1": "Oi Katiely, bem-vinda de volta!",
+        "bodyTextLength": 1730,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 19,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-afiliados-390x844.png",
+        "bytes": 55507,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct indicacoes 390x844",
+      "hash": "#indicacoes",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#indicacoes",
+        "h1": "Indicações",
+        "bodyTextLength": 2806,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 34,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-indicacoes-390x844.png",
+        "bytes": 47691,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct ganhos 390x844",
+      "hash": "#ganhos",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#ganhos",
+        "h1": "Ganhos",
+        "bodyTextLength": 1311,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 22,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-ganhos-390x844.png",
+        "bytes": 49849,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct produtosLinks 390x844",
+      "hash": "#produtosLinks",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#produtosLinks",
+        "h1": "Produtos e Links",
+        "bodyTextLength": 2984,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 43,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-produtosLinks-390x844.png",
+        "bytes": 57393,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct configuracoes 390x844",
+      "hash": "#configuracoes",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#configuracoes",
+        "h1": "",
+        "bodyTextLength": 234,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 7,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-configuracoes-390x844.png",
+        "bytes": 31003,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "scenario": "direct ajuda 390x844",
+      "hash": "#ajuda",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "verdict": "PASS",
+      "audit": {
+        "hash": "#ajuda",
+        "h1": "Como podemos ajudar?",
+        "bodyTextLength": 655,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 10,
+        "unnamedControls": [],
+        "clippedControls": [],
+        "offscreenControls": []
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/route-ajuda-390x844.png",
+        "bytes": 48170,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "scenario": "dashboard copy detail close",
+      "verdict": "PASS",
+      "copiedFeedback": true,
+      "copiedScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-dashboard-copied-1280x800.png",
+      "detailScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-dashboard-detail-1280x800.png",
+      "closed": true
+    },
+    {
+      "scenario": "indicacoes search tab detail back",
+      "verdict": "PASS",
+      "search": "João",
+      "searchScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-indicacoes-search-1280x800.png",
+      "paidTab": true,
+      "tabScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-indicacoes-pagas-1280x800.png",
+      "detailScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-indicacoes-detail-1280x800.png",
+      "copyVerdict": "PASS: exposed copy control",
+      "backHash": "#afiliados"
+    },
+    {
+      "scenario": "ganhos organization filter detail related link",
+      "verdict": "PASS",
+      "organization": "Cerrado Experience",
+      "filterScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-ganhos-org-filter-1280x800.png",
+      "detailScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-ganhos-detail-1280x800.png",
+      "relatedHash": "#indicacoes"
+    },
+    {
+      "scenario": "produtos links copy request unavailable",
+      "verdict": "PASS",
+      "generalCopied": true,
+      "organizationCopied": true,
+      "productCopied": true,
+      "organizationScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-produtos-organization-1280x800.png",
+      "productScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-produtos-product-copied-1280x800.png",
+      "requestFeedback": "Solicitação enviada",
+      "unavailableDisabled": true
+    },
+    {
+      "scenario": "configuracoes destination change cash no-op count update",
+      "verdict": "PASS",
+      "typeReadOnly": true,
+      "initialUsageCount": 2,
+      "updatedUsageCount": 2,
+      "updatedScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-configuracoes-updated-1280x800.png",
+      "cashNoOp": true
+    },
+    {
+      "scenario": "ajuda search hit no-result close",
+      "verdict": "PASS",
+      "hitScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-ajuda-search-hit-390x844.png",
+      "noResultScreenshot": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/screenshots/interaction-ajuda-no-result-390x844.png",
+      "closedHash": "#afiliados"
+    }
+  ],
+  "consoleEvents": [],
+  "failures": [],
+  "consoleClassification": {
+    "policy": "Known shared Breadcrumb/Sheet/Dialog React warnings are retained and classified; unexpected error-level console events, runtime exceptions, and network failures fail QA.",
+    "retainedEvents": 0,
+    "knownSharedPrimitiveWarnings": {
+      "total": 0,
+      "byCategory": {
+        "breadcrumb-dom-nesting": 0,
+        "sheet-overlay-ref": 0,
+        "dialog-description": 0
+      }
+    },
+    "errorLevelEvents": {
+      "total": 0,
+      "knownSharedPrimitive": 0,
+      "unexpected": 0
+    },
+    "unclassifiedRetainedEvents": 0,
+    "runtimeExceptions": 0,
+    "networkFailures": 0,
+    "eventClassifications": [],
+    "pass": true
+  },
+  "pass": true
+}

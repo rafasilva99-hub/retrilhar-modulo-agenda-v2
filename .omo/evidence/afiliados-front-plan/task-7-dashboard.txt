@@ -1,0 +1,85 @@
+Todo 7 evidence — refine affiliate dashboard at #afiliados
+Date: 2026-07-20
+Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+Evidence directory: .omo/evidence/afiliados-front-plan/
+Attempt lookup: `omo ulw-loop status --json` was unavailable (`zsh: command not found: omo`), so the fallback directory required by the plan was used.
+
+SOURCE REFERENCES
+- Read before editing: AGENTS.md; CLAUDE.md; .claude/rules/agenda-fidelity.md; .claude/rules/afiliados.md; DESIGN.md; Specdrivenafiliados.md:18-33.
+- Plan acceptance: .omo/plans/afiliados-front-plan.md:199-212.
+- Dashboard implementation: src/modules/afiliados/AfiliadosPage.tsx:52-63 (service/shared imports), :87-94 (period/status/link constants), :125-164 (KPI row), :200-322 (referrals preview), :377-516 (Sheet detail), :525-646 (code banner/copy), :692-738 (empty state/navigation), :740-850 (controlled dashboard state and render).
+- Service/fixture references: src/modules/afiliados/services/afiliados-mock-service.ts:67-115; src/mocks/afiliados/index.ts:126-141, :156-230, :738-755.
+- Shared primitives: src/modules/afiliados/components/index.ts and the existing shadcn Card/Table/Sheet/DataList primitives.
+
+CHANGED PRODUCT FILES
+- src/modules/afiliados/AfiliadosPage.tsx
+- src/modules/afiliados/AfiliadosPage.test.tsx
+- No other product or shared files were edited by this task. Other workers' dirty files remain untouched.
+
+IMPLEMENTATION OBSERVABLES
+- Dashboard uses `filterReferrals`, `getReferralCartItems`, and `listAffiliateOrganizations`; KPI calculation remains fixture-backed through `getKpis`.
+- Shared affiliate primitives now cover KPI cards, copy feedback, organization filtering, section headings, status badges, and the empty state.
+- Preserved controlled period/organization/search filters, `KAT-2931` copy feedback, referral preview, cart-item Sheet/detail/close flow, empty state, and links to all five requested affiliate hashes.
+- Added focused tests for filters, copy feedback, first-row cart detail/close, and empty state.
+
+TEST SCENARIO — focused dashboard regression
+Command: `npm run test -- --run src/modules/afiliados/AfiliadosPage.test.tsx`
+Exit: 0
+Observable:
+  Test Files 1 passed (1)
+  Tests 2 passed (2)
+Captured artifact: this file; source assertions: src/modules/afiliados/AfiliadosPage.test.tsx:12-75.
+
+TEST SCENARIO — exact requested aggregate suite
+Command: `npm run test -- --run src/app/App.test.tsx src/modules/afiliados`
+Final exit: 1
+Observable:
+  Test Files 1 failed | 8 passed (9)
+  Tests 1 failed | 33 passed (34)
+  Failure: `src/app/App.test.tsx > App hash routing > renders each affiliate screen for its direct hash route`
+  Expected `Extrato de comissoes`; rendered route text is `Extrato de comissões`.
+Classification: unrelated pre-existing/concurrent worker state. `src/app/App.test.tsx` was already modified before this task and is outside the allowed write set; the failing route is `#ganhos`, not `#afiliados`. The dashboard focused suite and the remaining aggregate tests pass. The shared breadcrumb also emits an existing DOM nesting warning.
+Captured artifact: this file; full terminal result was observed in the final run.
+
+STATIC/QUALITY SCENARIOS
+- Command: `rg -n "fetch\(|axios|contrato|vínculo|mock|fake" src/modules/afiliados/AfiliadosPage.tsx`
+  Exit: 0
+  Output:
+    52:} from "@/mocks/afiliados";
+    58:} from "./services/afiliados-mock-service";
+  Classification: only technical fixture/service identifiers contain `mock`; no `fetch(`, `axios`, `contrato`, `vínculo`, or `fake` match; no prohibited visible copy was introduced.
+- Command: `npx prettier --check src/modules/afiliados/AfiliadosPage.tsx src/modules/afiliados/AfiliadosPage.test.tsx && npx eslint src/modules/afiliados/AfiliadosPage.tsx src/modules/afiliados/AfiliadosPage.test.tsx && git diff --check`
+  Exit: 0.
+- Command: `npm run typecheck`
+  Exit: 0 (`tsc --noEmit`).
+- Command: `npm run build`
+  Exit: 0 (`vite build`, 2092 modules transformed). Vite emitted only the repository's existing large-chunk warning.
+
+BROWSER SCENARIOS
+- Server command: `npm run dev -- --host 127.0.0.1`; actual port `5178`; server stopped with Ctrl-C after QA.
+- Happy invocation: Playwright 1.52.0, `http://127.0.0.1:5178/#afiliados`, viewport `1440x1000`; click `Copiar`, open first referral row, inspect detail/cart items, click `Fechar aba`, inspect links.
+  Exit: 0. Binary observables: URL `#afiliados`; clipboard `KAT-2931`; feedback `Copiado`; cart items `Rapel Cachoeira` and `Tirolesa Radical`; detail closed; hrefs `#indicacoes`, `#ganhos`, `#produtosLinks`, `#configuracoes`, `#ajuda`.
+- Empty invocation: Playwright 1.52.0, same URL, viewport `375x900`; click existing `Encolher menu`, fill `sem-resultado`, inspect empty state and steps.
+  Exit: 0. Binary observables: `Nenhuma indicação encontrada`, `Passo a Passo`, `scrollWidth=375`, `innerWidth=375`, `shellScrollLeft=0`.
+- Responsive smoke: Playwright at `768x900` and `1280x900`; dashboard heading/content visible and `scrollWidth === innerWidth` in both. At 768px KPI grid computed to 2 columns.
+- Browser evidence details: `.omo/evidence/afiliados-front-plan/task-7-dashboard-browser.md`.
+- Screenshot artifacts: `task-7-dashboard.png`, `task-7-dashboard-detail.png`, `task-7-dashboard-empty.png`, `task-7-dashboard-768.png`, `task-7-dashboard-1280.png`, `task-7-dashboard-mobile-collapsed.png`.
+
+ADVERSARIAL CLASSES / RISK REVIEW
+- Network/backend: no maintained network call or backend/auth/Next concept in the target page; scan above is clean.
+- Visible terminology: no `contrato`, `vínculo`, `fake`, or visible `mock`; technical `mock` imports are fixture/service source-of-truth identifiers only.
+- Navigation: all five requested hash links were read from the rendered DOM and matched exactly.
+- Interaction regression: copy feedback, filter changes, first referral detail, cart items, close action, and no-result state were each exercised in tests/browser.
+- Scope/conflict: aggregate suite red is owned by an already-modified `App.test.tsx`/other screen worker expectation and was not overwritten. Shared shell auto-collapse at 375px is outside the allowed write set; the feature passes narrow QA after the existing shell collapse control is used.
+
+CLEANUP
+- Vite process stopped; Playwright browser/context closed; no dependency or route changes; no temporary worktree created.
+- Cleanup receipt: `lsof -nP -iTCP:5178 -sTCP:LISTEN || true` exited 0 with empty output, confirming no QA listener remained on the captured port.
+- Scoped status captured with `git status --short --untracked-files=all` for the two source files and Task 7 artifacts; `git diff --check` exited 0.
+
+DONECLAIM
+Status: IMPLEMENTED_FOR_TODO_7_WITH_EXTERNAL_AGGREGATE_TEST_BLOCKER
+Details: the requested dashboard refinement is implemented and directly verified. Focused dashboard tests, typecheck, build, lint/format, static guardrail scan, desktop happy path, empty state, responsive smoke, and screenshot evidence are green. The exact requested aggregate command remains red only because an out-of-scope concurrent `#ganhos` route assertion expects unaccented text. This is recorded rather than claimed as green.
+Final evidence paths:
+- .omo/evidence/afiliados-front-plan/task-7-dashboard.txt
+- .omo/evidence/afiliados-front-plan/task-7-dashboard-browser.md

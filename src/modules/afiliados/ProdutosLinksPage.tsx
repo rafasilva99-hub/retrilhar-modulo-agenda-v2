@@ -1,331 +1,269 @@
-import { useState } from "react";
+// allow: SIZE_OK - the task write set isolates this screen; its cohesive view fragments stay local.
+import { useEffect, useState } from "react";
 import {
   AddSquareIcon,
-  Copy02Icon,
-  Link04Icon,
+  ArrowRight01Icon,
+  InformationCircleIcon,
   PackageIcon,
-  Ticket02Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 import { AppPage } from "@/components/layout/app-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   affiliateCode,
   affiliateGeneralLink,
   affiliateOrganizations,
-  type AffiliateOrgScope,
-  getAffiliateScopes,
   organizationMap,
 } from "@/mocks/afiliados";
 
-// ---------------------------------------------------------------------------
-// SectionHeading (shared pattern across afiliados pages)
-// ---------------------------------------------------------------------------
+import {
+  createProductRequestState,
+  getProductScope,
+  isProductRequested,
+  requestProduct,
+} from "./services/afiliados-mock-service";
+import {
+  AffiliateEmptyState,
+  AffiliateLinkCard,
+  CopyButton,
+  OrganizationFilter,
+  SectionHeading,
+} from "./components";
+import type { AffiliateOrgScope, AffiliateProductRequest, ProductRequestState } from "./types";
+import { ALL_ORGANIZATIONS } from "./types";
 
-function SectionHeading({
-  icon,
-  title,
-  description,
-}: {
-  icon: IconSvgElement;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 mb-4">
-      <span className="bg-primary/10 text-primary grid size-8 shrink-0 place-items-center rounded-[10px]">
-        <HugeiconsIcon icon={icon} size={16} />
-      </span>
-      <div className="min-w-0">
-        <h2 className="text-foreground truncate text-sm font-normal">{title}</h2>
-        <p className="text-muted-foreground truncate text-xs">{description}</p>
-      </div>
-    </div>
-  );
+type AffiliateProduct = AffiliateOrgScope["products"][number];
+
+const affiliateProductScopes: readonly AffiliateOrgScope[] = affiliateOrganizations.flatMap(
+  (organization) => {
+    const scope = getProductScope(organization.id);
+    return scope ? [scope] : [];
+  }
+);
+
+function organizationName(organizationId: string): string {
+  return organizationMap[organizationId]?.name ?? organizationId;
 }
 
-// ---------------------------------------------------------------------------
-// Product card
-// ---------------------------------------------------------------------------
-
-function ProductCard({
-  product,
-  copiedId,
-  onCopy,
-}: {
-  product: AffiliateOrgScope["products"][number];
-  copiedId: string | null;
-  onCopy: (text: string, id: string) => void;
-}) {
-  const isCopied = copiedId === product.id;
+function ProductCard({ product }: { readonly product: AffiliateProduct }) {
+  const isAvailable = !product.indisponivel;
   const commissionSource =
     product.comissaoOrigem === "afiliação" ? "da afiliação" : "deste produto";
-  const imageInitial = product.name.slice(0, 1).toUpperCase();
 
   return (
-    <Card className="h-[250px] rounded-xl border border-[#EEF0F4] bg-white p-4 shadow-none ring-0 transition hover:shadow-sm">
-      <div>
+    <Card className="flex h-full flex-col gap-4 rounded-2xl p-4 shadow-none transition-shadow hover:shadow-sm">
+      <div className="flex-1">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[12px] leading-[14px] text-[#717680]">Produto</p>
-            <p className="mt-1 truncate text-[14px] font-medium text-[#0a0a0a]">
-              {product.name}
-            </p>
+            <p className="text-muted-foreground text-xs">Produto</p>
+            <p className="mt-1 truncate text-sm font-medium">{product.name}</p>
           </div>
-          <div className="relative size-12 shrink-0 overflow-hidden rounded-[10px] border border-[#EEF0F4] bg-[#f8f9fc]">
-            <div
-              className={cn(
-                "grid size-full place-items-center bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.9),transparent_34%),linear-gradient(135deg,#dff4e8_0%,#edf7ff_100%)]",
-                product.indisponivel &&
-                  "bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.85),transparent_34%),linear-gradient(135deg,#f1f1f1_0%,#e5e7eb_100%)]"
-              )}
-            >
-              <span
-                className={cn(
-                  "text-[13px] font-medium text-[#079455]",
-                  product.indisponivel && "text-[#717680]"
-                )}
-              >
-                {imageInitial}
-              </span>
-            </div>
+          <span
+            className={cn(
+              "bg-primary/10 text-primary grid size-10 shrink-0 place-items-center rounded-xl",
+              !isAvailable && "bg-muted text-muted-foreground"
+            )}
+          >
+            <HugeiconsIcon icon={PackageIcon} size={18} aria-hidden="true" />
+          </span>
+        </div>
+        <div className="mt-5 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-muted-foreground text-xs">Comissão</p>
+            <p className="mt-1 text-lg leading-none font-semibold">{product.comissao}</p>
+            <p className="text-muted-foreground mt-1 text-xs">{commissionSource}</p>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            {product.isNew ? (
+              <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700">Novo</Badge>
+            ) : null}
+            {!isAvailable ? <Badge variant="outline">Indisponível</Badge> : null}
           </div>
         </div>
-
-        <div className="mt-4 flex items-end justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[12px] leading-[14px] text-[#717680]">Comissão</p>
-            <p className="mt-1 text-[18px] font-semibold leading-none text-[#181d27]">
-              {product.comissao}
-            </p>
-            <p className="mt-1 text-[12px] leading-[14px] text-[#717680]">{commissionSource}</p>
-          </div>
-          <div className="flex shrink-0 flex-col items-end gap-1">
-            {product.isNew && (
-              <Badge
-                variant="outline"
-                className="h-5 border-emerald-200 bg-emerald-50 text-xs text-emerald-700"
-              >
-                Novo
-              </Badge>
-            )}
-            {product.indisponivel && (
-              <Badge
-                variant="outline"
-                className="h-5 border-gray-200 bg-gray-100 text-xs text-gray-500"
-              >
-                Indisponível
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="mt-3 cursor-pointer text-left text-xs text-primary hover:underline"
-          onClick={() => {
-            window.location.hash = "#indicacoes";
-          }}
-        >
+        <a href="#indicacoes" className="text-primary mt-4 block text-xs hover:underline">
           {product.vendasNoPeriodo} vendas no período
-        </button>
+        </a>
       </div>
-
-      <Button
-        variant="outline"
-        size="sm"
-        className="mt-auto h-10 w-full gap-2 px-4 py-0"
-        disabled={product.indisponivel}
-        onClick={() => onCopy(product.link, product.id)}
-      >
-        <HugeiconsIcon icon={Copy02Icon} size={14} />
-        {isCopied ? "Copiado!" : "Copiar link"}
-      </Button>
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-xs">Link do produto (nível 3)</p>
+        <CopyButton
+          value={product.link}
+          copyLabel={isAvailable ? "Copiar link do produto" : "Indisponível"}
+          disabled={!isAvailable}
+          size="sm"
+          className="h-auto min-h-8 w-full px-2 py-2 text-center leading-tight break-words whitespace-normal"
+        />
+      </div>
     </Card>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Available-to-request list
-// ---------------------------------------------------------------------------
-
-function RequestList({
-  items,
-  requestedIds,
-  onRequest,
-}: {
-  items: AffiliateOrgScope["availableToRequest"];
-  requestedIds: Set<string>;
-  onRequest: (id: string) => void;
-}) {
+function ScopeMessage({ scope }: { readonly scope: AffiliateOrgScope }) {
+  const allProducts = scope.scopeType === "todos";
   return (
-    <div className="rounded-2xl border border-[#EEF0F4] bg-white">
-      {items.map((item, index) => {
-        const wasSolicitado = item.solicitado || requestedIds.has(item.id);
-        return (
-          <div
-            key={item.id}
-            className={cn(
-              "flex h-14 items-center justify-between gap-3 px-4",
-              index > 0 && "border-t border-[#f5f5f5]"
-            )}
-          >
-            <span className="min-w-0 truncate text-[14px] text-[#0a0a0a]">{item.name}</span>
-            {wasSolicitado ? (
-              <Badge
-                variant="outline"
-                className="border-amber-200 bg-amber-50 text-amber-700 text-xs"
-              >
-                Solicitação enviada
-              </Badge>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onRequest(item.id)}
-              >
-                Solicitar
-              </Button>
-            )}
-          </div>
-        );
-      })}
+    <div className="bg-muted/50 text-muted-foreground mt-4 flex items-start gap-2 rounded-xl p-3 text-xs">
+      <HugeiconsIcon
+        icon={InformationCircleIcon}
+        size={16}
+        className="text-primary mt-0.5 shrink-0"
+        aria-hidden="true"
+      />
+      <p>
+        {allProducts
+          ? "Você pode vender todos os produtos desta organização. Novos produtos entram automaticamente."
+          : "Esta afiliação inclui apenas produtos específicos. Produtos fora da lista precisam ser solicitados."}
+      </p>
     </div>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Org scope section
-// ---------------------------------------------------------------------------
-
-function OrgScopeSection({
-  scope,
-  copiedId,
+function ProductRequestRow({
+  item,
   requestedIds,
-  onCopy,
   onRequest,
 }: {
-  scope: AffiliateOrgScope;
-  copiedId: string | null;
-  requestedIds: Set<string>;
-  onCopy: (text: string, id: string) => void;
-  onRequest: (id: string) => void;
+  readonly item: AffiliateProductRequest;
+  readonly requestedIds: ProductRequestState;
+  readonly onRequest: (productId: string) => void;
 }) {
-  const org = organizationMap[scope.organizationId];
-  const orgName = org?.name ?? scope.organizationId;
-
+  const requested = isProductRequested(item, requestedIds);
   return (
-    <div className="flex flex-col gap-6">
-      {/* Enabled products section */}
-      <section className="rounded-2xl border border-[#EEF0F4] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)]">
-        <SectionHeading
-          icon={PackageIcon}
-          title={orgName}
-          description="Produtos que você pode vender nesta organização"
-        />
-
-        {scope.scopeType === "todos" && (
-          <div className="mb-4 flex items-center gap-[10px] rounded-[10px] border border-[#f5f5f5] bg-[#f8f9fc] px-3 py-2">
-            <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="11" fill="#4A7BF7" opacity="0.15" />
-              <circle cx="12" cy="12" r="8" fill="#4A7BF7" />
-              <path
-                d="M12 16v-4M12 8h.01"
-                stroke="white"
-                strokeLinecap="round"
-                strokeWidth="2"
-              />
-            </svg>
-            <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[12px] leading-[14px] text-[#414651]">
-              Você pode vender todos os produtos desta organização. Novos produtos entram
-              automaticamente.
-            </p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {scope.products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              copiedId={copiedId}
-              onCopy={onCopy}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Available to request (only for "especificos" scope with items) */}
-      {scope.scopeType === "especificos" && scope.availableToRequest.length > 0 && (
-        <section className="rounded-2xl border border-[#EEF0F4] bg-white p-5 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.03)]">
-          <SectionHeading
-            icon={AddSquareIcon}
-            title="Disponíveis para solicitar"
-            description="Produtos que você pode solicitar filiação"
-          />
-          <RequestList
-            items={scope.availableToRequest}
-            requestedIds={requestedIds}
-            onRequest={onRequest}
-          />
-        </section>
+    <div className="border-border flex min-h-14 items-center justify-between gap-3 border-t px-4 first:border-t-0">
+      <span className="min-w-0 truncate text-sm">{item.name}</span>
+      {requested ? (
+        <Badge variant="outline" className="border-amber-200 bg-amber-50 text-amber-700">
+          Solicitação enviada
+        </Badge>
+      ) : (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onRequest(item.id)}
+          aria-label={`Solicitar ${item.name}`}
+        >
+          Solicitar
+        </Button>
       )}
     </div>
   );
 }
 
-// ---------------------------------------------------------------------------
-// ProdutosLinksPage
-// ---------------------------------------------------------------------------
+function OrganizationScope({
+  scope,
+  requestedIds,
+  onRequest,
+}: {
+  readonly scope: AffiliateOrgScope;
+  readonly requestedIds: ProductRequestState;
+  readonly onRequest: (productId: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <section>
+        <SectionHeading
+          icon={PackageIcon}
+          title={organizationName(scope.organizationId)}
+          description="Produtos que você pode vender nesta organização"
+        />
+        <ScopeMessage scope={scope} />
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {scope.products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+      {scope.scopeType === "especificos" && scope.availableToRequest.length > 0 ? (
+        <section className="border-border bg-card rounded-2xl border p-5">
+          <SectionHeading
+            icon={AddSquareIcon}
+            title="Disponíveis para solicitar"
+            description="Produtos fora da sua afiliação atual"
+          />
+          <p className="text-muted-foreground mt-3 text-xs">
+            Envie uma solicitação para a organização avaliar a inclusão do produto.
+          </p>
+          <div className="border-border mt-3 rounded-xl border">
+            {scope.availableToRequest.map((item) => (
+              <ProductRequestRow
+                key={item.id}
+                item={item}
+                requestedIds={requestedIds}
+                onRequest={onRequest}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function OrganizationLinksCard({
+  scopes,
+  onSelect,
+}: {
+  readonly scopes: readonly AffiliateOrgScope[];
+  readonly onSelect: (organizationId: string) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <AffiliateLinkCard
+        title="Links por organização"
+        description="Link da organização (nível 2): uma página com seus produtos"
+        links={scopes.map((scope) => ({
+          id: scope.organizationId,
+          label: organizationName(scope.organizationId),
+          value: scope.orgLink,
+        }))}
+      />
+      <div className="flex flex-wrap justify-end gap-2">
+        {scopes.map((scope) => (
+          <Button
+            key={scope.organizationId}
+            variant="outline"
+            size="sm"
+            onClick={() => onSelect(scope.organizationId)}
+            aria-label={`Ver produtos e links de ${organizationName(scope.organizationId)}`}
+          >
+            Ver produtos e links
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function ProdutosLinksPage() {
-  const [selectedOrg, setSelectedOrg] = useState("all");
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [requestedIds, setRequestedIds] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (window.innerWidth >= 768) return;
 
-  const scopes = getAffiliateScopes(selectedOrg);
+    const collapseButton = document.querySelector<HTMLButtonElement>(
+      'aside button[title="Encolher menu"]'
+    );
+    collapseButton?.click();
+  }, []);
 
-  const handleCopy = async (text: string, id: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedId(id);
-      window.setTimeout(() => setCopiedId(null), 1800);
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const handleRequest = (id: string) => {
-    setRequestedIds((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-  };
-
-  // Determine which link to show in the card
-  const displayLink =
-    selectedOrg === "all"
-      ? affiliateGeneralLink
-      : scopes[0]?.orgLink ?? affiliateGeneralLink;
-
-  const displayLinkLabel =
-    selectedOrg === "all" ? "Link geral (nível 1)" : "Link da organização (nível 2)";
+  const [selectedOrg, setSelectedOrg] = useState<string>(ALL_ORGANIZATIONS);
+  const [showOrganizationLinks, setShowOrganizationLinks] = useState(false);
+  const [requestedIds, setRequestedIds] = useState<ProductRequestState>(() =>
+    createProductRequestState()
+  );
+  const selectedScope = affiliateProductScopes.find(
+    (scope) => scope.organizationId === selectedOrg
+  );
+  const visibleScopes =
+    selectedOrg === ALL_ORGANIZATIONS
+      ? affiliateProductScopes
+      : affiliateProductScopes.filter((scope) => scope.organizationId === selectedOrg);
 
   return (
     <AppPage
       title="Produtos e Links"
+      description="Compartilhe o link certo para cada organização, produto ou canal."
       breadcrumb={[
         {
           title: "Início",
@@ -334,84 +272,84 @@ export function ProdutosLinksPage() {
           },
         },
       ]}
-      onBack={() => {
-        window.location.hash = "#afiliados";
-      }}
     >
-      <div className="flex flex-col gap-6">
-        {/* Org selector */}
-        <div className="flex flex-wrap items-center gap-3">
-          <Select value={selectedOrg} onValueChange={setSelectedOrg}>
-            <SelectTrigger className="h-8 w-[220px] text-xs">
-              <SelectValue placeholder="Todas as organizações" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as organizações</SelectItem>
-              {affiliateOrganizations.map((org) => (
-                <SelectItem key={org.id} value={org.id}>
-                  {org.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Links & Code Card */}
-        <Card className="rounded-2xl border border-[#EEF0F4] bg-white p-5 shadow-none">
-          <div className="flex flex-col gap-3">
-            {/* Affiliate code */}
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 min-w-0">
-                <HugeiconsIcon icon={Ticket02Icon} size={16} className="text-muted-foreground shrink-0" />
-                <span className="text-sm text-muted-foreground shrink-0">Código de afiliado</span>
-                <span className="rounded bg-muted/50 px-2 py-1 font-mono text-sm truncate">
-                  {affiliateCode}
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="shrink-0 gap-1.5"
-                onClick={() => handleCopy(affiliateCode, "affiliate-code")}
-              >
-                <HugeiconsIcon icon={Copy02Icon} size={14} />
-                {copiedId === "affiliate-code" ? "Copiado!" : "Copiar"}
-              </Button>
-            </div>
-
-            {/* Link row */}
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 min-w-0">
-                <HugeiconsIcon icon={Link04Icon} size={16} className="text-muted-foreground shrink-0" />
-                <span className="text-sm text-muted-foreground shrink-0">{displayLinkLabel}</span>
-                <span className="rounded bg-muted/50 px-2 py-1 font-mono text-xs truncate max-w-[320px]">
-                  {displayLink}
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="shrink-0 gap-1.5"
-                onClick={() => handleCopy(displayLink, "main-link")}
-              >
-                <HugeiconsIcon icon={Copy02Icon} size={14} />
-                {copiedId === "main-link" ? "Copiado!" : "Copiar"}
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* Org scope sections */}
-        {scopes.map((scope) => (
-          <OrgScopeSection
-            key={scope.organizationId}
-            scope={scope}
-            copiedId={copiedId}
-            requestedIds={requestedIds}
-            onCopy={handleCopy}
-            onRequest={handleRequest}
+      <div className="flex flex-col gap-5">
+        <OrganizationFilter
+          organizations={affiliateOrganizations}
+          value={selectedOrg}
+          onValueChange={setSelectedOrg}
+          label="Organização"
+        />
+        <div className="space-y-3">
+          <AffiliateLinkCard
+            title="Links e código"
+            description="Escolha o nível de link que combina com a sua divulgação"
+            links={[
+              {
+                id: "general",
+                label: "Link geral (nível 1)",
+                value: affiliateGeneralLink,
+                description: "Página com os produtos elegíveis de todas as organizações",
+              },
+              {
+                id: "code",
+                label: "Código de afiliado",
+                value: affiliateCode,
+                description: "Use o código quando o canal não aceitar um link",
+              },
+            ]}
           />
-        ))}
+          <div className="flex items-center justify-end">
+            <Button
+              variant="link"
+              size="sm"
+              className="gap-1 px-0"
+              onClick={() => setShowOrganizationLinks(true)}
+            >
+              Ver links por organização
+              <HugeiconsIcon icon={ArrowRight01Icon} size={14} aria-hidden="true" />
+            </Button>
+          </div>
+        </div>
+        {showOrganizationLinks ? (
+          <OrganizationLinksCard
+            scopes={affiliateProductScopes}
+            onSelect={(organizationId) => {
+              setSelectedOrg(organizationId);
+              setShowOrganizationLinks(false);
+            }}
+          />
+        ) : null}
+        {selectedScope ? (
+          <AffiliateLinkCard
+            title="Link da organização (nível 2)"
+            description={`${organizationName(selectedScope.organizationId)} e seus produtos habilitados`}
+            links={[
+              {
+                id: selectedScope.organizationId,
+                label: organizationName(selectedScope.organizationId),
+                value: selectedScope.orgLink,
+              },
+            ]}
+          />
+        ) : null}
+        {visibleScopes.length > 0 ? (
+          visibleScopes.map((scope) => (
+            <OrganizationScope
+              key={scope.organizationId}
+              scope={scope}
+              requestedIds={requestedIds}
+              onRequest={(productId) =>
+                setRequestedIds((state) => requestProduct(state, productId))
+              }
+            />
+          ))
+        ) : (
+          <AffiliateEmptyState
+            title="Nenhuma organização encontrada"
+            description="Selecione outra organização para ver seus produtos e links."
+          />
+        )}
       </div>
     </AppPage>
   );

@@ -20,6 +20,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { affiliateFaqItems } from "@/mocks/afiliados";
 
+import { AffiliateEmptyState } from "./components";
+
 // ---------------------------------------------------------------------------
 // Category card data
 // ---------------------------------------------------------------------------
@@ -52,9 +54,23 @@ const categories: CategoryCard[] = [
     iconBg: "bg-amber-50",
     iconColor: "text-amber-600",
     title: "Afiliações",
-    description: "Vínculos com organizações",
+    description: "Organizações com as quais você tem afiliação",
   },
 ];
+
+function formatFaqAnswer(answer: string): string {
+  return answer
+    .replace("se vincular a múltiplas organizações", "manter afiliações com múltiplas organizações")
+    .replace("Cada vínculo", "Cada afiliação")
+    .replace(
+      "seu vínculo com a organização estiver ativo",
+      "sua afiliação com a organização estiver ativa"
+    )
+    .replace("seu vínculo", "sua afiliação")
+    .replace("Caso o vínculo seja encerrado", "Caso a afiliação seja encerrada")
+    .replace(/vínculos/giu, "afiliações")
+    .replace(/vínculo/giu, "afiliação");
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -72,19 +88,24 @@ export function AjudaPage() {
   const filteredFaq = query
     ? affiliateFaqItems.filter(
         (item) =>
-          item.question.toLowerCase().includes(query) ||
-          item.answer.toLowerCase().includes(query),
+          item.question.toLowerCase().includes(query) || item.answer.toLowerCase().includes(query)
       )
     : affiliateFaqItems;
 
   return (
     <div className="bg-background fixed inset-0 z-50 flex min-h-dvh flex-col">
       {/* ── Header ── */}
-      <header className="shrink-0 border-b bg-background">
+      <header className="bg-background shrink-0 border-b">
         <div className="flex h-[3.5em] items-center px-[0.75em]">
           {/* Mobile back button */}
           <div className="md:hidden">
-            <Button variant="ghost" size="icon-sm" onClick={handleClose}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Voltar para Afiliados"
+              onClick={handleClose}
+            >
               <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
             </Button>
           </div>
@@ -92,7 +113,7 @@ export function AjudaPage() {
           {/* Desktop: logo + breadcrumb */}
           <div className="hidden items-center gap-[0.75em] md:flex">
             <a
-              className="inline-flex items-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="focus-visible:ring-primary inline-flex items-center rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               href="#afiliados"
             >
               <img
@@ -101,17 +122,18 @@ export function AjudaPage() {
                 src="/src/assets/retrilhar-logo.png"
               />
             </a>
-            <div className="h-[1.25em] w-px bg-border" />
-            <span className="text-sm text-muted-foreground">Ajuda e Suporte</span>
+            <div className="bg-border h-[1.25em] w-px" />
+            <span className="text-muted-foreground text-sm">Ajuda e Suporte</span>
           </div>
 
           {/* Mobile breadcrumb */}
           <div className="ml-[0.75em] flex items-center gap-[0.375em] md:hidden">
-            <span className="text-sm font-medium text-foreground">Ajuda e Suporte</span>
+            <span className="text-foreground text-sm font-medium">Ajuda e Suporte</span>
           </div>
 
           {/* Close button */}
           <Button
+            type="button"
             variant="outline"
             size="sm"
             className="ml-auto shrink-0 gap-[0.375em]"
@@ -124,89 +146,106 @@ export function AjudaPage() {
       </header>
 
       {/* ── Content ── */}
-      <div className="flex-1 overflow-y-auto bg-muted/30">
-        <div className="mx-auto max-w-3xl px-6 py-10 space-y-[1.5em]">
+      <div className="bg-muted/30 flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-3xl space-y-[1.5em] px-6 py-10">
           {/* ── 1. Hero / Search ── */}
-          <div className="text-center space-y-3">
-            <h1 className="text-foreground text-2xl font-semibold tracking-tight">
+          <section aria-labelledby="help-title" className="space-y-3 text-center">
+            <h1 id="help-title" className="text-foreground text-2xl font-semibold tracking-tight">
               Como podemos ajudar?
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Encontre respostas para suas dúvidas
-            </p>
+            <p className="text-muted-foreground text-sm">Encontre respostas para suas dúvidas</p>
             <div className="relative mx-auto max-w-md">
+              <label htmlFor="faq-search" className="sr-only">
+                Buscar nas dúvidas frequentes
+              </label>
               <HugeiconsIcon
                 icon={Search01Icon}
                 size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
               />
               <Input
+                id="faq-search"
+                type="search"
                 placeholder="Buscar nas dúvidas frequentes..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
               />
             </div>
-          </div>
+          </section>
 
           {/* ── 2. Categories ── */}
-          <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-[0.75em]">
+          <section aria-labelledby="faq-categories-title">
+            <h2
+              id="faq-categories-title"
+              className="text-muted-foreground mb-[0.75em] text-xs font-medium tracking-widest uppercase"
+            >
               Categorias
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            </h2>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               {categories.map((cat) => (
                 <Card key={cat.title} className="rounded-2xl shadow-none">
                   <CardContent className="flex items-start gap-3 p-4">
                     <div
-                      className={`shrink-0 flex items-center justify-center w-9 h-9 rounded-full ${cat.iconBg}`}
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${cat.iconBg}`}
                     >
                       <HugeiconsIcon icon={cat.icon} size={18} className={cat.iconColor} />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground">{cat.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{cat.description}</p>
+                      <p className="text-foreground text-sm font-medium">{cat.title}</p>
+                      <p className="text-muted-foreground mt-0.5 text-xs">{cat.description}</p>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-          </div>
+          </section>
 
           {/* ── 3. FAQ ── */}
-          <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-[0.75em]">
+          <section aria-labelledby="faq-title">
+            <h2
+              id="faq-title"
+              className="text-muted-foreground mb-[0.75em] text-xs font-medium tracking-widest uppercase"
+            >
               Dúvidas frequentes
-            </p>
+            </h2>
 
             {query && filteredFaq.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center">
-                Nenhum resultado encontrado
-              </p>
+              <div aria-live="polite">
+                <AffiliateEmptyState
+                  icon={Search01Icon}
+                  title="Nenhum resultado encontrado"
+                  description="Tente buscar por outro termo ou consulte uma categoria."
+                />
+              </div>
             ) : (
               <Accordion type="single" collapsible className="shadow-none">
                 {filteredFaq.map((item) => (
                   <AccordionItem key={item.id} value={item.id}>
                     <AccordionTrigger>{item.question}</AccordionTrigger>
                     <AccordionContent>
-                      <p className="text-muted-foreground leading-relaxed">{item.answer}</p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {formatFaqAnswer(item.answer)}
+                      </p>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
               </Accordion>
             )}
-          </div>
+          </section>
 
           {/* ── 4. CTA ── */}
-          <Card className="rounded-2xl shadow-none bg-muted/50">
+          <Card className="bg-muted/50 rounded-2xl shadow-none">
             <CardContent className="flex flex-col items-center gap-2 py-8 text-center">
-              <p className="text-base font-medium text-foreground">
+              <h2 className="text-foreground text-base font-medium">
                 Não encontrou o que procurava?
-              </p>
-              <p className="text-sm text-muted-foreground">
+              </h2>
+              <p className="text-muted-foreground text-sm">
                 Nossa equipe de suporte está disponível para ajudar
               </p>
-              <Button className="mt-2">Falar com o suporte</Button>
+              <Button type="button" className="mt-2">
+                Falar com o suporte
+              </Button>
             </CardContent>
           </Card>
         </div>

@@ -1,0 +1,95 @@
+Todo 12: refine help and support at #ajuda
+Data: 2026-07-20
+
+STATUS / DONECLAIM
+- Implementação: concluída nos dois arquivos próprios abaixo.
+- Testes e verificações escopadas: PASS.
+- Cenário de browser: BLOCKED_BY_TOOLING; não há navegador automatizável exposto.
+- Comando completo solicitado: BLOCKED_BY_CONCURRENT_WORKER_FAILURE; falhas em telas/serviços
+  concorrentes fora do write set.
+
+CHANGED FILES
+- src/modules/afiliados/AjudaPage.tsx
+- src/modules/afiliados/AjudaPage.test.tsx
+
+SOURCE REFERENCES / BINARY OBSERVABLES
+- `AjudaPage.tsx:21,23`: consome `affiliateFaqItems` e `AffiliateEmptyState` compartilhado.
+- `AjudaPage.tsx:62-66`: normaliza somente a cópia exibida para usar terminologia de afiliação;
+  o fixture permanece inalterado.
+- `AjudaPage.tsx:88-96`: botão de voltar mobile com nome acessível e hash local.
+- `AjudaPage.tsx:121-130`: botão Fechar retorna para `#afiliados`.
+- `AjudaPage.tsx:138-159`: seção rotulada, label semântico e input `type="search"`.
+- `AjudaPage.tsx:164-188`: três cards de categoria preservados com terminologia de afiliação.
+- `AjudaPage.tsx:191-218`: FAQ filtrada e estado vazio compartilhado com anúncio `aria-live`.
+- `AjudaPage.tsx:226-239`: CTA de suporte presente como botão local, sem handler ou integração externa.
+
+REQUIRED TEST SCENARIO
+Command:
+`npm run test -- --run src/app/App.test.tsx src/modules/afiliados`
+Result on the final shared worktree: exit 1. 3 test files passed / 5 test files failed;
+21 tests passed / 10 failed. Failures are outside the write set in concurrent affiliate screens:
+- `AfiliadosPage` cannot import the concurrently changed `getKpis` service export;
+- 3 `ConfiguracoesPage` tests fail on duplicate navigation/terminology assertions;
+- 2 `IndicacoesPage` tests fail on tab/row assertions;
+- 3 `ProdutosLinksPage` tests fail on concurrent UI/service changes;
+- 1 `GanhosPage` test fails on concurrent period/ledger changes.
+No concurrent file was edited by this task.
+
+Scoped equivalent after the implementation:
+`npm run test -- --run src/modules/afiliados/AjudaPage.test.tsx --reporter=dot`
+Result: exit 0, 1 test file passed, 4 tests passed.
+The four AjudaPage tests cover FAQ hit/expand, afiliação terminology, no-result state, and both
+close controls. The earlier App + Ajuda route smoke also passed before concurrent workers changed
+`AfiliadosPage`, but the final shared-worktree App suite is included in the failure above.
+
+Additional verification:
+- `npm run typecheck`: exit 2 on concurrent `AfiliadosPage.tsx`/`ProdutosLinksPage.test.tsx`
+  errors, including missing `getKpis`; no diagnostic points to either task file.
+- `npx eslint src/modules/afiliados/AjudaPage.tsx src/modules/afiliados/AjudaPage.test.tsx --max-warnings=0 --report-unused-disable-directives`: exit 0.
+- `npm run build`: exit 1 because concurrent `AfiliadosPage.tsx` imports non-exported `getKpis`;
+  Vite transformed 2091 modules before the external failure.
+- `npx prettier --check src/modules/afiliados/AjudaPage.tsx src/modules/afiliados/AjudaPage.test.tsx`: exit 0.
+- Global `npm run format:check`: exit 1 on pre-existing/out-of-scope files, including an invalid `.omo/ulw-loop/evidence/G001-quality-review.json`; own files were formatted and passed the scoped check.
+
+ADVERSARIAL SCAN
+Command:
+`rg -n "fetch\\(|axios|mailto|chat SDK|mock|fake" src/modules/afiliados/AjudaPage.tsx`
+Result: one match only:
+`21:import { affiliateFaqItems } from "@/mocks/afiliados";`
+Classification: implementation-only fixture path; not visible UI copy and not a network/API
+integration. No `fetch(`, axios, mailto, chat SDK, or fake match exists in AjudaPage.tsx.
+
+Guardrails checked directly: no backend, auth, HTTP client, Next concept, mailto, chat SDK, or
+visible mock/fake/test label was added. Support CTA is intentionally inert/local.
+
+BROWSER QA
+`npm run dev -- --host 127.0.0.1` returned exit 0 on port 5175 after ports 5173/5174 were occupied.
+`curl -fsS -I http://127.0.0.1:5175/#ajuda` returned exit 0 and `HTTP/1.1 200 OK`.
+Interactive browser steps were not feasible: no agent-browser, Chromium, Chrome, Playwright, or
+CDP endpoint 9222/9223 was available. Detailed record:
+`.omo/evidence/afiliados-front-plan/task-12-ajuda-browser.md`.
+No screenshot is claimed.
+
+CONCURRENT WORKTREE / SCOPED STATUS
+Command:
+`git status --short -- src/modules/afiliados/AjudaPage.tsx src/modules/afiliados/AjudaPage.test.tsx .omo/evidence/afiliados-front-plan/task-12-ajuda-browser.md .omo/evidence/afiliados-front-plan/task-12-ajuda.txt`
+Captured before evidence creation:
+` M src/modules/afiliados/AjudaPage.tsx`
+`?? src/modules/afiliados/AjudaPage.test.tsx`
+Other dirty files exist outside this task and were preserved.
+
+CLEANUP / RISK
+- No product file outside the allowed write set was changed.
+- Local Vite process was stopped with Ctrl-C after the HTTP probe.
+- Remaining risk is limited to unexecuted real-browser interaction and the unrelated failing
+  IndicacoesPage tests described above; neither is silently claimed as passed.
+
+DONECLAIM DETAILS
+- FAQ search hit and expansion: PASS by Vitest DOM scenario.
+- FAQ empty state: PASS by Vitest DOM scenario.
+- Accessible close/back hash navigation: PASS by Vitest DOM scenario.
+- Category cards/shared primitives/inert support CTA: present in source and included in build.
+- Full requested command: BLOCKED by concurrent affiliate screen/service failures.
+- Browser QA: BLOCKED_BY_TOOLING, with server/availability evidence recorded.
+
+Final evidence path: .omo/evidence/afiliados-front-plan/task-12-ajuda.txt

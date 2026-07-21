@@ -1,0 +1,3736 @@
+{
+  "generatedAt": "2026-07-20T22:17:12.859Z",
+  "baseUrl": "http://127.0.0.1:41713/",
+  "cdpPort": 9337,
+  "appPort": 41713,
+  "routeChecks": [
+    {
+      "kind": "direct",
+      "hash": "afiliados",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#afiliados",
+        "title": "Oi Katiely,\nbem-vinda de volta!",
+        "bodyTextLength": 1786,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 29,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-afiliados-390x844.png",
+        "bytes": 49210,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "indicacoes",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#indicacoes",
+        "title": "Indicações",
+        "bodyTextLength": 2806,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 33,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-indicacoes-390x844.png",
+        "bytes": 47912,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "ganhos",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#ganhos",
+        "title": "Ganhos",
+        "bodyTextLength": 1875,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 28,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-ganhos-390x844.png",
+        "bytes": 46453,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "produtosLinks",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#produtosLinks",
+        "title": "Produtos e Links",
+        "bodyTextLength": 3040,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 44,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-produtosLinks-390x844.png",
+        "bytes": 40357,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "configuracoes",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#configuracoes",
+        "title": "",
+        "bodyTextLength": 234,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 7,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-configuracoes-390x844.png",
+        "bytes": 28983,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "ajuda",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#ajuda",
+        "title": "Como podemos ajudar?",
+        "bodyTextLength": 655,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 10,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": true,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-ajuda-390x844.png",
+        "bytes": 47588,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "afiliados",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#afiliados",
+        "title": "Oi Katiely,\nbem-vinda de volta!",
+        "bodyTextLength": 1801,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "visibleControlCount": 31,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-afiliados-768x900.png",
+        "bytes": 86816,
+        "pngSignatureValid": true,
+        "width": 768,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "indicacoes",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#indicacoes",
+        "title": "Indicações",
+        "bodyTextLength": 2870,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "visibleControlCount": 34,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-indicacoes-768x900.png",
+        "bytes": 78771,
+        "pngSignatureValid": true,
+        "width": 768,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "ganhos",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#ganhos",
+        "title": "Ganhos",
+        "bodyTextLength": 1787,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "visibleControlCount": 29,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-ganhos-768x900.png",
+        "bytes": 81920,
+        "pngSignatureValid": true,
+        "width": 768,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "produtosLinks",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#produtosLinks",
+        "title": "Produtos e Links",
+        "bodyTextLength": 3040,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "visibleControlCount": 45,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-produtosLinks-768x900.png",
+        "bytes": 91724,
+        "pngSignatureValid": true,
+        "width": 768,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "configuracoes",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#configuracoes",
+        "title": "",
+        "bodyTextLength": 414,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "visibleControlCount": 9,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-configuracoes-768x900.png",
+        "bytes": 54083,
+        "pngSignatureValid": true,
+        "width": 768,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "ajuda",
+      "viewport": {
+        "width": 768,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#ajuda",
+        "title": "Como podemos ajudar?",
+        "bodyTextLength": 655,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 768,
+        "viewportWidth": 768,
+        "visibleControlCount": 10,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": true,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-ajuda-768x900.png",
+        "bytes": 67787,
+        "pngSignatureValid": true,
+        "width": 768,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "afiliados",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#afiliados",
+        "title": "Oi Katiely,\nbem-vinda de volta!",
+        "bodyTextLength": 1848,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 30,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-afiliados-1280x900.png",
+        "bytes": 136119,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "indicacoes",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#indicacoes",
+        "title": "Indicações",
+        "bodyTextLength": 2917,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 33,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-indicacoes-1280x900.png",
+        "bytes": 118443,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "ganhos",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#ganhos",
+        "title": "Ganhos",
+        "bodyTextLength": 1834,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 28,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-ganhos-1280x900.png",
+        "bytes": 107594,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "produtosLinks",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#produtosLinks",
+        "title": "Produtos e Links",
+        "bodyTextLength": 3087,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 44,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-produtosLinks-1280x900.png",
+        "bytes": 105145,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "configuracoes",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#configuracoes",
+        "title": "",
+        "bodyTextLength": 414,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 9,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-configuracoes-1280x900.png",
+        "bytes": 57828,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "direct",
+      "hash": "ajuda",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#ajuda",
+        "title": "Como podemos ajudar?",
+        "bodyTextLength": 655,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 10,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": true,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/direct-ajuda-1280x900.png",
+        "bytes": 72327,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/afiliados",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#preview/afiliados",
+        "title": "Oi Katiely,\nbem-vinda de volta!",
+        "bodyTextLength": 1724,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 21,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-afiliados-390x844.png",
+        "bytes": 41828,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/indicacoes",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#preview/indicacoes",
+        "title": "Indicações",
+        "bodyTextLength": 2800,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 25,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-indicacoes-390x844.png",
+        "bytes": 37296,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/ganhos",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#preview/ganhos",
+        "title": "Ganhos",
+        "bodyTextLength": 1813,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 20,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-ganhos-390x844.png",
+        "bytes": 39291,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/produtosLinks",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#preview/produtosLinks",
+        "title": "Produtos e Links",
+        "bodyTextLength": 2978,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 36,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-produtosLinks-390x844.png",
+        "bytes": 51232,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/configuracoes",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#preview/configuracoes",
+        "title": "",
+        "bodyTextLength": 234,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 7,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-configuracoes-390x844.png",
+        "bytes": 28983,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/ajuda",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "audit": {
+        "hash": "#preview/ajuda",
+        "title": "Como podemos ajudar?",
+        "bodyTextLength": 655,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 390,
+        "viewportWidth": 390,
+        "visibleControlCount": 10,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": true,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-ajuda-390x844.png",
+        "bytes": 47588,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/afiliados",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#preview/afiliados",
+        "title": "Oi Katiely,\nbem-vinda de volta!",
+        "bodyTextLength": 1739,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1269,
+        "viewportWidth": 1280,
+        "visibleControlCount": 22,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-afiliados-1280x900.png",
+        "bytes": 104743,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/indicacoes",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#preview/indicacoes",
+        "title": "Indicações",
+        "bodyTextLength": 2808,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1269,
+        "viewportWidth": 1280,
+        "visibleControlCount": 25,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-indicacoes-1280x900.png",
+        "bytes": 94748,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/ganhos",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#preview/ganhos",
+        "title": "Ganhos",
+        "bodyTextLength": 1725,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1269,
+        "viewportWidth": 1280,
+        "visibleControlCount": 20,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-ganhos-1280x900.png",
+        "bytes": 75590,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/produtosLinks",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#preview/produtosLinks",
+        "title": "Produtos e Links",
+        "bodyTextLength": 2978,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1269,
+        "viewportWidth": 1280,
+        "visibleControlCount": 36,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": true,
+          "Organização": true
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-produtosLinks-1280x900.png",
+        "bytes": 75609,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/configuracoes",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#preview/configuracoes",
+        "title": "",
+        "bodyTextLength": 414,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 9,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": true,
+          "Afiliações": false,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-configuracoes-1280x900.png",
+        "bytes": 57828,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "preview",
+      "hash": "preview/ajuda",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#preview/ajuda",
+        "title": "Como podemos ajudar?",
+        "bodyTextLength": 655,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 10,
+        "missingNames": [],
+        "clippedControls": [],
+        "visibleProfileControls": 0,
+        "diacritics": {
+          "Indicações": true,
+          "Configurações": false,
+          "Afiliações": true,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/preview-ajuda-1280x900.png",
+        "bytes": 72327,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    },
+    {
+      "kind": "unknown",
+      "hash": "doesNotExist",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "audit": {
+        "hash": "#agenda",
+        "title": "",
+        "bodyTextLength": 1169,
+        "expectedTextPresent": true,
+        "globalHorizontalOverflow": false,
+        "documentWidth": 1280,
+        "viewportWidth": 1280,
+        "visibleControlCount": 20,
+        "missingNames": [
+          {
+            "tag": "BUTTON",
+            "role": null
+          },
+          {
+            "tag": "BUTTON",
+            "role": null
+          }
+        ],
+        "clippedControls": [],
+        "visibleProfileControls": 1,
+        "diacritics": {
+          "Indicações": false,
+          "Configurações": false,
+          "Afiliações": false,
+          "Comissão": false,
+          "Organização": false
+        }
+      },
+      "screenshot": {
+        "path": ".omo/evidence/afiliados-front-plan/task-13-browser/screenshots/unknown-hash-1280x900.png",
+        "bytes": 120235,
+        "pngSignatureValid": true,
+        "width": 1280,
+        "height": 900,
+        "dimensionsMatch": true
+      }
+    }
+  ],
+  "interactionChecks": [
+    {
+      "scenario": "sidebar Indicações",
+      "pass": true,
+      "hash": "#indicacoes"
+    },
+    {
+      "scenario": "sidebar Ganhos",
+      "pass": true,
+      "hash": "#ganhos"
+    },
+    {
+      "scenario": "sidebar Produtos e Links",
+      "pass": true,
+      "hash": "#produtosLinks"
+    },
+    {
+      "scenario": "sidebar Início",
+      "pass": true,
+      "hash": "#afiliados"
+    },
+    {
+      "scenario": "profile Configurações",
+      "pass": true,
+      "fullScreenShellHidden": true,
+      "hash": "#afiliados"
+    },
+    {
+      "scenario": "profile Ajuda e Suporte",
+      "pass": true,
+      "fullScreenShellHidden": true,
+      "hash": "#afiliados"
+    },
+    {
+      "scenario": "organization to affiliate",
+      "pass": true,
+      "hash": "#afiliados"
+    },
+    {
+      "scenario": "organization back to agenda",
+      "pass": true,
+      "hash": "#agendaDia"
+    },
+    {
+      "scenario": "global search to affiliate",
+      "pass": true,
+      "hash": "#afiliados"
+    }
+  ],
+  "focusChecks": [
+    {
+      "scenario": "sidebar keyboard",
+      "tabs": 4,
+      "tag": "A",
+      "role": "link",
+      "name": "Indicações",
+      "outline": "none 2px oklab(0.558 -0.0364445 -0.187491 / 0.5)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.558 -0.0364445 -0.187491 / 0.009885) 0px 0px 0px 0.09885px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "backgroundColor": "oklch(1 0 0)",
+      "borderColor": "oklab(0.910006 -0.00120085 -0.00617782)",
+      "visibleFocus": true,
+      "activatedHash": "#indicacoes"
+    },
+    {
+      "scenario": "profile keyboard",
+      "tabs": 29,
+      "tag": "BUTTON",
+      "role": "button",
+      "name": "Perfil",
+      "outline": "none 2px oklab(0.558 -0.0364445 -0.187491 / 0.5)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.558 -0.0364445 -0.187491 / 0.0120863) 0px 0px 0px 0.120863px, rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.1) 0px 1px 2px -1px",
+      "backgroundColor": "oklch(1 0 0)",
+      "borderColor": "oklab(0.907335 -0.00146826 -0.00755357)",
+      "visibleFocus": true,
+      "menuOpened": true
+    },
+    {
+      "scenario": "indication row keyboard",
+      "tabs": 10,
+      "tag": "TR",
+      "role": "",
+      "name": "Abrir detalhe da indicação de João Pedro da Silva Oliveira",
+      "outline": "none 1px oklab(0.558 -0.0364445 -0.187491 / 0.5)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklch(0.558 0.191 259) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "backgroundColor": "oklab(0.97 0 0 / 0.0175245)",
+      "borderColor": "oklch(0.922 0 0)",
+      "visibleFocus": true,
+      "spacePreventedScroll": true,
+      "scrollBefore": 0,
+      "scrollAfter": 0
+    },
+    {
+      "scenario": "settings section keyboard",
+      "tabs": 4,
+      "tag": "BUTTON",
+      "role": "button",
+      "name": "Formas de recebimento",
+      "outline": "none 1px oklab(0.558 -0.0364445 -0.187491 / 0.5)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklch(0.558 0.191 259) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "oklch(0.922 0 0)",
+      "visibleFocus": true,
+      "sectionOpened": true
+    }
+  ],
+  "consoleEvents": [
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 280,
+        "timestamp": 1784585818082.101,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at GanhosPage (http://127.0.0.1:41713/src/modules/afiliados/GanhosPage.tsx:298:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 281,
+        "timestamp": 1784585818442.792,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at ProdutosLinksPage (http://127.0.0.1:41713/src/modules/afiliados/ProdutosLinksPage.tsx?t=1784585740506:432:41)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 282,
+        "timestamp": 1784585818757.829,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 286,
+        "timestamp": 1784585820022.76,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at GanhosPage (http://127.0.0.1:41713/src/modules/afiliados/GanhosPage.tsx:298:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 287,
+        "timestamp": 1784585820388.131,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at ProdutosLinksPage (http://127.0.0.1:41713/src/modules/afiliados/ProdutosLinksPage.tsx?t=1784585740506:432:41)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 288,
+        "timestamp": 1784585820717.904,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 292,
+        "timestamp": 1784585822044.952,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at GanhosPage (http://127.0.0.1:41713/src/modules/afiliados/GanhosPage.tsx:298:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 293,
+        "timestamp": 1784585822407.984,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at ProdutosLinksPage (http://127.0.0.1:41713/src/modules/afiliados/ProdutosLinksPage.tsx?t=1784585740506:432:41)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 294,
+        "timestamp": 1784585822754.358,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at AffiliatePreviewFrame (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:82:34)\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 298,
+        "timestamp": 1784585823913.877,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at GanhosPage (http://127.0.0.1:41713/src/modules/afiliados/GanhosPage.tsx:298:31)\n    at div\n    at AffiliatePreviewFrame (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:82:34)\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 299,
+        "timestamp": 1784585824225.109,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at ProdutosLinksPage (http://127.0.0.1:41713/src/modules/afiliados/ProdutosLinksPage.tsx?t=1784585740506:432:41)\n    at div\n    at AffiliatePreviewFrame (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:82:34)\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 300,
+        "timestamp": 1784585824527.709,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at AffiliatePreviewFrame (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:82:34)\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 304,
+        "timestamp": 1784585825632.017,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at GanhosPage (http://127.0.0.1:41713/src/modules/afiliados/GanhosPage.tsx:298:31)\n    at div\n    at AffiliatePreviewFrame (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:82:34)\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 305,
+        "timestamp": 1784585825950.894,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at ProdutosLinksPage (http://127.0.0.1:41713/src/modules/afiliados/ProdutosLinksPage.tsx?t=1784585740506:432:41)\n    at div\n    at AffiliatePreviewFrame (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:82:34)\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 306,
+        "timestamp": 1784585826245.645,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 309,
+        "timestamp": 1784585827150.81,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performSyncWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18926,
+              "columnNumber": 27
+            },
+            {
+              "functionName": "flushSyncCallbacks",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 9165,
+              "columnNumber": 29
+            },
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18676,
+              "columnNumber": 20
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s"
+          },
+          {
+            "type": "string",
+            "value": "\n\nCheck the render method of `GlobalSearch`."
+          },
+          {
+            "type": "string",
+            "value": "\n    at Input (http://127.0.0.1:41713/src/components/ui/input.tsx:18:18)\n    at div\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:4914:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:11515:13\n    at PopoverAnchor (http://127.0.0.1:41713/src/components/ui/popover.tsx:69:29)\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Popper (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:4906:11)\n    at Popover (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:11478:5)\n    at Popover (http://127.0.0.1:41713/src/components/ui/popover.tsx:20:23)\n    at div\n    at GlobalSearch (http://127.0.0.1:41713/src/components/layout/topbar/global-search.tsx:33:32)\n    at div\n    at header\n    at TopBar (http://127.0.0.1:41713/src/components/layout/top-bar.tsx:22:26)\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 313,
+        "timestamp": 1784585829480.6,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateFunctionComponentInDev",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15060,
+              "columnNumber": 16
+            },
+            {
+              "functionName": "mountIndeterminateComponent",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15035,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "beginWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15961,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "beginWork$1",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19805,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19250,
+              "columnNumber": 19
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performSyncWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18926,
+              "columnNumber": 27
+            },
+            {
+              "functionName": "flushSyncCallbacks",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 9165,
+              "columnNumber": 29
+            },
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18676,
+              "columnNumber": 20
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s"
+          },
+          {
+            "type": "string",
+            "value": "\n\nCheck the render method of `GlobalSearch`."
+          },
+          {
+            "type": "string",
+            "value": "\n    at Command (http://127.0.0.1:41713/src/components/ui/command.tsx:30:20)\n    at div\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at div\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:4936:7\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1497:7\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1696:5\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:11658:7\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:11615:61\n    at Presence (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:11564:67\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at PopoverPortal (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:11556:11)\n    at PopoverContent (http://127.0.0.1:41713/src/components/ui/popover.tsx:37:3)\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Popper (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:4906:11)\n    at Popover (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:11478:5)\n    at Popover (http://127.0.0.1:41713/src/components/ui/popover.tsx:20:23)\n    at div\n    at GlobalSearch (http://127.0.0.1:41713/src/components/layout/topbar/global-search.tsx:33:32)\n    at div\n    at header\n    at TopBar (http://127.0.0.1:41713/src/components/layout/top-bar.tsx:22:26)\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 313,
+        "timestamp": 1784585829482.664,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateFunctionComponentInDev",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15060,
+              "columnNumber": 16
+            },
+            {
+              "functionName": "mountIndeterminateComponent",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15035,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "beginWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15961,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "beginWork$1",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19805,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19250,
+              "columnNumber": 19
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performSyncWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18926,
+              "columnNumber": 27
+            },
+            {
+              "functionName": "flushSyncCallbacks",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 9165,
+              "columnNumber": 29
+            },
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18676,
+              "columnNumber": 20
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 314,
+        "timestamp": 1784585829977.11,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performSyncWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18926,
+              "columnNumber": 27
+            },
+            {
+              "functionName": "flushSyncCallbacks",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 9165,
+              "columnNumber": 29
+            },
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18676,
+              "columnNumber": 20
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s"
+          },
+          {
+            "type": "string",
+            "value": "<li>"
+          },
+          {
+            "type": "string",
+            "value": "li"
+          },
+          {
+            "type": "string",
+            "value": "\n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:41713/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:41713/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 316,
+        "timestamp": 1784585831633.082,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateDOMNesting",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8302,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "createInstance",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 8374,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "completeWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 16337,
+              "columnNumber": 33
+            },
+            {
+              "functionName": "completeUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19276,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19258,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performConcurrentWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18727,
+              "columnNumber": 82
+            },
+            {
+              "functionName": "workLoop",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 196,
+              "columnNumber": 41
+            },
+            {
+              "functionName": "flushWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 175,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performWorkUntilDeadline",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 383,
+              "columnNumber": 28
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "error",
+        "args": [
+          {
+            "type": "string",
+            "value": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s"
+          },
+          {
+            "type": "string",
+            "value": "\n\nCheck the render method of `Primitive.div.SlotClone`."
+          },
+          {
+            "type": "string",
+            "value": "\n    at SheetOverlay (http://127.0.0.1:41713/src/components/ui/sheet.tsx:56:3)\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at DialogPortal (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:2008:11)\n    at SheetPortal (http://127.0.0.1:41713/src/components/ui/sheet.tsx:47:27)\n    at SheetContent (http://127.0.0.1:41713/src/components/ui/sheet.tsx:81:3)\n    at Provider4 (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Dialog (http://127.0.0.1:41713/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1948:5)\n    at Sheet (http://127.0.0.1:41713/src/components/ui/sheet.tsx:23:21)\n    at ReferralDetailDrawer (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:132:3)\n    at main\n    at div\n    at AppPage (http://127.0.0.1:41713/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:41713/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:41713/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:41713/src/modules/agenda/components/AgendaPrototypeApp.tsx?t=1784585811819:92:18)\n    at App"
+          }
+        ],
+        "executionContextId": 316,
+        "timestamp": 1784585832095.327,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "printWarning",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 520,
+              "columnNumber": 37
+            },
+            {
+              "functionName": "error",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 504,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "validateFunctionComponentInDev",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15060,
+              "columnNumber": 16
+            },
+            {
+              "functionName": "mountIndeterminateComponent",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15035,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "beginWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 15961,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "beginWork$1",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19805,
+              "columnNumber": 21
+            },
+            {
+              "functionName": "performUnitOfWork",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19250,
+              "columnNumber": 19
+            },
+            {
+              "functionName": "workLoopSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19189,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "renderRootSync",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 19168,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "performSyncWorkOnRoot",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18926,
+              "columnNumber": 27
+            },
+            {
+              "functionName": "flushSyncCallbacks",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 9165,
+              "columnNumber": 29
+            },
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:41713/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=4735b91a",
+              "lineNumber": 18676,
+              "columnNumber": 20
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "pass": true
+}

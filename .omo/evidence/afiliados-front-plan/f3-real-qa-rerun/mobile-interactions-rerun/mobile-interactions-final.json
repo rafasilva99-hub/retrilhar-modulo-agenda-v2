@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-07-21T01:18:59.192Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "results": [
+    {
+      "scenarioId": "F3-I-02",
+      "criterion": "dashboard copy/detail/close",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #afiliados; click Copiar; open João detail; assert cart items; click Fechar aba",
+      "verdict": "PASS",
+      "artifact": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions-rerun/mobile-afiliados-detail.png",
+        "bytes": 58118,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844
+      },
+      "copyFeedback": true,
+      "cartItems": [
+        "Rapel Cachoeira",
+        "Tirolesa Radical"
+      ],
+      "closed": true
+    },
+    {
+      "scenarioId": "F3-I-06",
+      "criterion": "earnings organization filter/detail/related link",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #ganhos; select Vertaco Aventuras; open João commission; related indication",
+      "verdict": "PASS",
+      "artifact": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions-rerun/mobile-ganhos-detail.png",
+        "bytes": 46508,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844
+      },
+      "organization": "Vertaco Aventuras",
+      "detailOpened": true,
+      "relatedHash": "#indicacoes"
+    },
+    {
+      "scenarioId": "F3-I-08",
+      "criterion": "products/links copy general/org/product/request/disabled",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #produtosLinks; copy general/org/product; request Boia Cross Radical; verify disabled Rafting",
+      "verdict": "PASS",
+      "artifact": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions-rerun/mobile-produtosLinks-interaction.png",
+        "bytes": 51732,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844
+      },
+      "copiedLevels": [
+        1,
+        2,
+        3
+      ],
+      "requested": "Boia Cross Radical",
+      "unavailableDisabled": true
+    },
+    {
+      "scenarioId": "F3-I-10",
+      "criterion": "settings destination/cash/count update",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #configuracoes; open Formas de recebimento; cash no action; change destination; confirm",
+      "verdict": "PASS",
+      "artifact": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions-rerun/mobile-configuracoes-destination-sheet.png",
+        "bytes": 57810,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844
+      },
+      "cashNoAction": true,
+      "receivingMethodLocked": true,
+      "selectedDestination": "Conta da empresa",
+      "countsUpdated": true
+    },
+    {
+      "scenarioId": "F3-I-12",
+      "criterion": "help search hit/no-result/close",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #ajuda; search comissões and expand hit; search semresultadozz; close",
+      "verdict": "PASS",
+      "artifact": {
+        "path": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions-rerun/mobile-ajuda-expanded.png",
+        "bytes": 47216,
+        "pngSignatureValid": true,
+        "width": 390,
+        "height": 844
+      },
+      "matchingSearch": "comissões",
+      "emptySearch": "semresultadozz",
+      "returnedHash": "#afiliados"
+    },
+    {
+      "scenarioId": "F3-I-04",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #indicacoes; click Copiar; search Juliana; select Pagas; open Juliana row; click Close; click back",
+      "verdict": "PASS",
+      "artifact": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions-rerun/mobile-indicacoes-detail-retry.png",
+      "copyFeedback": true,
+      "search": "Juliana",
+      "paidTab": true,
+      "detailOpened": true,
+      "closed": true,
+      "returnedHash": "#afiliados",
+      "runtimeWarningsOrErrors": []
+    }
+  ],
+  "runtime": {
+    "retainedEvents": [],
+    "warningOrErrorCount": 0,
+    "runtimeExceptions": 0,
+    "networkFailures": 0,
+    "pass": true
+  },
+  "sourceLogs": [
+    "actions.jsonl",
+    "indicacoes-retry.json"
+  ]
+}

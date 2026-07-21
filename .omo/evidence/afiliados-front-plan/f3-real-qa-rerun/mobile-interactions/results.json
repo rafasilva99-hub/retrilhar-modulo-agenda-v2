@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-07-21T01:12:06.494Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "results": [
+    {
+      "scenarioId": "F3-I-02",
+      "criterion": "dashboard copy/detail/close",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #afiliados; click Copiar; open João detail; assert cart items; click Fechar aba",
+      "verdict": "PASS",
+      "artifact": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions/mobile-afiliados-detail.png",
+      "copyFeedback": true,
+      "cartItems": [
+        "Rapel Cachoeira",
+        "Tirolesa Radical"
+      ],
+      "closed": true
+    },
+    {
+      "scenarioId": "F3-I-04",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #indicacoes; search Juliana; select Pagas; open detail; close; back",
+      "verdict": "FAIL",
+      "error": "Error: Timed out waiting for indication detail\n    at waitFor (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:26:198)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:45:563\n    at async scenario (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:41:196)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:45:1"
+    },
+    {
+      "scenarioId": "F3-I-06",
+      "criterion": "earnings organization filter/detail/related link",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #ganhos; select Vertaco Aventuras; open João commission; related indication",
+      "verdict": "FAIL",
+      "error": "Error: Could not locate Ver indicação relacionada\n    at point (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:30:348)\n    at async click (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:31:60)\n    at async clickText (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:34:44)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:46:508\n    at async scenario (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:41:196)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:46:1"
+    },
+    {
+      "scenarioId": "F3-I-08",
+      "criterion": "products/links copy general/org/product/request/disabled",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #produtosLinks; copy general/org/product; request Boia Cross Radical; verify disabled Rafting",
+      "verdict": "FAIL",
+      "error": "Error: Could not locate Ver links por organização\n    at point (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:30:348)\n    at async click (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:31:60)\n    at async clickText (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:34:44)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:47:367\n    at async scenario (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:41:196)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:47:1"
+    },
+    {
+      "scenarioId": "F3-I-10",
+      "criterion": "settings destination/cash/count update",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #configuracoes; open Formas de recebimento; cash no action; change destination; confirm",
+      "verdict": "FAIL",
+      "error": "Error: Could not locate Formas de recebimento\n    at point (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:30:348)\n    at async click (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:31:60)\n    at async clickText (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:34:44)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:48:233\n    at async scenario (file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:41:196)\n    at async file:///Users/rafaelsilva/Documents/Projetos%20HTML/Retrilhar%20-%20Mo%CC%81dulo%20de%20Agenda%20V2/[eval1]:48:1"
+    },
+    {
+      "scenarioId": "F3-I-12",
+      "criterion": "help search hit/no-result/close",
+      "surface": "browser UI",
+      "invocation": "CDP browser page at http://127.0.0.1:4173/ with Emulation.setDeviceMetricsOverride 390x844; navigate #ajuda; search comissões and expand hit; search semresultadozz; close",
+      "verdict": "PASS",
+      "artifact": ".omo/evidence/afiliados-front-plan/f3-real-qa-rerun/mobile-interactions/mobile-ajuda-expanded.png",
+      "matchingSearch": "comissões",
+      "emptySearch": "semresultadozz",
+      "returnedHash": "#afiliados"
+    }
+  ],
+  "runtime": {
+    "retainedEvents": [],
+    "warningOrErrorCount": 0,
+    "runtimeExceptions": 0,
+    "networkFailures": 0,
+    "pass": true
+  }
+}\n

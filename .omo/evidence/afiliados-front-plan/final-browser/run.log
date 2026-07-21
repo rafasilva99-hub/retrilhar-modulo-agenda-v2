@@ -1,0 +1,9 @@
+{
+  "pass": true,
+  "routes": 12,
+  "interactions": 6,
+  "consoleEvents": 14,
+  "failures": []
+}
+
+BROWSER DRIVER EXIT STATUS: 0

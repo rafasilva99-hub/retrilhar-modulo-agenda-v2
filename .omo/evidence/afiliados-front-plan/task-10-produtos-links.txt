@@ -1,0 +1,138 @@
+TODO 10 EVIDENCE — PRODUTOS E LINKS
+
+Workspace: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2
+Route: http://127.0.0.1:5173/#produtosLinks
+Status: COMPLETE FOR ASSIGNED WRITE SET
+
+CHANGED FILES
+- src/modules/afiliados/ProdutosLinksPage.tsx
+- src/modules/afiliados/ProdutosLinksPage.test.tsx
+- Evidence files: .omo/evidence/afiliados-front-plan/task-10-produtos-links-browser.md and this file
+- No other product, shared, route, plan, ledger, or UI-library files were edited for this task.
+
+SOURCE REFERENCES
+- Requirements: Specdrivenafiliados.md:20,23-26,45-47
+- Plan Todo 10: .omo/plans/afiliados-front-plan.md:244-257
+- Screen hierarchy/state: src/modules/afiliados/ProdutosLinksPage.tsx:1,41-49,52-102,105-202,205-237,273-334
+- Service helpers: src/modules/afiliados/services/afiliados-mock-service.ts:159-218
+- Types: src/modules/afiliados/types.ts:1-48
+- Fixtures: src/mocks/afiliados/index.ts:94-119,126-153,1051-1104
+
+SUCCESS CRITERIA -> SCENARIO -> INVOCATION -> BINARY OBSERVABLE -> ARTIFACT
+
+1. Three-level hierarchy and organization behavior
+Scenario: render #produtosLinks and activate Ver links por organização.
+Invocation: npm run test -- --run src/modules/afiliados/ProdutosLinksPage.test.tsx (first test).
+Observable: test passes and finds Link geral (nível 1), Link da organização (nível 2), Link do produto (nível 3), plus organization drilldown.
+Artifact: this file and task-10-produtos-links-browser.md.
+
+2. Scope messaging
+Scenario: default all-organizations view, then Trilheiras de Brasília (specific scope).
+Invocation: same focused test (first test); browser steps 1-2.
+Observable: both exact scope messages are present; new products wording appears only for todos and request wording appears for especificos.
+Artifact: focused test result and browser JSON in task-10-produtos-links-browser.md.
+
+3. Local product request
+Scenario: request Boia Cross Radical for Trilheiras de Brasília.
+Invocation: focused test (second test); browser step 5.
+Observable: Solicitação enviada replaces the request button; browser requestButtonGone=true and requestSentCount=2.
+Artifact: focused test result and browser JSON.
+
+4. Unavailable product behavior
+Scenario: inspect Rafting Rio das Velhas under Cerrado Experience.
+Invocation: focused test (third test); browser steps 6-7.
+Observable: control is disabled and stays uncopied; disabledBefore=true and unavailableStayedUncopied=true.
+Artifact: focused test result and browser JSON.
+
+5. Copy feedback
+Scenario: copy general, organization, and Passeio de Barco product links.
+Invocation: focused test (second test); browser steps 1, 3, 4.
+Observable: all three labels become Copiado; browser generalCopied, organizationCopied, and productCopied each equal Copiado.
+Artifact: focused test result and browser JSON.
+
+COMMAND RESULTS (all from workspace)
+
+PASS — npm run test -- --run src/modules/afiliados/ProdutosLinksPage.test.tsx
+  1 file, 3 tests passed.
+
+PASS — npm run test -- --run src/modules/afiliados/ProdutosLinksPage.test.tsx src/modules/afiliados/services/afiliados-mock-service.test.ts
+  2 files, 10 tests passed.
+
+EXIT 1 — npm run test -- --run src/app/App.test.tsx src/modules/afiliados
+  Required caller command. Assigned page tests pass. Unrelated src/app/App.test.tsx:47 expects "Extrato de comissoes" while the current rendered screen has "Extrato de comissões". File is outside write set.
+
+EXIT 1 — npm run test -- --run src/modules/afiliados
+  6 files passed, 2 failed; 27 passed, 29 total tests. Unrelated failures: AfiliadosPage.test.tsx:12 timeout; IndicacoesPage.test.tsx:26 expected aria-selected=true but received false.
+
+PASS — npm run typecheck
+  Exit 0.
+
+PASS — npx eslint src/modules/afiliados/ProdutosLinksPage.tsx src/modules/afiliados/ProdutosLinksPage.test.tsx --max-warnings=0 --report-unused-disable-directives
+  Exit 0.
+
+EXIT 1 — npm run lint
+  Failures are outside the write set: src/components/custom/time-input.tsx, src/modules/agenda/components/AgendaNovaAtividade.tsx, src/modules/board/BoardCanvas.tsx, src/modules/board/index.ts, src/modules/board/use-canvas-pan-zoom.ts, src/modules/produtos/ProdutosPage.tsx. Assigned files absent from final failure list.
+
+PASS — npm run build
+  Exit 0; Vite built 2092 modules. Existing >500 kB chunk warning.
+
+PASS — npx prettier --check src/modules/afiliados/ProdutosLinksPage.tsx src/modules/afiliados/ProdutosLinksPage.test.tsx
+PASS — git diff --check -- src/modules/afiliados/ProdutosLinksPage.tsx src/modules/afiliados/ProdutosLinksPage.test.tsx
+
+GUARDRAIL COMMAND
+
+Invocation: rg -n "fetch\\(|axios|contrato|vínculo|mock|fake" src/modules/afiliados/ProdutosLinksPage.tsx
+Exit: 0 because two internal import paths matched:
+  21: from "@/mocks/afiliados";
+  28: from "./services/afiliados-mock-service";
+Classification: internal fixture/service names only. No fetch, axios, contrato, vínculo, or fake; no forbidden term is visible UI copy.
+
+BROWSER QA
+
+Existing Vite server on port 5173 was reused. Fresh Chrome CDP target, viewport 1280x800.
+1. Open http://127.0.0.1:5173/#produtosLinks.
+2. Click general Copiar => Copiado.
+3. Select Trilheiras de Brasília from Organização; click organization Copiar => Copiado.
+4. Click Passeio de Barco Copiar link do produto => Copiado.
+5. Click Solicitar Boia Cross Radical => button becomes Solicitação enviada.
+6. Select Cerrado Experience.
+7. Inspect Rafting Rio das Velhas Indisponível => disabled, copied state unchanged.
+
+Captured JSON observable:
+{"url":"http://127.0.0.1:5173/#produtosLinks","generalValuePresent":true,"generalCopied":"Copiado","organizationCopied":"Copiado","productCopied":"Copiado","requestButtonGone":true,"requestSentCount":2,"disabledBefore":true,"unavailableStayedUncopied":true,"bodyHasForbiddenVisibleCopy":false}
+
+Screenshot artifacts:
+- /tmp/task-10-produtos-links-desktop.png (1280x800, 95409 bytes)
+- /tmp/task-10-produtos-links-mobile.png (390x844, 42185 bytes)
+Visual result: desktop hierarchy/controls pass; mobile shows existing fixed-sidebar clipping at 390px, outside the write set.
+Cleanup: temporary CDP target closed with Target.closeTarget; reused Vite process left running.
+
+ADVERSARIAL CLASSES
+- malformed_input: PASS by constrained fixture-backed organization options; no free-form parser.
+- prompt_injection: N/A; no external text is interpreted as instructions.
+- cancel_resume: N/A; synchronous local state, no resumable request.
+- stale_state: PASS; createProductRequestState preserves pre-requested fixture state, and new request remains local React state.
+- dirty_worktree: PASS; scoped git status captured; unrelated changes preserved.
+- hung_or_long_commands: PASS; all focused commands and browser run completed; CDP target cleaned.
+- flaky_tests: PASS for assigned tests (3/3 focused; 10/10 page plus service); jsdom Select scrollIntoView setup is deterministic.
+- misleading_success_output: PASS; browser DOM state, not exit code alone, proves copy/request/disabled behavior.
+- repeated_interruptions: N/A; no interruptible long-running operation.
+
+CLEANUP / RISKS
+- omo ulw-loop status --json unavailable: omo: command not found. Evidence is under .omo/evidence/afiliados-front-plan/.
+- Scoped status observed before evidence creation:
+  M src/modules/afiliados/ProdutosLinksPage.tsx
+  ?? .omo/evidence/afiliados-front-plan/
+  ?? src/modules/afiliados/ProdutosLinksPage.test.tsx
+- Page has documented SIZE_OK exception at ProdutosLinksPage.tsx:1 because write set permits only this screen file; cohesive fragments remain local.
+- No admin approval UI, backend, auth, or network request added.
+- Residual risks: unrelated test/lint failures above, existing build chunk warning, pre-existing narrow-mobile shell clipping.
+
+DONECLAIM
+Task: Todo 10 — refine products and links screen at #produtosLinks.
+Status: complete (scoped implementation).
+Changed files: the page and focused test listed above.
+Tests: assigned focused tests, typecheck, assigned lint, build, formatting, and diff checks pass; required broad command is recorded with unrelated failures.
+Browser QA: PASS for requested interactions; mobile shell clipping recorded as residual risk.
+Evidence path: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/afiliados-front-plan/task-10-produtos-links-browser.md
+Companion path: /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/afiliados-front-plan/task-10-produtos-links.txt

@@ -1,0 +1,780 @@
+{
+  "generatedAt": "2026-07-21T00:35:34.000Z",
+  "base": "http://127.0.0.1:4173",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "routes": [
+    "afiliados",
+    "indicacoes",
+    "ganhos",
+    "produtosLinks",
+    "configuracoes",
+    "ajuda"
+  ],
+  "scenarios": [
+    {
+      "timestamp": "2026-07-21T00:35:20.689Z",
+      "kind": "navigation",
+      "route": "afiliados",
+      "viewport": "desktop",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:21.725Z",
+      "kind": "base-check",
+      "route": "afiliados",
+      "viewport": "desktop",
+      "textLength": 1848,
+      "docWidth": 1280,
+      "bodyWidth": 1280,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "desktop-afiliados-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 1280x800; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-base.png"
+      ],
+      "started": "2026-07-21T00:35:20.689Z",
+      "finished": "2026-07-21T00:35:21.779Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:21.779Z",
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "desktop",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:21.982Z",
+      "kind": "base-check",
+      "route": "indicacoes",
+      "viewport": "desktop",
+      "textLength": 2917,
+      "docWidth": 1280,
+      "bodyWidth": 1280,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "desktop-indicacoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 1280x800; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-indicacoes-base.png"
+      ],
+      "started": "2026-07-21T00:35:21.779Z",
+      "finished": "2026-07-21T00:35:22.061Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:22.061Z",
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "desktop",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:22.251Z",
+      "kind": "base-check",
+      "route": "ganhos",
+      "viewport": "desktop",
+      "textLength": 1834,
+      "docWidth": 1280,
+      "bodyWidth": 1280,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "desktop-ganhos-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 1280x800; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ganhos-base.png"
+      ],
+      "started": "2026-07-21T00:35:22.061Z",
+      "finished": "2026-07-21T00:35:22.327Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:22.327Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "desktop",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:22.519Z",
+      "kind": "base-check",
+      "route": "produtosLinks",
+      "viewport": "desktop",
+      "textLength": 3087,
+      "docWidth": 1280,
+      "bodyWidth": 1280,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "desktop-produtosLinks-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 1280x800; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtosLinks-base.png"
+      ],
+      "started": "2026-07-21T00:35:22.327Z",
+      "finished": "2026-07-21T00:35:22.594Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:22.594Z",
+      "kind": "navigation",
+      "route": "configuracoes",
+      "viewport": "desktop",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:22.786Z",
+      "kind": "base-check",
+      "route": "configuracoes",
+      "viewport": "desktop",
+      "textLength": 414,
+      "docWidth": 1280,
+      "bodyWidth": 1280,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "desktop-configuracoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 1280x800; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-configuracoes-base.png"
+      ],
+      "started": "2026-07-21T00:35:22.594Z",
+      "finished": "2026-07-21T00:35:22.817Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:22.817Z",
+      "kind": "navigation",
+      "route": "ajuda",
+      "viewport": "desktop",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:23.006Z",
+      "kind": "base-check",
+      "route": "ajuda",
+      "viewport": "desktop",
+      "textLength": 655,
+      "docWidth": 1280,
+      "bodyWidth": 1280,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "desktop-ajuda-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 1280x800; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-base.png"
+      ],
+      "started": "2026-07-21T00:35:22.817Z",
+      "finished": "2026-07-21T00:35:23.053Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:23.053Z",
+      "kind": "navigation",
+      "route": "afiliados",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-afiliados-interactions",
+      "criterion": "dashboard copy/detail/close",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#afiliados at 1280x800; click Copiar; open João detail; assert cart items; click Fechar aba.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-detail-open.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-detail-closed.png"
+      ],
+      "started": "2026-07-21T00:35:23.053Z",
+      "finished": "2026-07-21T00:35:24.157Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:24.157Z",
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:24.477Z",
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "desktop",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-indicacoes-interactions",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#indicacoes at 1280x800; fill Juliana; click Pagas; copy link; open João detail; close; click Voltar para afiliados.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at visible ([stdin]:3:115)\n    at async [stdin]:9:991\n    at async test ([stdin]:5:370)\n    at async [stdin]:9:1",
+      "started": "2026-07-21T00:35:24.157Z",
+      "finished": "2026-07-21T00:35:24.662Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:24.662Z",
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:24.993Z",
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "desktop",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-ganhos-interactions",
+      "criterion": "ganhos org filter/detail/related link",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ganhos at 1280x800; choose Vertaco Aventuras; open João commission; click Ver indicação relacionada.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at visible ([stdin]:3:115)\n    at async [stdin]:10:487\n    at async test ([stdin]:5:370)\n    at async [stdin]:10:1",
+      "started": "2026-07-21T00:35:24.662Z",
+      "finished": "2026-07-21T00:35:25.264Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:25.264Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "desktop",
+      "state": "general",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:25.827Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "desktop",
+      "state": "request",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:26.099Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "desktop",
+      "state": "disabled",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-produtos-links-interactions",
+      "criterion": "produtos/links copy general/org/product/request/disabled unavailable",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#produtosLinks at 1280x800; copy general/org/product; request Boia Cross Radical; verify Cerrado/Rafting unavailable disabled.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-general-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-organization-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-product-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-request-sent.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-disabled-unavailable.png"
+      ],
+      "started": "2026-07-21T00:35:25.264Z",
+      "finished": "2026-07-21T00:35:26.476Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:26.476Z",
+      "kind": "navigation",
+      "route": "configuracoes",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-configuracoes-interactions",
+      "criterion": "configuracoes Alterar destino/cash no-op/count update",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#configuracoes at 1280x800; open Formas de recebimento; verify Dinheiro has no Alterar destino; change first destination to Conta da empresa; confirm.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: missing Split de pagamento\n    at has ([stdin]:3:920)\n    at async [stdin]:12:386\n    at async test ([stdin]:5:370)\n    at async [stdin]:12:1",
+      "started": "2026-07-21T00:35:26.476Z",
+      "finished": "2026-07-21T00:35:26.713Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:26.713Z",
+      "kind": "navigation",
+      "route": "ajuda",
+      "viewport": "desktop",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 1280x800; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "desktop-ajuda-interactions",
+      "criterion": "ajuda search hit/no-result/Fechar",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ajuda at 1280x800; search comissões and expand hit; search semresultadozz; click Fechar.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-search-hit-open.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-no-result.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-close-afiliados.png"
+      ],
+      "started": "2026-07-21T00:35:26.713Z",
+      "finished": "2026-07-21T00:35:27.296Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:27.348Z",
+      "kind": "navigation",
+      "route": "afiliados",
+      "viewport": "mobile",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:28.308Z",
+      "kind": "base-check",
+      "route": "afiliados",
+      "viewport": "mobile",
+      "textLength": 1730,
+      "docWidth": 390,
+      "bodyWidth": 390,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "mobile-afiliados-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 390x844; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-base.png"
+      ],
+      "started": "2026-07-21T00:35:27.348Z",
+      "finished": "2026-07-21T00:35:28.336Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:28.336Z",
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "mobile",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:28.551Z",
+      "kind": "base-check",
+      "route": "indicacoes",
+      "viewport": "mobile",
+      "textLength": 2806,
+      "docWidth": 390,
+      "bodyWidth": 390,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "mobile-indicacoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 390x844; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-indicacoes-base.png"
+      ],
+      "started": "2026-07-21T00:35:28.336Z",
+      "finished": "2026-07-21T00:35:28.597Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:28.597Z",
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "mobile",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:28.789Z",
+      "kind": "base-check",
+      "route": "ganhos",
+      "viewport": "mobile",
+      "textLength": 1819,
+      "docWidth": 390,
+      "bodyWidth": 390,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "mobile-ganhos-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 390x844; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ganhos-base.png"
+      ],
+      "started": "2026-07-21T00:35:28.597Z",
+      "finished": "2026-07-21T00:35:28.835Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:28.835Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "mobile",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:29.033Z",
+      "kind": "base-check",
+      "route": "produtosLinks",
+      "viewport": "mobile",
+      "textLength": 2984,
+      "docWidth": 390,
+      "bodyWidth": 390,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "mobile-produtosLinks-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 390x844; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtosLinks-base.png"
+      ],
+      "started": "2026-07-21T00:35:28.835Z",
+      "finished": "2026-07-21T00:35:29.086Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:29.086Z",
+      "kind": "navigation",
+      "route": "configuracoes",
+      "viewport": "mobile",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:29.280Z",
+      "kind": "base-check",
+      "route": "configuracoes",
+      "viewport": "mobile",
+      "textLength": 234,
+      "docWidth": 390,
+      "bodyWidth": 390,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "mobile-configuracoes-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 390x844; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-configuracoes-base.png"
+      ],
+      "started": "2026-07-21T00:35:29.086Z",
+      "finished": "2026-07-21T00:35:29.297Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:29.297Z",
+      "kind": "navigation",
+      "route": "ajuda",
+      "viewport": "mobile",
+      "state": "base",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:29.487Z",
+      "kind": "base-check",
+      "route": "ajuda",
+      "viewport": "mobile",
+      "textLength": 655,
+      "docWidth": 390,
+      "bodyWidth": 390,
+      "overflow": [],
+      "verdict": "PASS"
+    },
+    {
+      "scenarioId": "mobile-ajuda-base",
+      "criterion": "no blank screen; no incoherent overlap/clipping; route renders at requested viewport",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 390x844; inspect body, visible bounds, and viewport screenshot.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-base.png"
+      ],
+      "started": "2026-07-21T00:35:29.297Z",
+      "finished": "2026-07-21T00:35:29.519Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:29.519Z",
+      "kind": "navigation",
+      "route": "afiliados",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#afiliados) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-afiliados-interactions",
+      "criterion": "dashboard copy/detail/close",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#afiliados at 390x844; click Copiar; open João detail; assert cart items; click Fechar aba.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-detail-open.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-detail-closed.png"
+      ],
+      "started": "2026-07-21T00:35:29.519Z",
+      "finished": "2026-07-21T00:35:30.958Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:30.958Z",
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:31.280Z",
+      "kind": "navigation",
+      "route": "indicacoes",
+      "viewport": "mobile",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#indicacoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-indicacoes-interactions",
+      "criterion": "indications search/tab/detail/copy/back",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#indicacoes at 390x844; fill Juliana; click Pagas; copy link; open João detail; close; click Voltar para afiliados.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at visible ([stdin]:3:115)\n    at async [stdin]:9:991\n    at async test ([stdin]:5:370)\n    at async [stdin]:9:1",
+      "started": "2026-07-21T00:35:30.958Z",
+      "finished": "2026-07-21T00:35:31.466Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:31.466Z",
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:31.797Z",
+      "kind": "navigation",
+      "route": "ganhos",
+      "viewport": "mobile",
+      "state": "detail",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ganhos) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-ganhos-interactions",
+      "criterion": "ganhos org filter/detail/related link",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ganhos at 390x844; choose Vertaco Aventuras; open João commission; click Ver indicação relacionada.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: No visible element for locator\n    at visible ([stdin]:3:115)\n    at async [stdin]:10:487\n    at async test ([stdin]:5:370)\n    at async [stdin]:10:1",
+      "started": "2026-07-21T00:35:31.466Z",
+      "finished": "2026-07-21T00:35:32.059Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:32.059Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "mobile",
+      "state": "general",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:32.564Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "mobile",
+      "state": "request",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 390x844; networkidle + 180ms"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:32.819Z",
+      "kind": "navigation",
+      "route": "produtosLinks",
+      "viewport": "mobile",
+      "state": "disabled",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#produtosLinks) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-produtos-links-interactions",
+      "criterion": "produtos/links copy general/org/product/request/disabled unavailable",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#produtosLinks at 390x844; copy general/org/product; request Boia Cross Radical; verify Cerrado/Rafting unavailable disabled.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-general-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-organization-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-product-copy.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-request-sent.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-disabled-unavailable.png"
+      ],
+      "started": "2026-07-21T00:35:32.059Z",
+      "finished": "2026-07-21T00:35:33.162Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:33.162Z",
+      "kind": "navigation",
+      "route": "configuracoes",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#configuracoes) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-configuracoes-interactions",
+      "criterion": "configuracoes Alterar destino/cash no-op/count update",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#configuracoes at 390x844; open Formas de recebimento; verify Dinheiro has no Alterar destino; change first destination to Conta da empresa; confirm.",
+      "verdict": "FAIL",
+      "artifactRefs": [],
+      "error": "Error: missing Split de pagamento\n    at has ([stdin]:3:920)\n    at async [stdin]:12:386\n    at async test ([stdin]:5:370)\n    at async [stdin]:12:1",
+      "started": "2026-07-21T00:35:33.162Z",
+      "finished": "2026-07-21T00:35:33.431Z"
+    },
+    {
+      "timestamp": "2026-07-21T00:35:33.431Z",
+      "kind": "navigation",
+      "route": "ajuda",
+      "viewport": "mobile",
+      "state": "interaction",
+      "invocation": "Playwright Chromium page.goto(http://127.0.0.1:4173/#ajuda) at 390x844; networkidle + 180ms"
+    },
+    {
+      "scenarioId": "mobile-ajuda-interactions",
+      "criterion": "ajuda search hit/no-result/Fechar",
+      "surface": "browser UI",
+      "exactInvocation": "Playwright Chromium http://127.0.0.1:4173/#ajuda at 390x844; search comissões and expand hit; search semresultadozz; click Fechar.",
+      "verdict": "PASS",
+      "artifactRefs": [
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-search-hit-open.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-no-result.png",
+        ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-close-afiliados.png"
+      ],
+      "started": "2026-07-21T00:35:33.431Z",
+      "finished": "2026-07-21T00:35:33.981Z"
+    }
+  ],
+  "consoleErrors": [
+    {
+      "viewport": "desktop",
+      "errors": [
+        {
+          "type": "console",
+          "text": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <li> li \n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:4173/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:4173/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        },
+        {
+          "type": "console",
+          "text": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s \n\nCheck the render method of `Primitive.div.SlotClone`. \n    at SheetOverlay (http://127.0.0.1:4173/src/components/ui/sheet.tsx:56:3)\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at DialogPortal (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:2008:11)\n    at SheetPortal (http://127.0.0.1:4173/src/components/ui/sheet.tsx:47:27)\n    at SheetContent (http://127.0.0.1:4173/src/components/ui/sheet.tsx:81:3)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Dialog (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1948:5)\n    at Sheet (http://127.0.0.1:4173/src/components/ui/sheet.tsx:23:21)\n    at ReferralDetailSheet (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:555:3)\n    at main\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at AfiliadosPage (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:1368:3)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "errors": [
+        {
+          "type": "console",
+          "text": "Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <li> li \n    at li\n    at BreadcrumbSeparator (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:116:32)\n    at li\n    at BreadcrumbItem (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:51:27)\n    at BreadcrumbItems (http://127.0.0.1:4173/src/components/layout/app-page.tsx:24:28)\n    at ol\n    at BreadcrumbList (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:29:27)\n    at nav\n    at Breadcrumb (http://127.0.0.1:4173/src/components/ui/breadcrumb.tsx:21:23)\n    at div\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at IndicacoesPage (http://127.0.0.1:4173/src/modules/afiliados/IndicacoesPage.tsx:698:31)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        },
+        {
+          "type": "console",
+          "text": "Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s \n\nCheck the render method of `Primitive.div.SlotClone`. \n    at SheetOverlay (http://127.0.0.1:4173/src/components/ui/sheet.tsx:56:3)\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:502:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:479:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:783:13\n    at http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1904:22\n    at Presence (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:820:11)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at DialogPortal (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:2008:11)\n    at SheetPortal (http://127.0.0.1:4173/src/components/ui/sheet.tsx:47:27)\n    at SheetContent (http://127.0.0.1:4173/src/components/ui/sheet.tsx:81:3)\n    at Provider4 (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:373:15)\n    at Dialog (http://127.0.0.1:4173/node_modules/.vite/deps/radix-ui.js?v=4735b91a:1948:5)\n    at Sheet (http://127.0.0.1:4173/src/components/ui/sheet.tsx:23:21)\n    at ReferralDetailSheet (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:555:3)\n    at main\n    at div\n    at AppPage (http://127.0.0.1:4173/src/components/layout/app-page.tsx:66:27)\n    at AfiliadosPage (http://127.0.0.1:4173/src/modules/afiliados/AfiliadosPage.tsx:1368:3)\n    at div\n    at div\n    at AppLayout (http://127.0.0.1:4173/src/components/layout/app-layout.tsx:22:3)\n    at AppShell\n    at AgendaPrototypeApp (http://127.0.0.1:4173/src/modules/agenda/components/AgendaPrototypeApp.tsx:92:18)\n    at App"
+        }
+      ]
+    }
+  ],
+  "artifactPaths": [
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-indicacoes-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ganhos-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtosLinks-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-configuracoes-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-detail-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-afiliados-detail-closed.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-indicacoes-search-tab-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ganhos-org-filter.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-general-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-organization-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-product-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-request-sent.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-produtos-disabled-unavailable.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-search-hit-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-no-result.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/desktop-ajuda-close-afiliados.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-indicacoes-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ganhos-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtosLinks-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-configuracoes-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-base.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-detail-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-afiliados-detail-closed.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-indicacoes-search-tab-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ganhos-org-filter.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-general-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-organization-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-product-copy.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-request-sent.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-produtos-disabled-unavailable.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-search-hit-open.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-no-result.png",
+    ".omo/evidence/afiliados-front-plan/f3-real-qa/run3/mobile-ajuda-close-afiliados.png"
+  ]
+}

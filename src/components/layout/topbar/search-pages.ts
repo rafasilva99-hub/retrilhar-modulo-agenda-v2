@@ -69,6 +69,7 @@ export const systemPages: SystemPage[] = [
     id: "afiliados",
     name: "Afiliados",
     icon: UserStar01Icon,
+    page: "afiliados",
     breadcrumb: "Gestão de afiliados",
   },
   {

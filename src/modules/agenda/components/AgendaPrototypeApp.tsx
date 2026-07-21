@@ -3,6 +3,8 @@ import { type CSSProperties, lazy, type ReactNode, Suspense, useCallback, useSta
 import ContextoMissao from "@/app/components/ContextoMissao";
 import { IntroTeste } from "@/app/components/IntroTeste";
 import { AppShell } from "@/components/layout/app-shell";
+import type { AppPage } from "@/components/layout/types";
+import type { GestorAffiliateSection } from "@/mocks/gestor-afiliados";
 import {
   affiliateNavItems,
   affiliateOrganization,
@@ -17,6 +19,7 @@ import { ConfiguracoesPage } from "@/modules/afiliados/ConfiguracoesPage";
 import { GanhosPage } from "@/modules/afiliados/GanhosPage";
 import { IndicacoesPage } from "@/modules/afiliados/IndicacoesPage";
 import { ProdutosLinksPage } from "@/modules/afiliados/ProdutosLinksPage";
+import { GestorAfiliadosPage } from "@/modules/gestor-afiliados/GestorAfiliadosPage";
 import { ProdutosPage } from "@/modules/produtos/ProdutosPage";
 
 import { AgendaDayPage } from "../adapters/figma-agenda-day-page";
@@ -83,6 +86,25 @@ function isAgendaViewMode(v: string | null): v is AgendaViewMode {
 
 function AffiliatePreviewFrame({ children }: { children: ReactNode }) {
   return <div style={{ "--shell-offset": "24px" } as CSSProperties}>{children}</div>;
+}
+
+function getGestorAffiliateSection(page: AppPage): GestorAffiliateSection | null {
+  switch (page) {
+    case "gestorAfiliados":
+      return "visao";
+    case "gestorAfiliadosLista":
+      return "afiliados";
+    case "gestorAfiliadosPropostas":
+      return "propostas";
+    case "gestorAfiliadosSolicitacoes":
+      return "solicitacoes";
+    case "gestorAfiliadosPagamentos":
+      return "pagamentos";
+    case "gestorAfiliadosTermo":
+      return "termo";
+    default:
+      return null;
+  }
 }
 
 function AgendaPrototypeApp() {
@@ -179,6 +201,19 @@ function AgendaPrototypeApp() {
             <ProdutosLinksPage />
           </AffiliatePreviewFrame>
         );
+      case "gestorAfiliados":
+      case "gestorAfiliadosLista":
+      case "gestorAfiliadosPropostas":
+      case "gestorAfiliadosSolicitacoes":
+      case "gestorAfiliadosPagamentos":
+      case "gestorAfiliadosTermo": {
+        const section = getGestorAffiliateSection(base);
+        return section ? (
+          <AffiliatePreviewFrame>
+            <GestorAfiliadosPage section={section} />
+          </AffiliatePreviewFrame>
+        ) : null;
+      }
       case "configuracoes":
         return <ConfiguracoesPage />;
       case "ajuda":
@@ -251,6 +286,21 @@ function AgendaPrototypeApp() {
         onNavigate={agenda.navigateTo}
       >
         <ProdutosLinksPage />
+      </AppShell>
+    );
+  }
+
+  const gestorAffiliateSection = getGestorAffiliateSection(agenda.currentPage);
+  if (gestorAffiliateSection) {
+    return (
+      <AppShell
+        activePage="gestorAfiliados"
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <GestorAfiliadosPage section={gestorAffiliateSection} />
       </AppShell>
     );
   }

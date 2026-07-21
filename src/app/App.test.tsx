@@ -12,7 +12,19 @@ const affiliateRoutes = [
   { hash: "configuracoes", expectedText: "Meu Perfil" },
   { hash: "ajuda", expectedText: "Como podemos ajudar?" },
 ] as const;
+const managerAffiliateRoutes = [
+  { hash: "gestorAfiliados", expectedText: "Ranking de afiliados" },
+  { hash: "gestorAfiliadosLista", expectedText: "ANA-4510" },
+  { hash: "gestorAfiliadosPropostas", expectedText: "Contraproposta" },
+  { hash: "gestorAfiliadosSolicitacoes", expectedText: "Rapel Cachoeira" },
+  { hash: "gestorAfiliadosPagamentos", expectedText: "Registrar pagamento" },
+  { hash: "gestorAfiliadosTermo", expectedText: "Termo de afiliação" },
+] as const;
 const affiliatePreviewRoutes = affiliateRoutes.map(({ hash, expectedText }) => ({
+  hash: `preview/${hash}`,
+  expectedText,
+}));
+const managerAffiliatePreviewRoutes = managerAffiliateRoutes.map(({ hash, expectedText }) => ({
   hash: `preview/${hash}`,
   expectedText,
 }));
@@ -92,14 +104,42 @@ describe("App hash routing", () => {
     }
   });
 
-  it("navigates from the manager sidebar to the affiliate dashboard", async () => {
+  it("renders each manager affiliate screen for its direct hash route", async () => {
+    for (const { hash, expectedText } of managerAffiliateRoutes) {
+      const { unmount } = renderHashRoute(hash);
+
+      await waitFor(() => {
+        expect(window.location.hash).toBe(`#${hash}`);
+        expect(document.body.textContent).toContain(expectedText);
+      });
+
+      unmount();
+      window.history.replaceState(null, "", "/");
+    }
+  });
+
+  it("renders each manager affiliate screen for its preview hash route", async () => {
+    for (const { hash, expectedText } of managerAffiliatePreviewRoutes) {
+      const { unmount } = renderHashRoute(hash);
+
+      await waitFor(() => {
+        expect(window.location.hash).toBe(`#${hash}`);
+        expect(document.body.textContent).toContain(expectedText);
+      });
+
+      unmount();
+      window.history.replaceState(null, "", "/");
+    }
+  });
+
+  it("navigates from the manager sidebar to the affiliate management dashboard", async () => {
     renderHashRoute("agenda");
 
     fireEvent.click(screen.getByRole("button", { name: "Afiliados" }));
 
     await waitFor(() => {
-      expect(window.location.hash).toBe("#afiliados");
-      expect(document.body.textContent).toContain("Oi Katiely,");
+      expect(window.location.hash).toBe("#gestorAfiliados");
+      expect(document.body.textContent).toContain("Gestão de afiliados");
     });
   });
 
@@ -122,8 +162,8 @@ describe("App hash routing", () => {
     fireEvent.keyDown(searchInput, { key: "Enter" });
 
     await waitFor(() => {
-      expect(window.location.hash).toBe("#afiliados");
-      expect(document.body.textContent).toContain("Oi Katiely,");
+      expect(window.location.hash).toBe("#gestorAfiliados");
+      expect(document.body.textContent).toContain("Gestão de afiliados");
     });
   });
 

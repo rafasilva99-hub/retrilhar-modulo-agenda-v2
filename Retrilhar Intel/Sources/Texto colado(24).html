@@ -1,0 +1,370 @@
+<p>
+  Rafael aqui. Considere que eu sou um imbecil com TDAH e preciso entender as regras de negócio
+  desse projeto, que por terem seu grau de complexidade estou tendo dificuldades para entender.
+  Baseado nas documentações que temos indexadas, avalie por onde posso começar e qual o melhor
+  caminho para eu compreender o negócio em um todo, considerando funcionalidades, módulos, etc 5 de
+  mai. Claude respondeu: Boa, Rafael. Boa, Rafael. Vou primeiro dar uma varrida no que temos
+  indexado pra te montar um caminho que faça sentido — não um &quot;leia tudo&quot;, mas uma ordem
+  que respeita cérebro com TDAH (do macro pro micro, com checkpoints). Pesquisou a memória Pesquisou
+  a memória Beleza, tenho material o suficiente. Deixa eu te entregar o caminho de forma direta —
+  sem tentar mastigar tudo de uma vez (que é exatamente o que mata foco TDAH). Antes de qualquer
+  documento: entenda o conceito-mãe em 30 segundos Retrilhar é um SaaS para empresas de turismo de
+  experiência (trilhas, passeios, tours, atividades ao ar livre). É o &quot;escritório de
+  bolso&quot; delas. Você está refatorando o painel administrativo — o e-commerce já existe. A
+  plataforma precisa atender 3 modelos de negócio diferentes, e isso muda quase tudo que o usuário
+  vê: Modelo Reserva? Pagamento no sistema? Identifica participante? Sistema de Reservas Sim Não Sim
+  Reserva + Pagamento Sim Sim Sim E-commerce (ingressos) Não Sim Não Se você gravar só isso, já está
+  30% à frente. O caminho de leitura (na ordem, sem pular) Pensei nisso como camadas: cada uma só
+  faz sentido depois da anterior. São checkpoints curtos, não maratona. 🟢 Etapa 1 — O mapa do
+  território (1 a 2h) Leia: Retrilhar - Escopo, Proposta e Planejamento.docx, mas só as seções
+  iniciais: Visão Geral do Produto Variações de Negócio (a tabela acima) Arquitetura de Módulos
+  (lista dos 15 módulos) Estrutura do Menu (7 itens) Perfis de Usuário e Jobs to Be Done Objetivo:
+  saber que módulos existem, quem são os personagens (Gestor, Vendedor, Operador/Guia, Afiliado), e
+  como o menu agrupa as coisas. Não precisa entender cada módulo a fundo ainda. É só o &quot;google
+  maps&quot; do sistema. 🟢 Etapa 2 — Os 4 conceitos que sustentam tudo Isso aqui não está num único
+  lugar, mas é o que vai fazer todos os outros documentos clicarem. Anota num post-it mental:
+  Produto vs. Evento vs. Atividade vs. Reserva — Produto é o anúncio (ex: &quot;Trilha do
+  Morro&quot;). Evento é uma instância datada (ex: &quot;Trilha do Morro - 12/05 às 8h&quot;).
+  Atividade é o que acontece de fato. Reserva é o vínculo de um participante a um evento. Lógica de
+  estoque — existem 4 tipos: Recursos (guia, barco, van — limitador operacional), Inventário Físico
+  (camiseta — estoque numérico), Inventário de Experiência (almoço, rapel — slot por horário) e
+  Adicionais (ponto de embarque, seguro — só personalizam). Pagador ≠ Participante — quem paga pode
+  não ser quem vai ao passeio. Crianças têm responsável. Isso explica metade da complexidade do
+  Painel de Reservas. Os 2 grandes lados do sistema — Central de Vendas (dinheiro entrando,
+  comercial) e Painel de Operações (tempo, pessoas, execução). Eles conversam mas têm donos
+  diferentes. A maioria das telas pertence a um desses dois mundos. 🟡 Etapa 3 — Mergulho no Módulo
+  1: Central de Vendas (~2h) Leia: Modulo_Central de Vendas.docx inteiro, mas com este foco: Quais
+  são as entidades (Carrinho, Orçamento, Pedido, Venda, Pagamento) e como uma vira a outra Os 3
+  papéis comerciais: Gestor Comercial, Vendedor, Afiliado — o que cada um vê O fluxo &quot;criar
+  pedido manual → gerar link de pagamento → confirmar&quot; (esse é o coração) 🟡 Etapa 4 — Mergulho
+  no Módulo de Operações (~3h, é o mais denso) Leia: RPP002_PAINEL_DE_OPERAÇÕES.docx (versão mais
+  recente, abril/2026). Está organizado em sub-módulos pela jornada do operador, o que ajuda muito:
+  3.1 Mapa de Vagas (QUANTO — capacidade) 3.2 Painel de Reservas (QUEM e O QUÊ — pessoas) 3.3 Agenda
+  (QUANDO — tempo) 3.4 Listas e Manifestos (COMO EXECUTAR — papelada) 3.5 Painel do Líder de
+  Operação (EXECUTAR — guia em campo) 3.6 Máquina de Estados (Reservas + Seguro) A 3.6 é a peça que
+  destrava tudo: te mostra os status possíveis (Rascunho → Agendada → Confirmada → Check-in →
+  Realizada / Cancelada / Expirada / No Show) e as transições válidas. Quando você entender essa
+  máquina, vai entender qualquer tela do módulo. 🔵 Etapa 5 — Validação no mundo real (1h, opcional
+  mas vale ouro) Depois de tudo isso, ler um dos Teste_de_Usabilidade_X.docx é didático: você vê
+  usuários reais quebrando a cara nas telas atuais e percebe por que certas decisões de design
+  existem. Recomendo o que tiver mais menções a &quot;Novo Pedido&quot; (foi falha crítica em todos
+  os participantes). 🔵 Etapa 6 — Resto dos módulos sob demanda Catálogo, Financeiro, Afiliados,
+  CRM, Configurações: você só precisa ler quando for tocar neles. A base que você tem nas etapas 1–4
+  é suficiente pra navegar nas conversas. Regrinhas pra não travar Não tente decorar status — abre o
+  documento da máquina de estados quando precisar. Quando um termo te embaralhar, pare e procure no
+  Glossário (existe um logo no início do RPP002). Não leia os documentos antigos primeiro
+  (Retrilhar_-_Transcricao_25_03, 01_04, 08_04, 15_04 são transcrições de reuniões — só consulta
+  quando quiser entender por que uma decisão foi tomada). Se quiser, posso te montar um resumo
+  executivo dos 4 conceitos da Etapa 2 num formato que sirva de &quot;cola de bolso&quot;, ou
+  desenhar o fluxograma da máquina de estados das reservas pra ficar visual. Qual ajudaria mais
+  agora? Você disse: Desenvolva a explicação a respeito disso
+  excerpt_from_previous_claude_message.txt 1 linha txt Desenvolva a explicação a respeito disso 5 de
+  mai. Claude respondeu: Boa pergunta — esse é o ponto que mais embaralha a cabeça no início, e
+  quando ele clica, metade do sistema fica óbvio. Boa pergunta — esse é o ponto que mais embaralha a
+  cabeça no início, e quando ele clica, metade do sistema fica óbvio. Vou primeiro confirmar
+  exatamente como o projeto define esses termos e depois desenvolver com calma. Searched project for
+  “produto evento atividade definição glossário” Searched project for “produto evento atividade
+  definição glossário” Beleza, confirmei o que precisava. O glossário oficial dá uma camada extra
+  que vou trazer pra explicação — porque &quot;Atividade&quot; no projeto tem um sentido bem
+  específico que a frase resumida não captura. Vou desenvolver com calma. A confusão que esses 4
+  termos causam A primeira armadilha é tratar tudo como sinônimo de &quot;passeio&quot;. Em conversa
+  solta, todo mundo fala &quot;vou criar um passeio na trilha de domingo às 8h&quot; — e isso
+  embute, sem distinguir, quatro coisas diferentes que o sistema precisa separar pra funcionar.
+  Quando você olha um print do Figma e não entende por que existem três telas parecidas, geralmente
+  é porque cada uma está tratando de uma dessas camadas. Pensa nelas como camadas que vão do mais
+  abstrato ao mais concreto: PRODUTO → EVENTO → RESERVA → ATIVIDADE (modelo) (instância) (vínculo)
+  (execução real)
+</p>
+<ol>
+  <li>
+    Produto — o anúncio, o &quot;molde&quot; &quot;Produto - Anúncio da atividade configurado para
+    ser comercializado no e-commerce.&quot; (Glossário oficial) Produto é o que fica na vitrine. É o
+    cadastro reutilizável que descreve o que a empresa oferece, sem data nem hora ainda. É um molde.
+    Quando o gestor entra em Catálogo de Produtos e cria &quot;Trilha do Morro do Boi&quot;, ele
+    está definindo: nome, descrição, fotos, política de cancelamento tarifas (adulto R $80, criança
+    R$ 40) adicionais disponíveis (almoço, transporte, foto profissional) capacidade padrão, regras
+    de idade, exigências físicas recursos necessários (1 guia, 1 van) O produto sozinho não vende
+    nada e ninguém vai a lugar nenhum. Ele só descreve o &quot;como seria se acontecesse&quot;. E
+    aqui tem uma sutileza que vai te ajudar com o RFP_001: Produto é uma categoria genérica no
+    Retrilhar. Existem 15 tipos de produto: Atividade, Mercadoria, Aluguel, Assinatura, Cartão
+    Presente, Hospedagem, Excursão etc. Ou seja, &quot;Produto&quot; é o conceito guarda-chuva da
+    loja. Uma camiseta também é um produto, só que de outra natureza.
+  </li>
+  <li>
+    Evento — a instância datada, o &quot;molde aplicado num dia&quot; &quot;Evento - Atividade com
+    data específica, podendo ter horários específicos, vinculada a um produto.&quot; (Glossário
+    oficial) Evento é quando você pega o molde (Produto) e fala: &quot;isso aqui vai acontecer no
+    dia 12/05 às 8h, com capacidade pra 12 pessoas, tendo o João como guia escalado&quot;. O evento
+    herda as configurações do produto (capacidade padrão, tarifas, adicionais), mas ganha: data e
+    hora específicas (início e fim) equipe escalada de fato link de grupo de WhatsApp daquela saída
+    visibilidade (interno ou público) recorrência (se é um evento que se repete) É no evento que a
+    vaga vira contável. Antes do evento existir, não dá pra reservar nada — porque &quot;Trilha do
+    Morro&quot; no abstrato não tem 12 vagas, só &quot;Trilha do Morro de 12/05 às 8h&quot; tem.
+    Detalhe importante: na visão de catálogo, alguns produtos funcionam sob demanda (sem evento
+    pré-criado, criam evento quando alguém compra) e outros são eventos pré-agendados (a empresa
+    publica a agenda toda do mês). Os dois caminhos existem, e isso aparece como filtro no Mapa de
+    Vagas: &quot;todos os eventos listados, para o sob demanda somente os dias que tiverem
+    reservas&quot;.
+  </li>
+  <li>
+    Reserva — o vínculo cliente↔evento &quot;Reserva - garantia que um produto foi separado com as
+    características solicitadas (de tempo, data, hora etc.) no momento da compra.&quot; (RFP_001)
+    Reserva é o que liga uma pessoa a um evento. É a &quot;passagem&quot; do cliente. Uma reserva
+    carrega: qual evento ela pertence quais participantes vão (pode ser 1 pagador comprando pra 4
+    pessoas — ainda é uma reserva única com 4 vagas dentro) qual tarifa cada participante usa (2
+    adultos + 2 crianças) quais adicionais foram comprados (2 almoços, 1 foto) qual ponto de
+    embarque cada um escolheu dados de saúde, termo de imagem, contrato assinado e — crucial —
+    status da máquina de estados: Rascunho, Agendada, Confirmada, Check-in Realizado, Realizada,
+    Cancelada, Expirada, No Show Note como reserva vive numa dimensão diferente: ela não é o
+    passeio, é o direito a participar dele. Por isso ela pode ser cancelada sem o evento ser
+    cancelado, ou pode existir sem ter pagamento (caso de reserva B2B onde o parceiro paga depois,
+    fora do sistema). Sintetizando os três até aqui: Camada Pergunta que responde Existe quando Mora
+    em Produto &quot;O que vendemos?&quot; Catálogo é cadastrado Módulo Produtos Evento &quot;Quando
+    vai acontecer?&quot; Agenda é montada Módulo Agenda Reserva &quot;Quem vai e como pagou?&quot;
+    Cliente compra Módulo Vendas + Painel de Reservas 4. Atividade — o passeio acontecendo de fato
+    Aqui tem uma armadilha de vocabulário que vale destacar, porque a palavra &quot;atividade&quot;
+    tem dois usos diferentes nos documentos: Uso A — uso operacional (que é o que importa pra você
+    no dia a dia do design): &quot;Atividade - O passeio que o participante irá usufruir e pelo qual
+    o pagador pagou.&quot; (Glossário oficial) Nesse sentido, atividade é a execução real — o
+    passeio que está acontecendo hoje, com pessoas no local, guia trabalhando, check-in sendo feito,
+    fotos sendo tiradas. É a camada que o Líder de Operação (guia) vê pelo celular dele em campo. A
+    atividade é o que o sistema acompanha quando uma reserva está em Check-in Realizado ou
+    Realizada. É o evento &quot;ganhando vida&quot; no mundo físico. Por isso o painel do guia tem
+    campo de &quot;registrar início e fim da atividade&quot;, &quot;registrar ocorrência&quot;,
+    &quot;marcar como realizada&quot; — ele está documentando a execução. Uso B — uso de catálogo
+    (RFP_001): &quot;Atividade - atividades curtas como rapel, salto de pêndulo, caminhadas...&quot;
+    Aqui &quot;atividade&quot; aparece como um dos 15 tipos de produto. Nesse contexto, é uma
+    classificação do catálogo (oposto de &quot;Mercadoria&quot;, &quot;Hospedagem&quot;,
+    &quot;Aluguel&quot; etc.). Não é a mesma coisa do uso A. Quando você ler um documento,
+    identifique pelo contexto: se está falando de execução em campo, é o uso A (a &quot;vida
+    real&quot; do passeio). Se está falando de cadastro/catálogo, é o uso B (categoria de produto).
+    No projeto, o uso A é o predominante, especialmente no módulo de Operações. Exemplo concreto pra
+    fechar a gestalt Vou pegar uma situação real e mostrar as quatro camadas em ação: Cenário: Maria
+    entra no e-commerce e compra ingresso pra ela e o filho na &quot;Trilha do Morro do Boi&quot; do
+    dia 12/05 às 8h. Camada O que está rolando Produto Lá atrás, a empresa cadastrou &quot;Trilha do
+    Morro do Boi&quot; no Catálogo, com tarifas Adulto/Criança, capacidade 12, política de
+    cancelamento, fotos, requer 1 guia. Esse cadastro existe há meses. Evento A empresa criou (ou o
+    sistema gerou recorrência) o evento &quot;Trilha do Morro do Boi — 12/05/2026 às 8h&quot;,
+    escalou o guia João, capacidade 12, link do WhatsApp daquela saída. Reserva A compra da Maria
+    virou uma reserva: ID #4521, vinculada ao evento de 12/05 8h, com 2 participantes (Maria adulto
+    + Pedro criança), almoço extra para a Maria, ponto de embarque &quot;Centro&quot;. Status atual:
+    🟢 Confirmada (porque pagou no PIX). Atividade No dia 12/05 às 7h45, o guia João abre o app e vê
+    a lista de participantes. Faz check-in da Maria e do Pedro com QR Code (reserva vai pra 🔴
+    Check-in Realizado). Conduz o passeio. No final, marca como ✅ Realizada. Isso foi a Atividade.
+    Note que a mesma &quot;Trilha do Morro do Boi&quot; gera, ao longo de um ano: 1 produto
+    (cadastro único) 52 eventos (todo sábado) ~600 reservas (clientes ao longo do ano) 52 atividades
+    (uma execução por sábado) Por que isso importa no seu trabalho de design Esse mapeamento explica
+    decisões de tela que parecem repetitivas mas não são: Mapa de Vagas mostra eventos (e o quanto
+    cada um está cheio). Painel de Reservas mostra reservas dentro de um evento (quem são as
+    pessoas, status, alertas). Painel do Líder de Operação acompanha a atividade acontecendo
+    (check-in, ocorrências, início/fim real). Catálogo de Produtos mexe no produto (o molde). Agenda
+    cria e organiza eventos (instâncias datadas do molde). Central de Vendas transaciona reservas
+    (parte financeira/comercial do vínculo). Quando o Cristiano fala &quot;essa tela está repetindo
+    a outra&quot;, quase sempre vale a pena perguntar: qual camada cada uma está representando? Se
+    forem camadas diferentes, não é repetição — é a mesma informação vista por óticas distintas, e
+    cada uma serve a um perfil diferente. Quer que eu desenhe isso como diagrama visual (cards
+    conectados ou fluxograma) pra você pendurar na parede do trabalho? Ou prefere que eu faça o
+    mesmo tipo de aprofundamento pra outro dos 4 conceitos da Etapa 2 (lógica de estoque,
+    pagador≠participante, ou Vendas vs. Operações)? Você disse: Isso não ficou claro para mim,
+    explique melhor excerpt_from_previous_claude_message.txt 1 linha txt Isso não ficou claro para
+    mim, explique melhor 5 de mai. Claude respondeu: Beleza, deixa eu pegar essa ideia e desmontar
+    com mais paciência, porque ela é mesmo abstrata. Beleza, deixa eu pegar essa ideia e desmontar
+    com mais paciência, porque ela é mesmo abstrata. A frase resumida em uma palavra:
+    &quot;molde&quot; A confusão vem disso. &quot;Molde&quot; é uma metáfora — produto não é uma
+    coisa física, é uma ficha de configuração que vai ser usada várias vezes. Vou trocar a metáfora
+    por algo mais palpável. Pense num restaurante Imagina que você é dono de uma pizzaria. Você tem
+    um cardápio. No cardápio está escrito: Pizza Calabresa Ingredientes: molho, queijo, calabresa,
+    cebola Preço: R $60 (grande) / R$ 45 (média) Tempo de preparo: 25 minutos Tem opção sem cebola
+    Esse cadastro no cardápio é o produto no Retrilhar. Note três coisas sobre esse cadastro: Ele
+    não é uma pizza. Ninguém come o cardápio. É só a descrição do que você sabe fazer. Ele é
+    reutilizável. Você cadastrou uma vez, e cada cliente que pede &quot;uma calabresa grande&quot;
+    usa o mesmo cadastro. Ele não tem data. Não está escrito &quot;Pizza Calabresa de 5 de novembro
+    às 20h&quot;. Está só descrevendo o que existe pra ser pedido. Quando o cliente faz o pedido, aí
+    sim nasce uma pizza real, com hora, mesa e nome. Essa pizza específica é outra coisa — no
+    Retrilhar seria a reserva ou a atividade. Agora trazendo pro Retrilhar A empresa de turismo
+    cadastra uma vez só, lá no Catálogo de Produtos: Trilha do Morro do Boi Descrição: trilha de 4h,
+    dificuldade média, vista do mar Fotos: [10 fotos] Tarifas: Adulto R $80, Criança R$ 40
+    Capacidade padrão: 12 pessoas Adicionais disponíveis: almoço (+R $30), foto profissional (+R$
+    50) Recursos necessários: 1 guia, 1 van Política de cancelamento: até 24h antes Idade mínima: 8
+    anos Pronto. Esse é o produto. Esse cadastro fica salvo no sistema. A partir dele: Em janeiro, a
+    empresa vai usar esse cadastro pra criar 8 eventos (um por sábado e domingo). Em fevereiro, mais
+    8 eventos. Em março, idem. Todos esses eventos puxam as informações do mesmo produto. Se a
+    empresa decidir mudar a tarifa de adulto pra R$ 90, ela edita um cadastro só (o produto), e
+    todos os eventos futuros já usam o novo valor. É por isso que o documento chama de
+    &quot;molde&quot;: o produto define o formato, e os eventos são as cópias do molde aplicadas em
+    datas específicas. Por que separar &quot;produto&quot; de &quot;evento&quot;? Porque sem essa
+    separação, a empresa teria que cadastrar a &quot;Trilha do Morro do Boi&quot; do zero toda vez
+    que quisesse oferecer ela num novo dia. Imagina ter que reescrever a descrição, recolocar as
+    fotos, redefinir as tarifas, reanexar a política de cancelamento — toda santa semana. Inviável.
+    Com a separação: Cadastra o produto 1 vez (trabalho pesado, demorado, completo). Cria os eventos
+    rapidamente (só escolhe a data, hora e quem é o guia daquele dia — o resto é herdado do
+    produto). É a mesma lógica do cardápio: você não escreve a receita da pizza calabresa toda vez
+    que alguém pede. Você escreve uma vez, e cada pedido usa. Onde isso aparece visualmente no
+    sistema Tela Mostra Você está mexendo em... Catálogo de Produtos Lista das experiências
+    cadastradas (a Trilha, o Rapel, o Café Colonial) Produtos (os moldes) Agenda Calendário com
+    datas e horários marcados Eventos (as instâncias datadas) Painel de Reservas Lista de pessoas
+    que compraram Reservas (clientes vinculados a um evento) Se o Cristiano falar &quot;preciso
+    editar a Trilha do Morro&quot; — ele quer mexer no produto, e a alteração vai refletir em todos
+    os eventos futuros dela. Se ele falar &quot;preciso cancelar a saída de sábado&quot; — ele quer
+    mexer no evento específico, sem afetar o produto nem as outras saídas. Se ele falar
+    &quot;preciso remarcar a Maria&quot; — ele quer mexer na reserva dela, sem afetar o evento nem
+    as outras pessoas que vão. Teste rápido pra ver se ficou claro Sem olhar pra cima, responde
+    mentalmente: Uma pousada cadastra &quot;Suíte Master&quot; no sistema com diária de R$ 400. João
+    reserva a Suíte Master pro fim de semana de 15-16/11. Onde está o produto? Onde está o evento?
+    Onde está a reserva? (Resposta: produto = o cadastro &quot;Suíte Master&quot; com a diária de R$
+    400; evento = a disponibilidade da Suíte Master nas datas 15 e 16/11; reserva = o vínculo do
+    João àquelas duas diárias.) Se isso bateu, o conceito tá ancorado. Se ainda tá nebuloso, me diz
+    qual parte específica ficou estranha que eu reformulo de outro ângulo. Você disse: Quais são os
+    15 tipos de produto? excerpt_from_previous_claude_message.txt 1 linha txt Quais são os 15 tipos
+    de produto? 5 de mai. Claude respondeu: Boa, vou te listar direto da fonte (RFP_001), com uma
+    descrição curta e um exemplo concreto pra cada um — porque alguns os nomes parecem se sobrepor
+    mas são ca… Boa, vou te listar direto da fonte (RFP_001), com uma descrição curta e um exemplo
+    concreto pra cada um — porque alguns os nomes parecem se sobrepor mas são casos distintos.
+  </li>
+</ol>
+<h3>Tipo O que é Exemplo</h3>
+<p>
+  1 Atividade Atividades curtas, de duração pontual Rapel, salto de pêndulo, caminhada, salto de
+  paraquedas 2 Mercadoria Produtos físicos vendidos pela empresa Camiseta, boné, brinde, caneca 3
+  Treinamento / Aulas Atividades educativas com duração estendida ou recorrente Aulas de escalada,
+  curso de caminhada, workshop 4 Aluguel Locação de equipamentos ou veículos Aluguel de bicicleta,
+  equipamento de escalada, caiaque 5 Assinatura Produto com pagamento recorrente Plano mensal de
+  acesso a trilhas, clube de associados 6 Cartão Presente Valor fixo pré-pago, com data de
+  expiração, pra usar em produtos da empresa Gift card de R$ 200 para usar em qualquer experiência 7
+  Transporte Serviços que levam o participante de um lugar a outro Traslado aeroporto → hotel,
+  transfer entre cidades 8 Excursão de 1 dia Passeios que incluem mais de um local no mesmo dia
+  Bate-volta para 3 cachoeiras + almoço 9 Ingresso Entradas para parques e atrações turísticas
+  Ingresso de parque ecológico, entrada de museu 10 Excursão Passeios longos, que duram o dia todo
+  ou têm pernoite Pacote de 3 dias na Serra, expedição de fim de semana 11 Evento Acontecimentos em
+  datas específicas, curta duração Show, festival, palestra 12 Meio de hospedagem Produto com
+  pernoite, vendido por diária Suíte de pousada, chalé, glamping 13 Tour privado Passeios com
+  reserva exclusiva por período/recurso Caminhada privada com guia exclusivo, passeio só pra um
+  casal 14 Produto personalizado Configuração livre, montada do zero com qualquer combinação de
+  opções Caso atípico que não se encaixa nas categorias acima Observação importante: O RFP_001 lista
+  &quot;15&quot; tipos no texto, mas a tabela traz 14 numerados. O item 1 (&quot;Produto&quot;) na
+  lista original é o cabeçalho/conceito guarda-chuva, não um tipo em si. Então na prática são 14
+  tipos operacionais. A armadilha que vale destacar Repare em duas sobreposições que confundem:
+  &quot;Atividade&quot; (item 1) vs. &quot;Atividade&quot; como uso operacional. No catálogo,
+  &quot;Atividade&quot; é uma categoria que significa &quot;passeio curto e pontual&quot; (rapel,
+  trilha). No módulo de Operações, &quot;Atividade&quot; é a execução real do passeio em campo.
+  Mesmo nome, contextos diferentes — exatamente o ponto sobre o qual a gente conversou antes.
+  &quot;Evento&quot; (item 11) vs. &quot;Evento&quot; como instância datada. No catálogo,
+  &quot;Evento&quot; é um tipo de produto (show, festival). No sistema como um todo,
+  &quot;Evento&quot; também é o nome técnico da instância datada de qualquer produto. Ou seja, um
+  produto do tipo &quot;Atividade&quot; gera &quot;Eventos&quot; na agenda, e um produto do tipo
+  &quot;Evento&quot; também gera &quot;Eventos&quot; na agenda. A palavra é a mesma e isso vai
+  confundir alguém uma hora. Esse é um dos pontos que provavelmente vai precisar de cuidado de
+  nomenclatura no design ou de glossário interno bem firme, porque já vi vocês discutindo esse tipo
+  de ambiguidade em outras decisões. Quer que eu siga pro próximo conceito da Etapa 2 (lógica de
+  estoque, ou pagador ≠ participante), ou tem algo mais sobre tipos de produto que ficou meio
+  nebuloso? Você disse: O que se compreende como saída aqui?
+  excerpt_from_previous_claude_message.txt 1 linha txt O que se compreende como saída aqui? 5 de
+  mai. Claude respondeu: Boa pegada — esse termo aparece bastante e merece ser destrinchado, porque
+  ele é meio &quot;vocabulário do mercado de turismo&quot; que escorrega pra dentro da documenta…
+  Boa pegada — esse termo aparece bastante e merece ser destrinchado, porque ele é meio
+  &quot;vocabulário do mercado de turismo&quot; que escorrega pra dentro da documentação sem sempre
+  ser definido. Deixa eu confirmar como o projeto usa. Searched project for “saída status pendente
+  confirmado cancelado data horário” Searched project for “saída status pendente confirmado
+  cancelado data horário” Confirmei. Vou explicar. &quot;Saída&quot; é gíria do mercado de turismo
+  No turismo de experiência, quando alguém diz &quot;a saída de sábado&quot; ou &quot;tenho duas
+  saídas hoje&quot;, está falando da ocorrência de uma atividade num dia/horário específico. Vem do
+  uso prático: o grupo &quot;sai&quot; do ponto de encontro e vai pra trilha. A saída das 8h, a
+  saída das 14h. Virou jargão. Então no Retrilhar, &quot;saída&quot; = &quot;evento&quot;. São
+  sinônimos — o mesmo objeto técnico, vocabulário diferente. Você vê isso no documento principal de
+  operações: Mapa de Vagas mostra &quot;status da saída (pendente, confirmado, cancelado)&quot;
+  Agenda tem &quot;Modal: Criar/Editar Data de Saída&quot; Existe &quot;Imprimir Saídas&quot; como
+  ação global E no glossário oficial não está escrito &quot;saída&quot;, está escrito
+  &quot;Evento&quot;. É a mesma coisa. Por que essa duplicidade existe Provavelmente porque os
+  clientes (empresas de turismo) falam &quot;saída&quot; naturalmente, e a documentação de UX
+  absorveu o termo deles. Já a documentação técnica (RPP002, máquina de estados) padronizou pra
+  &quot;Evento&quot;, que é mais neutro e funciona pra qualquer tipo de produto — incluindo os que
+  não &quot;saem&quot; de lugar nenhum, tipo Hospedagem ou Aluguel. Pensa assim: Contexto Termo
+  usado Por quê Conversa com cliente, telas voltadas pro operador Saída Linguagem natural do setor
+  Documento técnico, glossário, máquina de estados Evento Termo genérico, serve pra todos os 14
+  tipos de produto O &quot;status da saída&quot; — o que ele significa Quando o documento fala em
+  &quot;status da saída: pendente, confirmado, cancelado&quot;, isso não é o status da reserva. É o
+  status do evento inteiro — da saída como um todo. Exemplo prático pra ficar claro: Saída
+  &quot;Trilha do Morro do Boi - 12/05 às 8h&quot; tem capacidade pra 12 pessoas e mínimo de 6 pra
+  confirmar. Se vendeu 3 reservas até agora → status da saída = Pendente (ainda não atingiu o
+  mínimo, pode não acontecer) Quando atingir 6 reservas → status da saída = Confirmado (vai
+  acontecer com certeza) Se a empresa decidir cancelar (chuva, problema com guia) → status da saída
+  = Cancelado Repare na hierarquia: SAÍDA (evento) ──── tem seu próprio status: pendente /
+  confirmado / cancelado │ ├─ Reserva 1 ──── tem seu próprio status: agendada / confirmada /
+  check-in / etc. ├─ Reserva 2 ──── tem seu próprio status └─ Reserva 3 ──── tem seu próprio status
+  São duas máquinas de estado paralelas: uma para a saída/evento, outra para cada reserva. Isso vai
+  confundir muita gente uma hora — você pode ter uma saída &quot;Confirmada&quot; com uma reserva
+  &quot;Cancelada&quot; dentro dela (alguém comprou e desistiu, mas o passeio acontece). Onde isso
+  mais aparece no design Na sua jornada pelo módulo de Operações, você vai ver &quot;saída&quot;
+  principalmente em três lugares: Mapa de Vagas — cada linha é uma saída, com seu status e ocupação
+  Agenda — cada cartão no calendário é uma saída Listas e Manifestos — geralmente filtra &quot;as
+  saídas do dia X&quot; pra imprimir documentação Quando bater dúvida no futuro, mentalmente
+  substitua &quot;saída&quot; por &quot;evento daquele dia/horário&quot; e a frase faz sentido. Quer
+  que eu siga? Os próximos pontos da Etapa 2 que ainda faltam são Lógica de Estoque (Recurso vs.
+  Inventário Físico vs. Inventário de Experiência vs. Adicional) e Pagador ≠ Participante. Posso
+  pegar um deles, ou outra dúvida pontual primeiro. Você disse: Explique melhor
+  excerpt_from_previous_claude_message.txt 1 linha txt Explique melhor 5 de mai. Claude respondeu:
+  Boa, esse ponto é importante e merece desenrolar com calma. Boa, esse ponto é importante e merece
+  desenrolar com calma. Deixa eu confirmar primeiro como o projeto trata isso, porque é uma
+  diferença que afeta agenda, mapa de vagas e checkout. Searched project for “sob demanda evento
+  recorrência disponibilidade produto” Searched project for “sob demanda evento recorrência
+  disponibilidade produto” Beleza, confirmei. Agora explico com calma. A pergunta de fundo: como
+  nasce um evento? Lembra que evento é &quot;o produto numa data específica&quot;? Pois é, mas não
+  existe uma única forma do evento aparecer na agenda. Existem dois caminhos diferentes — e isso
+  muda completamente a operação da empresa. A escolha entre os dois acontece no cadastro do produto,
+  na aba &quot;Disponibilidade&quot;: &quot;Tipo: por data específica, recorrente (dias da semana),
+  sob demanda&quot; Vou explicar cada um pensando em situações reais. Caminho 1 — Eventos
+  pré-agendados (a empresa &quot;abre a agenda&quot;) Aqui a empresa decide com antecedência quando
+  os passeios vão acontecer, cadastra esses dias no sistema, e os clientes só podem comprar nas
+  datas que ela publicou. Como funciona na prática: A empresa de turismo cadastra a Trilha do Morro
+  do Boi e configura: &quot;acontece todo sábado e domingo às 8h, capacidade 12 pessoas&quot;. O
+  sistema então gera automaticamente um evento pra cada sábado e domingo dos próximos meses.
+  Resultado na agenda: Janeiro 2026 ─ Sáb 04/01 — Trilha 8h (0/12 vagas) ← evento existe, sem
+  reservas ─ Dom 05/01 — Trilha 8h (0/12 vagas) ← evento existe, sem reservas ─ Sáb 11/01 — Trilha
+  8h (3/12 vagas) ← evento existe, com 3 reservas ─ Dom 12/01 — Trilha 8h (0/12 vagas) ← evento
+  existe, sem reservas ─ Sáb 18/01 — Trilha 8h (0/12 vagas) ... (todos os sábados e domingos do ano)
+  Característica-chave: o evento existe antes de qualquer pessoa comprar. Ele já está lá esperando.
+  Se ninguém comprar, o evento aparece vazio, mas continua existindo na agenda. Quem usa esse
+  modelo: parques temáticos, empresas com saídas regulares, pousadas, atrações com horário fixo.
+  &quot;Toda quarta-feira tem rapel às 9h. Independente de ter cliente ou não, o horário tá
+  publicado.&quot; Caminho 2 — Sob demanda (o evento nasce da venda) Aqui é o oposto: a empresa só
+  &quot;abre&quot; o passeio quando alguém compra. Não tem agenda publicada, tem disponibilidade
+  aberta. Como funciona na prática: A empresa cadastra a Trilha Privada de Pôr-do-Sol e configura:
+  &quot;sob demanda, qualquer dia, com 48h de antecedência mínima&quot;. O sistema não cria nenhum
+  evento. A agenda fica vazia pra esse produto. Quando o João entra no e-commerce e escolhe
+  &quot;quero a trilha no dia 15/02 às 17h&quot;, aí sim — naquele momento da compra — o sistema
+  cria um evento novo pra 15/02 às 17h, e vincula a reserva do João a ele. Resultado na agenda:
+  Fevereiro 2026 ─ Sáb 14/02 — (vazio) ─ Dom 15/02 — Trilha Pôr-do-Sol 17h (1/4) ← evento nasceu
+  agora ─ Seg 16/02 — (vazio) ─ Ter 17/02 — (vazio) ─ Qua 18/02 — Trilha Pôr-do-Sol 17h (2/4) ←
+  outro cliente comprou pra cá ─ Qui 19/02 — (vazio) ... só aparece nos dias que alguém comprou
+  Característica-chave: o evento só existe se houver venda. Antes da compra, não existe nada na
+  agenda — só a &quot;disponibilidade abstrata&quot; de que aquele produto pode ser comprado. Quem
+  usa esse modelo: tours privados, experiências exclusivas, aluguéis sob agendamento, atividades que
+  exigem grupo formado pra acontecer. Por que isso é uma decisão de negócio, não só técnica Pensa
+  nas implicações: Aspecto Pré-agendado Sob demanda Esforço inicial Maior (publicar agenda) Menor
+  (basta cadastrar o produto) Flexibilidade Cliente escolhe entre datas fixas Cliente sugere a data
+  Risco de saída vazia Sim (pode rolar com 0 ou 2 pessoas) Não (só existe se vendeu) Capacidade
+  mínima Crítica (decide se a saída acontece) Geralmente irrelevante Marketing &quot;Veja nossas
+  próximas saídas&quot; &quot;Reserve sua experiência exclusiva&quot; Onde isso aparece nas suas
+  telas Esse é o ponto que volta a importar pro seu trabalho de design. Os documentos mencionam que
+  na visão de lista da Agenda, o comportamento é diferente pra cada caso: &quot;Para eventos todos
+  listados, para o sob demanda, somente os dias que tiverem reservas&quot; Faz sentido pensando do
+  ponto de vista do operador: Eventos pré-agendados: o operador quer ver a lista inteira, mesmo dias
+  com 0 vendas, porque precisa monitorar quais saídas estão fracas e tomar atitude (campanha,
+  divulgação, ou cancelar antes da hora). Eventos sob demanda: não faz sentido mostrar &quot;todos
+  os dias do ano em que o produto poderia acontecer mas ninguém comprou&quot; — seria poluição
+  visual. Mostra só os dias que viraram realidade. Mesma lógica vale pro Mapa de Vagas: ele lista
+  &quot;todos os dias com operação (evento ou sob demanda)&quot; — ou seja, só entra na lista o que
+  de fato tem operação programada, seja porque foi pré-agendada, seja porque alguém comprou. Existe
+  também um terceiro: &quot;por data específica&quot; O documento de Catálogo menciona três opções
+  na aba Disponibilidade: por data específica, recorrente e sob demanda. Os dois caminhos que
+  expliquei acima são na verdade as duas pontas extremas — &quot;data específica&quot; e
+  &quot;recorrente&quot; são os dois sabores do pré-agendado (uma data avulsa vs. um padrão que se
+  repete), enquanto sob demanda é o oposto. Pra fins de entendimento de regra de negócio, agrupar em
+  &quot;pré-agendado vs. sob demanda&quot; é o mais útil. Se um dia precisar diferenciar data avulsa
+  de recorrência, é só configuração de criação dos eventos. Resumo de bolso Pré-agendado = a empresa
+  publica a agenda → eventos existem antes da venda → aparecem na agenda mesmo vazios. Sob demanda =
+  a empresa abre disponibilidade → eventos nascem com a venda → só aparecem na agenda quando há
+  reservas. Esse é um dos pontos mais importantes pra você ter na cabeça quando for olhar Agenda e
+  Mapa de Vagas, porque o &quot;estado vazio&quot; e a &quot;lista de eventos&quot; se comportam
+  diferente dependendo do tipo do produto.
+</p>

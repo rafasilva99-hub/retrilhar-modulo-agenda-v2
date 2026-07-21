@@ -1,0 +1,557 @@
+<p>
+  <strong>Relatório Consolidado de</strong>
+  <strong>Testes de Usabilidade</strong>
+  5 participantes · Março 2026
+  <strong>1. Visão Geral</strong>
+  Este relatório consolida os resultados dos cinco testes de usabilidade realizados com o protótipo
+  de alta fidelidade do sistema Retrilhar. As sessões avaliaram quatro missões-chave relacionadas à
+  Central de Vendas e ao módulo de Agenda, com o objetivo de identificar fricções de navegação e
+  oportunidades de melhoria de arquitetura antes do lançamento.
+  <strong>1.1 Participantes</strong>
+  | <strong>#</strong> | <strong>Participante</strong> | <strong>Empresa / Contexto</strong> |
+  <strong>Perfil de Uso</strong> | | ------ | ------ | ------ | ------ | | <strong>P1</strong> |
+  <strong>Lucas Lopes</strong> | Vertaco | <strong>Avaliador externo</strong> | |
+  <strong>P2</strong> | <strong>Tania Oliveira</strong> | Rotas do Cerrado |
+  <strong>Operadora / Afiliada</strong> | | <strong>P3</strong> | <strong>Leandro Schin</strong> |
+  <strong>Roctrip Experiências com Natureza</strong> |
+  <strong>Usuário diário da plataforma</strong> | | <strong>P4</strong> |
+  <strong>Adriana Costa</strong> | <strong>Em Busca de Paraísos</strong> |
+  <strong>Operadora de experiências</strong> | | <strong>P5</strong> |
+  <strong>Lueli Suzel Lima Oliveira</strong> | EcoBocaína |
+  <strong>Primeiro contato com a plataforma</strong> |
+</p>
+<p>
+  <strong>1.2 Missões Testadas</strong> | <strong>Missão</strong> | <strong>P1</strong> |
+  <strong>P2</strong> | <strong>P3</strong> | <strong>P4</strong> | <strong>P5</strong> | | ------ |
+  ------ | ------ | ------ | ------ | ------ | |
+  <strong>M1 · Criar pedido manual e gerar link de pagamento</strong> | <strong>✗</strong> |
+  <strong>✗</strong> | <strong>✗</strong> | <strong>✗</strong> | <strong>✗</strong> | |
+  <strong>M2 · Localizar e recuperar carrinho abandonado</strong> | <strong>✓</strong> |
+  <strong>✓</strong> | <strong>✓</strong> | <strong>✓</strong> | <strong>✗</strong> | |
+  <strong>M3 · Verificar ocupação de atividade na Agenda</strong> | <strong>✓</strong> |
+  <strong>✓</strong> | <strong>✗</strong> | <strong>✓</strong> | → | |
+  <strong>M4 · Realizar check-in em alta pressão operacional</strong> | <strong>✓</strong> |
+  <strong>✓</strong> | <strong>✓</strong> | <strong>✓</strong> | ✗ |
+</p>
+<p>
+  ✓ Concluído de forma independente → Concluído com direcionamento ✗ Não concluído
+  <strong>2. Síntese por Missão</strong>
+  <strong>M1 · Criar Pedido Manual e Gerar Link de Pagamento</strong>
+  Esta missão apresentou a maior taxa de dificuldade entre os cinco participantes. Nenhum usuário
+  concluiu a tarefa de forma completamente independente, evidenciando fricções estruturais no acesso
+  ao fluxo de vendas. | <strong>Ponto crítico</strong> <strong>-</strong>
+  <strong>entrada no fluxo de pedido</strong> | Todos os participantes tentaram caminhos
+  alternativos (Produto, Agenda, Clientes) antes de encontrar Vendas → Pedidos → Novo Pedido. O menu
+  lateral não comunica claramente onde se inicia uma venda manual. | | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Nomenclatura &quot;Produto&quot; gera confusão de intenção</strong></th>
+      <th>
+        P4 (Adriana) relatou que o item &quot;Produto&quot; foi interpretado como catálogo/cadastro,
+        não como ponto de entrada para efetuar uma reserva. P2 (Tania) também navegou por Produto
+        antes de ser direcionada.
+      </th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Após direcionamento, o fluxo foi considerado claro</strong></th>
+      <th>
+        Uma vez dentro do fluxo correto (Vendas → Novo Pedido), todos os participantes concluíram as
+        etapas sem dificuldade adicional. O problema está na entrada, não no fluxo.
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>M2 · Localizar e Recuperar Carrinho Abandonado</strong> A missão foi concluída com sucesso
+  pela maioria dos participantes. O submenu &quot;Carrinhos&quot; dentro de Vendas foi encontrado
+  com relativa facilidade, especialmente após a navegação da missão anterior. |
+  <strong>Classificação por temperatura (quente/morno/frio) aprovada</strong> | Três participantes
+  (P1, P3, P4 - Lucas, Leandro e Adriana) comentaram positivamente sobre o sistema de temperatura.
+  P3 (Leandro) relacionou diretamente ao webhook de reativação que havia solicitado anteriormente. |
+  | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Critério da temperatura não é autoexplicativo</strong></th>
+      <th>
+        P3 e P4 (Leandro e Adriana) perguntaram exatamente quais variáveis determinam a temperatura.
+        O rótulo visual é atraente, mas os critérios precisam de mais visibilidade, seja via tooltip
+        ou legenda.
+      </th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>&quot;Gerar Link de Recuperação&quot; não é intuitivo</strong></th>
+      <th>
+        P4 (Adriana) declarou não entender para que serve esse botão. A nomenclatura não comunica
+        que se trata de um link de checkout para reengajamento. O posicionamento também foi
+        questionado, menor destaque que WhatsApp/e-mail.
+      </th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>P5 interpretou status &quot;Pendente&quot; como carrinho abandonado</strong></th>
+      <th>
+        Lueli questionou se o status &quot;pendente&quot; na lista de pedidos corresponderia ao
+        carrinho abandonado. Podendo haver fricção semântica entre pedido pendente de pagamento e
+        carrinho abandonado.
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>M3 · Verificar Ocupação de Atividade na Agenda</strong> Resultado variado: P3 (Leandro)
+  não concluiu devido a bugs de intermitência na alternância de visualizações; os demais
+  participantes tiveram sucesso parcial ou total. |
+  <strong>Visualização de ocupação considerada clara (P4, P5)</strong> | P4 e P5 (Adriana e Lueli)
+  encontraram facilmente a contagem de vagas (ex: 8 de 12). A tag &quot;Lotado&quot; foi reconhecida
+  imediatamente. O esquema de cores para status foi elogiado por P4 (Adriana). | | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Bugs de intermitência bloquearam P3 completamente</strong></th>
+      <th>
+        Leandro relatou atividades sumindo e reaparecendo ao alternar entre visualizações
+        Dia/Semana/Mês, gerando confusão e impossibilitando a conclusão da missão.
+      </th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        <strong>&quot;Pendências da atividade&quot; não foram encontradas sem orientação</strong>
+      </th>
+      <th>
+        P5 e outros participantes não localizaram a aba de pendências sem direcionamento. A
+        funcionalidade existe, mas não está em posição de destaque.
+      </th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>P2 usa exclusivamente a Agenda como hub operacional</strong></th>
+      <th>
+        Tania realiza todo o fluxo operacional dentro da Agenda , seguindo por status, confirmações,
+        check-in, seguro, sem usar outros menus. Isso indica que a Agenda precisa ser um centro de
+        operações robusto, não apenas visualização.
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>M4 · Realizar Check-in em Alta Pressão Operacional</strong> A missão com maior taxa de
+  sucesso autônomo. Todos os participantes realizaram o check-in com agilidade. A interface foi
+  elogiada como objetiva e adequada para momentos de alta pressão. |
+  <strong>Fluxo de check-in considerado ágil e direto</strong> | P3 (Leandro) destacou a opção de
+  check-in em massa (todos os pendentes com um clique) como diferencial importante. P5 descreveu a
+  experiência como &quot;tranquila e bem norteada&quot;. | | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Ícone de lista de participantes é pequeno</strong></th>
+      <th>
+        P3 e P5 (Leandro e Lueli) comentaram que o ícone de acesso à lista de participantes (dois
+        bonequinhos) é pequeno e poderia ser mais evidente, especialmente em contextos de alta
+        pressão.
+      </th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Familiaridade aumenta com o uso</strong></th>
+      <th>
+        <em>&quot;Depois do terceiro, quarto, quinto clique fica mais familiar.&quot;</em> - Citação
+        de Lueli
+        <em>. Isso reforça a necessidade de onboarding contextual para reduzir a curva inicial.</em>
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3. Mapeamento de Melhorias de Arquitetura</strong>
+  As melhorias abaixo foram derivadas diretamente das observações, comportamentos e verbalizações
+  dos participantes durante os testes. Cada item inclui o problema identificado, a melhoria
+  sugerida, nível de prioridade e os testes que evidenciaram o problema.
+  <strong>3.1 Central de Vendas</strong> ( <strong>Criação de Pedido)</strong> |
+  <strong>Entrada de Novo Pedido</strong> <strong>-</strong>
+  <strong>navegação e posicionamento de CTA</strong> | Prioridade: <strong>Alta</strong> ·
+  Evidenciado em: P1, P2, P3, P4, P5 | | ------ | ------ | |
+  <strong>PROBLEMA IDENTIFICADO</strong> | O acesso ao fluxo de criação de pedido manual não é
+  intuitivo. Todos os participantes tentaram caminhos alternativos antes de encontrar Vendas →
+  Pedidos → Novo Pedido. O CTA &quot;Novo Pedido&quot; no canto direito passou despercebido por P1,
+  que buscaria o botão à esquerda. | | <strong>MELHORIA SUGERIDA</strong> | Criar atalho de
+  &quot;Novo Pedido&quot; no dashboard Início como atalho de ação primária. Avaliar entrada direta
+  no submenu de Vendas com label orientada à ação. Rever posicionamento do CTA para zona de
+  varredura natural (esquerda-superior ou dentro da área de conteúdo). |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        <strong>Nomenclatura de Menu</strong> <strong>-</strong>
+        <strong>&quot;Produto&quot; vs. termos orientados à ação</strong>
+      </th>
+      <th>Prioridade: <strong>Alta</strong> · Evidenciado em: P2, P3, P4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        O item &quot;Produto&quot; é interpretado como área de cadastro/catálogo, não como ponto de
+        ação comercial. P4 (Adriana) sugeriu explicitamente os termos &quot;Reservar&quot; ou
+        &quot;Reserva&quot; para comunicar a intenção de efetuar uma reserva para um cliente.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Reavaliar a nomenclatura de &quot;Produto&quot; no menu lateral quando o contexto for
+        operacional comercial. Considerar separar conceitualmente Catálogo de Produtos da ação de
+        venda. Alternativas: &quot;Reservar&quot;, &quot;Nova Reserva&quot; ou submenu diferenciado.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        <strong>Modal vs. Drawer</strong> <strong>-</strong>
+        <strong>componente de criação de pedido</strong>
+      </th>
+      <th>Prioridade: <strong>Média</strong> · Evidenciado em: P1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        P1 (Lucas) considerou o drawer lateral inadequado para o volume de informações de criação de
+        pedido (resolução 1920×1080). O componente foi percebido como &quot;espremido&quot; e
+        &quot;perdido no canto&quot;. O botão de ação principal também foi apontado como mal
+        posicionado.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Avaliar uso de modal centralizado para fluxos de criação com múltiplas etapas e volume
+        considerável de dados. Reservar o drawer para ações de detalhe/preview. Garantir que ações
+        primárias (Gerar Link, Finalizar Pedido) estejam em posição de destaque no footer do
+        componente.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <strong>3.2 Central de Vendas</strong> - <strong>Carrinhos Abandonados</strong> |
+  <strong>Legibilidade do critério de temperatura</strong> | Prioridade: <strong>Média</strong> ·
+  Evidenciado em: P3, P4 | | ------ | ------ | | <strong>PROBLEMA IDENTIFICADO</strong> | O sistema
+  quente/morno/frio é visualmente atraente e bem recebido, mas os critérios exatos não são
+  autoexplicativos. Dois participantes perguntaram sobre os critérios (P3, P4 - Leandro e Adriana) e
+  outro tentou deduzir incorretamente. | | <strong>MELHORIA SUGERIDA</strong> | Adicionar tooltip
+  explicativo ao hover sobre o indicador de temperatura com os critérios: tempo de abandono +
+  estágio de compra atingido + status de login. Considerar também legenda discreta no cabeçalho da
+  listagem. |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        <strong>Nomenclatura e destaque do botão &quot;Gerar Link de Recuperação&quot;</strong>
+      </th>
+      <th>Prioridade: <strong>Média</strong> · Evidenciado em: P4, P5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        O botão foi mal compreendido por P4 (Adriana) e recebeu menos atenção que os botões de
+        WhatsApp/e-mail. A nomenclatura não comunica que se trata de um link de checkout para
+        reenvio ao cliente.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Renomear para algo mais claro: &quot;Copiar Link de Checkout&quot; ou &quot;Gerar Link de
+        Retomada&quot;. Alinhar visualmente com os CTAs de contato como opção complementar.
+        Considerar agrupar as três ações em um bloco único de &quot;Ações de Recuperação&quot;.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        <strong>Diferenciação semântica</strong> <strong>-</strong>
+        <strong>Pedido Pendente vs. Carrinho Abandonado</strong>
+      </th>
+      <th>Prioridade: <strong>Alta</strong> · Evidenciado em: P1, P5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        P5 (Lueli) questionou se o status &quot;pendente&quot; em Pedidos corresponderia ao carrinho
+        abandonado. A linha entre pedido com pagamento pendente e carrinho abandonado não está clara
+        para novos usuários.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Revisar a comunicação dos estados ao longo do pipeline Carrinho → Pedido → Venda. Usar
+        labels e ícones distintos para cada estado. Adicionar tooltip ou texto de apoio explicando
+        quando um pedido é classificado como carrinho abandonado (expiração do prazo de pagamento).
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <strong>3.3 Agenda</strong> - <strong>Visualização e Disponibilidade</strong> |
+  <strong>Estabilidade da visualização Dia/Semana/Mês</strong> | Prioridade: <strong>Alta</strong> ·
+  Evidenciado em: P3 | | ------ | ------ | | <strong>PROBLEMA IDENTIFICADO</strong> | P3 (Leandro)
+  relatou que atividades desapareciam e reapareciam ao alternar entre visualizações de calendário,
+  bloqueando completamente a conclusão da missão e gerando desconfiança no sistema. | |
+  <strong>MELHORIA SUGERIDA</strong> | Priorizar a correção dos bugs de renderização nas transições
+  Dia/Semana/Mês imediatamente, item bloqueante para próximas rodadas de teste. Garantir estado
+  persistente das atividades ao navegar entre períodos. |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        <strong>Acesso às pendências da atividade</strong> <strong>-</strong>
+        <strong>visibilidade</strong>
+      </th>
+      <th>Prioridade: <strong>Média</strong> · Evidenciado em: P5, P3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        O ícone/aba de pendências não foi encontrado por P5 (Lueli) sem orientação. A informação de
+        pendência (participantes sem documentação, pagamentos) precisa ser mais evidente.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Destacar pendências como badge de notificação visual diretamente no card da atividade no
+        calendário (indicador numérico em vermelho/laranja). Dentro do detalhe da atividade,
+        posicionar &quot;Pendências&quot; como tab visível, não como item secundário.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Agenda como hub operacional completo</strong></th>
+      <th>Prioridade: <strong>Alta</strong> · Evidenciado em: P2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        P2 (Tania) revelou que toda a sua operação diária acontece dentro da Agenda (status,
+        confirmações, check-in, seguro, sem sair do módulo). Outros menus raramente são utilizados
+        por ela.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Validar e consolidar a Agenda como hub operacional primário para o perfil Operador. Garantir
+        que todas as ações operacionais críticas (mudança de status, contato com participante,
+        check-in, gestão de pendências) estejam acessíveis diretamente do contexto da atividade, sem
+        navegar para outros módulos.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Consistência numérica na exibição de vagas</strong></th>
+      <th>Prioridade: <strong>Alta</strong> · Evidenciado em: P4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        P4 (Adriana) notou discrepância entre o número de vagas no card do calendário e no detalhe
+        da atividade (ex: &quot;8 de 10&quot; vs. &quot;8 de 12&quot;), gerando desconfiança na
+        confiabilidade dos dados.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Auditoria de consistência entre exibição de ocupação nos cards e no modal/drawer de detalhe.
+        Definir e documentar uma única fonte de verdade para o cálculo de vagas disponíveis e
+        garantir que todos os componentes exibam o mesmo valor.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <strong>3.4 Agenda</strong> - <strong>Check-in Operacional</strong> |
+  <strong>Tamanho e evidência do ícone de participantes</strong> | Prioridade:
+  <strong>Média</strong> · Evidenciado em: P3, P5 | | ------ | ------ | |
+  <strong>PROBLEMA IDENTIFICADO</strong> | P3 e P5 (Leandro e Lueli) comentaram que o ícone de
+  acesso à lista de participantes (icon button lateral) é pequeno e poderia passar despercebido em
+  contexto de alta pressão operacional. | | <strong>MELHORIA SUGERIDA</strong> | Aumentar o tamanho
+  do ícone ou substituí-lo por CTA com label textual (&quot;Ver Participantes&quot;) no contexto do
+  modal de atividade. Em momentos críticos como o check-in, a ação deve ser óbvia e não exigir
+  familiaridade prévia com ícones. |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Onboarding e orientação inicial à plataforma</strong></th>
+      <th>Prioridade: <strong>Alta</strong> · Evidenciado em: P1, P4, P5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Implementar onboarding contextual progressivo para novos usuários: walkthrough de
+        boas-vindas com os 3–5 atalhos mais usados por perfil, tooltips de dica na primeira visita a
+        áreas-chave, e painel de início com sugestões de próximas ações (ex: &quot;Você tem 2
+        carrinhos quentes hoje&quot;).
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <strong>3.5 Observações Transversais</strong> |
+  <strong>Visibilidade de dados para afiliados</strong> <strong>-</strong>
+  <strong>solicitação recorrente</strong> | Prioridade: <strong>Alta</strong> · Evidenciado em: P2 |
+  | ------ | ------ | | <strong>PROBLEMA IDENTIFICADO</strong> | P2 (Tania) manifestou
+  espontaneamente a necessidade urgente de um painel de visibilidade para afiliados: status de
+  vendas via link de marketplace, comissões automáticas e rastreamento de produtos de parceiros. | |
+  <strong>MELHORIA SUGERIDA</strong> | Incorporar esta solicitação no backlog do módulo de Afiliados
+  (prioridade confirmada por Cristiano). Incluir indicadores de comissão e status de vendas de
+  parceiros diretamente no dashboard do Início para o perfil Afiliado. |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Banners e KPIs do Início como atalhos de ação</strong></th>
+      <th>Prioridade: <strong>Média</strong> · Evidenciado em: P5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>PROBLEMA IDENTIFICADO</strong></td>
+      <td>
+        P5 (Lueli) destacou que os banners com porcentagens no painel Início (ex: % de carrinhos
+        abandonados) foram o que mais chamou atenção e funcionaram como ponto de entrada intuitivo
+        para ação.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>MELHORIA SUGERIDA</strong></td>
+      <td>
+        Evoluir os banners de KPI do painel Início como atalhos navegáveis, não apenas informativos.
+        Clicar no banner de &quot;X carrinhos abandonados&quot; deve levar diretamente à lista
+        filtrada. Reforça a distinção: Início = visão + atalhos, Módulos = operação.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <strong>4. Resumo Executivo de Melhorias</strong> Tabela consolidada de todas as melhorias
+  mapeadas, ordenadas por prioridade. | <strong>Melhoria</strong> | <strong>Prioridade</strong> |
+  <strong>Módulo</strong> | | ------ | ------ | ------ | |
+  <strong>Atalho &quot;Novo Pedido&quot; mais acessível e bem posicionado</strong> |
+  <strong>Alta</strong> | <strong>Central de Vendas</strong> | |
+  <strong>Renomear &quot;Produto&quot; → nomenclatura orientada à ação</strong> |
+  <strong>Alta</strong> | <strong>Central de Vendas</strong> | |
+  <strong>Diferenciar semanticamente Pedido Pendente vs. Carrinho Abandonado</strong> |
+  <strong>Alta</strong> | <strong>Central de Vendas</strong> | |
+  <strong>Corrigir bugs de intermitência na visualização de Agenda</strong> |
+  <strong>Alta</strong> | <strong>Agenda</strong> | |
+  <strong>Consolidar Agenda como hub operacional completo</strong> | <strong>Alta</strong> |
+  <strong>Agenda</strong> | | <strong>Corrigir discrepância nas contagens de vagas</strong> |
+  <strong>Alta</strong> | <strong>Agenda</strong> | |
+  <strong>Implementar onboarding contextual para novos usuários</strong> | <strong>Alta</strong> |
+  <strong>Global</strong> | |
+  <strong>Painel de visibilidade para afiliados (comissões, vendas via link)</strong> |
+  <strong>Alta</strong> | <strong>Afiliados</strong> | |
+  <strong>Rever drawer vs. modal para fluxo de criação de pedido</strong> | <strong>Média</strong> |
+  <strong>Central de Vendas</strong> | |
+  <strong>Tooltip explicativo para critérios de temperatura do carrinho</strong> |
+  <strong>Média</strong> | <strong>Central de Vendas</strong> | |
+  <strong>Renomear e reposicionar botão &quot;Gerar Link de Recuperação&quot;</strong> |
+  <strong>Média</strong> | <strong>Central de Vendas</strong> | |
+  <strong>Badge de pendências visível no card da atividade</strong> | <strong>Média</strong> |
+  <strong>Agenda</strong> | | <strong>Aumentar destaque do ícone/CTA de participantes</strong> |
+  <strong>Média</strong> | <strong>Agenda</strong> | |
+  <strong>Banners do Início como atalhos navegáveis de ação</strong> | <strong>Média</strong> |
+  <strong>Início / Dashboard</strong> |
+</p>
+<p>
+  <strong>Próximos Passos</strong>
+  <em><strong>Validar as melhorias de Alta Prioridade com</strong></em> equipe Retrilhar
+  <em><strong>para alinhamento de implementação.</strong></em> Avaliar a condução de um“
+  <em><strong>mini-teste</strong></em> ”
+  <em><strong>de validação de nomenclaturas com 2–3 usuários antes de implementar.</strong></em>
+  <em
+    ><strong
+      >Planejar módulo de Afiliados com base no feedback de P2 como insumo de backlog.</strong
+    ></em
+  >
+  <em><strong>Desenvolver</strong></em>
+  <em><strong>onboarding contextual para reduzir curva de aprendizado.</strong></em>
+</p>

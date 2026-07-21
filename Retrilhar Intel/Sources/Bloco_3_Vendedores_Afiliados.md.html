@@ -1,0 +1,559 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 3 de N — Módulo: Vendedores e Afiliados</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> Módulo Central de Vendas (escopo com user stories dos perfis
+  Vendedor e Afiliado), reunião 25/03 (discussão extensa sobre afiliados e vendedores com o
+  Cristiano e a Katiely como referência), reunião 01/04, backlog atual do projeto.
+  <strong>Contexto do módulo:</strong> Vendedores e Afiliados são módulos separados mas compartilham
+  lógica (listagem, cadastro, performance, comissões). No Figma atual, ambos estão como itens
+  independentes no menu, refletindo a estrutura do escopo que separa &quot;Gestão de
+  Vendedores&quot; e &quot;Gestão de Afiliados&quot;.
+  <strong>Diferença fundamental (reunião 25/03, Cristiano):</strong> o afiliado é pessoa física que
+  faz contrato com as empresas — &quot;sempre tem o mesmo código, só que manda para lojas
+  diferentes&quot;. Isso tem impacto em como o painel do afiliado precisa estruturar visualizações
+  por contrato (quando a mesma pessoa é afiliada de múltiplas empresas).
+</p>
+<hr />
+<h4>Tarefa 1 — Vendedores: Lista e Novo</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDEDORES] Lista e Novo <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Listagem de vendedores cadastrados com totalizadores e fluxo de cadastro
+  via convite. Vendedor é quem opera o sistema internamente — pode ser freelancer, CLT, PJ ou
+  contrato comercial (definição do escopo). <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas define colunas da lista: código, nome, CPF, status, ações (ver
+    vendedor, copiar link).
+  </li>
+  <li>
+    Escopo define totalizadores: quantidade total de vendedores ativos, vendas do último mês,
+    comissões a pagar, top 3 vendedores.
+  </li>
+  <li>Escopo define filtros: status, nome, código, pagamento (pendente/quitado).</li>
+  <li>
+    Reunião 25/03 (Rafael): padrão de visualização mudou de drawer para modal na criação de novo
+    vendedor. Justificativa: &quot;por conta justamente dos poucos campos vi a necessidade de
+    atribuir essa informação em modal&quot;. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Cadastro do vendedor inclui dados bancários para pagamento de comissão (padrão similar ao
+    afiliado).
+  </li>
+  <li>
+    User story do vendedor (ponto 9 do escopo): &quot;outros vendedores podem ver minhas vendas,
+    pois às vezes não estarei disponível quando meu cliente for fechar e ele poderá encontrar algum
+    problema&quot;. Isso sugere que Lista de Pedidos precisa permitir troca de contexto entre
+    vendedores do mesmo time.
+  </li>
+  <li>
+    Toast de convite enviado já está desenhado. Ações em massa ainda pendentes.
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Lista com código, nome, contato, meta, status [web]</li>
+  <li>[x] Modal &quot;Novo Vendedor&quot; (dados + envio de convite) [web]</li>
+  <li>[x] Toast de convite enviado [web]</li>
+  <li>[ ] Totalizadores no topo (total, ativos, vendas último mês, comissões a pagar)</li>
+  <li>[ ] Top 3 vendedores [caixa]</li>
+  <li>[ ] Drawer de filtros (status, nome, código, pagamento)</li>
+  <li>[ ] Ações em lote (ativar, desativar, alterar meta em massa)</li>
+  <li>[ ] Copiar link de vendas do vendedor (ação inline na linha)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] E-mail do convite inválido</li>
+  <li>[ ] [erro] Falha no envio do convite — CTA de retry</li>
+  <li>[ ] [exceção] Vendedor já cadastrado em outra empresa</li>
+  <li>[ ] [exceção] Convite pendente — não pode convidar novamente sem cancelar o anterior</li>
+  <li>[ ] [vazio] Nenhum vendedor cadastrado — CTA de onboarding</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Vendedores: Detalhes</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDEDORES] Detalhes <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Tela de detalhamento do vendedor com resumo de vendas, metas, comissões,
+  produtos vinculados e histórico. Permite ao gestor configurar metas, ver performance individual e
+  registrar pagamentos de comissão. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas: ver vendedor deve ter seção de informações e seção de produtos
+    habilitados. Ações: copiar link de produto específico ou link geral, editar dados do vendedor.
+  </li>
+  <li>
+    Escopo: relatório de vendas do vendedor com filtros (período, status venda, status comissão,
+    produto, valor, nome cliente, número carrinho). Resultado: somatório de vendas e comissão no
+    período + lista.
+  </li>
+  <li>
+    User stories do gestor (pontos 11, 12, 28, 29 do escopo): quem vendeu para mim, quanto de
+    comissão preciso pagar, ranking dos melhores vendedores, quanto e o que cada vendedor vendeu.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Configuração de metas (mensal, semanal, anual) é requisito do gestor comercial (ponto 6 do
+    escopo: &quot;preciso criar metas de vendas para os vendedores e meta da empresa&quot;).
+  </li>
+  <li>
+    Registrar pagamento de comissão gera entrada no extrato e muda status do período de
+    &quot;pendente&quot; para &quot;quitado&quot;.
+  </li>
+  <li>Exportar em PDF e Excel (requisito padrão do módulo). <strong>BLOQUEIOS</strong></li>
+  <li>Meta ajustada retroativamente: impacta histórico de performance? Aguardando cliente.</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>
+    [ ] Tela de Detalhes do Vendedor (resumo de vendas, metas, comissões, produtos, histórico)
+  </li>
+  <li>[ ] Configuração de metas (mensal, semanal, anual)</li>
+  <li>[ ] Seção de produtos habilitados</li>
+  <li>[ ] Copiar link de produto específico ou link geral</li>
+  <li>
+    [ ] Relatório de vendas do vendedor com filtros (período, status venda, status comissão,
+    produto, valor, cliente, carrinho)
+  </li>
+  <li>[ ] Registrar pagamento de comissão</li>
+  <li>[ ] Edição de dados do vendedor</li>
+  <li>[ ] Suspender / reativar vendedor</li>
+  <li>[ ] Exportar em PDF e Excel</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [exceção] Suspensão de vendedor com pedidos em aberto</li>
+  <li>[ ] [exceção] Meta ajustada retroativamente — impacto no histórico</li>
+  <li>[ ] [vazio] Vendedor sem vendas no período</li>
+  <li>[ ] [destrutivo] Modal ao desativar vendedor</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 3 — Afiliados: Lista e Novo</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AFILIADOS] Lista e Novo <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Listagem de afiliados cadastrados com ranking e fluxo de cadastro.
+  Afiliado é parceiro externo (pessoa física) que indica clientes via link ou código exclusivo e
+  recebe comissão pelas vendas originadas. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas define colunas: código, nome, CPF, status, ações (ver afiliado, copiar
+    link).
+  </li>
+  <li>
+    Escopo define totalizadores: quantidade total de afiliados ativos, vendas do último mês,
+    comissões a pagar, top 3 afiliados.
+  </li>
+  <li>
+    Reunião 25/03 (Rafael): decisão de usar modal para &quot;Novo Afiliado&quot; pelo mesmo motivo
+    do vendedor — poucos campos.
+  </li>
+  <li>
+    Reunião 25/03 (Rafael, sobre &quot;Definir comissão para todos&quot;): &quot;segui a mesma
+    lógica em modal. O usuário seleciona se vai aplicar em porcentagem ou valor, insere o valor. Se
+    já tinha preenchido outra comissão antes e não quer sobrescrever, pode só clicar no checkbox
+    para confirmar — a aplicação não vai ser sobrescrita com a nova, vai manter a comissão
+    anterior&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano): &quot;a empresa cadastra o afiliado e fala quais produtos e quais
+    eventos ele pode representar e quanto ele vai ganhar de comissão. Como é feito no mundo físico a
+    gente acaba não entrando muito nisso, não&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano): evolução futura no e-commerce vai permitir afiliação pelo site —
+    afiliado se cadastra, gestor aprova, e então entra no fluxo padrão. Não é prioridade agora.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Escopo: cadastrar afiliado inclui nome, CPF/CNPJ/passaporte, telefone, e-mail, código (gerado
+    pelo sistema mas alterável), produtos que pode vender, comissão.
+  </li>
+  <li>Ranking de posição já está desenhado na lista.</li>
+  <li>
+    User story 9 do afiliado (escopo): &quot;solicitar filiação para um produto que ainda não
+    vendo&quot; — funcionalidade futura, ainda não prioritária. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Lista com posição (ranking), link, afiliado, CPF, status [web]</li>
+  <li>[x] Tela &quot;Novo Afiliado&quot; com seleção de produtos e comissões [web]</li>
+  <li>[x] Modal &quot;Definir comissão para todos&quot; (% ou R$) [web]</li>
+  <li>[x] Toast de comissão definida [web]</li>
+  <li>[ ] Totalizadores no topo (total, ativos, vendas, comissões)</li>
+  <li>[ ] Top 3 afiliados [caixa]</li>
+  <li>[ ] Drawer de filtros (status, nome, código, pagamento)</li>
+  <li>[ ] Checkbox &quot;não sobrescrever comissões definidas anteriormente&quot;</li>
+  <li>[ ] Ações em lote</li>
+  <li>[ ] Copiar link de afiliado (ação inline na linha)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] E-mail do convite inválido</li>
+  <li>[ ] [exceção] CPF já cadastrado como afiliado em outra empresa</li>
+  <li>[ ] [exceção] Código duplicado (geração automática com colisão)</li>
+  <li>
+    [ ] [exceção] &quot;Definir comissão para todos&quot; em lista filtrada — escopo da aplicação
+    (só filtrados ou todos?)
+  </li>
+  <li>[ ] [vazio] Nenhum afiliado cadastrado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 4 — Afiliados: Detalhes</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AFILIADOS] Detalhes <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Tela de detalhamento do afiliado com resumo de comissões por período,
+  produtos habilitados, extrato e exportação. É onde o gestor acompanha performance individual e
+  registra pagamentos. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas: seção de informações + seção de produtos habilitados. Ações: copiar
+    link de produto específico ou link geral, editar dados do afiliado.
+  </li>
+  <li>
+    Reunião 25/03 (Rafael): decisão de mostrar resumo de comissões por períodos. &quot;Tabs na
+    lateral para filtragem rápida dessas informações por semana, mês ou ano. Clicando em uma das
+    tabs, as informações se atualizam assim como o status de comissões abaixo&quot;.
+  </li>
+  <li>
+    Escopo: relatório de vendas do afiliado com filtros (período, status venda, status comissão,
+    produto, valor, cliente, carrinho). Resultado: somatório de vendas e comissão + lista.
+  </li>
+  <li>Escopo: &quot;exportar dados para PDF e Excel&quot;. <strong>OBSERVAÇÕES</strong></li>
+  <li>Tabs Semanal / Mensal / Anual já estão desenhadas e aprovadas.</li>
+  <li>Cenário de Pct. (%) e Valor (R$) selecionados nas comissões já desenhado.</li>
+  <li>
+    Controle de pagamento de comissões vira uma tela separada com lista (escopo define como
+    &quot;Controle de pagamento dos afiliados&quot;). <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Tela de Detalhes (resumo de comissões, produtos, extrato) [web]</li>
+  <li>[x] Cenário de Pct. (%) e Valor (R$) selecionados [web]</li>
+  <li>[x] Período (Semanal, Mensal, Anual) [web]</li>
+  <li>[x] Exportar extrato [web]</li>
+  <li>[x] Editar dados do afiliado [web]</li>
+  <li>[ ] Seção de produtos habilitados (com copiar link por produto)</li>
+  <li>[ ] Registrar pagamento de comissão</li>
+  <li>[ ] Suspender / reativar afiliado</li>
+  <li>[ ] Link para Relatório de vendas do afiliado (com filtros)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Afiliado sem vendas ainda</li>
+  <li>[ ] [exceção] Afiliado suspenso — ações de edição limitadas</li>
+  <li>[ ] [exceção] Pagamento de comissão com valor em aberto diferente do calculado</li>
+  <li>[ ] [destrutivo] Modal ao desativar afiliado com vendas em aberto</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 5 — Controle de Pagamento dos Afiliados</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AFILIADOS] Controle de Pagamento
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Tela dedicada ao controle de pagamentos de comissão dos afiliados. Lista
+  consolidada com extrato de comissões pagas e a pagar, referenciando a venda que originou cada
+  comissão. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas define como seção distinta: &quot;Controle de pagamento dos afiliados
+    [tela com lista]&quot;.
+  </li>
+  <li>
+    Escopo define extrato: &quot;extrato de comissões pagas e a pagar com referência para a venda
+    que originou esta comissão [tela com filtros]&quot;.
+  </li>
+  <li>
+    Escopo define relatório: &quot;Relatório de vendas dos afiliados&quot; com filtros (período,
+    status da venda, status da comissão, produto, valor, nome cliente, número carrinho). Resultado:
+    somatório de valores vendidos e comissão no período + lista.
+  </li>
+  <li>Escopo: exportar dados para PDF e Excel. <strong>OBSERVAÇÕES</strong></li>
+  <li>
+    Essa tela consolidada é distinta da aba de extrato dentro da ficha individual do afiliado
+    (Tarefa 4). Aqui é a visão do gestor sobre todos os afiliados ao mesmo tempo.
+  </li>
+  <li>Ação principal: &quot;Registrar Pagamento&quot; em lote ou individual.</li>
+  <li>
+    Essa tela também é mencionada como parte de &quot;Painel de Acompanhamento de desempenho&quot;
+    no escopo. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista consolidada de comissões de todos os afiliados</li>
+  <li>
+    [ ] Filtros (período, status da venda, status da comissão, produto, valor, cliente, carrinho)
+  </li>
+  <li>[ ] Totalizador: vendas totais, comissão total, comissão paga, comissão pendente</li>
+  <li>[ ] Registrar pagamento de comissão (individual)</li>
+  <li>[ ] Registrar pagamento em lote</li>
+  <li>[ ] Referência da venda que originou cada comissão (link clicável)</li>
+  <li>[ ] Exportação em PDF e Excel</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Sem comissões no período filtrado</li>
+  <li>[ ] [loading] Cálculo do somatório</li>
+  <li>[ ] [erro] Falha no registro de pagamento — preservar dados</li>
+  <li>[ ] [exceção] Tentativa de registrar pagamento em comissão vinculada a venda cancelada</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 6 — Painel do Afiliado (interface externa)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AFILIADOS] Painel do Afiliado (interface externa)
+  <strong>Status:</strong> DESIGN <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Interface separada acessada apenas pelo afiliado (perfil externo).
+  Layout simplificado sem menu completo do sistema. O afiliado só vê as suas vendas, suas comissões
+  e seu link/código exclusivo. É um spin-off do painel principal.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Reunião 25/03 (Rafael): &quot;Menu é claramente mais enxuto aqui. No início temos as
+    visualizações gerais. Tomei o cuidado de atribuir todas as informações aqui sem ele precisar
+    prosseguir para outros fluxos. No cenário em que o usuário quer visualizar as informações
+    rapidamente, ele já consegue ver tudo no overview, justamente na página inicial&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Rafael): &quot;Header com saudação como padrão. Subtítulo com atualização dos
+    dados — o intuito é fazer o afiliado perceber que está no painel próprio e atualizado. As
+    indicações com quatro métricas principais: listagem das indicações feitas nos últimos 30 dias,
+    vendas abandonadas da última semana, valor recebido no mês, valor que vai receber nos próximos 7
+    dias&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano): &quot;o afiliado é pessoa física que gera contrato com nossos
+    clientes. Ele indica, leva compradores para as lojas dos clientes. Mentaliza a Katiely — ela é
+    afiliada de três clientes nossos, sei lá, Cerrado Experience, Ibertaco e Trilheiras de Brasília.
+    Vai ter link para cada desses contratos que ela tem, para ela trabalhar. Então sempre vai ter
+    esse recorte que é de qual é o contrato dela ali. A ideia é a gente pensar nisso — por exemplo,
+    quanto eu estou gerando para cada contrato? Quanto cada contrato está me pagando de
+    comissão?&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano): &quot;ele tem código único, só que manda para lojas diferentes. É
+    pessoa física — faz contrato da pessoa física com as empresas. É sempre o mesmo código. É o
+    identificador dele, ele está prestando serviço para as empresas&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano): &quot;Uma coisa que pode pensar é ter filtro se ele está olhando
+    todos os contratos ou se pode escolher contrato específico — a gente soma os valores se for
+    todos os contratos&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Rafael): passo a passo numerado de três passos explicando as comissões de forma
+    resumida. &quot;Serve como onboarding para afiliados novos e reforço de confiança para afiliados
+    ativos há mais tempo. Escolhi esse formato ao invés de modal com question mark para que a
+    informação fique sempre visível&quot;. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Menu do painel do afiliado: Painel Inicial, Lista de Vendas, Extrato de Comissões, Configurações
+    (escopo).
+  </li>
+  <li>
+    Link do afiliado precisa ter destaque visual com botão de copiar — ação primária do perfil.
+  </li>
+  <li>Tentativa de acesso a rotas do painel admin deve redirecionar — perfil restrito.</li>
+  <li>
+    Estrutura para múltiplos contratos (afiliado que atende várias empresas) ainda precisa de
+    proposta de arquitetura — o Rafael sinalizou que vai estruturar com lista semelhante à de
+    vendas, mas &quot;ainda vou buscar algumas soluções de arquitetura para isso&quot;.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Arquitetura para exibir múltiplos contratos do mesmo afiliado: Rafael sinalizou que ainda estava
+    buscando soluções (reunião 25/03). Status atual dessa decisão — em aberto.
+  </li>
+  <li>
+    Filtro &quot;todos os contratos vs. contrato específico&quot; mencionado pelo Cristiano: precisa
+    ser estruturado junto com a decisão acima.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Layout simplificado (sem menu completo do sistema) [web]</li>
+  <li>[x] Dashboard (vendas do período, comissão acumulada, pendente) [web]</li>
+  <li>[ ] Header com saudação e subtítulo com atualização dos dados</li>
+  <li>
+    [ ] 4 métricas principais (indicações 30 dias, abandonadas semana, valor recebido mês, a receber
+    7 dias)
+  </li>
+  <li>[ ] Exibição do link/código pessoal com botão copiar (destaque visual como ação primária)</li>
+  <li>[ ] Passo a passo numerado (3 passos) explicando comissões</li>
+  <li>[ ] Filtro &quot;todos os contratos&quot; vs. &quot;contrato específico&quot;</li>
+  <li>[ ] Lista de vendas realizadas</li>
+  <li>[ ] Detalhe de venda com comissão</li>
+  <li>[ ] Cadastro de dados bancários para recebimento</li>
+  <li>[ ] Tela Dúvidas / Central de Ajuda do afiliado</li>
+  <li>[ ] Perfil e alteração de senha</li>
+  <li>[ ] Configurações</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Afiliado sem vendas ainda — onboarding com passo a passo destacado</li>
+  <li>[ ] [vazio] Afiliado sem contratos ativos — mensagem + contato com gestor</li>
+  <li>[ ] [permissão] Tentativa de acesso a rotas do painel admin — redirecionamento</li>
+  <li>[ ] [exceção] Link do afiliado expirado ou contrato encerrado</li>
+  <li>[ ] [erro] Falha ao carregar métricas — fallback com dados do último sync</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 7 — Painel do Vendedor (interface externa)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDEDORES] Painel do Vendedor (interface externa)
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Interface dedicada ao vendedor quando loga no sistema (sem acumular
+  cargo de gestor). Permite criar vendas manuais, acompanhar pedidos próprios, ver extrato de
+  comissões e receber o link de vendas para enviar aos clientes.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas define menu do painel: Painel de Vendas e Relatórios, Extrato de
+    Comissões, Configurações.
+  </li>
+  <li>
+    Escopo (nota): &quot;o vendedor poderá ver as vendas que ele originou seja manualmente (offline)
+    ou pelo link dele de vendas. Ele só poderá ver as vendas de outros vendedores se tiver acumulado
+    o cargo de gestor&quot;.
+  </li>
+  <li>
+    User stories do vendedor (escopo): painel próprio de vendas, consultar produtos que pode vender
+    e comissões, criar vendas manuais com link para cliente pagar, definir tempo para bloquear
+    vagas, conferir pedidos em aberto/pagos/não concluídos, enviar link de vendas, histórico
+    completo de ações por usuário com data e horário para rastrear qualquer ação.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Criar venda manual aqui reutiliza o fluxo de &quot;Novo Pedido&quot; do módulo Vendas — não é
+    necessário duplicar.
+  </li>
+  <li>
+    Dar baixa em pedido (confirmar pagamento manual) é ação específica do vendedor, pós-venda.
+  </li>
+  <li>
+    Rastreabilidade por usuário é requisito forte do escopo — histórico com data/horário em todas as
+    ações. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Layout simplificado (sem menu completo do sistema)</li>
+  <li>[ ] Dashboard com métricas pessoais (vendas, meta, comissão)</li>
+  <li>[ ] Lista com todas as vendas próprias</li>
+  <li>
+    [ ] Filtros (período, tipo de item, status, cliente, tipo venda online/offline, forma de
+    pagamento, canal)
+  </li>
+  <li>[ ] Criar novo pedido (reutiliza fluxo de Novo Pedido)</li>
+  <li>[ ] Ver e editar pedido</li>
+  <li>[ ] Dar baixa em pedido (confirmar pagamento manual)</li>
+  <li>[ ] Extrato de comissões</li>
+  <li>[ ] Histórico de ações por pedido</li>
+  <li>[ ] Configurações (perfil, dados bancários)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Vendedor sem vendas no período</li>
+  <li>
+    [ ] [permissão] Tentativa de ver vendas de outros vendedores — bloqueado (só se for gestor
+    acumulado)
+  </li>
+  <li>[ ] [permissão] Tentativa de acessar áreas administrativas — redirecionamento</li>
+  <li>[ ] [exceção] Dar baixa em pedido já pago — bloqueio</li>
+  <li>[ ] [erro] Falha ao gerar link de venda — preservar dados</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 3</h4>
+<p><strong>Total de tarefas:</strong> 7 <strong>Por status sugerido:</strong></p>
+<ul>
+  <li>
+    <strong>DESIGN (4):</strong> Vendedores Lista/Novo, Afiliados Lista/Novo, Afiliados Detalhes,
+    Painel do Afiliado
+  </li>
+  <li>
+    <strong>BACKLOG (3):</strong> Vendedores Detalhes, Controle de Pagamento dos Afiliados, Painel
+    do Vendedor <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>Meta ajustada retroativamente no Detalhe do Vendedor: impacta histórico de performance?</li>
+  <li>
+    Escopo do &quot;Definir comissão para todos&quot; quando há filtro aplicado: aplica só aos
+    filtrados ou a todos?
+  </li>
+  <li>
+    Arquitetura para exibir múltiplos contratos do mesmo afiliado no Painel do Afiliado: Rafael
+    sinalizou em 25/03 que ainda buscaria soluções — status atual em aberto.
+  </li>
+  <li>
+    Filtro &quot;todos os contratos vs. contrato específico&quot; mencionado pelo Cristiano:
+    dependente da decisão acima. <strong>Observações transversais:</strong>
+  </li>
+</ol>
+<ul>
+  <li>
+    Vendedores e Afiliados compartilham padrões de lista, totalizadores, cadastro e extrato.
+    Componentes reutilizáveis (tabela de listagem, modal de cadastro, modal de comissão, tabs de
+    período).
+  </li>
+  <li>
+    O escopo do Cristiano na reunião 25/03 foi explícito: CRUDs genéricos (produtos, clientes,
+    analytics básicos) &quot;não precisa fazer no Figma, é padrão formulário + tabela&quot;. Isso
+    não se aplica a Vendedores/Afiliados porque têm particularidades (comissões, múltiplos
+    contratos, rankings) que justificam o design detalhado.
+  </li>
+  <li>
+    User story 9 do vendedor (&quot;outros vendedores podem ver minhas vendas&quot;) tem impacto em
+    permissões dentro do módulo Vendas (Lista de Pedidos) — não é pedido exclusivo daqui, mas
+    precisa ser considerado quando se projetar a visualização de pedidos por equipe.
+  </li>
+</ul>
+<hr />
+<p>
+  <strong>Fim do Bloco 3.</strong> Próximo bloco: Módulo 1 — Autenticação e Acesso (4 features),
+  Módulo 2 — Início/Dashboards (4 features), ou o que você preferir.
+</p>

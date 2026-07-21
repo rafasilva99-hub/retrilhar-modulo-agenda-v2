@@ -1,0 +1,1702 @@
+<p>
+  <em><strong>⚙️ Arquitetura Sistema</strong></em>
+  <strong>Arquitetura de Navegação e Dashboards</strong>
+  Retrilhar Painel Administrativo v2 · Especificação UX · Janeiro 2026
+  <strong>1. Contexto do Produto</strong>
+  <strong>O que é o Painel Administrativo</strong>
+  O Painel Administrativo é o sistema de gestão interno das empresas de turismo. É onde gestores,
+  vendedores, guias e parceiros acessam para gerenciar o negócio no dia a dia. O e-commerce (loja
+  online onde o cliente final compra) é um sistema separado, já desenvolvido. O Painel gerencia as
+  vendas que acontecem por lá, mas não é onde a compra acontece. | &quot;Escritório de bolso&quot;:
+  O sistema precisa funcionar muito bem no celular, com o mínimo de cliques possível. O público
+  inclui pessoas mais velhas, muitas vezes sem computador, que estão amadurecendo como
+  empreendedores. | | ------ |
+</p>
+<p>
+  <strong>Âncoras de Informação</strong> Toda informação no sistema gira em torno de três conceitos
+  fundamentais: | <strong>Âncora</strong> | <strong>O que representa</strong> |
+  <strong>Onde aparece</strong> | | ------ | ------ | ------ | | Data | Quando acontece a
+  experiência. Turismo vende tempo. | Listagens, filtros, agrupamentos. Sempre visível. | | Valor |
+  Quanto custa, quanto foi pago, quanto falta. | Vendas, financeiro, relatórios. | | Vagas | Quantas
+  pessoas cabem, tipo de vagas, quantas estão ocupadas e quantas estão livres.. | Disponibilidade,
+  alertas de lotação, agenda. |
+</p>
+<p>
+  <strong>Venda vs Reserva</strong> Esses dois conceitos são centrais e frequentemente confundidos:
+  | <strong>Conceito</strong> | <strong>O que é</strong> | <strong>Exemplo</strong> | | ------ |
+  ------ | ------ | | Venda | Transação comercial. Carrinho → Cobrança → Pagamento. Envolve
+  dinheiro. | Cliente pagou R$ 500 por 2 lugares no rapel de sábado. | | Reserva | Alocação de tempo
+  + qualificação de participantes. Envolve pessoas e datas. | João (75kg) e Maria (60kg, alérgica a
+  látex) vão no rapel de sábado. |
+</p>
+<p>
+  Relação entre eles: Uma venda pode conter múltiplas reservas ou nenhuma. Uma reserva pode existir
+  sem venda (quando vem de parceiro B2B que paga por fora). No menu: Vendas é onde o gestor vê
+  dinheiro. Agenda é onde vê pessoas, vagas e datas.
+  <strong>Nomenclatura</strong>
+  Alguns termos usados internamente foram substituídos por nomes mais amigáveis: |
+  <strong>Termo técnico / interno</strong> | <strong>Nome no sistema</strong> |
+  <strong>Por quê</strong> | | ------ | ------ | ------ | | CRM | Clientes | Mais direto, sem sigla
+  | | Funil de vendas | Oportunidades | Menos técnico | | Central de Vendas | Vendas | Simplificado
+  | | Painel de Operações | Agenda | Mais intuitivo para o dia a dia | | Dashboard | Início | Termo
+  em português | | Marketing | — | Cupons em Vendas, Afiliados é item próprio | | Loja / E-commerce
+  | Sistema separado | Não faz parte do painel administrativo | | Pedido / Ordem de compra | Venda |
+  Termo mais comum no contexto |
+</p>
+<p>
+  <strong>2. Modelos de Negócio</strong> O sistema atende três modelos de operação. O modelo
+  escolhido pela empresa define quais módulos ficam visíveis. | Reservas + Pagamento Mais completo |
+  Vende, recebe pagamento, qualifica participantes (nome, documentos, saúde) e opera. Usa todos os
+  módulos. |
+  <em
+    >Exemplo: Operadora de rapel que vende pelo site, cobra via Pix, coleta dados e executa com
+    guias.</em
+  >
+  | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Só Reservas Foco operacional</th>
+      <th>
+        Recebe reservas de parceiros B2B, mas não processa pagamento, mas pode ter controle
+        financeiro manual (precisa especificar forma de pagamento e para qual conta). Foco em
+        identificar participantes e operar com segurança.
+      </th>
+      <th>
+        <em>Exemplo: Parque ecológico que recebe grupos de agências. O dinheiro vem por fora.</em>
+      </th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Só Vendas Foco comercial</th>
+      <th>
+        Vende produtos ou serviços sem precisar identificar quem vai usar. Foco em conversão e
+        volume.
+      </th>
+      <th>
+        <em
+          >Exemplo: Escola de cursos online, clube de assinaturas, ingressos de experiências rurais,
+          ingressos sem data marcada.</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Visibilidade por Modelo</strong> | <strong>Módulo</strong> |
+  <strong>Reservas + Pagamento</strong> | <strong>Só Reservas</strong> |
+  <strong>Só Vendas</strong> | | ------ | ------ | ------ | ------ | | Início (dashboard) | Completa
+  | Foco operacional | Foco comercial | | Vendas | Completo | Parcial (sem pagamento) | Completo | |
+  Agenda | Completo | Completo | Oculto | | Financeiro | Completo | Oculto | Completo |
+</p>
+<p>
+  <strong>3. Proto-Personas e Jobs to Be Done</strong> Cada perfil tem um job principal que guia as
+  decisões de interface. | Gestor | Dono ou administrador da empresa | &quot;Preciso ter visão
+  completa do meu negócio para tomar decisões rápidas&quot; | | ------ | ------ | ------ |
+</p>
+<p>
+  Vê tudo, configura, decide. Pode administrar várias empresas, trocando pelo seletor. Precisa
+  equilibrar visão comercial, financeira e operacional. Geralmente é quem contratou o sistema.
+  <em
+    >&quot;Quero abrir o sistema e saber se está tudo bem, sem precisar clicar em mil
+    lugares&quot;</em
+  >
+  | Vendedor | Time comercial interno | &quot;Preciso vender mais e acompanhar quanto vou ganhar de
+  comissão&quot; | | ------ | ------ | ------ |
+</p>
+<p>
+  Foco em vender e acompanhar suas próprias métricas (não da empresa toda). Vê suas vendas, sua
+  meta, sua comissão. Precisa consultar disponibilidade rapidamente.
+  <em>&quot;Quanto falta pra eu bater a meta do mês?&quot;</em>
+  | Guia / Operador | Executa as atividades no campo | &quot;Preciso saber o que fazer hoje e quem
+  são as pessoas que vou atender&quot; | | ------ | ------ | ------ |
+</p>
+<p>
+  Pode trabalhar para várias empresas. Precisa ver sua agenda unificada, saber quem são os
+  participantes, fazer check-in, verificar condições de saúde. Acessa principalmente pelo celular.
+  <em>&quot;Quantas pessoas eu tenho hoje? Alguém tem algum problema de saúde?&quot;</em>
+  | Comportamento especial: Não troca de empresa manualmente. Vê agenda unificada e, ao clicar em
+  uma atividade, entra automaticamente no contexto daquela empresa. | | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Financeiro</th>
+      <th>Controle de contas</th>
+      <th>&quot;Preciso garantir que o dinheiro que deveria entrar, entrou&quot;</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  Acompanha entradas, confere pagamentos, emite notas, faz conciliação. Vê vendas em modo leitura.
+  Não precisa ver agenda nem configurações gerais.
+  <em>&quot;Quem ainda não pagou? Quanto tem pra receber essa semana?&quot;</em>
+  | Afiliado | Parceiro externo que indica vendas | &quot;Preciso saber quanto vendi e quanto vou
+  receber&quot; | | ------ | ------ | ------ |
+</p>
+<p>
+  Recebe comissão por vendas através do seu link/código. Pode ser afiliado de várias empresas. Não
+  vê operação interna. Exemplo: influenciador, agência que revende.
+  <em>&quot;Cadê meu dinheiro? Quando vai cair?&quot;</em>
+  | Comportamento especial: Não troca de empresa. Vê painel próprio com dados consolidados de todas
+  as empresas parceiras. | | ------ |
+</p>
+<p>
+  <strong>4. Estrutura de Navegação</strong>
+  <strong>Layout Base (Shell)</strong>
+  Desktop: Barra superior (logo, seletor de empresa, busca, notificações, menu do usuário) + Menu
+  lateral recolhível + Área principal. Mobile: Barra superior (logo, sino, avatar) + Área principal
+  + Barra inferior com 3 atalhos + botão &quot;Mais&quot;.
+  <strong>Seletor de Empresa</strong>
+  O usuário precisa saber em qual empresa está operando. O seletor aparece na barra superior, ao
+  lado da logo. | <strong>Perfil</strong> | <strong>Vê o seletor?</strong> |
+  <strong>Comportamento</strong> | | ------ | ------ | ------ | | Gestor | Sempre | Lista de
+  empresas. Ao trocar, todo o contexto muda. | | Vendedor / Financeiro | Condicional | Só se tiver
+  mais de uma empresa. | | Guia | Não | Agenda unificada. Entra no contexto ao clicar na atividade.
+  | | Afiliado | Não | Painel próprio consolidado. Pode filtrar por empresa. |
+</p>
+<p>
+  <strong>Menu Principal</strong> 7 itens organizados por modelo mental do usuário. Itens são
+  ocultados quando o perfil não tem acesso. | Início | Dashboard com visão geral | | ------ | ------
+  |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Vendas</th>
+      <th>Pedidos · Carrinhos · Clientes · Cupons</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Agenda</th>
+      <th>Calendário · Reservas</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Produtos</th>
+      <th>Catálogo · Tarifas · Adicionais</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Financeiro</th>
+      <th>Visão geral · Movimentações · Contratos</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Afiliados</th>
+      <th>Parceiros · Comissões</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Configurações</th>
+      <th>Empresa · Usuários · Integrações</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Lógica do Menu</strong> | <strong>Item</strong> | <strong>Por que existe</strong> |
+  <strong>O que agrupa</strong> | | ------ | ------ | ------ | | Início | Visão geral do negócio sem
+  clicar em nada. Indicadores + atalhos. Não é módulo. | Cards estatísticos, gráficos de tendência,
+  rankings, widgets com CTA pra cada módulo. Varia por perfil. | | Agenda | Tudo que envolve tempo e
+  pessoas (operacional) | Calendário de saídas, Mapa de Vagas, Painel de Reservas, Fichas
+  Operacionais | | Vendas | Tudo que envolve dinheiro entrando. Módulo comercial. | Pedidos,
+  Carrinhos Abandonados, Cupons, Vendedores, Relatórios. O vendedor encontra tudo aqui. | | Clientes
+  | Base unificada de quem compra. | Ficha única (dados pessoais, saúde, histórico de compras,
+  acompanhantes). | | Produtos | Configuração do que a empresa vende. | Catálogo, Tarifas,
+  Adicionais, Recursos, Termos. | | Financeiro | Visão consolidada do dinheiro da empresa, não só
+  vendas, tudo. | Dashboard financeiro, Movimentações, Fluxo de Caixa, Notas Fiscais, Centro de
+  Custo. | | Afiliados | Item próprio porque afiliado é um perfil que loga no sistema | Lista de
+  afiliados, Comissões, Relatório de vendas, Links. |
+</p>
+<p>
+  <strong>Barra Inferior (Mobile)</strong>
+  3 atalhos principais + botão &quot;Mais&quot; que abre menu completo: Gestor: Início · Vendas ·
+  Agenda · Mais Vendedor: Início · Vendas · Agenda · Mais Guia: Hoje · Agenda · Check-in · Mais
+  Afiliado: Início · Vendas · Comissões · Mais
+  <strong>Navegação Contextual</strong>
+  A conexão entre áreas (ex: de vendas para agenda) abre um painel lateral com prévia das
+  informações. O usuário vê o que precisa sem perder o contexto. Só navega para página completa se
+  clicar em &quot;Abrir página&quot;.
+  <strong>5. Estrutura da Dashboard</strong>
+  Todas as dashboards seguem a mesma estrutura base, garantindo consistência e facilitando o
+  aprendizado.
+  <strong>Princípios</strong>
+  Familiaridade: Usuário que acessa como gestor em uma empresa e como guia em outra reconhece o
+  padrão Escaneabilidade: Informações mais importantes sempre no topo Ação imediata: Cada widget tem
+  seu próprio CTA contextual Previsibilidade: Pessoas menos familiarizadas com tecnologia se
+  beneficiam do padrão
+  <strong>Anatomia</strong>
+  <strong>1. Cards Estatísticos (topo)</strong>
+  Sempre 4 cards em linha no desktop (2x2 no mobile). Cada card mostra um número importante com
+  variação percentual. Ao clicar, leva para a área relacionada.
+  <strong>2. Widgets</strong>
+  Blocos de informação em grid. Cada widget tem: título, período fixo visível, conteúdo (lista,
+  gráfico, etc) e CTA próprio. | Regra de período: Não há filtro de período geral na dashboard. Cada
+  widget tem seu próprio período fixo. O período deve estar sempre visível no widget. | | ------ |
+</p>
+<p>
+  <strong>Padrão de Widget</strong> | Nome do Widget Próximos 15 dias | Conteúdo: lista, gráfico,
+  cards internos, etc. | → Ver todos · Criar novo | | ------ | ------ | ------ |
+</p>
+<p>
+  <strong>6. Dashboards por Perfil</strong>
+  <strong>Gestor + Reservas com Pagamento Completo</strong>
+  Job: Ter visão completa do negócio para tomar decisões rápidas.
+  <strong>Cards Estatísticos</strong>
+  | <strong>Card</strong> | <strong>Métrica</strong> | <strong>Período</strong> |
+  <strong>Clique</strong> | | ------ | ------ | ------ | ------ | | Faturamento | R$ recebido +
+  variação % | Mês atual | → Financeiro | | Vendas realizadas | Quantidade + variação % | Mês atual
+  | → Vendas | | Reservas confirmadas | Quantidade + variação % | Próximos 15 dias | → Agenda | |
+  Ticket médio | R$ por venda + variação % | Mês atual | → Relatórios |
+</p>
+<p>
+  <strong>Widgets</strong> | Próximas saídas Próximos 15 dias | Lista: produto, data/hora, ocupação
+  (8/12), valor acumulado | → Ver agenda completa | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Vendas recentes Tempo real</th>
+      <th>Últimas vendas: cliente, valor, status do pagamento (badge)</th>
+      <th>→ Ver todas as vendas</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Desempenho semanal Últimos 7 dias</th>
+      <th>Gráfico de linha: vendas por dia vs período anterior</th>
+      <th>→ Abrir relatório de vendas</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Vendas por canal Mês atual</th>
+      <th>Gráfico pizza: loja online, balcão, parceiros</th>
+      <th>→ Ver detalhamento por canal</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Carrinhos abandonados Últimos 7 dias</th>
+      <th>Quantidade + valor potencial perdido</th>
+      <th>→ Ver carrinhos · Configurar recuperação</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pendências de dados Próximos 7 dias</th>
+      <th>Participantes sem cadastro completo ou termo aceito</th>
+      <th>→ Ver pendências · Enviar lembrete</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Gestor + Só Reservas Operacional</strong>
+  Job: Garantir que as atividades aconteçam com segurança.
+  <strong>Cards Estatísticos</strong>
+  | <strong>Card</strong> | <strong>Métrica</strong> | <strong>Período</strong> |
+  <strong>Clique</strong> | | ------ | ------ | ------ | ------ | | Reservas confirmadas |
+  Quantidade + variação % | Próximos 15 dias | → Agenda | | Dados pendentes | Participantes sem
+  cadastro | Próximos 15 dias | → Lista filtrada | | Condições de saúde | Participantes com atenção
+  | Próximos 15 dias | → Lista com detalhes | | Ocupação média | % das vagas + variação | Próximos
+  15 dias | → Disponibilidade |
+</p>
+<p>
+  <strong>Widgets</strong> | Próximas saídas Próximos 15 dias | Lista: produto, data/hora, ocupação,
+  ícone de equipe escalada | → Ver agenda completa · Criar bloqueio | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pendências operacionais Próximos 7 dias</th>
+      <th>Saídas sem equipe, mínimo não atingido, dados incompletos</th>
+      <th>→ Ver todas as pendências</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ocupação por produto Próximos 15 dias</th>
+      <th>Barras horizontais: % de ocupação por experiência</th>
+      <th>→ Abrir mapa de vagas</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Participantes com atenção Próximos 7 dias</th>
+      <th>Lista de pessoas com condições de saúde ou restrições</th>
+      <th>→ Ver fichas completas · Baixar relatório</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Gestor + Só Vendas Comercial</strong>
+  Job: Maximizar receita e entender o comportamento de compra.
+  <strong>Cards Estatísticos</strong>
+  | <strong>Card</strong> | <strong>Métrica</strong> | <strong>Período</strong> |
+  <strong>Clique</strong> | | ------ | ------ | ------ | ------ | | Faturamento | R$ recebido +
+  variação % | Mês atual | → Financeiro | | Vendas realizadas | Quantidade + variação % | Mês atual
+  | → Vendas | | Ticket médio | R$ por venda + variação % | Mês atual | → Relatórios | | Taxa de
+  conversão | % visitantes que compraram | Mês atual | → Analytics |
+</p>
+<p>
+  <strong>Widgets</strong> | Vendas recentes Tempo real | Últimas 10: cliente, produto, valor,
+  status | → Ver todas as vendas · Criar venda | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Produtos mais vendidos Mês atual</th>
+      <th>Top 5 por quantidade vendida</th>
+      <th>→ Ver ranking completo</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Desempenho diário Últimos 30 dias</th>
+      <th>Gráfico de linha: vendas por dia</th>
+      <th>→ Abrir relatório</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Carrinhos abandonados Últimos 7 dias</th>
+      <th>Quantidade + valor + tempo médio de abandono</th>
+      <th>→ Ver carrinhos · Criar cupom de recuperação</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Vendedor Individual</strong>
+  Job: Vender mais e acompanhar quanto vou ganhar de comissão.
+  <strong>Cards Estatísticos</strong>
+  | <strong>Card</strong> | <strong>Métrica</strong> | <strong>Período</strong> | | ------ | ------
+  | ------ | | Minhas vendas | Quantidade + variação % | Mês atual | | Valor vendido | R$ total +
+  variação % | Mês atual | | Comissão acumulada | R$ a receber | Mês atual | | Meta do mês | Barra
+  de progresso com % | Mês atual |
+</p>
+<p>
+  <strong>Widgets</strong> | Minhas vendas recentes Tempo real | Últimas 5: cliente, produto, valor,
+  status | → Ver todas as minhas vendas · Criar venda | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Disponibilidade rápida Próximos 7 dias</th>
+      <th>Produtos com vagas para venda imediata</th>
+      <th>→ Consultar disponibilidade · Abrir PDV</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Meu desempenho Mês atual</th>
+      <th>Gráfico: vendas diárias + linha de meta</th>
+      <th>→ Ver histórico de comissões</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Guia / Operador Individual</strong>
+  Job: Saber o que fazer hoje e quem são as pessoas que vou atender.
+  <strong>Cards Estatísticos</strong>
+  | <strong>Card</strong> | <strong>Métrica</strong> | <strong>Clique</strong> | | ------ | ------ |
+  ------ | | Atividades hoje | Quantidade de saídas | → Expande lista | | Participantes hoje | Total
+  de pessoas | → Lista passageiros | | Atenção especial | Com condições de saúde | → Detalhes | |
+  Próxima atividade | Horário + produto | → Detalhes |
+</p>
+<p>
+  <strong>Widgets</strong> | Minha agenda Próximos 7 dias | Lista agrupada por dia: produto,
+  horário, empresa (badge), local | → Ver agenda completa | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Atividade atual / Próxima Agora</th>
+      <th>Card expandido: produto, horário, local, participantes, condições</th>
+      <th>→ Fazer check-in · Baixar ficha operacional</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Lista de participantes Próxima atividade</th>
+      <th>Nome, telefone (clicável), indicador de atenção especial</th>
+      <th>→ Ver fichas completas · Ligar · WhatsApp</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Financeiro Individual</strong>
+  Job: Garantir que o dinheiro que deveria entrar, entrou.
+  <strong>Cards Estatísticos</strong>
+  | <strong>Card</strong> | <strong>Métrica</strong> | <strong>Período</strong> | | ------ | ------
+  | ------ | | Faturamento | R$ recebido + variação % | Mês atual | | A receber | R$ pendente de
+  pagamento | Atual | | Notas emitidas | Quantidade de NF | Mês atual | | Conciliação | % de vendas
+  conciliadas | Mês atual |
+</p>
+<p>
+  <strong>Widgets</strong> | Pagamentos pendentes Atual | Lista: cliente, valor, vencimento, dias em
+  atraso | → Ver todos os pendentes · Enviar cobrança | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Movimentações recentes Últimos 7 dias</th>
+      <th>Entradas e saídas com categoria e valor</th>
+      <th>→ Ver extrato completo</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Fluxo de caixa Próximos 30 dias</th>
+      <th>Gráfico: projeção de entradas e saídas</th>
+      <th>→ Abrir fluxo detalhado</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Afiliado Individual</strong>
+  Job: Saber quanto vendi e quanto vou receber.
+  <strong>Cards Estatísticos</strong>
+  | <strong>Card</strong> | <strong>Métrica</strong> | <strong>Período</strong> | | ------ | ------
+  | ------ | | Vendas realizadas | Quantidade total + variação % | Mês atual | | Valor gerado | R$
+  total de vendas + variação % | Mês atual | | Comissão acumulada | R$ a receber | Mês atual | |
+  Comissão paga | R$ já recebido | Histórico |
+</p>
+<p>
+  <strong>Widgets</strong> | Minhas vendas Mês atual | Lista: data, empresa (badge), produto, valor,
+  comissão, status | → Ver todas as vendas · Copiar link de afiliado | | ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Desempenho por empresa Mês atual</th>
+      <th>Vendas e comissões separadas por empresa parceira</th>
+      <th>→ Filtrar por empresa</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Pagamentos recebidos Últimos 6 meses</th>
+      <th>Comissões pagas: data, valor, comprovante</th>
+      <th>→ Ver histórico completo · Solicitar saque</th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>7. Decisões de Produto</strong>
+  <strong>Estrutura</strong>
+  | <strong>Tema</strong> | <strong>Decisão</strong> | | ------ | ------ | | Menu | 7 itens: Início,
+  Vendas, Agenda, Produtos, Financeiro, Afiliados, Configurações | | Vendas agrupa | Pedidos,
+  Carrinhos, Clientes, Cupons (tudo sobre dinheiro entrando) | | Agenda agrupa | Calendário,
+  Reservas (tudo sobre tempo e pessoas) | | Financeiro agrupa | Visão geral, Movimentações,
+  Contratos | | Nomenclatura | Termos amigáveis: Clientes (não CRM), Agenda (não Operações), Início
+  (não Dashboard) |
+</p>
+<p>
+  <strong>Comportamentos</strong> | <strong>Tema</strong> | <strong>Decisão</strong> | | ------ |
+  ------ | | Período dos widgets | Fixo por widget, sem filtro geral na dashboard | | CTAs dos
+  widgets | Cada widget tem seu próprio CTA contextual | | Notificações | Sistema centralizado com
+  sino no header | | Navegação entre áreas | Abre painel lateral, não navega diretamente | | Guia
+  multi-empresa | Agenda unificada, contexto automático ao clicar | | Afiliado multi-empresa |
+  Painel próprio consolidado com filtro opcional | | Mobile | 3 atalhos + botão Mais na barra
+  inferior | | Cor primária | Azul (laranja para destaques pontuais) |
+</p>
+<p>
+  <strong>Funcionalidades Futuras</strong>
+  Favoritos no menu: Marcar itens para acesso rápido Widgets personalizáveis: Mover, ocultar ou
+  adicionar Tour guiado: Onboarding interativo Ajuda contextual: Ícones explicando funcionalidades
+  Sala de negócios: Marketplace B2B entre empresas parceiras
+  <strong>8. Próximos Passos</strong>
+  Validar estrutura de menu com cliente Prototipar o Shell (header + menu + seletor de empresa)
+  Prototipar dashboard do Gestor + Reservas com Pagamento Desenhar painel lateral de visualização de
+  reserva/venda Testar fluxo do guia com agenda unificada
+  <em><strong>⚙️ Direcionamento UX</strong></em>
+  <strong>Documento de Arquitetura UX</strong>
+  Retrilhar - Painel Administrativo v2
+  <strong>Visão Geral do Produto</strong>
+  A Retrilhar é uma plataforma de gestão para turismo de experiências, posicionada como
+  <strong>&quot;escritório de bolso&quot;</strong> (PWA). O projeto atual é a refatoração completa
+  do Painel Administrativo, com 15 módulos interdependentes, múltiplos perfis de usuário e três
+  variações de negócio.
+  <strong>Problema Central</strong>
+  O sistema atual apresenta lacunas de usabilidade que impactam a operação diária dos clientes:
+  Falta de relatórios críticos (vendas por produto, ingressos por tipo, adicionais) Fluxo confuso de
+  cadastro de usuários (modelo atual de autocadastro) Baixa affordance em elementos interativos (não
+  parece clicável)
+  <strong>Variações de Negócio Atendidas</strong>
+  O sistema precisa se adaptar a três modelos de operação distintos: | <strong>Modelo</strong> |
+  <strong>Reserva</strong> | <strong>Pagamento</strong> |
+  <strong>Identificação de Participantes</strong> | | ------ | ------ | ------ | ------ | | Sistema
+  de Reservas | Sim | Não | Obrigatória | | Reserva + Pagamento | Sim | Sim | Obrigatória | |
+  E-commerce (ingressos) | Não | Sim | Não necessária |
+</p>
+<p>
+  Cada tipo de empresa terá uma experiência diferente no sistema, com módulos e funcionalidades
+  visíveis conforme seu modelo de operação. 2.
+  <strong>Matriz CSD - Certezas, Suposições e Dúvidas</strong> | <strong>Certezas</strong> - O que
+  sabemos com segurança | | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Área</strong></th>
+      <th><strong>Certeza</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tecnologia</td>
+      <td>Componentes baseados em shadcn/ui para exportação via MCP do Figma</td>
+    </tr>
+    <tr>
+      <td>Tecnologia</td>
+      <td>Sistema PWA (&quot;escritório de bolso&quot;)</td>
+    </tr>
+    <tr>
+      <td>Prioridade</td>
+      <td>Central de Vendas é prioridade 1, Painel de Operações é prioridade 2</td>
+    </tr>
+    <tr>
+      <td>Dor do Cliente</td>
+      <td>Falta de relatórios é reclamação recorrente dos usuários finais</td>
+    </tr>
+    <tr>
+      <td>Dor do Cliente</td>
+      <td>Cadastro de usuários atual (autocadastro) é confuso</td>
+    </tr>
+    <tr>
+      <td>Dor do Cliente</td>
+      <td>Elementos clicáveis não têm identidade visual clara</td>
+    </tr>
+    <tr>
+      <td>Visual</td>
+      <td>Admin deve ter cara corporativa, diferente do e-commerce do cliente</td>
+    </tr>
+    <tr>
+      <td>Visual</td>
+      <td>Verde da marca como primário, mas cuidado para não confundir com status</td>
+    </tr>
+    <tr>
+      <td>Mobile</td>
+      <td>Tab bar com poucos itens (referência Airbnb)</td>
+    </tr>
+    <tr>
+      <td>Mobile</td>
+      <td>Público mais velho usa muito celular - mínimo de cliques</td>
+    </tr>
+    <tr>
+      <td>Entrega</td>
+      <td>Entregas por módulo para desenvolvimento em paralelo</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Suposições</strong> - O que acreditamos, mas precisamos validar</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Área</strong></th>
+      <th><strong>Suposição</strong></th>
+      <th><strong>Como Validar</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Navegação</td>
+      <td>Abas são a melhor forma de agrupar informações em cadastros complexos</td>
+      <td>Teste de usabilidade</td>
+    </tr>
+    <tr>
+      <td>Dashboard</td>
+      <td>Widgets configuráveis por perfil atenderão as diferentes necessidades</td>
+      <td>Entrevista com gestores vs operadores</td>
+    </tr>
+    <tr>
+      <td>Atalhos</td>
+      <td>Conexão entre Central de Vendas e Painel de Operações é essencial</td>
+      <td>Observação de uso atual</td>
+    </tr>
+    <tr>
+      <td>PDV</td>
+      <td>Atalhos de teclado e botões grandes melhoram vendas presenciais</td>
+      <td>Teste em ambiente real</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Dúvidas</strong> - O que precisamos descobrir</th>
+    </tr>
+  </thead>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Área</strong></th>
+      <th><strong>Dúvida</strong></th>
+      <th><strong>Responsável</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Permissões</td>
+      <td>Qual a matriz de permissões por perfil de usuário?</td>
+      <td>Definir durante projeto</td>
+    </tr>
+    <tr>
+      <td>Dashboard</td>
+      <td>Quais widgets cada perfil deve ver por padrão?</td>
+      <td>Definir durante projeto</td>
+    </tr>
+    <tr>
+      <td>Sala de Negócios</td>
+      <td>Como funciona o fluxo B2B entre empresas parceiras?</td>
+      <td>Cliente detalhar</td>
+    </tr>
+    <tr>
+      <td>Onboarding</td>
+      <td>Quais os passos essenciais do tour guiado por tipo de empresa?</td>
+      <td>Mapear com cliente</td>
+    </tr>
+    <tr>
+      <td>Fichas</td>
+      <td>Fichas operacionais ficam em menu separado ou dentro do Painel de Reservas?</td>
+      <td>Testar alternativas</td>
+    </tr>
+    <tr>
+      <td>Recursos</td>
+      <td>Como mostrar conflitos de escalas de forma clara e acionável?</td>
+      <td>Explorar no design</td>
+    </tr>
+  </tbody>
+</table>
+<ol start="3">
+  <li>
+    <strong>Mapeamento de Objetos do Sistema</strong>
+    O sistema gira em torno de objetos principais que se relacionam entre si. Este mapeamento define
+    a arquitetura de informação e como os dados fluem.
+    <strong>Objetos Core (Núcleo do Negócio)</strong>
+    | PRODUTO | → | SAÍDA/DATA | → | RESERVA | | ------ | ------ | ------ | ------ | ------ | |
+    Tarifa | Adicional | Recurso | Participante | Pagamento |
+  </li>
+</ol>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Objeto</strong></th>
+      <th><strong>O que é</strong></th>
+      <th><strong>Atributos-chave</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Produto</strong></td>
+      <td>Experiência ou atividade vendida</td>
+      <td>Nome, descrição, fotos, categoria, política de cancelamento, termos</td>
+    </tr>
+    <tr>
+      <td><strong>Tarifa</strong></td>
+      <td>Variação de preço do produto</td>
+      <td>Nome (adulto, criança), valor, regras de idade</td>
+    </tr>
+    <tr>
+      <td><strong>Adicional</strong></td>
+      <td>Item opcional vinculado ao produto</td>
+      <td>Nome, preço, estoque por slot (ex: almoço, equipamento)</td>
+    </tr>
+    <tr>
+      <td><strong>Saída/Data</strong></td>
+      <td>Instância do produto em data/horário específico</td>
+      <td>Data, horário, capacidade, status, mínimo para confirmar</td>
+    </tr>
+    <tr>
+      <td><strong>Recurso</strong></td>
+      <td>Limitador operacional</td>
+      <td>Tipo (guia, veículo, equipamento), capacidade, disponibilidade</td>
+    </tr>
+    <tr>
+      <td><strong>Reserva</strong></td>
+      <td>Vínculo entre cliente e saída</td>
+      <td>ID, status, participantes, pagamento, contrato assinado</td>
+    </tr>
+    <tr>
+      <td><strong>Participante</strong></td>
+      <td>Pessoa que vai na experiência</td>
+      <td>Nome, documento, dados de saúde, termo assinado</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <strong>Objetos de Suporte</strong> | Cliente | Vendedor | Afiliado | Contrato | Empresa | |
+  ------ | ------ | ------ | ------ | ------ |
+</p>
+<p>
+  <strong>Lógica de Estoque e Inventário</strong> | <strong>Categoria</strong> |
+  <strong>Exemplo</strong> | <strong>Comportamento no Sistema</strong> | | ------ | ------ | ------
+  | | <strong>Recursos</strong> | Guia, piloto, van, barco | Limitador operacional: se João está na
+  Trilha A, não pode estar na Trilha B no mesmo horário | | <strong>Inventário Físico</strong> |
+  Camiseta, caneca, brinde | Estoque numérico global: vendeu, subtrai do total | |
+  <strong>Inventário de Experiência</strong> | Rapel, almoço, foto | Disponibilidade por slot: vaga
+  vinculada a data/horário específico | | <strong>Adicionais</strong> | Ponto de embarque, seguro |
+  Atributos de escolha: personalizam a reserva sem impactar estoque |
+</p>
+<ol start="4">
+  <li>
+    <strong>Perfis de Usuário e Jobs to Be Done</strong>
+    Mapeamento do que cada perfil precisa realizar no sistema, orientando as decisões de interface.
+    <strong>Gestor (Visão 360°)</strong>
+    | <strong>Quando...</strong> | <strong>Eu quero...</strong> | <strong>Para que...</strong> | |
+    ------ | ------ | ------ | | Inicio meu dia | Ver resumo de vendas, próximas saídas e alertas |
+    Entender rapidamente a situação do negócio | | Preciso tomar decisões | Acessar relatórios de
+    performance por produto, vendedor e canal | Basear decisões em dados concretos | | Gerencio a
+    equipe | Configurar perfis de acesso e permissões | Garantir que cada um veja apenas o
+    necessário | | Analiso o financeiro | Ver extrato consolidado por conta e forma de pagamento |
+    Fazer fechamento de caixa |
+  </li>
+</ol>
+<p>
+  <strong>Operador/Guia (Execução do Dia)</strong> | <strong>Quando...</strong> |
+  <strong>Eu quero...</strong> | <strong>Para que...</strong> | | ------ | ------ | ------ | | Chego
+  no trabalho | Ver minhas escalas do dia e lista de passageiros | Saber exatamente o que fazer | |
+  Recebo os clientes | Fazer check-in rápido (QR code) | Confirmar presença sem burocracia | |
+  Preciso de informações | Ver alertas de saúde e adicionais de cada participante | Prestar
+  atendimento adequado | | Organizo a logística | Baixar fichas operacionais | Ter documentação
+  física se necessário |
+</p>
+<p>
+  <strong>Vendedor (Conversão)</strong> | <strong>Quando...</strong> |
+  <strong>Eu quero...</strong> | <strong>Para que...</strong> | | ------ | ------ | ------ | |
+  Atendo cliente presencialmente | Criar pedido rápido no PDV | Fechar venda sem fricção | | Atendo
+  cliente remotamente | Gerar orçamento e enviar link de pagamento | Converter sem precisar do
+  cliente presente | | Acompanho meus resultados | Ver minhas vendas e comissões | Entender minha
+  performance | | Recupero vendas perdidas | Ver carrinhos abandonados e acionar cliente | Aumentar
+  conversão |
+</p>
+<p>
+  <strong>Afiliado Externo (Parceiro)</strong> | <strong>Quando...</strong> |
+  <strong>Eu quero...</strong> | <strong>Para que...</strong> | | ------ | ------ | ------ | | Quero
+  vender | Ter meu link/código único | Rastrear minhas vendas | | Acompanho resultados | Ver vendas
+  realizadas e comissão acumulada | Saber quanto vou receber | | Preciso receber | Ver histórico de
+  pagamentos | Controlar meu financeiro |
+</p>
+<ol start="5">
+  <li>
+    <strong>Arquitetura de Módulos</strong>
+    <strong>Estrutura Hierárquica do Sistema</strong>
+    | <strong>#</strong> | <strong>Módulo</strong> | <strong>Funcionalidades Principais</strong> | |
+    ------ | ------ | ------ | | 0 | <strong>Fundação</strong> | Design System, Templates de
+    Estrutura (Shell, Listagem, Formulários, Modais) | | 1 | <strong>Central de Vendas</strong> |
+    Lista de Vendas, Criar Pedido, PDV, Carrinhos Abandonados, Vendedores, Canais, Extrato,
+    Relatórios | | 2 | <strong>Painel de Operações</strong> | Mapa de Vagas, Painel de Reservas,
+    Agenda, Fichas Operacionais | | 3 | <strong>Dashboard</strong> | Widgets configuráveis por
+    perfil de usuário | | 4 | <strong>CRM</strong> | Funil de Vendas (Kanban), Base de Clientes,
+    Qualidade/NPS | | 5 | <strong>Catálogo de Produtos</strong> | Lista de Produtos, Cadastro/Edição
+    com abas | | 6 | <strong>Gestão de Contratos</strong> | Lista de Contratos, Central de Faturas,
+    Templates | | 7 | <strong>Financeiro</strong> | Dashboard, Movimentações, Fluxo de Caixa, Notas
+    Fiscais | | 8 | <strong>Loja</strong> | Configurações do E-commerce (identidade, SEO) | | 9 |
+    <strong>Marketing</strong> | Afiliados, Cupons de Desconto | | 10 |
+    <strong>Marketplace</strong> | Fornecedores parceiros | | 11 |
+    <strong>Sala de Negócios</strong> | B2B: empresas que me vendem / que eu vendo | | 12 |
+    <strong>Administrativo</strong> | Usuários, Perfis de Acesso, Templates de Mensagem, Termos,
+    Integrações | | 13 | <strong>Recursos e Equipe</strong> | Guias, Veículos, Equipamentos | | 14 |
+    <strong>Sistema de Ajuda</strong> | Ajuda Contextual, Tour Guiado (Onboarding), Central de Ajuda
+    | | - | <strong>Spin-offs</strong> | Painel do Afiliado, Painel do Operador (interfaces
+    separadas) |
+  </li>
+</ol>
+<p>
+  <strong>Conexões Entre Módulos</strong> O sistema não opera em silos. Atalhos entre módulos são
+  essenciais para produtividade, especialmente para empresas pequenas onde a mesma pessoa opera
+  vendas e operações. | <strong>De</strong> | <strong>Para</strong> | <strong>Atalho</strong> | |
+  ------ | ------ | ------ | | Central de Vendas (pedido) | Painel de Operações | &quot;Visualizar
+  na Operação&quot; | | Painel de Operações (passageiro) | Central de Vendas | &quot;Ver Financeiro
+  desta Venda&quot; | | Qualquer listagem | Modal de visualização | Clique no nome abre preview sem
+  navegar | | Mapa de Vagas | Painel de Reservas | &quot;Ver Reservas&quot; (já filtrado) |
+</p>
+<ol start="6">
+  <li>
+    <strong>Diagnóstico: Atual vs. Novo</strong>
+    Mapeamento do que existe, o que precisa ser refatorado e o que será desenvolvido do zero.
+    <strong>Legenda de Status</strong>
+    Existe e funciona - Manter ou melhorar interfaceExiste com problemas - Refatorar com
+    prioridadeNão existe - Desenvolver do zeroParcialmente existe - Completar funcionalidades
+    <strong>Módulo 1: Central de Vendas</strong>
+    | <strong>Funcionalidade</strong> | <strong>Status</strong> | <strong>Observações</strong> | |
+    ------ | ------ | ------ | | Lista de Vendas | Funciona | Melhorar filtros e ações em lote | |
+    Criar Pedido Manual | Problemas | Fluxo complexo. Refatorar de forma mais clara/direta | | PDV /
+    Checkout Balcão | Parcial | Otimizar para velocidade (atalhos, botões grandes) | | Carrinhos
+    Abandonados | Funciona | Adicionar indicador quente/frio | |
+    <strong>Relatórios de Performance</strong> | Não existe | PRIORIDADE MÁXIMA - Reclamação de
+    clientes | | Extrato de Contas | Problemas | Falta filtro por canal e totalização para
+    fechamento | | Vendedores | Funciona | - | | Canais de Venda | Funciona | - |
+  </li>
+</ol>
+<p>
+  <strong>Módulo 2: Painel de Operações</strong> | <strong>Funcionalidade</strong> |
+  <strong>Status</strong> | <strong>Observações</strong> | | ------ | ------ | ------ | | Mapa de
+  Vagas | Problemas | Evoluir com alertas visuais e regras de conflito | |
+  <strong>Painel de Reservas</strong> | Problemas | TELA MAIS COMPLEXA - Muita informação, refatorar
+  completamente | | Agenda - Calendário | Funciona | Adicionar visualização lista | | Fichas
+  Operacionais | Parcial | Completar todas (transporte, saúde, inventário, presença) |
+</p>
+<p>
+  <strong>Módulos Complementares</strong> | <strong>Funcionalidade</strong> |
+  <strong>Status</strong> | <strong>Observações</strong> | | ------ | ------ | ------ | | Dashboard
+  | Parcial | Evoluir para widgets configuráveis por perfil | | CRM / Funil de Vendas | Não existe |
+  Desenvolver do zero | | Base de Clientes | Problemas | Falta dados de saúde persistentes e
+  exportação | | NPS / Qualidade | Não existe | Desenvolver do zero | | Cadastro de Produtos |
+  Problemas | Reorganizar em abas e adicionar campos | | Gestão de Contratos | Funciona | Melhorar
+  dashboard e templates | | Financeiro | Parcial | Completar fluxo de caixa e NF | |
+  <strong>Cadastro de Usuários</strong> | Problemas | Fluxo confuso (autocadastro). Refatorar com
+  convite | | Perfis de Acesso | Parcial | Criar matriz de permissões completa | | Sala de Negócios
+  (B2B) | Não existe | Fluxo ainda não definido pelo cliente | | Sistema de Ajuda | Não existe |
+  Ajuda contextual + onboarding | | Painel do Operador (Spin-off) | Não existe | Interface separada
+  simplificada |
+</p>
+<ol start="7">
+  <li>
+    <strong>Regras de Negócio Críticas</strong>
+    Regras que impactam diretamente o design das interfaces.
+    <strong>Conflitos e Alertas</strong>
+    | <strong>Regra</strong> | <strong>Comportamento Esperado</strong> |
+    <strong>Onde Aparece</strong> | | ------ | ------ | ------ | |
+    <strong>Recurso compartilhado</strong> | Se barco (capacidade 10) é usado por 2 experiências no
+    mesmo horário, ocupação deve ser somada | Mapa de Vagas | |
+    <strong>Colaborador duplicado</strong> | Sistema deve alertar se mesmo guia escalado em horários
+    sobrepostos | Mapa de Vagas, Agenda | | <strong>Vagas bloqueadas</strong> | Se gestor
+    &quot;reserva&quot; vagas para grupo em negociação, subtrair imediatamente das disponíveis |
+    Mapa de Vagas | | <strong>Sem equipe alocada</strong> | Se produto não tiver equipe escalada,
+    exibir alerta visual | Mapa de Vagas |
+  </li>
+</ol>
+<p>
+  <strong>Visibilidade por Tipo de Empresa</strong> | <strong>Funcionalidade</strong> |
+  <strong>Reserva s/ pagamento</strong> | <strong>Reserva c/ pagamento</strong> |
+  <strong>E-commerce</strong> | | ------ | ------ | ------ | ------ | | E-commerce / Loja | Não |
+  Sim | Sim | | Central de Vendas completa | Parcial | Sim | Sim | | Painel de Reservas | Sim | Sim
+  | Não | | Dados de participantes | Sim | Sim | Não | | Financeiro / Pagamentos | Não | Sim | Sim |
+</p>
+<ol start="8">
+  <li>
+    <strong>Entregas de Design (Figma)</strong>
+    O que precisa ser desenhado, organizado por prioridade e fase do projeto.
+    <strong>Fase 1: Bootstrap (Janeiro-Fevereiro)</strong>
+    Objetivo: Base funcional rodando | <strong>Entrega</strong> | <strong>Tipo</strong> |
+    <strong>Detalhamento</strong> | | ------ | ------ | ------ | | Flowmap com regras de negócio |
+    Arquitetura | Fluxos prioritários (Central de Vendas, Painel de Operações) + regras por perfil |
+    | Design System (shadcn customizado) | Fundação | Tokens, componentes atômicos, tabela completa,
+    badges de status | | Shell / Layout Base | Template | Menu lateral, header, troca de
+    organização, responsivo | | Login + Recuperação de senha | Tela | - | | CRUD modelo | Template |
+    Listagem, formulário simples, formulário com abas, modal de cadastro, visualização | |
+    Responsivo mobile/tablet | Variação | Tab bar com poucos itens, menu drawer |
+  </li>
+</ol>
+<p>
+  <strong>Fase 2: Módulos Core (Março-Abril)</strong> Objetivo: Módulos principais completos |
+  <strong>Entrega</strong> | <strong>Prioridade</strong> | <strong>Detalhamento</strong> | | ------
+  | ------ | ------ | | Lista de Vendas + Detalhe | Alta | Filtros, ações em lote, abas de detalhe |
+  | Criar Pedido Manual | Alta | Stepper (Cliente → Produtos → Pagamento → Confirmação), carrinho
+  lateral | | PDV / Checkout Balcão | Alta | Interface otimizada, atalhos, botões grandes | |
+  <strong>Relatórios de Performance</strong> | Crítica | 4 relatórios: vendas por produto, ingressos
+  por tarifa, adicionais, performance vendedor | | Mapa de Vagas | Alta | Alertas visuais (saúde,
+  esgotado, sem equipe), filtros, ocupação visual | | <strong>Painel de Reservas</strong> | Crítica
+  | Accordion por responsável, badges (pagamento, contrato, saúde), agrupamentos, downloads | |
+  Agenda (Lista + Calendário) | Média | Duas visualizações, criar/editar saída, bloqueios | | Fichas
+  Operacionais | Média | Transporte, presença, saúde, inventário, embarque |
+</p>
+<p>
+  <strong>Fase 3: Expansão (Maio-Junho)</strong> Objetivo: Módulos complementares |
+  <strong>Entrega</strong> | <strong>Prioridade</strong> | <strong>Detalhamento</strong> | | ------
+  | ------ | ------ | | Dashboard dinâmico | Média | Widgets configuráveis, definir por perfil | |
+  Funil de Vendas (Kanban) | Média | Colunas fixas, cards com drag and drop, drawer de detalhes | |
+  Base de Clientes + Ficha | Média | Dados persistentes, saúde, histórico, exportação | | Gestão de
+  Contratos | Baixa | Lista, faturas, templates | | Financeiro | Baixa | Dashboard, movimentações,
+  fluxo de caixa, NF | | Cadastro de Produtos | Média | Reorganizar em abas (básico, preços,
+  disponibilidade, adicionais, recursos, termos) |
+</p>
+<p>
+  <strong>Fase 4: Finalização (Julho-Agosto)</strong> Objetivo: Polimento e extras |
+  <strong>Entrega</strong> | <strong>Prioridade</strong> | <strong>Detalhamento</strong> | | ------
+  | ------ | ------ | | Cadastro de Usuários (refatorado) | Alta | Fluxo de convite (substituir
+  autocadastro) | | Perfis de Acesso | Média | Matriz de permissões por módulo | | Sistema de Ajuda
+  | Baixa | Ícones contextuais, tooltips, FAQ | | Onboarding / Tour Guiado | Baixa | Passos por tipo
+  de empresa | | Painel do Afiliado (Spin-off) | Baixa | Interface separada simplificada | | Painel
+  do Operador (Spin-off) | Média | Escalas, lista de passageiros, aceite | | Sala de Negócios |
+  Baixa | Aguarda definição de fluxo pelo cliente |
+</p>
+<p>
+  <em><strong>------------------</strong></em>
+  <em><strong>⚙️ Regras de Negócio</strong></em>
+  <strong>ESPECIFICAÇÃO DO PAINEL ADMINISTRATIVO DO RETRILHAR</strong>
+  <strong>LÓGICAS DE ESTOQUE</strong>
+  | <strong>CATEGORIA</strong> | <strong>O QUE É</strong> |
+  <strong>Comportamento no sistema</strong> | | ------ | ------ | ------ | | Recursos | Guia,
+  piloto, van, barco | <strong>Limitador Operacional:</strong> Se o Guia João está na Trilha A, ele
+  não pode estar na Trilha B. | | Inventário - físico | Camiseta, Caneca, Brinde. |
+  <strong>Estoque Numérico:</strong> Vendeu, subtrai do total geral. | | Inventário (Experiência) |
+  Rapel, Almoço, Foto. | <strong>Disponibilidade por Slot:</strong> Vaga vinculada a um horário ou
+  data específica. | | Adicionais | Ponto de embarque, Seguro. |
+  <strong>Atributos de Escolha:</strong> Informações que personalizam a reserva. |
+</p>
+<p>
+  <strong>OBJETIVOS DE USO DO SISTEMA</strong> | | <strong>CONFIGURAÇÕES</strong>* |
+  <strong>PÚBLICO ALVO</strong> | | ------ | ------ | ------ | | |
+  <strong>Sistema de reservas</strong> (com reservas e sem pagamento) - pode ter ou não um ecommerce
+  | Agências e atrativos | | | <strong>Sistema de vendas de ingressos</strong> (reserva com
+  pagamento) - obrigatório ecommerce | agências, atrativos e experiências. | | |
+  <strong>Sistema de e-commerce</strong> (sem reserva e com pagamento) - obrigatório ecommerce |
+  eventos, shows, experiências, atrativos. | | |
+  <strong>Motor de reserva para meios de hospedagem</strong> | pequenas pousadas na natureza,
+  geralmente atrativos que também oferecem hospedagem | | |
+  <strong>Sistema de gestão de contratos por assinatura</strong> | Clubes de trilha ou clube de
+  experiências, aulas de experiências |
+</p>
+<p>
+  <strong>PERFIS DE ACESSO</strong>
+  <strong>DASHBOARD</strong>
+  GESTOR VENDAS (conectar essa tela com o analytics?) carrinhos abandonados vendas realizadas
+  cancelamentos OPERACIONAL Quantidade de reservas feitas/ quantidade de vagas disponíveis
+  Eventos/datas confirmadas/ em análise/ canceladas
+  <strong>Visão Geral:</strong> (Próximas saídas, resumo de vendas do dia e avisos).
+  <strong>Indicadores (BI)</strong> 🔒: (Gráficos de performance, lucratividade e canal de venda).
+  <strong>INFORMAÇÃO IMPORTANTE</strong>
+  A central de vendas e o painel operacional, podem ter interações entre si, para perfis de empresas
+  pequenas que geralmente é a mesma pessoa operando as duas frentes, exemplo: Dentro da
+  <strong>Central de Vendas</strong> , ao clicar em um pedido, deve haver um atalho:
+  <em>&quot;Visualizar na Operação&quot;</em> . Dentro do <strong>Painel Operacional</strong> , ao
+  clicar em um passageiro, deve haver um atalho: <em>&quot;Ver pagamento desta Venda&quot;</em> .
+  <strong>CENTRAL DE VENDAS</strong>
+  Especificação aqui - Módulo: Central de Vendas
+  <strong>PAINEL DE OPERAÇÕES</strong>
+  Especificação aqui - Módulo: Painel de Operações e RPP002 PAINEL OPERACIONAL.docx
+  <strong>CRM</strong>
+  Funil de Vendas- Interface visual para transformar interessados ( <strong>Leads</strong> ) em
+  clientes reais. <strong>Kanban Personalizável</strong> : Colunas representando as etapas (ex:
+  Prospecção, Orçamento Enviado, Negociação, Venda Concluída).
+  <strong>Cards de Oportunidades</strong> : Cada card contém o nome do lead, valor estimado da
+  venda, produto de interesse e data da última interação. <strong>Gestão de Tarefas</strong> :
+  Possibilidade de criar alertas para follow-up (retorno de contato) diretamente no card Base de
+  Clientes - O &quot;Cérebro&quot; do Retrilhar, onde todo o histórico do participante é armazenado.
+  <strong>Ficha Única do Cliente</strong> : Centraliza dados pessoais (CPF, RG/Passaporte,
+  Nascimento), contatos e histórico de todas as compras já realizadas.
+  <strong>Dados de Saúde e Perfil</strong> : Armazenamento persistente de restrições alimentares ou
+  condições de saúde para que o cliente não precise preencher tudo do zero em uma nova compra.
+  <strong>Exportação Estratégica</strong> : Botão para exportar a base de dados em Excel para ações
+  de marketing externo ou análise de dados. Gestão de Qualidade (Pós-Venda) - Automação para medir a
+  experiência do cliente após a atividade. <strong>Pesquisa de Satisfação</strong> : Disparo
+  automático de formulários após o status da reserva mudar para &quot;Realizada&quot;.
+  <strong>NPS (Net Promoter Score)</strong> : Pergunta clássica de &quot;0 a 10&quot; para
+  identificar promotores e detratores da marca. <strong>Dashboard de Qualidade</strong> : Gráficos
+  simples mostrando a nota média das experiências e dos guias. Cadastro de vendedores kanban com
+  funil de vendas clientes (dados unificados) dados dos clientes Exportar Excel com dados dos
+  clientes Qualidade Pesquisa de satisfação NPS Cadastro de Vendedores
+  <strong>INVENTÁRIO DE PRODUTOS (CATÁLOGO)</strong>
+  RFP 001 Produto
+  <strong>FINANCEIRO</strong>
+  Dashboard Movimentação (lançamentos) Fluxo de caixa Classificação Centro de custo
+  <strong>NOTA FISCAL</strong>
+  Listagem de notas cadastro de template de notas precificação através de analise e gerenciamento de
+  custos por cada tipo de atividade.
+  <strong>LOJA</strong>
+  CMS (personalizações) e SEO GOOGLE ADS E META ADS, PIXEL FACEBOOK Informações básicas padrão de
+  cores logomarca estilo de padrão da loja criação de páginas [modelos de páginas]
+  <strong>CONFIGURAÇÕES DA LOJA</strong>
+  upload do favicon e da logo ativar e desativar a loja limpar cache botão de trocar de versão
+  <strong>MARKETPLACE</strong>
+  Fornecedores
+  <strong>GESTÃO DE CONTRATOS</strong>
+  lista de contratos com filtros e dashboard informações do dashboard contratos ativos contratos
+  inativos contratantes aniversariantes do mês filtros produto ciclo de cobrança campo de nome, cpf,
+  número de contrato exportar planilha com contratos e dados listagem dos contratos ícone de atraso
+  vermelho quando o contrato tiver faturas em aberto dashboard contratos ativos contratos inativos
+  faturado solicitações template de contratos central de faturas listagem de faturas com dashboard
+  dashboard quant. faturas sem pagamento quant. faturas pagas quant. mostrar na lista lista de
+  espera template de mensagens Este contrato pode servir para a contratação de produtos e ter
+  possivelmente a integração de um serviço de assinatura digital?
+  <strong>INTELIGÊNCIA DE NEGÓCIOS</strong>
+  RELATÓRIOS DO GESTOR RELATÓRIOS PERSONALIZADOS POR DEPARTAMENTO INDICADORES
+  <strong>MARKETING</strong>
+  AFILIADOS lista de afiliados controle de pagamentos dos afiliados cadastro de afiliados relatório
+  de vendas dos afiliados CUPOM DE DESCONTO google ads e meta configuração de campanhas Promoção
+  (banner especial de produto em promoção)
+  <strong>INTEGRAÇÕES</strong>
+  GOOGLE CONTATOS Google Agenda GOOGLE COISAS LEGAIS SEGURO Google Analytics proxy de pagamento
+  Depoimentos google Trip Advisor send pulse wordpress marketplaces - get your guide, airbnb,
+  civitatis
+  <strong>SALA DE NEGÓCIOS</strong>
+  GESTÃO DE MARKETPLACE Sala de Negócios empresas que me vendem empresas que eu vendo INTEGRAÇÃO B2B
+  <strong>ADMINISTRATIVO (configurações e regras gerais da empresa)</strong>
+  CADASTRO DE USUÁRIOS Perfis de usuários Gestor Operador (uma interface diferente, mais simplista
+  para aceite de escalas acesso de lista de passageiros que foi designado entre outros) Financeiro
+  Marketing Vendedor Administrador COMUNICAÇÃO (TEMPLATES DE MENSAGEM de whatsapp e por email E os
+  FLUXOS) Templates de termos de uso política de cancelamento Regras de cancelar a reserva conforme
+  a política Regras de estorno de pagamento conforme a política Termo de responsabilidade Ser
+  adicionado em produtos Possibilidade de contratar serviço de assinatura digital Enviar aceite após
+  compra via check in antes do passeio, momento que irá preencher dados de saúde também ficha de
+  anamnese)
+  <strong>CONFIGURAÇÕES GERAIS (configs do sistema)</strong>
+  MINHA CONTA Meus dados Alternar contas Meu plano Central de ajuda
+  <strong>SPIN OFF</strong>
+  <strong>Painel do afiliado -</strong> para acompanhar as vendas
+  <strong>Painel do operador -</strong> verá somente os dados de passeios que esteja vinculado
+  Painel do vendedor - verá somente as vendas realizadas por ele ou originadas pelo link de vendedor
+  (semelhante ao link de afiliado). O vendedor podera criar vendas em seu painel.
+  <strong>—-------------------------------</strong>
+  <strong>idéias:</strong> check in semelhante a cia aérea, ser o momento que irá captar os dados de
+  saúde e segurança dos participantes. —---------------------------------- Painel do dia
+  <em><strong>🏷️ Solicitações UX</strong></em>
+  <strong>TAGS PARA O DASHBOARD OPERACIONAL</strong>
+  Link para produto com todas as perguntas possíveis para o participante (aqui vcs podem logar com a
+  mesma conta do painel admin de demonstração) https://demonstracao.retrilhar.com.br/p/jalapao
+  Imagem estática do formulário. Cada seção no formulário é um conjunto de perguntas que se conectam
+  com o quadro explicativo acima na seção “Alertas para a operação conforme formulário de
+  preenchimento” (dados pessoas, endereço, estrangeiro, informações gerais, saúde e autorizações).
+  <em><strong>👥 Solicitações de Clientes</strong></em>
+  <strong>CLIENTE 1 - PARQUE SOLDADOS SEBOLD</strong>
+  <strong>Cliente 2 - CERRADO EXPERIENCE</strong>
+  <strong>CLIENTE 3 - VERTACO</strong>
+  <strong>O QUE É -</strong> Filtro no painel do dia sobre os agregadores na reserva.
+  <em><strong>-------------------</strong></em>
+  <em><strong>Planejamento</strong></em>
+  <strong>Planejamento do Projeto</strong>
+  Retrilhar Painel Administrativo v2 Cliente: Retrilhar (Cristiano e Katiely)Projeto: Redesign
+  completo do Painel AdministrativoInício: 13 de Janeiro de 2026Deadline: Setembro de 2026Duração: 6
+  mesesReunião semanal: Quarta-feira às 9:30
+  <strong>Plano de Horas</strong>
+  | Período | Plano | Horas | Foco | | ------ | ------ | ------ | ------ | | Janeiro e Fevereiro |
+  Growth | 80h/mês (~20h/semana) | Bootstrap: fundação, templates, CRUD modelo, painel, front | |
+  Março a Junho | Starter | 35h/mês (~9h/semana) | Modo cruzeiro: evolução tela a tela | | Total do
+  Projeto | 300h | | |
+</p>
+<p>
+  <strong>Decisões Alinhadas no Kickoff</strong>
+  <strong>Design System</strong>
+  Usar shadcn/ui como base, customizar componentes existentes Componentes extras seguem as
+  diretrizes do shadcn Verde da marca como cor primária, com cuidado para não confundir com status
+  (success) Paleta complementar com outras cores da marca para indicadores Visual corporativo,
+  claramente diferente do e-commerce
+  <strong>Entregas de Front-end</strong>
+  Entregas incrementais: design aprovado → entrega de front da etapa Cristiano cria o repositório
+  com CI/CD configurado UXNaut envia código isolado, sem integração com backend Responsivo: desktop,
+  tablet e mobile
+  <strong>Mobile</strong>
+  Tab bar com poucos itens (referência Airbnb) Foco em simplicidade: público mais velho usa muito
+  celular &quot;Escritório no bolso&quot; — mínimo de cliques possível
+  <strong>Documentação do Cliente</strong>
+  Kátia vai alimentar guia de Especificações de Negócio Kátia vai alimentar guia de Solicitações de
+  Clientes
+  <strong>Roadmap de 6 Meses</strong>
+  | Mês | Foco | Entregas | Horas | | ------ | ------ | ------ | ------ | | Janeiro | Flowmap +
+  Fundação + Front | Flowmap com regras de negócio, fundação shadcn, CRUD modelo, login, responsivo
+  | 80h | | Fevereiro | Fundação + Painel + Central de Vendas | Templates, Painel principal,
+  Lista/Detalhe de Vendas, front das etapas | 80h | | Março | Central de Vendas | Criar Pedido, PDV,
+  Carrinhos, Relatórios, Vendedores | 35h | | Abril | Painel de Operações | Mapa de Vagas, Painel de
+  Reservas, Agenda | 35h | | Maio | Dashboard + CRM + Contratos | Dashboard dinâmico, Kanban, Base
+  de Clientes, Contratos | 35h | | Junho | Financeiro + Complementares | Financeiro, Catálogo,
+  Configurações, Spin-offs | 35h | | Total | 300h | | |
+</p>
+<p>
+  Julho e Agosto ficam como buffer para ajustes e acompanhamento da implementação.
+  <strong>Detalhamento: Janeiro/2026</strong>
+  Plano: Growth (80h) · ~27h/semana (3 semanas, início dia 13) Objetivo: Mapear fluxos com regras de
+  negócio, montar fundação visual com shadcn/ui, entregar CRUD modelo + login + painel funcionando
+  em front. Entregas: Flowmap, fundação de componentes, CRUD modelo, login, responsivo mobile/tablet
+  <strong>Semana 1 (13-17 Jan) — ~27h</strong>
+  | Tarefa | Tipo | Horas | | ------ | ------ | ------ | | Reunião de Kickoff | Reunião | 1h | |
+  Análise do sistema atual | Discovery | 3h | | Flowmap — Módulos prioritários (Central de Vendas,
+  Painel de Operações) | Arquitetura | 6h | | Flowmap — Módulos secundários (Dashboard, CRM,
+  Financeiro, etc) | Arquitetura | 4h | | Flowmap — Regras de negócio por perfil de usuário/empresa
+  | Arquitetura | 6h | | Auditoria de componentes do e-commerce | Design System | 4h | | Definição
+  de tokens: cores da marca, tipografia, espaçamentos | Design System | 3h | | Subtotal | | 27h |
+</p>
+<p>
+  <strong>Semana 2 (20-24 Jan) — ~27h</strong> | Tarefa | Tipo | Horas | | ------ | ------ | ------
+  | | Reunião semanal | Reunião | 1h | | Documentação e reorganização no Figma (padrão shadcn) |
+  Design System | 4h | | Componentes extras: Tabela completa, Accordion, Badges de status | Design
+  System | 7h | | Componentes extras: Cards estatísticos, Empty State, Skeleton | Design System | 4h
+  | | Layout Base (Shell) + Login — Design | Design | 4h | | CRUD modelo — Design (listagem,
+  formulário, visualização) | Design | 5h | | Documentação de componentes | Documentação | 2h | |
+  Subtotal | | 27h |
+</p>
+<p>
+  <strong>Semana 3 (27-31 Jan) — ~26h</strong> | Tarefa | Tipo | Horas | | ------ | ------ | ------
+  | | Reunião semanal | Reunião | 1h | | Responsivo mobile/tablet — Design | Design | 4h | | CRUD
+  modelo — Front-end | Código | 6h | | Login — Front-end | Código | 3h | | Shell (layout base) —
+  Front-end | Código | 4h | | Responsivo mobile/tablet — Front-end | Código | 5h | | Entrega do
+  código + documentação | Documentação | 3h | | Subtotal | | 26h |
+</p>
+<p>
+  <strong>Resumo de Janeiro</strong> | Categoria | Entregas | Horas | | ------ | ------ | ------ | |
+  Reuniões | Kickoff + 2 semanais | 3h | | Discovery | Análise do sistema atual | 3h | | Arquitetura
+  | Flowmap completo com regras de negócio por perfil | 16h | | Design System | Auditoria, tokens,
+  componentes extras (Tabela, Accordion, Badges, Cards, Empty State, Skeleton) | 22h | | Design |
+  Shell, Login, CRUD modelo, Responsivo | 13h | | Código | CRUD modelo, Login, Shell, Responsivo —
+  Front-end | 18h | | Documentação | Componentes + entrega de código | 5h | | Total | | 80h |
+</p>
+<p>
+  <strong>Detalhamento: Fevereiro/2026</strong> Plano: Growth (80h) · ~20h/semana Objetivo:
+  Finalizar templates, entregar Painel principal e iniciar Central de Vendas com front. Entregas:
+  Templates de estrutura, Painel principal, Lista/Detalhe de Vendas, front das etapas | Categoria |
+  Entregas | Horas | | ------ | ------ | ------ | | Reuniões | 4 semanais (1h cada) | 4h | |
+  Templates — Design | Listagem, Formulário Simples, Formulário com Abas, Modal de Cadastro,
+  Visualização, Modal de Visualização | 14h | | Templates — Front | Código dos templates acima | 12h
+  | | Painel Principal — Design | Tela do painel com todas as regras de negócio | 10h | | Painel
+  Principal — Front | Código do painel | 10h | | Central de Vendas — Design | Lista de Vendas,
+  Detalhe da Venda | 10h | | Central de Vendas — Front | Código das telas de vendas | 10h | | Teste
+  de usabilidade | Preparação do protótipo e missões para teste com clientes | 6h | | Documentação |
+  Entrega de código + guias | 4h | | Total | | 80h |
+</p>
+<p>
+  <strong>Detalhamento: Março/2026</strong> Plano: Starter (35h) · ~9h/semana Objetivo: Concluir
+  todas as telas da Central de Vendas. | Categoria | Entregas | Horas | | ------ | ------ | ------ |
+  | Reuniões | 4 semanais (1h cada) | 4h | | Telas principais | Criar Pedido Manual, Checkout de
+  Balcão (PDV) | 14h | | Telas secundárias | Carrinhos Abandonados, Extrato de Contas, Vendedores,
+  Canais de Venda | 8h | | Relatórios | Vendas por Produto, Ingressos, Performance por Vendedor | 9h
+  | | Total | | 35h |
+</p>
+<p>
+  <strong>Detalhamento: Abril/2026</strong> Plano: Starter (35h) · ~9h/semana Objetivo: Entregar
+  Painel de Operações (inclui a tela mais complexa: Painel de Reservas). | Categoria | Entregas |
+  Horas | | ------ | ------ | ------ | | Reuniões | 4 semanais (1h cada) | 4h | | Mapa de Vagas |
+  Inventário com filtros, ocupação, alertas | 8h | | Painel de Reservas | Listagem agrupada,
+  accordion, badges, ações, downloads | 12h | | Agenda + Modais | Lista, Calendário, criação de
+  saída, bloqueio | 11h | | Total | | 35h |
+</p>
+<p>
+  <strong>Detalhamento: Maio/2026</strong> Plano: Starter (35h) · ~9h/semana Objetivo: Entregar
+  Dashboard, CRM e Gestão de Contratos. | Categoria | Entregas | Horas | | ------ | ------ | ------
+  | | Reuniões | 4 semanais (1h cada) | 4h | | Dashboard | Dashboard dinâmico com widgets
+  configuráveis | 8h | | CRM | Kanban, Lista de Clientes, Ficha, Pesquisas de Satisfação | 12h | |
+  Contratos | Lista, Detalhe, Faturas, Templates | 11h | | Total | | 35h |
+</p>
+<p>
+  <strong>Detalhamento: Junho/2026</strong> Plano: Starter (35h) · ~9h/semana Objetivo: Finalizar
+  todos os módulos restantes. | Categoria | Entregas | Horas | | ------ | ------ | ------ | |
+  Reuniões | 4 semanais (1h cada) | 4h | | Financeiro | Dashboard, Movimentações, Fluxo de Caixa,
+  NFs | 8h | | Catálogo | Lista de Produtos, Cadastro/Edição | 6h | | Configurações | Usuários,
+  Perfis, Templates, Termos, Integrações | 8h | | Complementares | Loja, Marketing, Marketplace,
+  Spin-offs, Ajuda | 9h | | Total | | 35h |
+</p>
+<p>
+  Buffer: Julho e Agosto ficam como margem para iterações, ajustes finais e acompanhamento da
+  implementação antes do deadline de Setembro.
+  <strong>Gestão no ClickUp</strong>
+  | Nível | Valor | | ------ | ------ | | Space | UXNaut | | Folder | Projeto Recorrente | | List |
+  Retrilhar | | Task | [RETRILHAR] [P/M/G] Nome da tarefa |
+</p>
+<p>
+  Tamanhos: [P] até 2h · [M] 2h a 5h · [G] mais de 5h
+  <em><strong>Escopo</strong></em>
+  <strong>Escopo de Trabalho UX/UI: Retrilhar Painel Administrativo v2</strong>
+  Cliente: Retrilhar (Cristiano Teles e Katiely)Responsável UX: UXNaut (Luana)Deadline:
+  Setembro/2026 (sistema implantado)Modelo de entrega: Por módulos (cliente desenvolve conforme
+  recebe)Prioridades: 1º Central de Vendas, 2º Painel de Operações
+  <strong>Contexto</strong>
+  Refatoração do painel administrativo do Retrilhar, plataforma de gestão para turismo de
+  experiências (PWA). O e-commerce já foi entregue anteriormente, este escopo é apenas o admin.
+  Problemas de usabilidade a resolver (feedback dos clientes): Falta de relatórios: vendas por
+  produto, quantidade de ingressos por tipo, adicionais por cliente/venda Processo de cadastro de
+  usuários confuso (hoje é link de autocadastro) Elementos clicáveis não parecem botões Requisitos
+  técnicos: Componentes baseados em shadcn/ui para exportação via MCP do Figma Dev Mode para 1
+  desenvolvedor (incluir no orçamento) PWA (manter comportamento mobile-first)
+  <strong>Módulo 0: Fundação</strong>
+  Base que será usada em todos os outros módulos. Precisa ser entregue primeiro. 0.1 Design System
+  Tokens de Design Paleta de cores: primária, secundária, neutros, feedbacks (sucesso, erro, alerta,
+  info) Tipografia: hierarquia completa (h1-h6, body, caption, labels) Espaçamentos: escala de 4px
+  (4, 8, 12, 16, 24, 32, 48, 64) Bordas e raios Sombras/elevação (3 níveis) Componentes Atômicos
+  Botões: primário, secundário, outline, ghost, destructive, link (cada um com estados: default,
+  hover, active, disabled, loading) Inputs: text, password, email, number, textarea, com estados de
+  erro e sucesso Select e Combobox (com busca) Checkbox e Radio Toggle/Switch Badges: status
+  (confirmado, pendente, cancelado, esgotado), alertas (saúde, contrato, pagamento) Tags: removíveis
+  e não-removíveis Avatar Ícones: biblioteca definida + ícones de ação claramente clicáveis Tooltip
+  Spinner/Loading Componentes Compostos Card: padrão, com ações, estatístico (para dashboard)
+  Tabela: com ordenação, seleção em lote, ações inline, paginação, estados empty/loading Modal:
+  pequeno (confirmação), médio (formulário), grande (visualização) Drawer/Sheet: lateral para
+  detalhes Accordion: para listas expansíveis (usado no painel de reservas) Tabs: horizontal
+  Breadcrumb Dropdown Menu Toast/Notificação Alert (inline) Empty State: ilustração + texto + ação
+  Skeleton (loading state) Componentes de Formulário Form Field: label + input + helper text + error
+  Date Picker Time Picker Date Range Picker File Upload Editor de texto com suporte a tags dinâmicas
+  (ex: {nomecliente}) para templates de contrato/mensagem 0.2 Templates de Estrutura Layout Base
+  (Shell) Menu lateral colapsável com ícones e labels Menu varia por tipo de empresa (algumas seções
+  somem, ex: reserva sem pagamento não tem e-commerce) Header com: logo, busca global, notificações,
+  perfil do usuário, troca de organização Troca de organização: dropdown com busca, mostra empresas
+  que o usuário tem acesso. Super admin pode buscar qualquer empresa. Área de conteúdo com
+  breadcrumb Comportamento responsivo: menu vira drawer no mobile Prompt de instalação PWA Template:
+  Listagem Padrão Título da página + botão de ação principal Área de filtros: campos de busca,
+  selects, date range, botão limpar filtros Tabela com: checkbox para seleção, colunas ordenáveis,
+  ações inline (ícones), menu de ações (...) Barra de ações em lote (aparece quando seleciona itens)
+  Paginação: itens por página, navegação, contador total Estados: loading (skeleton), empty
+  (ilustração + texto + ação), erro Template: Formulário Simples Header: título + botões
+  cancelar/salvar Área de campos organizados em grid responsivo Validação inline em cada campo
+  Estados: salvando (loading no botão), erro geral (alert no topo) Template: Formulário com Abas
+  Mesmo header do formulário simples Navegação por abas horizontal Indicador de aba com erro (badge
+  vermelho) Indicador de campos obrigatórios não preenchidos por aba Botões de salvar/cancelar ficam
+  fixos no footer Template: Modal de Cadastro Rápido Modal pequeno/médio 2-3 campos apenas Botões
+  cancelar/salvar no footer Uso: tabelas de tipo, tags, cadastros auxiliares Template: Visualização
+  de Registro (com abas) Header: título do registro, badges de status, botões de ação (editar,
+  excluir, etc) Navegação por abas Conteúdo organizado em seções/cards Tabelas associativas dentro
+  das abas Template: Modal de Visualização Rápida Modal grande ou drawer lateral Preview dos dados
+  principais sem sair da listagem Botão para &quot;abrir página completa&quot; Uso: clicar no nome
+  do cliente numa listagem e ver os dados sem navegar
+  <strong>Módulo 1: Central de Vendas (Prioridade 1)</strong>
+  1.1 Lista de Vendas Tela: Listagem de Vendas Média Usa template de listagem padrão Filtros
+  específicos: período, status (pago, pendente, cancelado, reembolsado), canal de venda (site,
+  balcão, marketplace, agência), produto, vendedor Colunas: ID, data, cliente, produtos (resumo),
+  valor total, status, canal, vendedor, ações Ações inline: ver detalhes, cancelar, reembolsar,
+  enviar comprovante (WhatsApp) Clique na linha abre modal de visualização rápida da venda Badge de
+  status colorido Tela: Detalhe da Venda Média Usa template de visualização com abas Header: ID da
+  venda, status, data, valor total, botões de ação Aba &quot;Resumo&quot;: dados do cliente (nome,
+  contato, documento), produtos comprados (lista com nome, quantidade, valor unitário, subtotal),
+  forma de pagamento, canal de venda, vendedor responsável Aba &quot;Participantes&quot;: lista dos
+  participantes da reserva (se aplicável), com dados de cada um Aba &quot;Pagamento&quot;: histórico
+  de transações, comprovantes, status do gateway Aba &quot;Histórico&quot;: log de alterações (quem
+  fez o quê e quando) 1.2 Criar Pedido / Orçamento Tela: Criar Pedido Manual Alta Fluxo em etapas
+  (stepper) ou formulário longo Etapa 1 - Cliente: buscar cliente existente (autocomplete) ou
+  cadastrar novo inline Etapa 2 - Produtos: buscar produto, selecionar data/horário disponível,
+  quantidade, tipo de tarifa (adulto/criança/etc), adicionais opcionais Carrinho lateral: lista dos
+  itens adicionados, pode remover, mostra subtotais Etapa 3 - Pagamento: selecionar forma de
+  pagamento, aplicar cupom de desconto, definir se é venda direta ou orçamento (gera link) Etapa 4 -
+  Confirmação: resumo completo, botão finalizar Validações: verificar disponibilidade em tempo real,
+  alertar conflito de horário Ao finalizar: opção de enviar link de pagamento por WhatsApp 1.3
+  Checkout de Balcão (PDV) Tela: PDV Alta Interface otimizada para vendas rápidas presenciais Busca
+  de produto com tecla de atalho Lista de itens no carrinho com quantidade editável Calculadora de
+  troco para dinheiro Seleção rápida de forma de pagamento (botões grandes: Pix, Cartão, Dinheiro)
+  Campo para observações Finalização rápida com impressão de comprovante (ou envio digital) Não
+  precisa de todos os dados do cliente (venda anônima permitida para e-commerce simples) 1.4
+  Carrinhos Abandonados Tela: Carrinhos Abandonados Média Usa template de listagem padrão Filtros:
+  período, valor mínimo, produto Colunas: data/hora do abandono, cliente (se identificado),
+  email/telefone, produtos, valor total, tempo desde abandono Ações: visualizar carrinho, enviar
+  lembrete (WhatsApp/email), marcar como recuperado, excluir Indicador visual de &quot;quente&quot;
+  (abandonou há pouco) vs &quot;frio&quot; (há muito tempo) 1.5 Vendedores Tela: Lista de Vendedores
+  Baixa Usa template de listagem padrão Colunas: nome, email, telefone, vendas no período, comissão
+  acumulada, status (ativo/inativo) Ações: editar, desativar, ver histórico de vendas Tela: Cadastro
+  de Vendedor Baixa Usa template de formulário simples Campos: nome, email, telefone, documento,
+  percentual de comissão, canais de venda permitidos 1.6 Canais de Venda Tela: Canais de Venda Baixa
+  Usa template de listagem padrão Lista de origens: Site próprio, Balcão, Marketplace, Agências
+  parceiras Configuração de cada canal: nome, comissão padrão, ativo/inativo 1.7 Extrato de Contas
+  Tela: Extrato de Contas Média Filtros: período, conta (Banco Itaú, Caixa, Conta Digital, etc),
+  forma de pagamento (Pix, Cartão, Dinheiro), canal de venda Resumo no topo: total recebido no
+  período, por conta, por forma de pagamento Tabela de lançamentos: data, descrição, venda
+  relacionada (link), valor, conta, forma de pagamento, canal Totalização por conta para fechamento
+  de caixa Exportar para Excel 1.8 Relatórios de Performance Tela: Relatórios de Vendas Alta
+  <em>Prioridade do cliente - resolver reclamação de falta de relatórios</em>
+  Filtros: período, produto, canal, vendedor Relatório 1 - Vendas por Produto: tabela com produto,
+  quantidade vendida, valor total, ticket médio. Gráfico de barras. Relatório 2 - Quantidade de
+  Ingressos por Tipo de Tarifa: tabela com tarifa (adulto, criança, etc), quantidade, valor. Gráfico
+  de pizza. Relatório 3 - Adicionais por Venda: tabela com adicional, quantidade vendida, valor
+  total. Média de adicionais por venda. Relatório 4 - Performance por Vendedor: ranking de
+  vendedores, valor vendido, número de vendas, ticket médio Todos com opção de exportar Excel e PDF
+  <strong>Módulo 2: Painel de Operações (Prioridade 2)</strong>
+  2.1 Mapa de Vagas Tela: Mapa de Vagas (Inventário) Alta Responde &quot;QUANTO&quot; - controle de
+  capacidade em tempo real Filtros no topo: período (próximos 7 dias, 15 dias, 30 dias,
+  personalizado), status (todos, pendente, confirmado, cancelado), produto, com vagas/esgotados,
+  guia/responsável Botão atualizar (refresh manual) Tabela por data/horário: Data e horário Nome do
+  produto Capacidade máxima Ocupação atual (barra de progresso visual) Vagas restantes Status da
+  saída: badge (Pendente amarelo, Confirmado verde, Cancelado vermelho) Alertas (ícones):
+  Participante com problema de saúde (ícone coração/cruz) Itens adicionais escolhidos (ícone +)
+  Vagas esgotadas (ícone cheio) Recurso compartilhado em uso (ícone link/corrente) Nenhuma equipe
+  alocada (ícone alerta amarelo) Quantidade de adicionais vendidos Equipe escalada (nomes ou
+  &quot;Não alocada&quot;) Ações: bloquear vendas, ver reservas (vai pro painel de reservas
+  filtrado) Clique na linha expande detalhes ou abre drawer lateral Comportamento especial: se
+  recurso (barco, van) é compartilhado entre duas experiências, mostra ocupação somada Alerta se
+  mesmo colaborador escalado em horários sobrepostos 2.2 Painel de Reservas Tela: Painel de Reservas
+  Muito Alta Responde &quot;QUEM e O QUÊ&quot; - a tela mais complexa do sistema Filtros no topo:
+  Data (date picker) Agrupar por: Venda (responsável), Ordem alfabética, Tipo de tarifa, Item
+  adicional Botões de ação global: Manifesto Geral (download), Imprimir Saídas Seção por
+  Produto/Horário: Header da seção: Nome do produto, horário, equipe escalada, status
+  (Confirmado/Pendente), ocupação (X/Y vagas) Tabela de reservas dentro de cada seção: Coluna
+  Responsável/Participantes: accordion expansível Linha principal: nome do responsável, ID da
+  reserva, quantidade de PAX Expansão: lista de participantes com ID individual de cada um Coluna
+  PAX: número de vagas Coluna Financeiro: badge (Pago verde, Saldo Pendente amarelo) Coluna
+  Contrato: ícone + fração (2/2 = todos assinaram, 1/3 = falta) Coluna Saúde: ícone verde (ok) ou
+  vermelho (problema declarado) Coluna Adicionais: lista resumida (ex: &quot;2x Botas, 1x
+  Almoço&quot;) Coluna Ações: Botão Check-in (muda estado, lê QR code) Menu (...): Ver dados
+  completos, Chamar no WhatsApp, Cancelar reserva, Confirmar reserva Estado da linha:
+  &quot;Aguardando chegada&quot;, &quot;Check-in realizado&quot; Download das fichas (botões ou
+  dropdown): Ficha de transporte Lista de presença Dados de saúde Checklist de inventário (por
+  tarifa e por adicional) Pontos de embarque/desembarque Lista completa de participantes Modal:
+  Detalhes da Reserva Média Dados do responsável: nome, documento, telefone, email Lista de
+  participantes: nome, documento, tipo de tarifa, dados de saúde, termo assinado (sim/não), termo de
+  imagem (sim/não) Produtos: nome, data, horário Adicionais escolhidos Ponto de embarque selecionado
+  Dados financeiros: valor total, valor pago, saldo Histórico de ações (check-in, alterações)
+  Botões: editar reserva, cancelar, enviar mensagem 2.3 Agenda Operacional Tela: Agenda -
+  Visualização Lista Alta Responde &quot;QUANDO&quot; Header: navegação mês (anterior/próximo),
+  botão &quot;Novo Bloqueio&quot; Filtros: Status (todos, confirmado, pendente), Equipe (todos,
+  colaborador específico), Tipo (saídas, bloqueios) Agrupado por dia: Header do dia: data por
+  extenso, ícone clima (se integrado), total de pessoas no dia Cards de atividade: Horário Nome do
+  produto/experiência Ocupação (X/Y) Se lotado: badge &quot;Lotado&quot; Guia/responsável escalado
+  Status: Confirmado/Pendente Menu de ações (...) Tela: Agenda - Visualização Calendário Mensal Alta
+  Calendário grid padrão (dom-sáb) Navegação mês anterior/próximo Toggle: Hoje / Mês / Lista Dentro
+  de cada dia: Chips coloridos com nome resumido da atividade Se mais de 3, mostra &quot;+2
+  atividades&quot; com tooltip Dias bloqueados: fundo cinza com ícone de cadeado Legenda: Saída
+  Confirmada (verde), Saída Pendente (amarelo), Bloqueio (cinza) Clique no dia abre drawer com lista
+  detalhada Clique na atividade abre modal de edição/visualização Modal: Criar/Editar Data de Saída
+  Média Produto (select) Data Horário Capacidade (pode sobrescrever o padrão do produto) Equipe
+  escalada (multiselect de recursos/guias) Quantidade mínima para confirmar Observações internas
+  Modal: Criar Bloqueio Baixa Tipo: dia inteiro ou produto específico Data ou range de datas Produto
+  (se específico) Motivo do bloqueio
+  <strong>Módulo 3: Dashboard</strong>
+  Tela: Dashboard Dinâmico Alta Sistema de widgets configuráveis (definição de quais widgets por
+  perfil será feita durante o projeto) Widgets previstos: Próximas saídas (lista resumida) Resumo de
+  vendas do dia/semana/mês (valor, quantidade) Avisos e alertas (reservas pendentes, contratos
+  vencendo) Gráfico de vendas (linha, período selecionável) Gráfico de ocupação Carrinhos
+  abandonados (contador + valor) Eventos confirmados vs pendentes vs cancelados Reservas do dia
+  Vagas disponíveis hoje Ação de adicionar/remover widgets (se for customizável pelo usuário)
+  Widgets têm ação de &quot;ver mais&quot; que leva para a tela completa
+  <strong>Módulo 4: CRM</strong>
+  4.1 Funil de Vendas Tela: Kanban de Oportunidades Alta Colunas fixas (não editáveis): Prospecção,
+  Orçamento Enviado, Negociação, Venda Concluída, Perdido Cards de oportunidade: Nome do
+  lead/cliente Valor estimado Produto de interesse Data da última interação Responsável (avatar)
+  Indicador de follow-up atrasado (ícone vermelho) Drag and drop entre colunas Clique no card abre
+  drawer lateral com detalhes Filtros: responsável, período, produto Botão &quot;+ Nova
+  Oportunidade&quot; Drawer: Detalhe da Oportunidade Média Dados do lead: nome, empresa, telefone,
+  email Produto de interesse Valor estimado Probabilidade de fechamento Responsável Histórico de
+  interações (timeline) Agendar follow-up (data/hora + lembrete) Adicionar nota/interação Converter
+  em venda (abre fluxo de criar pedido) Marcar como perdido (pede motivo) 4.2 Base de Clientes Tela:
+  Lista de Clientes Média Usa template de listagem padrão Filtros: busca por nome/email/documento,
+  período de cadastro, com compras/sem compras Colunas: nome, email, telefone, documento, data
+  cadastro, total de compras, última compra Ações: ver ficha, editar, exportar selecionados Exportar
+  base completa para Excel Tela: Ficha do Cliente Média Usa template de visualização com abas
+  Header: nome, badges de status, última compra Aba &quot;Dados Pessoais&quot;: nome, email,
+  telefone, CPF, RG/Passaporte, data nascimento, endereço Aba &quot;Saúde e Perfil&quot;: restrições
+  alimentares, condições de saúde, observações (dados persistem entre compras) Aba &quot;Histórico
+  de Compras&quot;: lista de todas as compras com link para detalhe Aba &quot;Acompanhantes
+  Frequentes&quot;: lista de pessoas que já foram cadastradas como acompanhantes deste cliente 4.3
+  Qualidade (Pós-Venda) Tela: Pesquisas de Satisfação Média Configuração: template de pesquisa,
+  gatilho de envio (após status &quot;Realizada&quot;), canal (email/WhatsApp) Lista de respostas
+  recebidas Dashboard de qualidade: NPS geral (gauge ou número grande) Nota média por experiência
+  Nota média por guia Gráfico de evolução do NPS Promotores vs Neutros vs Detratores (pizza)
+  <strong>Módulo 5: Gestão de Contratos</strong>
+  Tela: Lista de Contratos Média Dashboard resumido no topo: Contratos ativos (número) Contratos
+  inativos Aniversariantes do mês (contratantes) Valor faturado no período Filtros: produto, ciclo
+  de cobrança (mensal, anual), busca por nome/CPF/número, status Colunas: número, cliente, produto,
+  valor, ciclo, próximo vencimento, status Ícone de atraso vermelho quando tem faturas em aberto
+  Exportar planilha Tela: Detalhe do Contrato Média Dados do contrato: número, cliente, produto,
+  valor, ciclo, data início, data fim (se houver) Lista de faturas: data vencimento, valor, status
+  (paga/pendente/atrasada), link para boleto Histórico de cobranças Ações: gerar fatura avulsa,
+  cancelar contrato, pausar, enviar lembrete Tela: Central de Faturas Média Dashboard: faturas em
+  aberto (valor), faturas pagas no período, inadimplência Lista de faturas com filtros: status,
+  período de vencimento, cliente Ações em lote: enviar lembrete, gerar segunda via Tela: Templates
+  de Contrato Média Lista de templates salvos Editor de template: Nome do template Editor de texto
+  rico Painel lateral com tags disponíveis: {nomecliente}, {cpf}, {produto}, {valor}, {data}, etc
+  Clique na tag insere no texto (não precisa copiar/colar) Preview do template preenchido com dados
+  de exemplo
+  <strong>Módulo 6: Financeiro</strong>
+  Tela: Dashboard Financeiro Média Cards de resumo: receita do período, despesas, saldo, contas a
+  receber, contas a pagar Gráfico de fluxo de caixa (entradas x saídas) Gráfico de receita por
+  categoria/produto Alertas: contas vencendo, inadimplência Tela: Movimentações Média Lista de
+  lançamentos (entradas e saídas) Filtros: período, tipo (entrada/saída), categoria, conta, centro
+  de custo Cadastro de lançamento manual: data, descrição, valor, tipo, categoria, conta, centro de
+  custo, anexo Importar extrato (CSV/OFX) Tela: Fluxo de Caixa Média Visão por período (dia, semana,
+  mês) Projeção futura baseada em contas a pagar/receber Gráfico de linha com saldo projetado Tela:
+  Notas Fiscais Média Lista de notas emitidas Filtros: período, status (emitida, cancelada), cliente
+  Emitir nota: selecionar venda, dados fiscais, template Templates de nota: configuração dos dados
+  padrão Tela: Categorias e Centro de Custo Baixa CRUD simples de categorias de receita/despesa CRUD
+  simples de centros de custo
+  <strong>Módulo 7: Catálogo de Produtos</strong>
+  Tela: Lista de Produtos Média Usa template de listagem Filtros: categoria, status (ativo/inativo),
+  com estoque/esgotado Colunas: foto thumb, nome, categoria, preço base, status, ações Ações:
+  editar, duplicar, desativar Tela: Cadastro/Edição de Produto Alta
+  <em>Depende do documento RFP 001 para detalhar todas as regras</em>
+  Usa template de formulário com abas Aba &quot;Informações Básicas&quot;: nome, descrição curta,
+  descrição longa (editor rico), categoria, fotos (upload múltiplo com ordenação) Aba &quot;Preços e
+  Tarifas&quot;: Lista de tarifas: nome (adulto, criança, etc), preço, regras (idade mínima/máxima)
+  Adicionar/remover tarifas Aba &quot;Disponibilidade&quot;: Tipo: por data específica, recorrente
+  (dias da semana), sob demanda Capacidade máxima Quantidade mínima para confirmar Antecedência
+  mínima para reserva Aba &quot;Adicionais&quot;: Lista de itens opcionais: nome, preço, estoque (se
+  aplicável) Ex: almoço, equipamento, foto Aba &quot;Recursos&quot;: Vincular recursos necessários:
+  guia, veículo, equipamento Definir quantidade de cada recurso Aba &quot;Regras e Termos&quot;:
+  Política de cancelamento (select de template ou texto) Termo de responsabilidade (select de
+  template) Informações de saúde obrigatórias (checkbox) Termo de uso de imagem (checkbox) Aba
+  &quot;SEO&quot;: título, descrição, URL amigável (para e-commerce)
+  <strong>Módulo 8: Configurações e Administrativo</strong>
+  8.1 Usuários Tela: Lista de Usuários Média
+  <em>Revisar fluxo atual de autocadastro (reclamação de cliente)</em>
+  Lista de usuários com: nome, email, perfil, status, último acesso Ações: editar, desativar,
+  reenviar convite, resetar senha Botão &quot;Convidar Usuário&quot; Modal: Convidar Usuário Média
+  Email do convidado Perfil de acesso (select) Mensagem personalizada (opcional) Ao enviar: usuário
+  recebe email com link para criar senha e completar cadastro Tela: Perfis de Acesso Média Lista de
+  perfis: Gestor, Operador, Financeiro, Marketing, Vendedor, Admin Edição de perfil: Nome do perfil
+  Lista de permissões por módulo (checkbox): visualizar, criar, editar, excluir Módulos que o perfil
+  pode acessar
+  <em>Matriz de permissões será definida durante o projeto</em>
+  8.2 Comunicação Tela: Templates de Mensagem Média Lista de templates por tipo: WhatsApp, Email
+  Templates por gatilho: confirmação de compra, lembrete de atividade, pesquisa de satisfação,
+  recuperação de carrinho, etc Editor do template: Assunto (para email) Corpo da mensagem Tags
+  disponíveis: {nome}, {produto}, {data}, {horario}, {link_pagamento}, etc Preview 8.3 Termos e
+  Políticas Tela: Templates de Termos Média Lista de templates: Política de Cancelamento, Termo de
+  Responsabilidade, Termo de Uso de Imagem Editor igual ao de contratos (texto rico + tags) Vincular
+  template a produtos específicos ou usar como padrão 8.4 Integrações Tela: Integrações Baixa Lista
+  de integrações disponíveis: Google Contatos, Google Agenda, Google Analytics, Gateway de
+  Pagamento, SendPulse, etc Status de cada uma: conectado/desconectado Botão conectar/desconectar
+  Modal de configuração com campos específicos de cada integração (API key, credenciais, etc) 8.5
+  Configurações Gerais Tela: Dados da Empresa Baixa Informações cadastrais: razão social, CNPJ,
+  endereço, telefone, email Logo da empresa Configurações fiscais Tela: Minha Conta Baixa Dados
+  pessoais: nome, email, telefone Alterar senha Foto de perfil Preferências de notificação Tela: Meu
+  Plano Baixa Plano atual Funcionalidades inclusas Uso atual (se houver limites) Histórico de
+  faturas do plano Botão upgrade (se aplicável)
+  <strong>Módulo 9: Loja (Configurações do E-commerce)</strong>
+  Tela: Configurações da Loja Média
+  <em
+    >Configuração de campos, não builder visual (equilibrar intuitividade com facilidade de
+    desenvolvimento)</em
+  >
+  Aba &quot;Identidade Visual&quot;: Upload de logo Upload de favicon Cor primária (color picker)
+  Cor secundária Preview em tempo real Aba &quot;Informações&quot;: Nome da loja Descrição
+  Telefone/WhatsApp de atendimento Redes sociais Aba &quot;SEO&quot;: Título da página Meta
+  description Palavras-chave Aba &quot;Avançado&quot;: Ativar/desativar loja Limpar cache Código do
+  Google Analytics Pixel do Facebook
+  <strong>Módulo 10: Marketing</strong>
+  10.1 Afiliados Tela: Lista de Afiliados Média Lista com: nome, email, código do afiliado, vendas
+  no período, comissão acumulada, status Filtros: período, status Ações: ver detalhes, editar,
+  desativar, pagar comissão Tela: Cadastro de Afiliado Baixa Dados pessoais: nome, email, telefone,
+  documento Dados bancários para pagamento Percentual de comissão Produtos que pode vender (todos ou
+  específicos) Gerar link/código único do afiliado Tela: Relatório de Vendas do Afiliado Média
+  Filtro por período e afiliado Lista de vendas: data, cliente, produto, valor, comissão
+  Totalizador: vendas totais, comissão total, comissão paga, comissão pendente Botão &quot;Registrar
+  Pagamento&quot; 10.2 Cupons de Desconto Tela: Lista de Cupons Baixa Lista com: código, tipo (% ou
+  valor fixo), desconto, usos, validade, status Ações: editar, desativar, duplicar Tela: Cadastro de
+  Cupom Baixa Código do cupom Tipo: percentual ou valor fixo Valor do desconto Valor mínimo de
+  compra Limite de usos (total e por cliente) Validade (data início e fim) Produtos aplicáveis
+  (todos ou específicos)
+  <strong>Módulo 11: Marketplace</strong>
+  Tela: Fornecedores Média Lista de empresas parceiras cujos produtos podem ser vendidos Status:
+  ativo, pendente de aprovação, inativo Produtos do fornecedor disponíveis para venda Comissão por
+  produto/fornecedor
+  <strong>Módulo 12: Sala de Negócios (B2B)</strong>
+  Tela: Sala de Negócios Alta
+  <em>Fluxo ainda não definido pelo cliente, será detalhado durante o projeto</em>
+  Duas visões: &quot;Empresas que me vendem&quot;: lista de parceiros que revendem meus produtos,
+  com vendas e comissões &quot;Empresas que eu vendo&quot;: lista de parceiros cujos produtos eu
+  revendo Perfil da empresa: dados, produtos oferecidos, condições comerciais Fluxo de
+  convite/solicitação de parceria Gestão de comissões entre empresas
+  <strong>Módulo 13: Spin-offs</strong>
+  13.1 Painel do Afiliado Interface: Painel do Afiliado Baixa Interface separada, acesso apenas para
+  afiliados externos Layout simplificado (sem menu completo) Dashboard com: vendas do período,
+  comissão acumulada, comissão pendente, link/código do afiliado Lista de vendas realizadas Dados
+  bancários para recebimento 13.2 Painel do Operador Interface: Painel do Operador/Guia Média
+  Interface separada, acesso apenas para guias/operadores Layout simplificado Tela &quot;Minhas
+  Escalas&quot;: lista de atividades onde está escalado, com data, horário, produto, status
+  Aceitar/recusar escala Ver lista de passageiros das suas atividades (sem dados sensíveis
+  completos, apenas nome e alertas de saúde) Empresas vinculadas (se trabalha para mais de uma)
+  <strong>Módulo 14: Recursos e Equipe</strong>
+  Tela: Recursos Média Categorias: Guias, Veículos (van, barco), Equipamentos Lista por categoria
+  com: nome, capacidade (se aplicável), status, disponibilidade Cadastro: nome, tipo, capacidade,
+  custo, observações Regra: recurso não pode ser escalado em dois produtos no mesmo horário
+  <strong>Módulo 15: Sistema de Ajuda</strong>
+  Componente: Ajuda Contextual Média Ícone &quot;i&quot; ou &quot;?&quot; ao lado de campos/seções
+  complexas Ao clicar: popover ou tooltip com explicação do campo Textos configuráveis pelo admin
+  (CRUD de textos de ajuda) Componente: Tour Guiado (Onboarding) Média Ativado no primeiro acesso ou
+  sob demanda Passos destacando funcionalidades principais Específico por tipo de empresa (os passos
+  mudam) Opção de &quot;pular&quot; ou &quot;não mostrar novamente&quot; Tela: Central de Ajuda
+  Baixa FAQ organizado por categoria Busca Link para documentação externa (se houver) Botão de
+  contato com suporte
+  <strong>Resumo para Estimativa</strong>
+  | Módulo | Telas/Componentes | Complexidade Geral | | ------ | ------ | ------ | | 0. Fundação
+  (Design System + Templates) | 4 entregas (tokens, atômicos, compostos, templates) | Média | | 1.
+  Central de Vendas | 10 telas | Média-Alta | | 2. Painel de Operações | 6 telas | Alta | | 3.
+  Dashboard | 1 tela | Alta | | 4. CRM | 5 telas | Média-Alta | | 5. Gestão de Contratos | 4 telas |
+  Média | | 6. Financeiro | 5 telas | Média | | 7. Catálogo de Produtos | 2 telas | Alta | | 8.
+  Configurações e Admin | 8 telas | Média | | 9. Loja | 1 tela | Média | | 10. Marketing | 5 telas |
+  Baixa-Média | | 11. Marketplace | 1 tela | Média | | 12. Sala de Negócios | 1 tela | Alta | | 13.
+  Spin-offs | 2 interfaces (~4 telas) | Baixa-Média | | 14. Recursos e Equipe | 1 tela | Média | |
+  15. Sistema de Ajuda | 3 componentes/telas | Média |
+</p>
+<p>
+  Total aproximado: ~60 telas/componentes únicos
+  <strong>Premissas e Dependências</strong>
+  Matriz de permissões por perfil será definida durante o projeto Definição de widgets do dashboard
+  por perfil será feita durante o projeto Fluxo da Sala de Negócios será detalhado durante o projeto
+  Dev Mode do Figma para 1 desenvolvedor incluso Entregas por módulo, cliente desenvolve conforme
+  recebe
+  <em><strong>Proposta Retrilhar</strong></em>
+  <strong>Proposta Comercial: Painel Administrativo Retrilhar v2</strong>
+  <strong>Contexto do Projeto</strong>
+  Esse projeto é um sistema de gestão completo: 15 módulos interdependentes, múltiplos perfis de
+  usuário, três tipos de empresa diferentes, e uma série de regras de negócio que precisam estar
+  refletidas na interface. É o que a gente chama de projeto nível enterprise. Diferente de uma
+  interface simples voltada para o cliente final, aqui estamos falando de um produto que vai ser
+  usado diariamente pela equipe de vocês e pelos clientes de vocês. A qualidade da experiência
+  impacta diretamente na operação do negócio. Além disso, vocês mencionaram que querem entregas por
+  módulo para ir desenvolvendo em paralelo, que alguns fluxos ainda estão sendo definidos (Sala de
+  Negócios, matriz de permissões, widgets do dashboard), e que existe interesse em acompanhamento
+  técnico para a integração com MCP do Figma. Tudo isso pede uma abordagem mais flexível do que o
+  modelo tradicional de escopo fechado.
+  <strong>O que vamos entregar</strong>
+  Design UX/UI Completo Design System completo, alinhado com shadcn/ui para exportação via MCP
+  Templates de estrutura reutilizáveis (listagens, formulários, modais, dashboards) Todas as telas
+  do escopo detalhado (~60 telas/componentes) Protótipo interativo no Figma Dev Mode ativo para 1
+  desenvolvedor Componentes organizados e documentados Acompanhamento do Desenvolvimento Reuniões
+  semanais de alinhamento (30-60min) Backlog organizado e atualizado por prioridade Revisão de
+  implementação: verificamos se o código está fiel ao design Ajustes e iterações conforme feedback
+  Canal direto para dúvidas durante a semana Consultoria Técnica Assessoria na configuração e uso do
+  MCP do Figma Apoio na estruturação da biblioteca de componentes Auxílio com desenvolvimento
+  front-end de algumas páginas para teste Orientação sobre boas práticas de componentização
+  Prioridade no Atendimento Clientes em recorrência têm agenda travada. Toda semana, temos um bloco
+  de horas reservado exclusivamente para o projeto de vocês. Isso significa entregas contínuas e
+  previsíveis, diferente de projetos de escopo fechado que entram na fila e podem ter prazos mais
+  elásticos.
+  <strong>Distribuição por Módulo</strong>
+  Para vocês terem visibilidade do que será entregue: | Módulo | Telas | Horas | | ------ | ------ |
+  ------ | | Fundação (Design System + Templates) | 4 entregas | 24h | | Central de Vendas
+  (prioridade 1) | 10 telas | 38h | | Painel de Operações (prioridade 2) | 6 telas | 30h | |
+  Dashboard | 1 tela | 10h | | CRM | 5 telas | 18h | | Gestão de Contratos | 4 telas | 12h | |
+  Financeiro | 5 telas | 15h | | Catálogo de Produtos | 2 telas | 10h | | Configurações e Admin | 8
+  telas | 20h | | Loja + Marketing + Marketplace | 7 telas | 16h | | Sala de Negócios | 1 tela | 5h
+  | | Spin-offs + Recursos + Ajuda | 8 telas | 14h | | Total | ~60 itens | 212h |
+</p>
+<p>
+  <strong>Por que acompanhamento faz diferença</strong> A maioria dos projetos de interface não
+  inclui acompanhamento depois que o design é entregue. O designer faz as telas, entrega o Figma, e
+  o desenvolvedor implementa. Funciona para projetos simples. Mas para sistemas complexos como esse,
+  a distância entre design e desenvolvimento cobra um preço. Detalhes se perdem na implementação,
+  decisões são tomadas sem considerar o impacto na experiência, e o resultado final fica aquém do
+  que poderia ser. Quando a gente acompanha o desenvolvimento de perto, conseguimos: Revisar a
+  implementação e garantir fidelidade ao design Fazer ajustes rápidos quando algo não funciona como
+  esperado Orientar decisões técnicas que impactam a experiência Iterar com base em feedback real,
+  não em suposições Nossos projetos com acompanhamento têm taxa de satisfação significativamente
+  maior. Os clientes relatam menos retrabalho, menos ruído de comunicação, e um produto final mais
+  sólido. | Esse modelo não é algo que oferecemos para todos os clientes. | A recorrência com equipe
+  dedicada só faz sentido quando o projeto realmente precisa de acompanhamento próximo e quando
+  existe uma relação de confiança entre as partes. Oferecemos para vocês porque já trabalhamos
+  juntos, conhecemos o produto, e entendemos que esse projeto específico se beneficia dessa
+  proximidade. | | ------ | ------ |
+</p>
+<p>
+  <strong>Como funciona na prática</strong>
+  Primeiro Mês (Teste) O primeiro mês funciona como período de teste. Vocês pagam, a gente trabalha,
+  e no final do mês vocês avaliam o volume de entrega e a dinâmica. Se fizer sentido para vocês,
+  seguimos. Se não, encerramos sem compromisso adicional. É uma forma de vocês sentirem como é
+  trabalhar nesse modelo antes de se comprometerem com os meses seguintes. Meses Seguintes Após o
+  primeiro mês, continuamos sem fidelidade. A cada mês vocês decidem se querem continuar. Nossa
+  expectativa é que, mantendo o ritmo de ~35 horas por mês, em 6 meses o projeto esteja completo.
+  Mas se por algum motivo vocês precisarem pausar ou encerrar antes, não tem multa nem complicação.
+  Dinâmica Semanal Reunião de alinhamento (definimos o melhor dia/horário) Backlog atualizado com as
+  entregas da semana Entregas parciais ao longo da semana (~9h semanais dedicadas) Canal direto
+  (WhatsApp) para dúvidas e ajustes rápidos Flexibilidade Vocês podem redistribuir as horas conforme
+  a necessidade. Se um mês precisar focar mais em consultoria de MCP e menos em telas novas,
+  ajustamos. Se outro mês precisar acelerar a entrega de um módulo específico, também. O escopo
+  serve como guia, mas a execução é flexível.
+  <strong>Investimento</strong>
+  Existem duas formas de trabalhar esse projeto: Opção A: Escopo Fechado | Modelo tradicional.
+  Escopo fixo, qualquer alteração vira extra, sem acompanhamento incluso. | Investimento: **4x de R$
+  5.447,25** (total R$ 21.789) | Quando faz sentido: projetos com escopo 100% definido, sem
+  expectativa de mudanças, onde o cliente não precisa de acompanhamento. | | ------ | ------ |
+  ------ |
+</p>
+<p>
+  Opção B: Recorrência com Equipe Dedicada ★ Recomendada | Modelo de parceria contínua com
+  flexibilidade para ajustar prioridades, acompanhamento do desenvolvimento e consultoria técnica
+  inclusos. | Investimento: **R$ 2.900/mês × 6 meses** (total R$ 17.400) | ~35 horas mensais | Valor
+  hora efetivo: R$ 82 | Por que recomendamos: esse projeto tem partes ainda em definição, vocês
+  querem entregas por módulo, e existe necessidade de acompanhamento técnico. Escopo fechado
+  travaria essas flexibilidades. | | ------ | ------ | ------ | ------ |
+</p>
+<p>
+  <strong>Comparativo</strong> | | Escopo Fechado | Recorrência (recomendada) | | ------ | ------ |
+  ------ | | Investimento total | R$ 28.789 | R$ 17.400 | | Flexibilidade | Baixa (mudanças viram
+  extra) | Alta (backlog flexível) | | Acompanhamento | Não incluso | Incluso | | Consultoria
+  MCP/front | Não incluso | Incluso | | Prioridade | Fila normal | Agenda travada | | Compromisso |
+  Total desde o início | Teste no 1º mês, sem fidelidade depois |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        Nossa recomendação: dado o perfil desse projeto, a recorrência faz mais sentido. Vocês pagam
+        menos no total, têm mais flexibilidade, e garantem um acompanhamento que vai fazer diferença
+        no resultado final.
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Próximos Passos</strong> Se a proposta fizer sentido: Confirmam qual opção preferem
+  (recomendamos a recorrência) Enviamos o contrato para assinatura Agendamos a primeira reunião para
+  montar o backlog Começamos pela Fundação + primeiras telas da Central de Vendas Se quiserem,
+  podemos fazer uma call rápida para alinhar qualquer dúvida antes de fechar. Fico à disposição.
+  Estou animada para continuar esse projeto com vocês! Abraços,LuanaUXNaut
+</p>

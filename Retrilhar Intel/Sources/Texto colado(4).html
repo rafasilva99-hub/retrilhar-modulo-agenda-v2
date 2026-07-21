@@ -1,0 +1,105 @@
+<p>
+  Preciso buscar uma solução para termos a opção de definir o valor de comissão de uma só vez.
+  Pensei em estruturar da seguinte forma, no container de produtos ao lado do título na área lateral
+  direita, adicionar um text button (Definir comissão geral) e ao clicar, abrir um modal para
+  selecionar a porcentagem ou valor, inserir o valor e salvar as definições para todos os produtos
+  selecionados, analise essa solução considerando critérios de boa usabilidade e boas práticas de
+  UX/UI para me dar sua opinião a respeito 24 de mar. Claude respondeu: A análise está ótima.
+  Searched project for “afiliados comissão produtos” Searched project for “afiliados comissão
+  produtos” A análise está ótima. Deixa eu dar um feedback estruturado sobre a solução proposta,
+  considerando tanto os pontos fortes quanto os pontos de atenção. Análise da solução &quot;Definir
+  comissão geral&quot; ✅ O que funciona bem A ideia central é sólida. Um text button discreto
+  próximo ao título &quot;Produtos&quot; resolve exatamente o problema sem sobrecarregar a tela
+  principal. É uma ação secundária — e o posicionamento como text button comunica isso corretamente,
+  sem dar peso visual igual ao botão primário &quot;Criar Novo Afiliado&quot;. O modal é o padrão
+  correto para essa ação. É uma decisão com impacto (sobrescrever comissões de múltiplos produtos),
+  então interromper o fluxo para confirmação é justificado — alinha com o princípio de confirmation
+  for destructive or mass actions do NN/g. ⚠️ Pontos de atenção e sugestões
+</p>
+<ol>
+  <li>
+    O label pode gerar ambiguidade &quot;Definir comissão geral&quot; pode soar como uma
+    configuração global permanente do sistema, não como uma ação pontual sobre os produtos desta
+    tela. Sugestão: &quot;Aplicar comissão a todos&quot; ou &quot;Definir mesma comissão para
+    todos&quot; — deixa mais claro que é uma ação contextual.
+  </li>
+  <li>
+    O modal precisa de preview do impacto Antes de confirmar, o usuário deveria ver quais produtos
+    serão afetados. Se ele já havia definido comissões individuais (como o &quot;10%&quot; no Trilha
+    Pico do Itambé da tela), ele precisa saber que vai sobrescrever. Uma lista resumida no modal
+    (&quot;Será aplicado a: Trilha Pico do Itacolomi, Trilha Pico do Itambé&quot;) previne erros.
+  </li>
+  <li>
+    Considerar preservação de exceções Uma boa adição seria um checkbox no modal: &quot;Não
+    sobrescrever produtos que já têm comissão definida&quot;. Isso dá flexibilidade para quem está
+    cadastrando um afiliado com muitos produtos e quer só preencher os que estão vazios.
+  </li>
+  <li>
+    Feedback pós-ação Após salvar, os campos de comissão na lista de produtos devem atualizar
+    visualmente de forma imediata — preferencialmente com um micro-feedback (toast discreto:
+    &quot;Comissão aplicada a 2 produtos&quot;). Evita que o usuário fique em dúvida se funcionou.
+  </li>
+  <li>
+    Posicionamento exato do botão Ao lado do título &quot;Produtos&quot; funciona, mas avalie se não
+    fica próximo demais do ícone ⓘ que já está lá. Se o espaço ficar apertado, uma alternativa é
+    posicioná-lo logo abaixo do título, alinhado à direita, antes da lista de produtos — mais
+    respiro visual. 💡 Sugestão de estrutura do modal ┌─────────────────────────────────────────┐ │
+    Definir comissão para todos os produtos│ │ ───────────────────────────────────── │ │ Tipo: ●
+    Porcentagem (%) ○ Valor (R$) │ │ │ │ Valor: [____________] │ │ │ │ Será aplicado a: │ │ • Trilha
+    Pico do Itacolomi │ │ • Trilha Pico do Itambé │ │ │ │ ☐ Não sobrescrever comissões já │ │
+    definidas │ │ │ │ [Cancelar] [Aplicar comissão] │ └─────────────────────────────────────────┘
+    Veredicto A solução é bem pensada e segue boas práticas — ação de bulk edit contextual, sem
+    poluir o formulário principal, com modal para confirmação. Os ajustes principais são no label,
+    no feedback de impacto antes de confirmar, e na opção de preservar exceções. Com esses
+    refinamentos, fica bem robusta. Quer que eu monte um mockup interativo dessa proposta? Você
+    disse: Agora quero textos com título e subtítulo para aplicar no container de passo a passo,
+    considere textos com uma quantidade que caiba dentro do container, analis…
+    1774384569171_image.png Agora quero textos com título e subtítulo para aplicar no container de
+    passo a passo, considere textos com uma quantidade que caiba dentro do container, analise os
+    materiais do projeto para entender como funciona e elaborar esse conteúdo 24 de mar. Claude
+    respondeu: Baseado no escopo do projeto, aqui estão as opções de texto para o container
+    &quot;Passo a Passo&quot;: Searched project for “afiliado link comissão como funciona indicação”
+    Searched project for “afiliado link comissão como funciona indicação” Baseado no escopo do
+    projeto, aqui estão as opções de texto para o container &quot;Passo a Passo&quot;: Opção A —
+    Foco no fluxo completo (4 passos) Título: Como funciona sua comissão Passos:
+  </li>
+  <li>
+    Compartilhe seu link Envie seu link exclusivo para seus contatos ou divulgue nas redes sociais.
+  </li>
+  <li>
+    Seu contato compra Quando alguém acessa pelo seu link e finaliza a compra, a venda é registrada
+    automaticamente no seu painel.
+  </li>
+  <li>
+    Comissão confirmada Após o pagamento ser confirmado, sua comissão é calculada e aparece em
+    &quot;Valor a Receber&quot;.
+  </li>
+  <li>
+    Receba seu valor No prazo combinado com a empresa, a comissão cai na sua conta cadastrada. Opção
+    B — Mais enxuta (3 passos) Título: Ganhe comissão em 3 passos Passos:
+  </li>
+  <li>Compartilhe Use seu link exclusivo para indicar os passeios para seus contatos.</li>
+  <li>
+    Venda concluída Cada compra feita pelo seu link gera uma indicação registrada aqui no painel.
+  </li>
+  <li>
+    Receba Comissões de vendas pagas ficam disponíveis para recebimento no prazo acordado. Opção C —
+    Tom mais direto/motivador Título: Seu link, sua comissão Passos:
+  </li>
+  <li>
+    Copie e compartilhe seu link Qualquer pessoa que comprar pelo seu link gera uma comissão para
+    você.
+  </li>
+  <li>
+    Acompanhe suas indicações Veja em tempo real quais vendas foram originadas pelo seu link e o
+    status de cada uma.
+  </li>
+  <li>
+    Acompanhe seus ganhos Tudo que você tem a receber aparece no card &quot;Valor a Receber&quot;
+    atualizado aqui no início. Minha recomendação é a Opção A — ela cobre a dúvida mais crítica do
+    afiliado (&quot;quando vou receber?&quot;) que apareceu inclusive na fala da Tânia no teste de
+    usabilidade, e os 4 passos cabem bem no espaço do container sem precisar de scroll. A Opção B é
+    boa se o container for menor do que aparece na tela. Qual delas vai melhor com o que você tem em
+    mente?
+  </li>
+</ol>

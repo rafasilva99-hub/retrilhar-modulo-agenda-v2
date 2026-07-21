@@ -1,0 +1,982 @@
+<p>
+  Tá, vou dar um overview geral aqui sobre o que que tem acontecido. Eu combinei com o cliente de
+  fazer inicialmente a dashboard para diferentes tipos de perfis, né? E aí eu fiz a dashboard pra
+  pro perfil gestor, para o perfil gestor comercial, que, enfim, tem vários indicadores para o
+  perfil Na verdade, minto, fiz para o gestor, que é o administrador, fiz para o comercial e fiz
+  para o operador. Fiz três dashboards diferentes, certo? E aí, depois que eu terminei essas
+  dashboards e validei com eles, a ideia era iniciar o fluxo de vendas e o fluxo de agenda. Mas eu
+  tenho umas dois reuniões que eles estão meio confusos, porque eles falam que tem que ter várias
+  coisas no fluxo de vendas e no fluxo de agendas, mas a gente fala, ué, já não tem? Porque assim,
+  na minha visão, eu vou eu vou mandar a transcrição da nossa última reunião com eles e os
+  documentos que a gente tem que eles nos passaram, né? Mas na minha visão, o que que tem que ter em
+  vendas, né? Tem que ter o que a gente definiu que tem que ter em vendas. a parte de pedidos, a
+  parte de carrinhos abandonados e a parte de cupom de desconto, que nada mais é que tabelas com
+  filtros. E aí, ao invés de ter uma segunda dashboard na parte de vendas, na verdade, a dashboard
+  atual se manteria, né? Então, de acordo com a nossa última reunião, eles queriam tipo uma grande
+  visão geral na parte de vendas, mas eu entendo que a dashboard já entende isso, tá? Então, o que
+  que é a dashboard? A dashboard é a única tela que não é um módulo no sistema, porque o resto tudo
+  são módulos. A dashboard é uma grande visão geral das informações mais importantes para aquele
+  perfil e o objetivo dela é indicar os dados principais e posicionar atalhos para os caminhos
+  ascendentes do obrados. Então, ao invés de ter uma segunda dashboard em vendas que canibalizaria a
+  primeira dashboard existente, a gente só pegou e complementou ela com informações extras lá que eu
+  vi no documento que eles passaram. E a ideia seria nessa dashboard ter atalhos para a parte de
+  vendas, mas eu preciso de uma de uma visão geral sobre isso para entender assim. Eu eu sinto que
+  eles estão também com uma dificuldade de entender a gente, né? E eu preciso clarear. Docs q eles
+  fizeram: Transcricao: Cristiano Teles: 00:00 Oi pessoal, tudo bom? Mostrar menos 19 de fev. Claude
+  respondeu: Entendi o cenário. Analisou conflito de escopo entre dashboard e módulos de vendas
+  Analisou conflito de escopo entre dashboard e módulos de vendas Entendi o cenário. Deixa eu te dar
+  uma visão organizada do que está acontecendo e onde está o ruído com o cliente. O ponto central do
+  conflito: O cliente está pedindo uma &quot;visão geral&quot; dentro do módulo de Vendas (Tela 5 do
+  doc deles — &quot;Dash com resumos: quantidade e valor de vendas, carrinhos abandonados, taxa de
+  conversão, % meio de pagamento, % canal de vendas&quot;). Na prática, isso é exatamente o que a
+  dashboard do perfil Gestor Comercial já faz. Eles estão pedindo a mesma coisa em dois lugares
+  porque ainda não internalizaram a lógica de navegação que vocês desenharam. Sua leitura está
+  correta. A arquitetura que vocês definiram é clara: A Início (Dashboard) é a visão geral —
+  resumos, indicadores, atalhos. Cada widget tem CTA que leva pro módulo correspondente. Ela existe
+  justamente pra que o gestor não precise &quot;clicar em mil lugares&quot; pra saber como está o
+  negócio. O módulo Vendas é operacional — é onde o gestor vai agir: ver a lista de pedidos,
+  filtrar, abrir detalhes, criar pedido, ver carrinhos abandonados, cupons. São tabelas com filtros
+  e ações, não dashboards. Se você colocar um mini-dashboard dentro de Vendas, acontecem dois
+  problemas: canibaliza a Início (o gestor não sabe mais onde olhar os números) e quebra a
+  consistência do padrão que vocês definiram (módulos = ação, dashboard = visão geral). O que o
+  cliente provavelmente quer e não está sabendo pedir: Quando eles entram no módulo de Vendas e
+  fazem uma busca com filtros, eles querem ver um resumo contextual do resultado da pesquisa —
+  aquelas &quot;caixas&quot; que eles mencionam no doc: &quot;total em quantidade e em valores do
+  que foi pesquisado&quot;. Isso não é uma dashboard, é um resumo de resultados de filtro que fica
+  no topo da listagem, acima da tabela. É um padrão comum: você filtra por &quot;Janeiro, Pix, Site
+  próprio&quot; e no topo aparecem cards tipo &quot;32 vendas · R $48.500 · Ticket médio R$
+  1.515&quot;. Minha sugestão de como clarear isso pra eles na próxima reunião: Separe em três
+  conceitos simples: a Dashboard (Início) mostra &quot;como está meu negócio&quot; com indicadores
+  fixos e atalhos. O módulo Vendas mostra &quot;o que aconteceu&quot; com listas, filtros e ações. E
+  os cards de resumo da pesquisa aparecem quando o gestor filtra a listagem — mostram o total
+  daquela busca específica. Isso atende tudo que eles pediram no documento sem duplicar informação.
+  Os indicadores gerais ficam na Início, a operação fica em Vendas, e o resumo contextual aparece
+  conforme a pesquisa. Sobre a transcrição — parece que veio só o início (&quot;Oi pessoal, tudo
+  bom?&quot;). Se tiver o restante, me manda que eu analiso e te ajudo a mapear exatamente os pontos
+  de confusão do cliente pra preparar a próxima reunião. Você disse: Tá, eu vou mandar pra você.
+  Captura de Tela 2026-02-19 às 14.22.47.png Captura de Tela 2026-02-19 às 14.22.59.png Captura de
+  Tela 2026-02-19 às 14.23.06.png Captura de Tela 2026-02-19 às 14.23.13.png Tá, eu vou mandar pra
+  você. Vamos falar aqui do nível principal, que é o vamos falar aqui do nível principal, que é o
+  gestor, tá? Considerando a dashboard do gestor. Na dashboard do gestor. Na verdade, vamos falar do
+  nível administrador, que é o é o maior, né? Então, na dashboard do administrador. Aí tem um outro
+  problema, né? Porque a gente tem três tipos de perfil. A gente tem um perfil gestor, que ele
+  precisa ver indicadores de faturamento, ticket médio, total de eventos, total de vendas, cartão e
+  Pix, taxa de ocupação, taxa de cancelamento, previsão de recebíveis, possibilidade de venda versus
+  o que foi vendido. E o gest-, quando a gente fala de gestor ou administrador, ele precisa ter uma
+  visão 360. Então a dashboard, além de ter informações de venda, vai ter informações relacionadas à
+  reserva e à toda a empresa. Já o sistema do nível comercial, certo? A gente está falando aí de uma
+  dashboard mais de vendas, né? Que o sistema em nível comercial tem o total em vendas, carrinhos
+  abandonados, meios de pagamento usados, linha do tempo de vendas efetuadas, três últimas vendas
+  realizadas, cinco produtos mais vendidos, enfim. E aí o que que eu estava fazendo aqui na verdade,
+  eu tinha pego a dashboard do gestor comercial e tinha complementado com coisas que a Catieli pediu
+  para a parte de vendas. Só que eu estou pensando, eu estou confusa ainda como lidar com esses
+  diferentes tipos de perfil, né? Será que a gente começa falando primeiro do perfil maior, mas se a
+  gente falar do perfil maior, sempre vai ter informação, além de venda, informação relacionada à
+  reserva. Enfim, eu estou eu estou meio. Eu estou meio em dúvida em relação a isso. E aí eu vou
+  mandar as telas também que tem hoje. E a ideia é você entender o que eles precisam, releer toda a
+  nossa conversa e ver se o que a gente fez está de acordo. Mostrar menos 19 de fev. Claude
+  respondeu: Agora ficou bem mais claro vendo as telas. Delineou estrutura de dashboards por perfil
+  de usuário Delineou estrutura de dashboards por perfil de usuário Agora ficou bem mais claro vendo
+  as telas. Deixa eu te dar uma leitura organizada do que está acontecendo e o caminho pra resolver.
+  O problema real: A tela da Imagem 1 (&quot;Central de Vendas&quot;) é uma dashboard dentro do
+  módulo de Vendas. Ela tem gráficos de vendas, ranking de vendedores, meios de pagamento,
+  atividades mais vendidas — tudo isso são indicadores estratégicos, não ferramentas de ação. Isso
+  deveria estar na Início, não dentro de Vendas. Da forma como está, o gestor comercial tem dois
+  lugares pra olhar números e não sabe qual é &quot;o certo&quot;. A confusão dos perfis: Você tem
+  três camadas de dashboard na Início, não três dashboards em lugares diferentes: O Administrador
+  (360°) vê na Início: KPIs de faturamento + vendas + ocupação/reservas + cancelamentos +
+  recebíveis. É o mais completo porque ele precisa ver tudo. Sim, vai ter informação de vendas E de
+  reservas na mesma tela — e tudo bem, porque o papel dele é exatamente esse. O Gestor Comercial vê
+  na Início: KPIs focados em vendas — total vendido, ticket médio, meios de pagamento, ranking de
+  vendedores, produtos mais vendidos, carrinhos abandonados. É basicamente o que está na Imagem 1
+  hoje, mas morando na Início. O Operador vê na Início: KPIs de reservas, ocupação, participantes,
+  saúde, agenda do dia. São variações da mesma tela (Início), configuradas por perfil. Não são
+  páginas separadas em módulos diferentes. O que muda nas telas que você já fez: A Imagem 1 (Central
+  de Vendas overview) deixa de existir como página. O conteúdo dela migra pra Início do perfil
+  Gestor Comercial. Ranking de vendedores, gráfico de vendas por dia da semana, vendas por meio de
+  pagamento, atividades mais vendidas — tudo isso é widget de dashboard. A Imagem 2 (Pedidos) vira a
+  página principal do módulo Vendas. Mas os cards do topo precisam de ajuste: &quot;Taxa de
+  Ocupação&quot; e &quot;Taxa de Cancelamento&quot; são métricas estratégicas, não contextuais a uma
+  lista de pedidos. Os cards dessa tela deveriam refletir o resultado dos filtros aplicados — tipo
+  &quot;32 vendas · R $45.230 · Ticket médio R$ 1.540&quot; que mudam conforme o filtro. Faturamento
+  e Ticket Médio podem ficar, mas ocupação e cancelamento pertencem à Dashboard. As Imagens 3 e 4
+  (Carrinhos e Cupons) estão corretas no padrão — cards de resumo contextual + filtros + tabela. Só
+  precisam garantir que os cards respondem aos filtros. Resumo da estrutura limpa: A Início é onde o
+  gestor abre o sistema e entende como está o negócio (indicadores, gráficos, rankings, atalhos).
+  Varia por perfil. O módulo Vendas é onde ele age — Pedidos (lista com filtros), Carrinhos (lista
+  com filtros), Cupons (lista com filtros). Cada sub-página tem cards de resumo contextuais que
+  refletem a pesquisa ativa, não indicadores globais fixos. E os Relatórios (vendas por produto, por
+  vendedor, por período) podem ser uma seção dentro de Vendas ou acessíveis via CTA da Dashboard —
+  isso resolve o pedido do cliente de &quot;quero saber quanto vendi de cada produto&quot; sem
+  precisar de uma segunda dashboard. Quer que eu monte um mapa visual mostrando o que vai pra onde?
+  Posso fazer um diagrama que você usa na próxima reunião pra clarear isso com eles. Você disse:
+  Separa todas as solicitacoes deles, cada uma e como resolvemos isso com a nova arquitetura atual
+  Separa todas as solicitacoes deles, cada uma e como resolvemos isso com a nova arquitetura atual
+  19 de fev. Organizou mapeamento de solicitações com nova arquitetura Organizou mapeamento de
+  solicitações com nova arquitetura A resposta do Claude foi interrompida Você disse: Separa todas
+  as solicitacoes deles, cada uma e como resolvemos isso com a nova arquitetura atual, me manda aqui
+  sem criar nenhum doc Separa todas as solicitacoes deles, cada uma e como resolvemos isso com a
+  nova arquitetura atual, me manda aqui sem criar nenhum doc 19 de fev. Claude respondeu: Ok, vou
+  mapear tudo direto aqui. Catalogou solicitações do cliente e mapeou resoluções arquiteturais
+  Catalogou solicitações do cliente e mapeou resoluções arquiteturais Ok, vou mapear tudo direto
+  aqui. Vou separar por perfil, exatamente como eles pediram. GESTOR COMERCIAL — &quot;Quero
+  saber...&quot;
+</p>
+<ol>
+  <li>
+    O que vendi → Módulo Vendas &gt; Pedidos (lista com filtros). Dashboard Início mostra resumo nos
+    widgets &quot;Vendas recentes&quot; e cards estatísticos.
+  </li>
+  <li>
+    Quanto vendi → Cards estatísticos na Início (Faturamento, Vendas realizadas). Detalhe no módulo
+    Vendas &gt; Pedidos com cards de resumo contextual que mudam conforme o filtro aplicado.
+  </li>
+  <li>
+    Como vendi → Widget &quot;Vendas por canal&quot; na Início (gráfico pizza: site, balcão,
+    parceiros). Filtro por canal disponível em Vendas &gt; Pedidos.
+  </li>
+  <li>
+    De onde veio essa venda → Coluna &quot;Canal&quot; na lista de Pedidos + filtro por canal.
+    Widget &quot;Vendas por canal&quot; na Início. No detalhe da venda: origem (canal), se veio de
+    afiliado, se usou cupom.
+  </li>
+  <li>
+    Para qual conta foi a venda → Vendas &gt; Extrato de Contas (espelho comercial). Filtro por
+    conta de recebimento. Identificação de qual canal alimentou qual conta.
+  </li>
+  <li>
+    Criar metas de vendas para vendedores e meta da empresa → Configuração de metas fica em Vendas
+    &gt; Vendedores (cadastro do vendedor com meta). Reflexo visual: widget &quot;Ranking de
+    Vendedores&quot; na Início mostra barra de progresso da meta. Relatórios de performance comparam
+    meta vs realizado.
+  </li>
+  <li>
+    Em quanto tempo vou receber o valor dessa venda → Detalhe da Venda &gt; Aba Pagamento: mostra
+    parcelamento, datas previstas de recebimento por parcela. Financeiro &gt; Fluxo de Caixa:
+    projeção de recebíveis.
+  </li>
+  <li>
+    Quanto paguei e pagarei de taxa → Detalhe da Venda &gt; Aba Pagamento: taxa cobrada, proxy que
+    processou. Vendas &gt; Extrato de Contas: totalização de taxas por conta/período. Taxa é
+    definida pela Conta de Recebimento, não pela forma de pagamento.
+  </li>
+  <li>
+    Quanto vendi por qual proxy de pagamento → Vendas &gt; Extrato de Contas com filtro por conta
+    (cada proxy é uma conta). Cards de resumo mostram total por conta.
+  </li>
+  <li>
+    Quanto vai cair na conta e quando (até última parcela) → Detalhe da Venda &gt; Aba Pagamento:
+    timeline de parcelas com datas e valores líquidos. Financeiro &gt; Fluxo de Caixa: visão
+    consolidada de todos os recebíveis futuros.
+  </li>
+  <li>
+    Quem vendeu pra mim → Coluna &quot;Vendedor&quot; e &quot;Canal&quot; na lista de Pedidos.
+    Filtro por vendedor. Widget &quot;Ranking de Vendedores&quot; na Início. Se veio de afiliado,
+    aparece no detalhe da venda.
+  </li>
+  <li>
+    Quanto de comissão preciso pagar → Afiliados &gt; Comissões (extrato de comissões a pagar).
+    Vendas &gt; Vendedores (comissão acumulada por vendedor). Relatório de performance por
+    vendedor/afiliado.
+  </li>
+  <li>
+    Criar pedido e mandar link pro cliente pagar → Vendas &gt; Pedidos &gt; botão &quot;Novo
+    Pedido&quot; (stepper: cliente → produto → pagamento → confirmação). Ao finalizar: gera link com
+    tempo de expiração configurável + botão de cópia rápida pra WhatsApp.
+  </li>
+  <li>
+    Quanto vendi de cada produto → Relatórios de Performance &gt; &quot;Vendas por Produto&quot;
+    (tabela + gráfico). Também acessível via CTA do widget &quot;Atividades mais vendidas&quot; na
+    Início.
+  </li>
+  <li>
+    Quanto vendi de cada evento/data → Relatórios de Performance com filtro por data/evento. Mostra
+    vendas por data específica de saída.
+  </li>
+  <li>
+    Quais eventos venderam melhor → Relatórios de Performance &gt; &quot;Vendas por Produto&quot;
+    ordenado por quantidade/valor. Widget &quot;Atividades mais vendidas&quot; na Início (top 5).
+  </li>
+  <li>
+    Qual dia da semana vendo melhor → Widget &quot;Venda por Dia da Semana&quot; na Início (gráfico
+    de barras, já existe na tela atual). Relatório de Performance com agrupamento por dia da semana
+    — tanto dia da compra quanto dia do passeio.
+  </li>
+  <li>
+    Cancelar somente 1 ingresso de 10 da mesma venda → Detalhe da Venda &gt; ação &quot;Cancelamento
+    Parcial&quot;. Recalcula saldo automaticamente. Status do item cancelado muda individualmente
+    sem afetar os outros 9.
+  </li>
+  <li>
+    Comprar adicionais para venda já paga → Detalhe da Venda &gt; ação &quot;Venda
+    Complementar&quot;. Gera link apenas para a diferença de valor.
+  </li>
+  <li>
+    Adicionar dados de participantes de venda já paga → Detalhe da Venda &gt; Aba Participantes &gt;
+    editar/adicionar dados. Também acessível pelo Painel de Reservas (atalho &quot;Ver na
+    Operação&quot;).
+  </li>
+  <li>
+    Top 5 clientes que mais compraram → Clientes &gt; lista ordenável por total de compras. Pode
+    virar widget na Início ou relatório em Vendas.
+  </li>
+  <li>
+    Qual venda usou qual cupom → Detalhe da Venda mostra se usou cupom. Vendas &gt; Cupons &gt; ao
+    abrir um cupom, mostra lista de vendas que usaram aquele cupom + somatório.
+  </li>
+  <li>
+    Aplicar desconto para o cliente → Fluxo de Criar Pedido &gt; Etapa Pagamento: campo para aplicar
+    cupom ou desconto manual. Registrado no log de auditoria (quem aprovou).
+  </li>
+  <li>
+    Adicionar observações sobre a venda para outros vendedores verem → Detalhe da Venda &gt; campo
+    de observações internas (CRM de Pedido). Log de auditoria mostra quem escreveu o quê e quando.
+    Próximo vendedor que abrir a venda vê tudo.
+  </li>
+  <li>
+    Acompanhar Pix parcelado interno (sem proxy) → Detalhe da Venda &gt; Aba Pagamento: registros de
+    pagamento manual com status parcial. Cada pagamento registrado aparece na timeline. Saldo
+    atualiza automaticamente.
+  </li>
+  <li>
+    Quanto o cliente já pagou e saldo restante → Detalhe da Venda &gt; Aba Pagamento: valor total,
+    valor pago, saldo pendente. Badge na lista de Pedidos: &quot;Pago&quot;, &quot;Parcial&quot;,
+    &quot;Pendente&quot;.
+  </li>
+  <li>
+    Marcar venda como paga total, parcial ou cortesia (e filtrar por isso) → Status do pedido +
+    filtro na lista de Pedidos. &quot;Cortesia&quot; é um tipo que zera o valor. Aparece como filtro
+    nos relatórios.
+  </li>
+  <li>
+    Ranking dos melhores vendedores → Widget &quot;Ranking de Vendedores&quot; na Início (top 5 com
+    barra de meta). Relatório de Performance &gt; &quot;Performance por Vendedor&quot; (ranking
+    completo).
+  </li>
+  <li>
+    Quanto e o que cada vendedor e afiliado vendeu → Relatório de Performance por Vendedor (valor,
+    quantidade, ticket médio, produtos). Afiliados &gt; Relatório de Vendas dos Afiliados (mesma
+    estrutura). VENDEDOR — &quot;Preciso...&quot;
+  </li>
+  <li>
+    Vínculo com a empresa (freelancer, CLT, PJ) → Vendas &gt; Vendedores &gt; cadastro do vendedor:
+    tipo de vínculo, dados, comissão.
+  </li>
+  <li>
+    Meu painel próprio de vendas → Início do perfil Vendedor: cards &quot;Minhas vendas&quot;,
+    &quot;Valor vendido&quot;, &quot;Comissão acumulada&quot;, &quot;Meta do mês&quot;. Widgets:
+    &quot;Minhas vendas recentes&quot;, &quot;Meu desempenho&quot;, &quot;Disponibilidade
+    rápida&quot;.
+  </li>
+  <li>
+    Quais produtos posso vender e comissão de cada → Painel do Vendedor &gt; Configurações: lista de
+    produtos habilitados com comissão por produto.
+  </li>
+  <li>
+    Criar vendas manualmente com tempo de bloqueio de vagas → Vendas &gt; Novo Pedido (mesmo stepper
+    do gestor). Tempo de expiração configurável no link. Se não pagar, vagas liberam
+    automaticamente.
+  </li>
+  <li>
+    Conferir pedidos em aberto dos meus clientes → Vendas &gt; Pedidos com filtro automático
+    &quot;Meus pedidos&quot; + status &quot;Em aberto&quot;. Cards de resumo mostram quantidade e
+    valor dos pendentes.
+  </li>
+  <li>
+    Conferir pedidos não concluídos e pagos → Vendas &gt; Pedidos com filtro por status:
+    &quot;Pendente&quot;, &quot;Pago&quot;, &quot;Cancelado&quot;. Abas ou filtro rápido.
+  </li>
+  <li>
+    Criar vendas com baixa manual de pagamento → Vendas &gt; Novo Pedido &gt; na etapa de pagamento:
+    opção &quot;Registrar pagamento manual&quot; (dinheiro, transferência). Vendedor seleciona
+    produto, data, horário, quantidade, define tempo limite.
+  </li>
+  <li>
+    Enviar meu link de vendas pro cliente → Painel do Vendedor &gt; link pessoal de vendas
+    (semelhante ao de afiliado). Botão de copiar link.
+  </li>
+  <li>
+    Outros vendedores podem ver minhas vendas → Vendas &gt; Pedidos: vendedores veem vendas dos
+    colegas em modo leitura (para dar suporte ao cliente). Só edita se tiver permissão de gestor.
+  </li>
+  <li>
+    Histórico de ações da venda com usuário, data e horário → Detalhe da Venda &gt; Aba Histórico:
+    log completo de auditoria (quem criou, editou, aprovou desconto, registrou pagamento, cancelou).
+    AFILIADO — &quot;Preciso...&quot;
+  </li>
+  <li>
+    Quantas vendas originadas pelo meu link (pagas e carrinhos abandonados) → Painel do Afiliado
+    &gt; Início: cards &quot;Vendas realizadas&quot; e &quot;Carrinhos abandonados&quot;. Lista
+    filtrada por link do afiliado.
+  </li>
+  <li>
+    Quantas vendas com cupom do meu código → Painel do Afiliado &gt; lista de vendas com filtro por
+    origem (link ou cupom). Card de resumo com somatório.
+  </li>
+  <li>
+    Quais produtos vendi com meu link → Painel do Afiliado &gt; lista de vendas com coluna
+    &quot;Produto&quot;. Relatório por produto.
+  </li>
+  <li>
+    Quanto de comissão já recebi e quanto tenho a receber → Painel do Afiliado &gt; cards
+    &quot;Comissão acumulada&quot; (a receber) e &quot;Comissão paga&quot; (já recebido). Widget
+    &quot;Pagamentos recebidos&quot;.
+  </li>
+  <li>
+    Quanto vendi em período específico → Painel do Afiliado &gt; lista de vendas com filtro por
+    período. Cards de resumo atualizam conforme filtro.
+  </li>
+  <li>
+    Resumo de vendas do mês atual → Painel do Afiliado &gt; Início: cards estatísticos mostram mês
+    atual por padrão.
+  </li>
+  <li>
+    Consultar produtos habilitados, links e link geral → Painel do Afiliado &gt; Configurações:
+    lista de produtos com link individual + link geral. Botão copiar em cada um.
+  </li>
+  <li>
+    Consultar comissão de cada produto → Painel do Afiliado &gt; Configurações: mesma lista mostra %
+    de comissão por produto.
+  </li>
+  <li>
+    Solicitar filiação para produto que ainda não vendo → Painel do Afiliado &gt; Configurações:
+    lista de produtos não habilitados com botão &quot;Solicitar filiação&quot;.
+  </li>
+  <li>
+    Ver venda específica e quando foi realizada → Painel do Afiliado &gt; lista de vendas &gt;
+    clique abre detalhe com data, produto, valor, status, comissão. GESTÃO DE AFILIADOS (visão do
+    Gestor) Lista de afiliados cadastrados → Afiliados &gt; Parceiros (lista com código, nome, CPF,
+    status, ações). Cadastrar afiliado → Afiliados &gt; Parceiros &gt; drawer de cadastro (nome,
+    documento, telefone, email, código, produtos, comissão). Cards de resumo: ativos, vendas último
+    mês, comissões a pagar, top 3 → Afiliados &gt; Parceiros: cards estatísticos no topo da
+    listagem. Ver afiliado: informações + produtos habilitados → Afiliados &gt; Parceiros &gt;
+    detalhe do afiliado: seção dados + seção produtos. Ações: copiar link, editar. Tabela de
+    desempenho por mês → Afiliados &gt; Comissões: tabela com valor de cada afiliado por mês.
+    Controle de pagamento → Afiliados &gt; Comissões: lista com status (pendente/pago), botão
+    &quot;Registrar pagamento&quot;. Extrato de comissões com referência à venda → Afiliados &gt;
+    Comissões: extrato com link para a venda que originou cada comissão. Relatório com filtros e
+    exportação PDF/Excel → Afiliados &gt; Comissões: filtros (período, status venda, status
+    comissão, produto, valor, cliente, carrinho). Somatório + lista. Exportar PDF e Excel. GESTÃO DE
+    VENDEDORES (visão do Gestor) → Mesma estrutura dos Afiliados, dentro de Vendas &gt; Vendedores.
+    Cadastro, lista, desempenho, comissões, relatórios. CUPONS DE DESCONTO Resumo de uso: cupons
+    criados, ativos → Vendas &gt; Cupons: cards estatísticos no topo (Ativos, Usos este mês,
+    Desconto Total, Vendas Geradas — já existe na tela 4). Lista, criar, editar cupom → Vendas &gt;
+    Cupons: lista + botão &quot;Novo Cupom&quot; + edição. Resumo de usos ao abrir um cupom (quais
+    vendas usaram) → Vendas &gt; Cupons &gt; detalhe do cupom: lista de vendas vinculadas +
+    somatório de valor. GESTÃO COMERCIAL — Pedidos e Vendas Dashboard com resumos (vendas,
+    carrinhos, conversão, meios de pagamento, canais) → Resolvido pela Início, não por uma segunda
+    dashboard dentro de Vendas. Widgets: vendas recentes, carrinhos abandonados, vendas por canal,
+    vendas por meio de pagamento. Cards: faturamento, ticket médio, vendas realizadas, taxa de
+    conversão. Listagem de vendas/orçamentos/pedidos/carrinhos → Vendas &gt; Pedidos (lista
+    principal com filtro de status/tipo: venda, orçamento, pedido, carrinho). Vendas &gt; Carrinhos
+    Abandonados (lista dedicada). Cards de resumo ao filtrar (total quantidade e valores) → Cards
+    contextuais no topo da lista de Pedidos que reagem aos filtros aplicados. Não são indicadores
+    fixos — mudam conforme a pesquisa. Detalhamento da venda (tudo que pediram) → Detalhe da Venda
+    com abas: Resumo (dados comprador, itens, valor, forma pagamento, taxas, proxy, cupom, afiliado,
+    canal, NF), Participantes, Pagamento (timeline de parcelas, saldo), Histórico (log de
+    auditoria). Relatórios em PDF e Excel → Botão &quot;Exportar&quot; em toda listagem + relatórios
+    dedicados em Vendas &gt; Relatórios. Controle de contas de recebimento → Vendas &gt; Extrato de
+    Contas: cadastro de contas + extrato por conta + filtro por período para fechamento de caixa.
+    Atalho Vendas ↔ Operações → Detalhe da Venda: botão &quot;Ver na Operação&quot; (abre painel
+    lateral com reservas vinculadas). Painel de Reservas: botão &quot;Ver pagamento desta
+    Venda&quot; (abre painel lateral com dados financeiros). RESUMO: O QUE VAI PRA ONDE Início
+    (Dashboard) → Indicadores estratégicos fixos, gráficos de tendência, rankings, atalhos. Varia
+    por perfil. É onde o gestor &quot;sabe se está tudo bem sem clicar em mil lugares&quot;. Vendas
+    &gt; Pedidos → Lista operacional com filtros + cards de resumo contextual (reagem ao filtro). É
+    onde o gestor age. Vendas &gt; Carrinhos → Lista dedicada com temperatura (quente/morno/frio).
+    Vendas &gt; Cupons → Lista com resumo de uso por cupom. Vendas &gt; Extrato → Espelho comercial
+    das contas para fechamento de caixa. Vendas &gt; Relatórios → 4 relatórios: por produto, por
+    tarifa, adicionais, por vendedor. Exportáveis. Afiliados → Gestão completa (parceiros +
+    comissões). Spin-offs → Painéis simplificados do Vendedor e do Afiliado (só veem o que é deles).
+    Você disse: Tá, agora que eu já sei isso, eu preciso organizar isso de uma forma clara, sem
+    excesso de informações, pra explicar pra eles o seguinte, pessoal, na nossa últ… Tá, agora que
+    eu já sei isso, eu preciso organizar isso de uma forma clara, sem excesso de informações, pra
+    explicar pra eles o seguinte, pessoal, na nossa última reunião, a gente mostrou a parte aqui do
+    módulo de vendas que seriam tabelas e aí vocês trouxeram algumas pontuações e aí a gente chegou
+    à conclusão de que a gente precisa repassar melhor a arquitetura que a gente tá pensando do
+    sistema pra vocês, pra vocês verem se estão de acordo, né? E aí, explicar pra eles, mas de uma
+    forma clara, por exemplo, ah, vocês pediram isso aqui. Mas na verdade, a gente não tá pensando
+    na dashboard ser um módulo. A dashboard é isso aqui, isso aqui e isso aqui, né? E aí, um módulo
+    de vendas em si é um módulo que vai ser pra isso, isso e isso. E aí a gente pegou todas as
+    solicitações de vocês, certo? E aí, nessa parte de a gente pegou todas as solicitações de vocês,
+    é importante GPT ter o seguinte, De uma forma geral, de uma forma geral, assim, sem falar de
+    perfil, com quais indicadores a gente vai trabalhar na dashboard relacionados a vendas? Com
+    quais indicadores a gente vai trabalhar relacionados a outras coisas? Vamos falar só de vendas
+    agora, com quais indicadores na dashboard a gente vai trabalhar relacionados a vendas pra
+    resolver o que vocês precisam, tá? E aí, com quais páginas dentro da parte de vendas vão ter as
+    informações que vocês precisam? Dentro dos indicadores relacionados a vendas na dashboard, pra
+    onde que eles direcionam dentro de vendas pra resolver o que é preciso, tá? Não sei, eu preciso
+    meio que organizar tudo isso aí de uma forma mais clara pra falar pra eles em reunião Mostrar
+    menos 19 de fev. Claude respondeu: Vou organizar como um roteiro de reunião — direto, na ordem
+    que você falaria. Estruturou apresentação clara da arquitetura de sistema para reunião
+    Estruturou apresentação clara da arquitetura de sistema para reunião Vou organizar como um
+    roteiro de reunião — direto, na ordem que você falaria. ROTEIRO PRA REUNIÃO
+  </li>
+  <li>
+    ABERTURA &quot;Na última reunião, vocês trouxeram algumas pontuações sobre o que precisavam ver
+    na parte de vendas. A gente analisou tudo e percebeu que precisa alinhar melhor com vocês a
+    arquitetura que a gente está pensando pro sistema, pra garantir que tudo que vocês precisam está
+    coberto — só que talvez em lugares diferentes do que vocês estavam imaginando.&quot;
+  </li>
+  <li>
+    O QUE É A INÍCIO (DASHBOARD) E O QUE É UM MÓDULO &quot;Antes de entrar nos detalhes, preciso
+    explicar uma distinção importante que está gerando confusão.&quot; Início (Dashboard) é a
+    primeira tela que o gestor vê quando abre o sistema. Ela não é um módulo — ela é um painel de
+    indicadores e atalhos. O objetivo dela é: &quot;abro o sistema e sei como está meu negócio sem
+    clicar em nada&quot;. Ela mostra números, gráficos e links pra onde agir. Ela não tem tabelas,
+    não tem filtros, não tem ações sobre pedidos. Módulo de Vendas é onde o gestor vai agir: ver a
+    lista de pedidos, filtrar, abrir um pedido, criar venda, cancelar, registrar pagamento. São
+    tabelas com filtros e ações. A lógica é: Início mostra, Vendas resolve. Se a gente colocar uma
+    dashboard dentro de Vendas, o gestor não vai saber onde olhar os números — se é na Início ou
+    dentro de Vendas. A informação fica duplicada e confusa.
+  </li>
+  <li>
+    INDICADORES DE VENDAS NA INÍCIO &quot;Agora, o que a Início vai ter relacionado a vendas?&quot;
+    Cards estatísticos (topo da tela, sempre visíveis): Faturamento do mês (R $+ variação %)$ $Total
+    de vendas realizadas (quantidade + variação %)$ $Ticket médio (R$ + variação %) Taxa de
+    conversão (% visitantes que compraram) Cada card é clicável e leva pra área correspondente
+    dentro de Vendas. Widgets (blocos de informação abaixo dos cards): Vendas recentes → últimas
+    vendas em tempo real (cliente, valor, status). CTA: &quot;Ver todas as vendas&quot; → vai pra
+    Vendas &gt; Pedidos Desempenho semanal → gráfico de linha: vendas por dia vs período anterior.
+    CTA: &quot;Abrir relatório&quot; → vai pra Vendas &gt; Relatórios Vendas por canal → gráfico
+    pizza: site, balcão, parceiros. CTA: &quot;Ver detalhamento&quot; → vai pra Vendas &gt; Pedidos
+    filtrado por canal Vendas por meio de pagamento → Pix, crédito, débito, boleto com valores. CTA:
+    &quot;Ver detalhes&quot; → vai pra Vendas &gt; Extrato Ranking de vendedores → top 5 com barra
+    de progresso da meta. CTA: &quot;Ver ranking completo&quot; → vai pra Vendas &gt; Vendedores
+    Atividades mais vendidas → top 5 produtos. CTA: &quot;Ver ranking&quot; → vai pra Vendas &gt;
+    Relatórios Venda por dia da semana → gráfico de barras por dia. CTA: → vai pra Vendas &gt;
+    Relatórios Carrinhos abandonados → quantidade + valor perdido. CTA: &quot;Ver carrinhos&quot; →
+    vai pra Vendas &gt; Carrinhos &quot;Ou seja: tudo que vocês pediram de indicadores de venda está
+    na Início. Cada indicador tem um atalho que leva pro lugar certo dentro de Vendas pra
+    agir.&quot;
+  </li>
+  <li>
+    O QUE TEM DENTRO DO MÓDULO DE VENDAS &quot;Agora, quando o gestor clica em Vendas no menu, o que
+    ele encontra?&quot; Pedidos — Lista de todas as vendas com filtros (período, status, canal,
+    forma de pagamento, produto, vendedor, cliente). No topo: cards de resumo que mudam conforme o
+    filtro — não são indicadores fixos, são o total daquela pesquisa. Exemplo: filtro &quot;Janeiro
+    + Pix + Site&quot; → cards mostram &quot;32 vendas · R $48.500 · Ticket médio R$ 1.515&quot;.
+    Clique no pedido abre o detalhe completo. Carrinhos Abandonados — Lista com temperatura
+    (quente/morno/frio), valor perdido, ações de remarketing. Cupons de Desconto — Lista de cupons,
+    criar/editar, e ao abrir um cupom: quais vendas usaram + somatório. Extrato de Contas — Espelho
+    comercial pra fechamento de caixa. Filtro por conta, forma de pagamento, canal, período.
+    Totalização por conta. Vendedores — Lista, cadastro, comissão, histórico de vendas. Relatórios —
+    Vendas por produto, ingressos por tarifa, adicionais por venda, performance por vendedor. Todos
+    exportáveis em PDF e Excel.
+  </li>
+  <li>
+    COMO AS SOLICITAÇÕES DE VOCÊS FICAM COBERTAS &quot;A gente pegou todas as solicitações que vocês
+    fizeram e mapeou onde cada uma está resolvida.&quot; &quot;Quero saber quanto vendi&quot; → Card
+    na Início + lista em Pedidos com cards de resumo &quot;Quero saber de onde veio a venda&quot; →
+    Widget &quot;Vendas por canal&quot; na Início + coluna e filtro &quot;Canal&quot; em Pedidos
+    &quot;Quero saber pra qual conta foi&quot; → Widget &quot;Vendas por meio de pagamento&quot; na
+    Início + Extrato de Contas em Vendas &quot;Quero ranking de vendedores&quot; → Widget na Início
+    + Relatório de Performance em Vendas &quot;Quero saber quanto vendi de cada produto&quot; →
+    Widget &quot;Atividades mais vendidas&quot; na Início + Relatório &quot;Vendas por Produto&quot;
+    em Vendas &quot;Quero dia da semana que mais vendo&quot; → Widget &quot;Venda por Dia da
+    Semana&quot; na Início + Relatório com agrupamento &quot;Quero criar pedido e mandar link&quot;
+    → Vendas &gt; Novo Pedido (stepper) → gera link com tempo de expiração &quot;Quero cancelar 1
+    ingresso de 10&quot; → Detalhe da Venda &gt; Cancelamento Parcial &quot;Quero ver histórico de
+    ações&quot; → Detalhe da Venda &gt; Aba Histórico (log de auditoria) &quot;Quero saber quanto o
+    cliente pagou e o saldo&quot; → Detalhe da Venda &gt; Aba Pagamento + badge na lista &quot;Quero
+    adicionar observações pra outros vendedores verem&quot; → Detalhe da Venda &gt; campo de
+    observações internas &quot;Quero ver quais vendas usaram qual cupom&quot; → Vendas &gt; Cupons
+    &gt; detalhe do cupom com lista de vendas &quot;Quero marcar como pago total, parcial ou
+    cortesia&quot; → Status do pedido + filtro na lista + relatórios
+  </li>
+  <li>
+    RESUMO VISUAL (pra fechar) INÍCIO (Dashboard) ├── Cards: Faturamento · Vendas · Ticket Médio ·
+    Conversão ├── Widgets de vendas: Recentes · Semanal · Por canal · Por pagamento ├── Widgets de
+    ranking: Vendedores · Produtos mais vendidos · Dia da semana ├── Widget carrinhos abandonados
+    └── Cada widget tem atalho → leva pro módulo de Vendas VENDAS (Módulo) ├── Pedidos (lista +
+    filtros + cards contextuais + detalhe completo) ├── Carrinhos Abandonados (lista + temperatura +
+    remarketing) ├── Cupons de Desconto (lista + detalhe com vendas vinculadas) ├── Extrato de
+    Contas (fechamento de caixa) ├── Vendedores (cadastro + comissão + histórico) └── Relatórios
+    (por produto · por tarifa · adicionais · por vendedor) &quot;Início mostra os números pra
+    entender. Vendas tem as ferramentas pra agir. Os dois se conectam pelos atalhos dos widgets.
+    Nenhuma informação que vocês pediram ficou de fora — só organizamos pra não duplicar.&quot; Esse
+    é o roteiro. Quer que eu ajuste alguma parte ou que eu monte isso num formato visual tipo slides
+    ou diagrama pra projetar na reunião? Você disse: o que é para qual conta foi a venda? o que é
+    para qual conta foi a venda? 19 de fev. Claude respondeu: Essa é a solicitação #5 do gestor: ele
+    quer saber em qual conta de recebimento o dinheiro de uma venda caiu. Desvendou significado de
+    conta receptora em sistema comercial Desvendou significado de conta receptora em sistema
+    comercial Essa é a solicitação #5 do gestor: ele quer saber em qual conta de recebimento o
+    dinheiro de uma venda caiu. No contexto deles, &quot;conta&quot; não é forma de pagamento — é a
+    conta bancária ou digital onde o dinheiro efetivamente chega. Exemplos: Banco Itaú, Caixa
+    Físico, conta do PagSeguro, conta do Mercado Pago. O gestor precisa disso pra fazer fechamento
+    de caixa: &quot;quanto entrou na conta do Itaú esse mês? Quanto entrou no PagSeguro?&quot; Está
+    no doc deles na parte de Extrato de Contas: &quot;Visualização do saldo recebido por conta
+    configurada e por forma de pagamento (ex: Banco Itaú, Caixa Físico, Conta Digital Proxy). Filtro
+    por período para conferência de fechamento de caixa. Identificação de qual canal de venda
+    alimentou qual conta.&quot; Então no roteiro, onde eu coloquei &quot;Widget Vendas por meio de
+    pagamento&quot; como resposta, na verdade está impreciso. O mais correto seria: &quot;Quero
+    saber pra qual conta foi&quot; → Vendas &gt; Extrato de Contas (filtro por conta de recebimento
+    + canal). Na Início, o widget de meios de pagamento mostra a distribuição por
+    Pix/crédito/débito, mas o detalhe por conta bancária fica no Extrato. Quer que eu ajuste isso no
+    roteiro? Você disse: Nós pensamos em ter um módulo de financeiro que é diferente de vendas, e
+    coisas como quando vai cair o dinheiro na conta em quanto tempo etc estar em financeir…
+    Arquitetura de Navegação e Dashboards Retrilhar Painel Administrativo v2 · Especificação UX ·
+    Janeiro 2026 1. Contexto do Produto O que é o Painel Administrativo O Painel Administrativo é o
+    sistema de gestão interno das empresas de turismo. É onde gestores, vendedores, guias e
+    parceiros acessam para pasted Nós pensamos em ter um módulo de financeiro que é diferente de
+    vendas, e coisas como quando vai cair o dinheiro na conta em quanto tempo etc estar em
+    financeiros, mas qual a diferença do financeiro para vendas? 19 de fev. Claude respondeu: Boa
+    pergunta, porque é exatamente onde o cliente pode confundir também. Diferenciou perspectivas
+    comercial versus contábil dos módulos Diferenciou perspectivas comercial versus contábil dos
+    módulos Boa pergunta, porque é exatamente onde o cliente pode confundir também. A diferença é de
+    perspectiva e objetivo. Vendas responde: &quot;O que eu vendi?&quot; É a visão do comercial. O
+    gestor ou vendedor quer saber: qual pedido, qual cliente, qual produto, qual canal, qual forma
+    de pagamento, quanto de comissão. O dinheiro aparece aqui como consequência da venda —
+    &quot;esse pedido foi pago ou não?&quot;. O Extrato de Contas dentro de Vendas é um espelho
+    comercial pra fechamento de caixa: &quot;das vendas de hoje, quanto caiu em cada conta?&quot;.
+    Inclusive no doc deles está escrito: &quot;não é o módulo financeiro, é somente um espelho das
+    contas para conferência comercial.&quot; Financeiro responde: &quot;Como está o dinheiro da
+    empresa?&quot; É a visão do contador/financeiro. Aqui entram coisas que Vendas não cobre:
+    despesas (aluguel, fornecedores, salários), fluxo de caixa projetado (entradas vs saídas
+    futuras), notas fiscais, centros de custo, categorias de receita/despesa, conciliação bancária.
+    É aqui que fica &quot;quando vai cair na conta&quot; como projeção consolidada — não pedido a
+    pedido, mas &quot;nos próximos 30 dias, tenho R $X pra receber e R$ Y pra pagar.&quot; Na
+    prática, a separação funciona assim: o detalhe da venda individual (parcelas, taxa, proxy) fica
+    em Vendas &gt; Detalhe do Pedido &gt; Aba Pagamento — porque é informação sobre aquela venda
+    específica. Já a visão consolidada de recebíveis futuros, fluxo de caixa, e toda a movimentação
+    financeira (incluindo o que não é venda) fica no Financeiro. É como numa empresa: o time
+    comercial olha o CRM e os pedidos, o time financeiro olha o extrato bancário e o fluxo de caixa.
+    Às vezes a mesma pessoa faz os dois, mas são perguntas diferentes sobre o mesmo dinheiro. Você
+    disse: dessa lista aqui preciso do seguinte: mostrar o que tá na dash, mostrar o que tá em
+    vendas, mostrar o que tá em financeiro, segmentar as solicitacoes deles GESTOR COMERCIAL —
+    &quot;Quero saber...&quot; 1. O que vendi → Módulo Vendas &gt; Pedidos (lista com filtros).
+    Dashboard Início mostra resumo nos widgets &quot;Vendas recentes&quot; e cards estatísticos. 2.
+    Quanto vendi → Cards estatísticos na Início (Faturamento, Vendas realizadas). Detalhe no módulo
+    Vendas &gt; Pedidos com pasted dessa lista aqui preciso do seguinte: mostrar o que tá na dash,
+    mostrar o que tá em vendas, mostrar o que tá em financeiro, segmentar as solicitacoes deles 19
+    de fev. Claude respondeu: SOLICITAÇÕES DO GESTOR — ONDE CADA UMA MORA Categorizado solicitações
+    gerenciais por módulos do sistema Categorizado solicitações gerenciais por módulos do sistema
+    SOLICITAÇÕES DO GESTOR — ONDE CADA UMA MORA 🏠 INÍCIO (Dashboard) Indicadores e atalhos. O
+    gestor abre e entende como está o negócio.
+  </li>
+</ol>
+<h3>Solicitação Como aparece na Início</h3>
+<p>
+  1 O que vendi Widget &quot;Vendas recentes&quot; (últimas vendas em tempo real) 2 Quanto vendi
+  Cards: Faturamento + Vendas realizadas + Ticket médio 3 Como vendi Widget &quot;Vendas por
+  canal&quot; (pizza: site, balcão, parceiros) 4 De onde veio a venda Widget &quot;Vendas por
+  canal&quot; 11 Quem vendeu pra mim Widget &quot;Ranking de Vendedores&quot; (top 5 + barra de
+  meta) 14 Quanto vendi de cada produto Widget &quot;Atividades mais vendidas&quot; (top 5) 16 Quais
+  eventos venderam melhor Widget &quot;Atividades mais vendidas&quot; 17 Qual dia da semana vendo
+  melhor Widget &quot;Venda por Dia da Semana&quot; (gráfico de barras) 28 Ranking dos melhores
+  vendedores Widget &quot;Ranking de Vendedores&quot; Cada widget tem CTA que leva pro módulo
+  correspondente pra ver o detalhe completo. 🛒 VENDAS (Módulo) Onde o gestor age: lista, filtra,
+  cria, cancela, consulta. Pedidos (lista principal)
+</p>
+<h3>Solicitação Onde em Vendas</h3>
+<p>
+  1 O que vendi Lista de Pedidos com filtros 2 Quanto vendi Cards de resumo contextual (mudam
+  conforme filtro) 3 Como vendi Filtro por canal na lista 4 De onde veio a venda Coluna
+  &quot;Canal&quot; + filtro. No detalhe: canal, afiliado, cupom 5 Pra qual conta foi Extrato de
+  Contas (espelho comercial, fechamento de caixa) 11 Quem vendeu pra mim Coluna &quot;Vendedor&quot;
+  + filtro por vendedor 13 Criar pedido e mandar link Botão &quot;Novo Pedido&quot; → stepper → gera
+  link com expiração 22 Qual venda usou qual cupom No detalhe da venda + em Cupons (lista de vendas
+  por cupom) 23 Aplicar desconto Etapa Pagamento do Novo Pedido (cupom ou desconto manual) 27 Marcar
+  como pago/parcial/cortesia Status do pedido + filtro na lista Detalhe da Venda (ao clicar num
+  pedido)
+</p>
+<h3>Solicitação Onde no detalhe</h3>
+<p>
+  7 Em quanto tempo vou receber Aba Pagamento: parcelas com datas previstas 8 Quanto paguei de taxa
+  Aba Pagamento: taxa + proxy que processou 18 Cancelar 1 ingresso de 10 Ação &quot;Cancelamento
+  Parcial&quot; 19 Comprar adicionais pra venda já paga Ação &quot;Venda Complementar&quot; (link da
+  diferença) 20 Adicionar dados de participantes Aba Participantes (editar/adicionar) 24 Observações
+  pra outros vendedores Campo de observações internas + log de auditoria 25 Acompanhar Pix parcelado
+  interno Aba Pagamento: timeline de pagamentos manuais 26 Quanto pagou e saldo restante Aba
+  Pagamento: valor total, pago, saldo. Badge na lista Extrato de Contas
+</p>
+<h3>Solicitação Onde</h3>
+<p>
+  5 Pra qual conta foi Filtro por conta de recebimento 8 Quanto paguei de taxa Totalização de taxas
+  por conta/período 9 Quanto vendi por qual proxy Filtro por conta (cada proxy = uma conta)
+  Relatórios de Performance
+</p>
+<h3>Solicitação Onde</h3>
+<p>
+  14 Quanto vendi de cada produto Relatório &quot;Vendas por Produto&quot; 15 Quanto vendi de cada
+  evento/data Relatório com filtro por data de saída 16 Quais eventos venderam melhor Relatório
+  ordenado por quantidade/valor 17 Qual dia da semana vendo melhor Relatório com agrupamento por dia
+  28 Ranking dos vendedores Relatório &quot;Performance por Vendedor&quot; 29 O que cada
+  vendedor/afiliado vendeu Relatório por Vendedor + Afiliados &gt; Relatório Vendedores
+</p>
+<h3>Solicitação Onde</h3>
+<p>
+  6 Criar metas de vendas Cadastro do vendedor (meta mensal) 12 Quanto de comissão pagar Comissão
+  acumulada por vendedor Cupons
+</p>
+<h3>Solicitação Onde</h3>
+<p>22 Quais vendas usaram o cupom Detalhe do cupom: lista de vendas + somatório Clientes</p>
+<h3>Solicitação Onde</h3>
+<p>
+  21 Top 5 clientes que mais compraram Lista ordenável por total de compras 💰 FINANCEIRO (Módulo)
+  Visão consolidada do dinheiro da empresa — não só vendas, mas toda movimentação.
+</p>
+<h3>Solicitação Onde em Financeiro</h3>
+<p>
+  7 Em quanto tempo vou receber Fluxo de Caixa: projeção consolidada de recebíveis 10 Quanto vai
+  cair na conta e quando (até última parcela) Fluxo de Caixa: todos os recebíveis futuros, por data
+  A diferença: no detalhe da venda (Vendas), o gestor vê as parcelas daquela venda específica. No
+  Financeiro, ele vê o consolidado de todas as vendas: &quot;nos próximos 30 dias, tenho R $X pra
+  receber e R$ Y pra pagar.&quot; 👥 AFILIADOS (Módulo separado)
+</p>
+<h3>Solicitação Onde</h3>
+<p>
+  12 Quanto de comissão pagar Comissões a pagar (extrato) 29 O que cada afiliado vendeu Relatório de
+  Vendas dos Afiliados RESUMO RÁPIDO Área Resolve o quê Início &quot;Como está meu negócio?&quot; —
+  9 solicitações cobertas com indicadores e atalhos Vendas &quot;O que aconteceu e o que preciso
+  fazer?&quot; — 27 solicitações (quase tudo mora aqui) Financeiro &quot;Quando o dinheiro chega
+  consolidado?&quot; — 2 solicitações exclusivas (fluxo de caixa) Afiliados &quot;Quanto devo pros
+  parceiros?&quot; — 2 solicitações Algumas solicitações aparecem em mais de um lugar porque têm um
+  resumo na Início e o detalhe em Vendas. Isso é proposital: a Início mostra, Vendas resolve. Você
+  disse: o menu hj tá que nem o print dentro de vendas tem pedidos, carrinhos abandonados, cupons,
+  vendedores, considerando td que conversamos até agora preciso explica… Captura de Tela 2026-02-19
+  às 15.30.59.png o menu hj tá que nem o print dentro de vendas tem pedidos, carrinhos abandonados,
+  cupons, vendedores, considerando td que conversamos até agora preciso explicar a lógica de cada
+  item para eles que isso abaixo tá desatualizado: Lógica do Menu Item Por que existe O que agrupa
+  Início Vendas Tudo que envolve dinheiro entrando (comercial) Pedidos, carrinhos, clientes, cupons.
+  O vendedor encontra tudo aqui. Agenda Tudo que envolve tempo e pessoas (operacional) Calendário
+  com saídas, reservas, disponibilidade. Financeiro Controle de contas Visão geral, movimentações,
+  fluxo de caixa, contratos. Afiliados Item próprio porque afiliado é um perfil que loga no sistema
+  Gestão de parceiros, comissões, links. Mostrar menos 19 de fev. Claude respondeu: Aqui vai
+  atualizado, considerando tudo que conversamos: Reorganizou lógica do menu para apresentação
+  atualizada aos clientes Reorganizou lógica do menu para apresentação atualizada aos clientes Aqui
+  vai atualizado, considerando tudo que conversamos: LÓGICA DO MENU 7 itens. Cada um existe por um
+  motivo claro. Início É a primeira tela do sistema. Não é um módulo — é um painel de indicadores e
+  atalhos. O gestor abre e entende como está o negócio sem clicar em nada. Mostra cards com números
+  principais (faturamento, vendas, ticket médio), gráficos de tendência (vendas por canal, por dia
+  da semana, por meio de pagamento) e rankings (vendedores, produtos mais vendidos). Cada indicador
+  tem um atalho que leva pro módulo correspondente. Varia conforme o perfil: o administrador vê
+  indicadores de vendas + reservas + financeiro; o comercial vê só vendas; o operacional vê só
+  reservas e ocupação. Agenda Tudo que envolve tempo, pessoas e operação. Responde: &quot;quando
+  acontece, quem vai, quantas vagas tem?&quot; Agrupa: Calendário de saídas (quando), Mapa de Vagas
+  (quantas vagas), Painel de Reservas (quem são os participantes), Fichas Operacionais (documentos
+  pra operação do dia). O guia/operador vive aqui. O gestor acessa pra ver ocupação e escalar
+  equipe. Vendas Tudo que envolve dinheiro entrando. É o módulo comercial — onde o gestor e o
+  vendedor agem sobre pedidos. Agrupa: Pedidos — lista de todas as vendas (online, offline,
+  marketplace, afiliado). Filtros por período, status, canal, forma de pagamento, produto, vendedor.
+  Cards de resumo no topo que mudam conforme o filtro. Clique no pedido abre detalhe completo com
+  abas (resumo, participantes, pagamento, histórico). Carrinhos Abandonados — vendas que não foram
+  finalizadas. Lista com temperatura (quente/morno/frio), valor perdido, ações de remarketing.
+  Cupons de Desconto — criar, editar, ver quais vendas usaram cada cupom com somatório. Vendedores —
+  cadastro, meta, comissão, histórico de vendas de cada vendedor. Extrato de Contas — espelho
+  comercial pra fechamento de caixa. Filtro por conta de recebimento, forma de pagamento, canal. Não
+  é o financeiro completo — é a conferência comercial (&quot;quanto caiu na conta do Itaú das vendas
+  de hoje?&quot;). Relatórios — vendas por produto, ingressos por tarifa, adicionais por venda,
+  performance por vendedor. Exportáveis em PDF e Excel. Clientes Base de dados de todos os clientes.
+  Ficha única com dados pessoais, saúde, histórico de compras, acompanhantes frequentes. O gestor
+  consulta &quot;quem são meus melhores clientes&quot;, o vendedor consulta dados pra atendimento, a
+  operação consulta dados de saúde. Exportável pra Excel. Produtos Catálogo de experiências e
+  serviços vendidos. Cadastro e edição com abas: informações básicas, preços e tarifas,
+  disponibilidade, adicionais, recursos necessários (guias, veículos), regras e termos, SEO. É a
+  configuração do que aparece na loja e do que o vendedor pode vender. Financeiro Visão consolidada
+  do dinheiro da empresa — não só vendas, mas toda a movimentação. Agrupa: Dashboard financeiro
+  (receita, despesa, saldo), Movimentações (lançamentos de entrada e saída, inclusive o que não é
+  venda), Fluxo de Caixa (projeção de recebíveis e pagáveis nos próximos 30 dias), Notas Fiscais,
+  Categorias e Centro de Custo. A diferença pra Vendas: o Extrato em Vendas mostra &quot;quanto caiu
+  de vendas na conta X&quot;. O Financeiro mostra &quot;quanto a empresa tem, deve e vai receber de
+  tudo — vendas, despesas, fornecedores, salários.&quot; Afiliados Item próprio porque afiliado é um
+  perfil que loga no sistema com painel próprio. Do lado do gestor: lista de afiliados, cadastro,
+  produtos habilitados, comissões a pagar, relatório de vendas por afiliado. Do lado do afiliado:
+  ele entra no sistema e vê só o painel dele (vendas que originou, comissão acumulada, comissão
+  paga, links). RESUMO EM UMA LINHA CADA Item Pergunta que responde Início &quot;Como está meu
+  negócio agora?&quot; Agenda &quot;Quando acontece, quem vai, quantas vagas tem?&quot; Vendas
+  &quot;O que vendi, quanto vendi, como vendi?&quot; Clientes &quot;Quem são meus clientes?&quot;
+  Produtos &quot;O que eu vendo?&quot; Financeiro &quot;Como está o dinheiro da empresa?&quot;
+  Afiliados &quot;Quanto meus parceiros venderam e quanto devo?&quot; Você disse: preciso de algo
+  mais conciso nome por que existe e o que agrupa preciso de algo mais conciso nome por que existe e
+  o que agrupa 19 de fev. Claude respondeu: | Item | Por que existe | O que agrupa | Identificou
+  requisição por resumo conciso e estruturado Identificou requisição por resumo conciso e
+  estruturado Item Por que existe O que agrupa Início Visão geral do negócio sem clicar em nada.
+  Indicadores + atalhos. Não é módulo. Cards estatísticos, gráficos de tendência, rankings, widgets
+  com CTA pra cada módulo. Varia por perfil. Agenda Tudo que envolve tempo, pessoas e operação.
+  Calendário de saídas, Mapa de Vagas, Painel de Reservas, Fichas Operacionais. Vendas Tudo que
+  envolve dinheiro entrando. Módulo comercial. Pedidos, Carrinhos Abandonados, Cupons, Vendedores,
+  Extrato de Contas, Relatórios. Clientes Base unificada de quem compra. Ficha única (dados
+  pessoais, saúde, histórico de compras, acompanhantes). Produtos Configuração do que a empresa
+  vende. Catálogo, Tarifas, Adicionais, Recursos, Termos. Financeiro Visão consolidada do dinheiro
+  da empresa — não só vendas, tudo. Dashboard financeiro, Movimentações, Fluxo de Caixa, Notas
+  Fiscais, Centro de Custo. Afiliados Parceiros externos que vendem e logam no sistema com painel
+  próprio. Lista de afiliados, Comissões, Relatório de vendas, Links. Você disse: Preciso
+  transformar isso abaixo primeiro numa apresentacao do que é a dashboard, o que é vendas e por
+  assim vai. GESTOR COMERCIAL — &quot;Quero saber...&quot; 1. O que vendi → Módulo Vendas &gt;
+  Pedidos (lista com filtros). Dashboard Início mostra resumo nos widgets &quot;Vendas
+  recentes&quot; e cards estatísticos. ✅ 2. Quanto vendi → Cards estatísticos na Início
+  (Faturamento, Vendas realizadas). Detalhe no módulo Vendas &gt; Pedidos c pasted Preciso
+  transformar isso abaixo primeiro numa apresentacao do que é a dashboard, o que é vendas e por
+  assim vai... e depois o que cada solicitacao deles para qual lugar vai o que vai pra dashboard etc
+  pra vendas etc pra apresentar na reuniao, releia toda a conversa 19 de fev. Estruturou
+  apresentação mapeando dashboard, vendas e solicitações do cliente Estruturou apresentação mapeando
+  dashboard, vendas e solicitações do cliente A resposta do Claude foi interrompida Você disse:
+  Preciso transformar isso abaixo primeiro numa apresentacao do que é a dashboard, o que é vendas e
+  por assim vai. GESTOR COMERCIAL — &quot;Quero saber...&quot; 1. O que vendi → Módulo Vendas &gt;
+  Pedidos (lista com filtros). Dashboard Início mostra resumo nos widgets &quot;Vendas
+  recentes&quot; e cards estatísticos. ✅ 2. Quanto vendi → Cards estatísticos na Início
+  (Faturamento, Vendas realizadas). Detalhe no módulo Vendas &gt; Pedidos c pasted Preciso
+  transformar isso abaixo primeiro numa apresentacao do que é a dashboard, o que é vendas e por
+  assim vai... e depois o que cada solicitacao deles para qual lugar vai o que vai pra dashboard etc
+  pra vendas etc pra apresentar na reuniao, releia toda a conversa, nao cria nenhum doc me manda por
+  aqui bem organizado mesmo 19 de fev. Claude respondeu: PARTE 1 — O QUE É CADA ÁREA DO SISTEMA
+  Estruturou apresentação mapeando solicitações para seus respectivos módulos Estruturou
+  apresentação mapeando solicitações para seus respectivos módulos PARTE 1 — O QUE É CADA ÁREA DO
+  SISTEMA 🏠 INÍCIO (Dashboard) O que é: A primeira tela que aparece ao abrir o sistema. Não é um
+  módulo — é um painel de indicadores e atalhos. Pra que serve: O gestor abre e sabe como está o
+  negócio sem clicar em nada. O que tem dentro: 4 cards estatísticos no topo (Faturamento, Vendas,
+  Ticket Médio, Conversão) Widgets com gráficos e listas (vendas recentes, vendas por canal, vendas
+  por dia da semana, ranking de vendedores, produtos mais vendidos, carrinhos abandonados) Cada
+  widget tem um atalho que leva pro módulo correspondente O que NÃO tem: Tabelas, filtros, ações
+  sobre pedidos. Não dá pra cancelar venda, criar pedido ou registrar pagamento aqui. Resumo: Início
+  mostra. Vendas resolve. 🛒 VENDAS (Módulo) O que é: O módulo comercial. Onde o gestor e o vendedor
+  vão agir sobre os pedidos. Pra que serve: Ver, filtrar, criar, cancelar, editar vendas. Tudo que
+  envolve dinheiro entrando. O que tem dentro: Pedidos — Lista de todas as vendas com filtros
+  (período, status, canal, forma de pagamento, produto, vendedor). Cards de resumo no topo que mudam
+  conforme o filtro aplicado. Clique no pedido abre detalhe com abas (Resumo, Participantes,
+  Pagamento, Histórico). Carrinhos Abandonados — Vendas não finalizadas com temperatura
+  (quente/morno/frio) e ações de remarketing. Cupons — Criar, editar, ver quais vendas usaram cada
+  cupom. Vendedores — Cadastro, meta, comissão, histórico. Extrato de Contas — Espelho comercial pra
+  fechamento de caixa. Quanto caiu em cada conta bancária. Não é o financeiro completo. Relatórios —
+  Vendas por produto, ingressos por tarifa, adicionais, performance por vendedor. Exportáveis em PDF
+  e Excel. 💰 FINANCEIRO (Módulo) O que é: Visão consolidada do dinheiro da empresa — não só vendas,
+  tudo. Pra que serve: Entender o dinheiro como um todo: o que entrou, o que saiu, o que vai entrar,
+  o que vai sair. Inclui despesas, fornecedores, salários — coisas que Vendas não cobre. Diferença
+  pra Vendas: Vendas &gt; Extrato = &quot;quanto caiu de vendas na conta do Itaú hoje?&quot;
+  (conferência comercial, pedido a pedido) Financeiro &gt; Fluxo de Caixa = &quot;nos próximos 30
+  dias, tenho R $X pra receber e R$ Y pra pagar de tudo&quot; (visão consolidada) 👥 AFILIADOS
+  (Módulo) O que é: Gestão dos parceiros externos que vendem e logam no sistema com painel próprio.
+  Pra que serve: Cadastro de afiliados, comissões a pagar, relatório de vendas por afiliado, links.
+  PARTE 2 — ONDE CADA SOLICITAÇÃO MORA O que vai pra 🏠 INÍCIO (Dashboard)
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  1 O que vendi Widget &quot;Vendas recentes&quot; 2 Quanto vendi Cards: Faturamento + Vendas
+  realizadas + Ticket médio 3 Como vendi Widget &quot;Vendas por canal&quot; (pizza) 4 De onde veio
+  a venda Widget &quot;Vendas por canal&quot; 11 Quem vendeu pra mim Widget &quot;Ranking de
+  Vendedores&quot; 14 Quanto vendi de cada produto Widget &quot;Atividades mais vendidas&quot; (top
+  5) 16 Quais eventos venderam melhor Widget &quot;Atividades mais vendidas&quot; 17 Qual dia da
+  semana vendo melhor Widget &quot;Venda por Dia da Semana&quot; 28 Ranking dos vendedores Widget
+  &quot;Ranking de Vendedores&quot; (top 5 + meta) → Cada widget tem atalho que leva pra Vendas pra
+  ver o detalhe completo e agir. O que vai pra 🛒 VENDAS &gt; Pedidos (lista)
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  1 O que vendi Lista com filtros (período, status, canal, produto, vendedor) 2 Quanto vendi Cards
+  de resumo contextual no topo (mudam conforme o filtro) 3 Como vendi Filtro por canal 4 De onde
+  veio a venda Coluna &quot;Canal&quot; + filtro 11 Quem vendeu pra mim Coluna &quot;Vendedor&quot;
+  + filtro 13 Criar pedido e mandar link Botão &quot;Novo Pedido&quot; → stepper → gera link 27
+  Marcar como pago/parcial/cortesia Status do pedido + filtro O que vai pra 🛒 VENDAS &gt; Detalhe
+  da Venda (ao clicar num pedido)
+</p>
+<h3>&quot;Quero saber...&quot; Onde no detalhe</h3>
+<p>
+  4 De onde veio essa venda Resumo: canal, afiliado, cupom 7 Em quanto tempo vou receber Aba
+  Pagamento: parcelas com datas previstas 8 Quanto paguei de taxa Aba Pagamento: taxa + proxy 10
+  Quanto vai cair e quando Aba Pagamento: timeline de parcelas com valores líquidos 12 Quanto de
+  comissão pagar Resumo: comissão vinculada ao pedido 18 Cancelar 1 ingresso de 10 Ação
+  &quot;Cancelamento Parcial&quot; 19 Comprar adicionais pra venda já paga Ação &quot;Venda
+  Complementar&quot; 20 Adicionar dados de participantes Aba Participantes 22 Qual cupom foi usado
+  Resumo: cupom aplicado 24 Observações pra outros vendedores Campo de observações + log de
+  auditoria 25 Acompanhar Pix parcelado interno Aba Pagamento: timeline de pagamentos manuais 26
+  Quanto pagou e saldo restante Aba Pagamento: valor total, pago, saldo O que vai pra 🛒 VENDAS &gt;
+  Extrato de Contas
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  5 Pra qual conta foi a venda Filtro por conta de recebimento 8 Quanto paguei de taxa Totalização
+  de taxas por conta/período 9 Quanto vendi por qual proxy Filtro por conta (cada proxy = uma conta)
+  O que vai pra 🛒 VENDAS &gt; Relatórios
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  14 Quanto vendi de cada produto Relatório &quot;Vendas por Produto&quot; 15 Quanto vendi de cada
+  evento/data Relatório com filtro por data de saída 16 Quais eventos venderam melhor Relatório
+  ordenado por quantidade/valor 17 Qual dia da semana vendo melhor Relatório com agrupamento por dia
+  28 Ranking dos vendedores Relatório &quot;Performance por Vendedor&quot; 29 O que cada
+  vendedor/afiliado vendeu Relatório por Vendedor O que vai pra 🛒 VENDAS &gt; Vendedores
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  6 Criar metas de vendas Cadastro do vendedor com meta 12 Quanto de comissão pagar Comissão
+  acumulada por vendedor O que vai pra 🛒 VENDAS &gt; Cupons
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  22 Quais vendas usaram qual cupom Detalhe do cupom: lista de vendas + somatório 23 Aplicar
+  desconto No fluxo de Novo Pedido (etapa pagamento) O que vai pra 💰 FINANCEIRO
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  7 Em quanto tempo vou receber Fluxo de Caixa: projeção consolidada 10 Quanto vai cair na conta e
+  quando Fluxo de Caixa: todos os recebíveis futuros → A diferença: no detalhe da venda (Vendas) vê
+  as parcelas daquela venda. No Financeiro, vê o consolidado de todas as vendas — &quot;nos próximos
+  30 dias, tenho R$ X pra receber.&quot; O que vai pra 👥 AFILIADOS
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  12 Quanto de comissão pagar Extrato de comissões a pagar 29 O que cada afiliado vendeu Relatório
+  de Vendas dos Afiliados O que vai pra 👤 CLIENTES
+</p>
+<h3>&quot;Quero saber...&quot; Como aparece</h3>
+<p>
+  21 Top 5 clientes que mais compraram Lista ordenável por total de compras PARTE 3 — RESUMO FINAL
+  Área Pergunta que responde Qtd de solicitações cobertas Início &quot;Como está meu negócio?&quot;
+  9 (indicadores + atalhos) Vendas &gt; Pedidos &quot;O que aconteceu?&quot; 7 (lista, filtros,
+  criar pedido) Vendas &gt; Detalhe &quot;O que aconteceu nessa venda?&quot; 12 (pagamento,
+  cancelamento, participantes) Vendas &gt; Extrato &quot;Quanto caiu em cada conta?&quot; 3
+  (conferência de caixa) Vendas &gt; Relatórios &quot;Quais são os números?&quot; 6 (por produto,
+  vendedor, período) Vendas &gt; Vendedores &quot;Como está meu time?&quot; 2 (metas, comissão)
+  Vendas &gt; Cupons &quot;Como estão os descontos?&quot; 2 (uso, aplicação) Financeiro &quot;Quando
+  o dinheiro chega?&quot; 2 (fluxo de caixa consolidado) Afiliados &quot;Quanto devo pros
+  parceiros?&quot; 2 (comissão, vendas) Clientes &quot;Quem são meus melhores?&quot; 1 (ranking de
+  clientes) Todas as 29 solicitações estão cobertas. Nenhuma ficou de fora. Início mostra os números
+  pra entender. Vendas tem as ferramentas pra agir. Os dois se conectam pelos atalhos dos widgets.
+  Você disse: em vendas so tem pedidos, carrinhos, cupons, vendores n tem relatorios nem extrato, os
+  relatórios tá em pedidos pq posso exportar relatórios de lá, e relatório… em vendas so tem
+  pedidos, carrinhos, cupons, vendores n tem relatorios nem extrato, os relatórios tá em pedidos pq
+  posso exportar relatórios de lá, e relatórios específicos tao na dashboard, extrato de conta n tem
+  pq no detalhe do pedido vai tá lá a taxa, e por qual proxy vendeu, agora para qual conta foi a
+  venda acho que faz sentido estar em financeiro nao? enfim me manda algo mais enxuto sem ser em
+  tabela, pq assim ta ruim de mostrar 19 de fev. Claude respondeu: PARTE 1 — O QUE É CADA ÁREA
+  Reorganizou estrutura de vendas eliminando redundâncias e melhorando apresentação Reorganizou
+  estrutura de vendas eliminando redundâncias e melhorando apresentação PARTE 1 — O QUE É CADA ÁREA
+  🏠 INÍCIO Primeira tela do sistema. Não é módulo. É um painel de indicadores e atalhos. O gestor
+  abre e entende como está o negócio sem clicar em nada. Tem cards com números principais, gráficos
+  de tendência, rankings e widgets. Cada widget tem atalho que leva pro módulo certo pra agir. Os
+  relatórios visuais (gráficos, rankings, distribuições) moram aqui. 🛒 VENDAS Módulo comercial.
+  Onde o gestor e o vendedor agem. Tem 4 sub-páginas: Pedidos — lista de todas as vendas, filtros,
+  criar pedido, detalhe completo. Dá pra exportar relatórios a partir dos filtros. Carrinhos
+  Abandonados — vendas não finalizadas, temperatura, remarketing. Cupons — criar, editar, ver quais
+  vendas usaram. Vendedores — cadastro, meta, comissão. 💰 FINANCEIRO Visão consolidada do dinheiro
+  da empresa. Não só vendas — tudo. Despesas, fornecedores, fluxo de caixa projetado, notas fiscais,
+  pra qual conta foi a venda. A diferença pra Vendas: Vendas mostra &quot;esse pedido foi pago ou
+  não&quot;. Financeiro mostra &quot;nos próximos 30 dias, tenho R $X pra receber e R$ Y pra pagar
+  de tudo.&quot; 👥 AFILIADOS Parceiros externos. Cadastro, comissões, relatório de vendas, links.
+  PARTE 2 — ONDE CADA SOLICITAÇÃO MORA 🏠 VAI PRA INÍCIO (indicadores e atalhos)
+</p>
+<ol>
+  <li>
+    O que vendi → Widget &quot;Vendas recentes&quot; 2. Quanto vendi → Cards: Faturamento, Vendas
+    realizadas, Ticket médio 3. Como vendi → Widget &quot;Vendas por canal&quot; (gráfico pizza) 4.
+    De onde veio a venda → Widget &quot;Vendas por canal&quot; 11. Quem vendeu pra mim → Widget
+    &quot;Ranking de Vendedores&quot; 14. Quanto vendi de cada produto → Widget &quot;Atividades
+    mais vendidas&quot; 16. Quais eventos venderam melhor → Widget &quot;Atividades mais
+    vendidas&quot; 17. Qual dia da semana vendo melhor → Widget &quot;Venda por Dia da Semana&quot;
+    28. Ranking dos vendedores → Widget &quot;Ranking de Vendedores&quot; (top 5 + meta) Cada widget
+    tem atalho que leva pra Vendas &gt; Pedidos pra ver o detalhe e agir. 🛒 VAI PRA VENDAS &gt;
+    PEDIDOS (lista + filtros + exportação)
+  </li>
+  <li>
+    O que vendi → Lista com filtros (período, status, canal, produto, vendedor) 2. Quanto vendi →
+    Cards de resumo no topo que mudam conforme o filtro 3. Como vendi → Filtro por canal 4. De onde
+    veio a venda → Coluna &quot;Canal&quot; + filtro 11. Quem vendeu pra mim → Coluna
+    &quot;Vendedor&quot; + filtro 13. Criar pedido e mandar link → Botão &quot;Novo Pedido&quot; →
+    stepper → gera link 14/15/16/17. Relatórios de vendas por produto, evento, dia → Exportar a
+    partir dos filtros (PDF/Excel) 27. Marcar como pago/parcial/cortesia → Status do pedido + filtro
+    29. O que cada vendedor vendeu → Filtro por vendedor + exportar 🛒 VAI PRA VENDAS &gt; DETALHE
+    DA VENDA (ao clicar num pedido) 7. Em quanto tempo vou receber → Aba Pagamento: parcelas com
+    datas 8. Quanto paguei de taxa → Aba Pagamento: taxa + proxy 9. Quanto vendi por qual proxy →
+    Aba Pagamento: qual proxy processou 10. Quanto vai cair e quando → Aba Pagamento: timeline de
+    parcelas 12. Quanto de comissão pagar → Comissão vinculada ao pedido 18. Cancelar 1 ingresso de
+    10 → Ação &quot;Cancelamento Parcial&quot; 19. Comprar adicionais pra venda já paga → Ação
+    &quot;Venda Complementar&quot; 20. Adicionar dados de participantes → Aba Participantes 22. Qual
+    cupom foi usado → Info no resumo do pedido 23. Aplicar desconto → No fluxo de Novo Pedido (etapa
+    pagamento) 24. Observações pra outros vendedores → Campo de observações + log 25. Acompanhar Pix
+    parcelado interno → Aba Pagamento: timeline manual 26. Quanto pagou e saldo → Aba Pagamento:
+    valor total, pago, saldo 🛒 VAI PRA VENDAS &gt; VENDEDORES 6. Criar metas → Cadastro do vendedor
+    com meta mensal 12. Quanto de comissão pagar → Comissão acumulada por vendedor 🛒 VAI PRA VENDAS
+    &gt; CUPONS 22. Quais vendas usaram qual cupom → Detalhe do cupom com lista + somatório 💰 VAI
+    PRA FINANCEIRO 5. Pra qual conta foi a venda → Extrato por conta de recebimento 7. Em quanto
+    tempo vou receber (consolidado) → Fluxo de Caixa: projeção de todos os recebíveis 10. Quanto vai
+    cair na conta e quando (consolidado) → Fluxo de Caixa: visão geral A diferença: no detalhe da
+    venda vê as parcelas daquela venda. No Financeiro vê o consolidado: &quot;nos próximos 30 dias,
+    R$ X pra receber de tudo.&quot; 👥 VAI PRA AFILIADOS 12. Quanto de comissão pagar pros afiliados
+    → Extrato de comissões 29. O que cada afiliado vendeu → Relatório de vendas 👤 VAI PRA CLIENTES
+    21. Top 5 clientes que mais compraram → Lista ordenável por total de compras PARTE 3 — RESUMO
+    Início → 9 solicitações (indicadores, gráficos, rankings — tudo visual, sem ação) Vendas → 22
+    solicitações (lista de pedidos, detalhe, criar pedido, cancelar, exportar, vendedores, cupons)
+    Financeiro → 3 solicitações (pra qual conta foi, fluxo de caixa consolidado) Afiliados → 2
+    solicitações (comissão e vendas dos parceiros) Clientes → 1 solicitação (ranking de clientes) 29
+    solicitações. Nenhuma ficou de fora. Início mostra os números. Vendas tem as ferramentas pra
+    agir. Financeiro consolida o dinheiro. Os três se conectam pelos atalhos. Você disse: ta muito
+    bagunçado, bem dificl de ler e entender ta muito bagunçado, bem dificl de ler e entender 19 de
+    fev. Claude respondeu: O QUE É CADA ÁREA Reorganizou conteúdo para melhor clareza e apresentação
+    Reorganizou conteúdo para melhor clareza e apresentação O QUE É CADA ÁREA INÍCIO é a primeira
+    tela. Mostra indicadores e atalhos. O gestor abre e entende como está o negócio. Não é módulo,
+    não tem ação — só mostra números e leva pros lugares certos. VENDAS é onde o gestor age. Lista
+    de pedidos, criar venda, cancelar, ver detalhe, exportar. Dentro tem: Pedidos, Carrinhos
+    Abandonados, Cupons e Vendedores. FINANCEIRO é a visão do dinheiro como um todo. Fluxo de caixa,
+    pra qual conta foi, projeção de recebíveis. Não só vendas — tudo da empresa. AFILIADOS é a
+    gestão dos parceiros externos. Comissões e vendas deles. CLIENTES é a base de quem compra. ONDE
+    CADA SOLICITAÇÃO MORA Na INÍCIO (o gestor abre e vê) 1 · O que vendi → Widget &quot;Vendas
+    recentes&quot; 2 · Quanto vendi → Cards de faturamento, vendas, ticket médio 3 · Como vendi →
+    Widget &quot;Vendas por canal&quot; 4 · De onde veio → Widget &quot;Vendas por canal&quot; 11 ·
+    Quem vendeu → Widget &quot;Ranking de Vendedores&quot; 14 · Quanto de cada produto → Widget
+    &quot;Atividades mais vendidas&quot; 16 · Quais eventos melhor → Widget &quot;Atividades mais
+    vendidas&quot; 17 · Melhor dia da semana → Widget &quot;Venda por Dia da Semana&quot; 28 ·
+    Ranking vendedores → Widget &quot;Ranking de Vendedores&quot; Em VENDAS &gt; PEDIDOS (o gestor
+    filtra, busca, exporta) 1 · O que vendi → Lista com filtros 2 · Quanto vendi → Cards de resumo
+    que mudam conforme o filtro 3 · Como vendi → Filtro por canal 4 · De onde veio → Coluna e filtro
+    &quot;Canal&quot; 11 · Quem vendeu → Coluna e filtro &quot;Vendedor&quot; 13 · Criar pedido e
+    mandar link → Botão &quot;Novo Pedido&quot; 27 · Pago, parcial ou cortesia → Status + filtro 14,
+    15, 16, 17, 29 · Relatórios → Exportar resultado dos filtros em PDF/Excel Em VENDAS &gt; DETALHE
+    DA VENDA (o gestor clica num pedido e vê tudo) 7 · Quando vou receber → Aba Pagamento: parcelas
+    com datas 8 · Quanto de taxa → Aba Pagamento: taxa e proxy 9 · Qual proxy processou → Aba
+    Pagamento 10 · Quanto vai cair e quando → Aba Pagamento: timeline de parcelas 12 · Comissão
+    desse pedido → No resumo do pedido 18 · Cancelar 1 ingresso de 10 → Ação &quot;Cancelamento
+    Parcial&quot; 19 · Adicionar item a venda paga → Ação &quot;Venda Complementar&quot; 20 · Dados
+    dos participantes → Aba Participantes 22 · Cupom usado → No resumo 23 · Aplicar desconto → No
+    fluxo de criar pedido 24 · Observações internas → Campo de observações + log 25 · Pix parcelado
+    interno → Aba Pagamento: timeline manual 26 · Quanto pagou e saldo → Aba Pagamento Em VENDAS
+    &gt; VENDEDORES 6 · Criar metas → No cadastro do vendedor 12 · Comissão acumulada → No perfil do
+    vendedor Em VENDAS &gt; CUPONS 22 · Quais vendas usaram o cupom → No detalhe do cupom No
+    FINANCEIRO 5 · Pra qual conta foi a venda → Extrato por conta 7 · Quando vou receber (de tudo) →
+    Fluxo de Caixa consolidado 10 · Quanto vai cair (de tudo) → Fluxo de Caixa consolidado Em
+    AFILIADOS 12 · Comissão dos afiliados → Extrato de comissões 29 · Vendas dos afiliados →
+    Relatório Em CLIENTES 21 · Top clientes → Lista ordenável RESUMO Início → mostra os números (9
+    solicitações) Vendas → ferramentas pra agir (22 solicitações) Financeiro → visão consolidada do
+    dinheiro (3 solicitações) Afiliados → parceiros externos (2 solicitações) Clientes → base de
+    clientes (1 solicitação) 29 solicitações, nenhuma de fora. Você disse: Agora de acordo com a
+    nossa conversa desde o início e a transcricao da call com eles preciso explicar pessoal na
+    ultima call vcs etc e a gente pensando nisso m… Agora de acordo com a nossa conversa desde o
+    início e a transcricao da call com eles preciso explicar pessoal na ultima call vcs etc e a
+    gente pensando nisso modulos etc 19 de fev. Claude respondeu: O QUE FALAR NA REUNIÃO
+    Orchestrated conversational script referencing prior discussion and architectural decisions
+    Orchestrated conversational script referencing prior discussion and architectural decisions O
+    QUE FALAR NA REUNIÃO Pessoal, na última call vocês trouxeram algumas pontuações sobre o que
+    precisavam ver na parte de vendas. A gente analisou tudo com calma e percebeu que antes de
+    seguir desenhando telas, precisa alinhar com vocês a lógica de como o sistema está organizado —
+    porque acho que parte da confusão vem daí. Vocês pediram uma visão geral dentro de vendas com
+    gráficos, rankings, indicadores. E faz total sentido querer ver isso. Só que na arquitetura que
+    a gente desenhou, esse tipo de informação já existe — mora na Início. Deixa eu explicar como a
+    gente pensou. A Início não é um módulo. Ela é a primeira tela que aparece quando abre o sistema.
+    O objetivo dela é: abrir e saber como está o negócio sem clicar em nada. Ali tem os cards com
+    faturamento, total de vendas, ticket médio. Tem os gráficos de vendas por canal, por dia da
+    semana, por meio de pagamento. Tem o ranking de vendedores, os produtos mais vendidos, os
+    carrinhos abandonados. Tudo que é indicador visual, número, gráfico — mora ali. E cada um desses
+    widgets tem um atalho. Clicou no ranking de vendedores, vai pra lista de vendedores. Clicou em
+    carrinhos abandonados, vai pra lista de carrinhos. A Início mostra o resumo e aponta pra onde
+    agir. Vendas é onde o gestor age. Quando ele precisa ver a lista de pedidos, filtrar por
+    período, por canal, por vendedor, criar um pedido novo, abrir o detalhe de uma venda, cancelar
+    um ingresso, registrar um pagamento — tudo isso é em Vendas. Ali dentro tem Pedidos, Carrinhos
+    Abandonados, Cupons e Vendedores. A lista de pedidos tem cards de resumo no topo que mudam
+    conforme o filtro. Então se o gestor filtra &quot;Janeiro, Pix, Site&quot;, os cards mostram o
+    total daquela pesquisa. E dá pra exportar o resultado em PDF e Excel — que é o relatório que
+    vocês pediram. O detalhe da venda é onde fica tudo sobre aquele pedido específico: taxa, proxy,
+    parcelas, participantes, cancelamento parcial, observações, log de auditoria. Financeiro é a
+    visão consolidada do dinheiro. Não só vendas — tudo da empresa. Despesas, fornecedores, fluxo de
+    caixa. Quando vocês perguntam &quot;pra qual conta bancária foi essa venda&quot;, isso mora no
+    Financeiro. Quando perguntam &quot;nos próximos 30 dias quanto tenho pra receber de tudo&quot;,
+    também. A diferença pro que aparece em Vendas: no detalhe do pedido vocês veem as parcelas
+    daquela venda. No Financeiro vocês veem o consolidado de todas as vendas e despesas juntas. Se a
+    gente colocasse uma dashboard dentro de Vendas com gráficos e rankings, ia duplicar o que já
+    está na Início. O gestor não ia saber onde olhar os números — se é na Início ou dentro de
+    Vendas. E quando a informação está em dois lugares, ela fica desatualizada ou confusa. A lógica
+    é simples: Início mostra os números. Vendas tem as ferramentas pra agir. Financeiro consolida o
+    dinheiro. E pra garantir que nada ficou de fora, a gente pegou todas as 29 solicitações que
+    vocês fizeram no documento e mapeou uma por uma onde cada uma está resolvida. Todas estão
+    cobertas. Posso passar por elas com vocês agora se quiserem.
+  </li>
+</ol>

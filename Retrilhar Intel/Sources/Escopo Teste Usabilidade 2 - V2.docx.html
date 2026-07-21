@@ -1,0 +1,366 @@
+<p>
+  <strong>Retrilhar -</strong> <strong>Escopo de Teste de Usabilidade</strong>
+  <strong>Módulo de Agenda ·</strong> <strong>V</strong> <strong>2</strong>
+  <em>Atualizado após alinhamento de 23 de abril de 2026</em>
+  | <strong>Ajustes em relação à versão anterior</strong> |
+  <strong>Redução de 5 para 3 missões</strong> - Como havíamos alinhado na reunião de 23/04 com base
+  na sugestão da Katiely de priorizar os fluxos mais usados pelos clientes: busca de participante,
+  consulta de dados da reserva e check-in. | <strong>Missões removidas nesta rodada:</strong> Visão
+  Geral da atividade, Atualizações operacionais e Conclusão/Encerramento do dia. Serão
+  reintroduzidas em uma rodada posterior, após definição dos tipos de intercorrências e dos edge
+  cases de fechamento dos demais fluxos. | | ------ | ------ | ------ |
+</p>
+<p>
+  <strong>1. Objetivo do Teste</strong>
+  <em
+    ><strong
+      >O teste tem como propósito validar os fluxos operacionais mais críticos do módulo de Agenda
+      da plataforma Retrilhar, com foco no check-in de participantes</strong
+    ></em
+  >
+  , <em><strong>identificado</strong></em> nos
+  <em
+    ><strong
+      >alinhamentos como o fluxo mais utilizado pelos clientes no dia a dia. Esta rodada avalia a
+      eficiência das interações nas seguintes áreas funcionais:</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Acesso e navegação pelo calendário de atividades pelas visualizações de mês, semana e
+      dia;</strong
+    ></em
+  >
+  <em><strong>Painel de atividades do dia;</strong></em>
+  <em
+    ><strong
+      >Aba de participantes dentro da interna da atividade, com ênfase em busca por nome e consulta
+      de dados da reserva;</strong
+    ></em
+  >
+  <em><strong>Fluxo de check-in individual e check-in em massa de reservas em grupo;</strong></em>
+  <em
+    ><strong
+      >Compreensão dos alertas operacionais (pagamento, saúde, seguro obrigatório).</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Os resultados irão orientar os refinamentos de design antes da entrega do módulo para
+      desenvolvimento, e servirão de base para as rodadas subsequentes de teste das demais áreas do
+      módulo (Visão Geral, Atualizações, Fechamento).</strong
+    ></em
+  >
+  <strong>2. Perfil Esperado dos Participantes</strong>
+  <em
+    ><strong
+      >Podemos realizar o teste com 5 participantes, distribuídos entre os perfis operacionais da
+      plataforma:</strong
+    ></em
+  >
+  | <strong>Perfil</strong> | <strong>Critério de inclusão</strong> |
+  <strong>Nº de participantes</strong> | | ------ | ------ | ------ | |
+  <em><strong>Gestor Comercial</strong></em> |
+  <em
+    ><strong
+      >Responsável pela gestão da agenda, atribuição de guias e fechamento de atividades</strong
+    ></em
+  >
+  | <em><strong>2 participantes</strong></em> | | <em><strong>Operador / Guia</strong></em> |
+  <em
+    ><strong
+      >Atua diretamente nas saídas; precisa visualizar a operação do dia e realizar
+      check-ins</strong
+    ></em
+  >
+  | <em><strong>2 participantes</strong></em> | | <em><strong>Vendedor (Comercial)</strong></em> |
+  <em><strong>Realiza vendas e acompanha pedidos; uso eventual do painel operacional</strong></em> |
+  <em><strong>1 participante</strong></em> |
+</p>
+<p>
+  <strong>Critérios gerais de inclusão</strong>
+  <em
+    ><strong
+      >Familiaridade com ferramentas digitais de gestão (independentemente do setor);</strong
+    ></em
+  >
+  <em><strong>Atuação direta ou indireta na operação de turismo de experiências;</strong></em>
+  <em
+    ><strong
+      >Não ter participado dos testes de usabilidade anteriores do projeto Retrilhar.</strong
+    ></em
+  >
+  <strong>3. Metodologia</strong>
+  <strong>Método</strong>
+  <em
+    ><strong
+      >Teste de usabilidade moderado, remoto, com tarefas baseadas em cenários realistas. Cada
+      participante navega individualmente no protótipo de alta fidelidade enquanto pensa em voz
+      alta.</strong
+    ></em
+  >
+  <strong>Formato</strong>
+  <em><strong>Sessões individuais</strong></em> via
+  <em
+    ><strong
+      >Google Meet, com compartilhamento de tela e gravação para análise posterior.</strong
+    ></em
+  >
+  <strong>4. Cronograma da Sessão</strong>
+  <em><strong>Estrutura padrão de cada sessão de teste:</strong></em>
+  | <strong>Etapa</strong> | <strong>Descrição</strong> | <strong>Duração estimada</strong> | |
+  ------ | ------ | ------ | | <em><strong>Introdução e boas-vindas</strong></em> |
+  <em><strong>Apresentação do teste, termos de gravação e instruções gerais</strong></em> |
+  <em><strong>5 min</strong></em> | | <em><strong>Contextualização inicial</strong></em> |
+  <em><strong>Briefing do cenário de uso para o teste</strong></em> |
+  <em><strong>3 min</strong></em> | | <em><strong>Missão 1</strong></em> |
+  <em><strong>Localizar as atividades do dia na agenda</strong></em> |
+  <em><strong>6 min</strong></em> | | <em><strong>Missão 2</strong></em> |
+  <em><strong>Buscar um participante e conferir os dados da reserva</strong></em> |
+  <em><strong>8 min</strong></em> | | <em><strong>Missão 3</strong></em> |
+  <em><strong>Realizar o check-in de participantes individuais e em grupo</strong></em> |
+  <em><strong>12 min</strong></em> | |
+  <em><strong>Encerramento e perguntas pós-teste</strong></em> |
+  <em><strong>Questionário de satisfação e perguntas abertas</strong></em> |
+  <em><strong>6 min</strong></em> | | <em><strong>Total estimado por sessão</strong></em> | |
+  <em><strong>~40 min</strong></em> |
+</p>
+<p>
+  <strong>5. Missões</strong>
+  <em
+    ><strong
+      >Cada missão vai simular um cenário real de uso da plataforma. Nós iremos apresentar o
+      contexto antes do início de cada missão e não iremos interferir durante a execução do teste,
+      exceto em casos de bloqueio total.</strong
+    ></em
+  >
+  | <strong>MISSÃO 1 - Localizar as atividades do dia na agenda</strong> | | | | | ------ | ------ |
+  ------ | ------ | | <strong>Contexto</strong> |
+  <em
+    >&quot;Você está iniciando o seu dia de trabalho na plataforma. Localize as atividades
+    programadas para hoje.&quot;</em
+  >
+  | | | | <strong>Passos esperados</strong> | <strong>1.</strong> Identificar a data atual no
+  calendário; | <strong>2.</strong> Acessar a lista de Atividades do Dia a partir do calendário; |
+  <strong>3.</strong> Alternativamente: clicar diretamente em uma atividade no calendário para
+  acessar sua interna. | | <strong>Objetivo de observação</strong> | Avaliar se o usuário consegue
+  se orientar no calendário e encontrar as atividades do dia sem dificuldades. Identificar se as
+  visualizações (Mês, Semana, Dia) são intuitivas e se o ponto de entrada para a interna da
+  atividade é claro. | | |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>MISSÃO 2 - Buscar um participante e conferir os dados da reserva</strong></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Contexto</strong></td>
+      <td>
+        <em
+          >&quot;Um participante chegou ao ponto de encontro e mencionou que tem uma reserva, mas
+          você precisa confirmar os detalhes antes de liberar a entrada. Localize esse participante
+          dentro da atividade do dia e confira as informações da reserva dele.&quot;</em
+        >
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><strong>Passos esperados</strong></td>
+      <td><strong>1.</strong> Acessar a interna de uma atividade do dia;</td>
+      <td><strong>2.</strong> Navegar para a aba Participantes;</td>
+      <td>
+        <strong>3.</strong> Utilizar o campo de busca para localizar o participante pelo nome;
+      </td>
+      <td><strong>4.</strong> Identificar o status do pagamento da reserva;</td>
+      <td><strong>5.</strong> Verificar se há alertas de saúde associados ao participante;</td>
+      <td>
+        <strong>6.</strong> Identificar se a reserva é individual ou em grupo e, no caso de grupo,
+        expandir para visualizar os participantes vinculados.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Objetivo de observação</strong></td>
+      <td>
+        Avaliar se a busca por nome é descoberta naturalmente, se os dados da reserva (status,
+        pagamento, alertas de saúde, tipo de reserva) são compreendidos no primeiro contato e se a
+        distinção entre reservas individuais e em grupo é clara. Esta é uma das ações mais
+        frequentes citadas pelos clientes no uso real da plataforma.
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        <strong>MISSÃO 3 - Realizar o check-in de participantes individuais e em grupo</strong>
+      </th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Contexto</strong></td>
+      <td>
+        <em
+          >&quot;A atividade está prestes a começar e os participantes estão chegando ao ponto de
+          encontro. Você precisa liberar a entrada deles realizando o check-in. Faça o check-in de
+          um participante com reserva individual e, em seguida, de todos os participantes de uma
+          reserva em grupo de uma só vez.&quot;</em
+        >
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><strong>Passos esperados</strong></td>
+      <td>
+        <strong>1.</strong> Na aba Participantes, identificar os filtros rápidos disponíveis (Todos,
+        Pagamentos confirmados, Pendentes, etc.);
+      </td>
+      <td>
+        <strong>2.</strong> Localizar um participante com reserva individual e realizar o check-in;
+      </td>
+      <td>
+        <strong>3.</strong> Neste cenário a atividade exige seguro obrigatório: confirmar a reserva
+        no card e contratar o seguro antes do check-in;
+      </td>
+      <td>
+        <strong>4.</strong> Concluir o check-in do participante individual pelo botão &quot;Realizar
+        Check-in&quot;;
+      </td>
+      <td>
+        <strong>5.</strong> Localizar uma reserva em grupo, selecionar todos os participantes e
+        realizar o check-in em massa pela barra de ações contextuais;
+      </td>
+      <td>
+        <strong>6.</strong> Conferir, no topo da lista, se o contador de check-ins realizados foi
+        atualizado corretamente.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Objetivo de observação</strong></td>
+      <td>
+        Avaliar se o fluxo de check-in é fluido durante alta demanda operacional, considerando que
+        este é o fluxo mais crítico do módulo. Verificar se o bloqueio pelo seguro obrigatório é
+        compreendido, se a operação em massa é localizável, se os alertas de saúde são percebidos no
+        momento certo e se o feedback visual após o check-in é suficiente para dar segurança ao
+        operador.
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <strong>6. Métricas de Avaliação</strong>
+  <em><strong>As sessões serão avaliadas com base nas seguintes métricas:</strong></em>
+  | <strong>Métrica</strong> | <strong>Método de coleta</strong> | <strong>Meta</strong> | | ------
+  | ------ | ------ | | <em><strong>Taxa de conclusão por missão</strong></em> |
+  <em><strong>Observação direta</strong></em> | <em><strong>≥ 80% dos participantes</strong></em> |
+  | <em><strong>Número de erros / desvios de rota</strong></em> |
+  <em><strong>Observação direta</strong></em> | <em><strong>Mapeamento qualitativo</strong></em> | |
+  <em><strong>Ocorrências de confusão ou hesitação</strong></em> |
+  <em><strong>Think-aloud + observação</strong></em> |
+  <em><strong>Mapeamento qualitativo</strong></em> | |
+  <em><strong>Satisfação pós-teste (avaliação simplificada)</strong></em> |
+  <em><strong>Questionário pós-sessão</strong></em> |
+  <em><strong>Avaliações positivas pelos participantes</strong></em> |
+</p>
+<p>
+  <strong>Observações qualitativas</strong>
+  <em
+    ><strong
+      >Além das métricas quantitativas, serão registradas observações qualitativas sobre:</strong
+    ></em
+  >
+  <em
+    ><strong>Vocabulário utilizado pelo participante ao se referir às funcionalidades;</strong></em
+  >
+  <em><strong>Momentos de hesitação, retrocesso ou busca visual prolongada;</strong></em>
+  <em
+    ><strong
+      >Comentários espontâneos sobre expectativas não atendidas ou surpresas positivas.</strong
+    ></em
+  >
+  <strong>7. Base de Roteiro</strong>
+  <strong>Abertura da sessão</strong>
+  <em><strong>Apresentar-se e agradecer a participação;</strong></em>
+  <em><strong>Explicar que o objetivo é avaliar o sistema, não o participante;</strong></em>
+  <em><strong>Solicitar autorização para gravação da sessão;</strong></em>
+  <em><strong>Orientar o participante a pensar em voz alta durante toda a navegação;</strong></em>
+  <em
+    ><strong>Solicitar o compartilhamento de tela antes de enviar o link do protótipo;</strong></em
+  >
+  <em><strong>Informar que não haverá auxílio durante as missões</strong></em> ,
+  <em><strong>iremos apenas repetir o objetivo da missão quando solicitado.</strong></em>
+  <strong>Durante as missões</strong>
+  <em
+    ><strong
+      >Apresentar o contexto de cada missão em voz alta antes de liberar a navegação;</strong
+    ></em
+  >
+  <em><strong>Não indicar caminhos ou dar dicas de navegação;</strong></em>
+  <em
+    ><strong
+      >Avaliar erros, desvios de rota, verbalizações espontâneas e momentos de hesitação;</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Em caso de bloqueio total (&gt; 1,5 minutos sem progresso): registrar o ponto de falha e
+      passar para a próxima missão, comunicando ao participante que o objetivo foi
+      encerrado.</strong
+    ></em
+  >
+  <strong>Encerramento</strong>
+  <em><strong>Realizar ao menos 3 perguntas abertas</strong></em> ; Agradecer a participação.
+  <strong>8. Entregáveis Pós-Testes</strong>
+  <em><strong>Ao concluirmos os testes…</strong></em>
+  <em
+    ><strong
+      >Será elaborado um relatório consolidado dos achados por missão, com classificação por
+      severidade (crítico, moderado, irrelevante);</strong
+    ></em
+  >
+  <em
+    ><strong>Lista priorizada de melhorias recomendadas baseada nos achados dos testes;</strong></em
+  >
+  <em
+    ><strong
+      >Matriz de decisão indicando quais melhorias serão endereçadas antes da entrega para
+      desenvolvimento e quais ficarão como pendências para estruturar o design;</strong
+    ></em
+  >
+  <em><strong>Apresentação de resultados para alinhamento.</strong></em>
+</p>

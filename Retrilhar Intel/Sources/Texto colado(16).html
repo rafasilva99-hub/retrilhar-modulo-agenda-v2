@@ -1,0 +1,267 @@
+<p>
+  Análise — Escopo do Teste de Usabilidade · Módulo de Agenda (Retrilhar v2) Visão geral O documento
+  está bem estruturado e cobre os oito pilares esperados de um plano de teste: objetivo, perfis,
+  metodologia, cronograma, missões, métricas, roteiro e entregáveis. A estrutura é limpa, a
+  linguagem é consistente com o vocabulário do produto (Visão Geral, Participantes, Atualizações,
+  Painel do Dia) e as missões refletem a jornada operacional real — não testes genéricos. É um
+  escopo pronto para ser executado com ajustes pontuais. A seguir, a análise por severidade. 🔴
+  Críticos (resolver antes de rodar o teste)
+</p>
+<ol>
+  <li>
+    Cronograma subestima o tempo real. A soma das missões + abertura + encerramento dá 63 minutos,
+    mas sessões moderadas com think-aloud em 5 missões operacionais densas tipicamente levam 75–90
+    min. A Missão 3 sozinha (identificar filtros + conferir pagamento + expandir grupo + contratar
+    seguro + check-in individual + check-in em massa + identificar alertas de saúde) é pesada demais
+    para 12 minutos com think-aloud. Recomendo: aumentar Missão 3 para 15 min, ou dividir em 3a
+    (individual) e 3b (grupo + seguro). Total realista: ~75 min.
+  </li>
+  <li>
+    Missão 3 mistura pagamento com check-in sem justificativa clara. O contexto diz &quot;confira se
+    o pagamento da reserva já foi efetuado&quot;, mas o passo esperado depois salta para
+    &quot;confirmar a reserva no card e então contratar o seguro&quot;. Há três ações distintas
+    sendo empilhadas (verificar pagamento → confirmar reserva → contratar seguro → check-in) sem que
+    o contexto prepare o participante para isso. Se o pagamento pendente for um bloqueio para o
+    check-in, isso precisa estar explícito no contexto. Se for só observação, deixe como objetivo
+    secundário, não como passo.
+  </li>
+  <li>
+    Missão 5 não cobre o caso de bloqueio do fechamento do dia. Uma das principais regras de negócio
+    definidas com o Cristiano é que o CTA de encerrar o dia fica travado enquanto houver atividades
+    não concluídas. A missão atual assume que todas já estão concluídas (&quot;verifique se todas as
+    atividades do dia foram concluídas&quot;). Isso testa o caminho feliz, mas não testa a
+    descoberta do bloqueio — que é justamente onde usuários costumam travar. Sugiro: deixar 1
+    atividade pendente intencionalmente para observar se o usuário entende o toast/progress bar e
+    consegue usar o deep-link para a atividade pendente. 🟡 Moderados (vale ajustar) 4. Perfil
+    &quot;Vendedor (Comercial)&quot; destoa do objetivo. O objetivo declarado é validar a jornada
+    operacional (Agenda, Painel do Dia, check-in, fechamentos). O Comercial tem uso eventual desse
+    módulo — como você mesma documentou, Início é overview e módulos são ação operacional. Incluir 1
+    Comercial no teste provavelmente vai gerar dados de baixo valor para as missões 3, 4 e 5.
+    Considere: substituir por um terceiro Operador/Guia (perfil onde o volume de dor é maior) ou por
+    um segundo Gestor, e deixar a validação comercial para um teste do módulo Vendas. 5. Missão 1
+    não distingue Gestor de Operador. O contexto &quot;localize as atividades programadas para
+    hoje&quot; funciona igual para os dois perfis, mas o Painel do Dia comporta-se diferente por
+    perfil (Gestor tem seleção de data, Guia/Operador é present-focused sem seleção de data). Se o
+    mesmo protótipo for mostrado a ambos os perfis sem ajuste, você vai capturar ruído em vez de
+    sinal. Recomendo: deixar explícito no plano qual variação do protótipo cada perfil vê, ou rodar
+    a Missão 1 com cenários ligeiramente diferentes. 6. Missão 4 não cobre a distinção entre sumário
+    e listagem. O objetivo de observação menciona avaliar &quot;se a hierarquia das informações
+    (sumário vs. listagem) é clara&quot;, mas os passos esperados não forçam o participante a
+    interagir com ambos. O participante pode passar o olho no sumário e ir direto ao campo de texto
+    sem que você observe se ele entende a diferença. Sugestão: adicionar um passo como
+    &quot;identificar quantos alertas de saúde existem no dia&quot; — isso obriga a leitura do
+    sumário. 7. Ausência de pergunta pós-teste sobre vocabulário. Você lista &quot;vocabulário
+    utilizado pelo participante&quot; como observação qualitativa, mas as 3 perguntas abertas de
+    encerramento não tocam nisso. Se vocabulário é dado crítico (e é, para renomeações como
+    &quot;Participantes&quot; vs &quot;Reservas&quot;), vale uma 4ª pergunta: &quot;Se você tivesse
+    que explicar para um colega o que faz a aba &#39;Atualizações&#39;, como descreveria?&quot; 8.
+    Missão 3 tem passo com lógica de permissão implícita. &quot;Selecionar todos os participantes de
+    uma reserva em grupo e realizar o check-in em massa&quot; assume que o usuário vai descobrir o
+    multi-select. Dado o que você já mapeou (bottom contextual action bar), vale validar se o gesto
+    de entrada no modo multi-select (long press? checkbox no card?) é descoberto espontaneamente —
+    isso pode virar um objetivo de observação explícito. 🟢 Pontos fortes (preservar) Contextos
+    narrativos realistas (&quot;os participantes estão chegando ao ponto de encontro&quot;, &quot;um
+    dos guias cancelou a participação&quot;) — ótima técnica para ativar pensamento operacional em
+    vez de exploratório. Critério de bloqueio claro (1,5 min sem progresso) — evita que o moderador
+    resgate o participante cedo demais. Regra de não interferência bem definida — repetir apenas o
+    objetivo da missão é o padrão correto para teste moderado. Severidade tripartite nos entregáveis
+    (crítico/moderado/irrelevante) — alinhada com a matriz de decisão de desenvolvimento. Perfil
+    &quot;não ter participado dos testes anteriores&quot; — bom critério para evitar viés de
+    aprendizado do protótipo anterior. Sugestões opcionais Incluir baseline de familiaridade com o
+    domínio no screener (ex.: &quot;participante opera turismo de experiências há pelo menos 1
+    ano&quot;) — reduz risco de capturar confusão que é do domínio, não do design. Definir o que
+    significa &quot;avaliação positiva&quot; na métrica de satisfação. Escala Likert? SUS? Uma nota
+    1–5? Sem isso, a meta fica não-falsificável. Mencionar o protocolo para bugs do protótipo —
+    Figma Make às vezes tem estados quebrados; ter um &quot;script de recuperação&quot; pronto evita
+    perder a sessão. Quer que eu estruture algum desses pontos como edição sugerida direto no DOCX
+    (com tracked changes), ou prefere discutir as decisões antes de mexer no documento?Você disse:
+    Me dê o conteúdo para eu aplicar nesse template, é a tela de boas vindas do testeMe dê o
+    conteúdo para eu aplicar nesse template, é a tela de boas vindas do teste23 de abr.Claude
+    respondeu: Vou analisar a tela e propor o conteúdo ajustado para ela.Vou analisar a tela e
+    propor o conteúdo ajustado para ela. Observações sobre o layout atual Antes do conteúdo, três
+    pontos que vi na tela que vale pensar: O texto introdutório atual é comprido e mistura contexto
+    + instruções. Na sua versão, os parágrafos de abertura já antecipam o que será testado e ainda
+    emendam &quot;Lembre-se:&quot; antes dos cards. Isso funciona, mas dá peso de texto antes do
+    participante chegar nos pontos-chave. Os dois cards funcionam como &quot;lembretes&quot;, então
+    o conteúdo deles deve ser curto, direto e acionável — não uma segunda explicação. &quot;Não há
+    pressa...&quot; está solto no final, fora dos cards. Isso cria hierarquia estranha. Pode virar
+    um terceiro card ou ser absorvido em um dos dois. Conteúdo proposto Título Olá, boas-vindas ao
+    teste de usabilidade! Parágrafo de abertura (mais enxuto, sem antecipar missões) Agradecemos a
+    sua participação. Hoje vamos avaliar a sua experiência de uso no módulo de Agenda da Retrilhar —
+    uma plataforma de gestão para operadoras de turismo de experiências. O seu papel durante o teste
+    será navegar pelo protótipo como se estivesse no seu dia a dia de trabalho. Antes de começar,
+    alguns pontos importantes: Tirei a lista de ações específicas (&quot;criar vendas, gerenciar
+    agenda...&quot;) porque isso já vem nas missões. Aqui o foco é posicionar o produto e preparar o
+    mindset. Card 1 — Estamos avaliando o produto, não você Título: Estamos avaliando o produto, não
+    você. Descrição: Não existe resposta certa ou errada. Tudo o que você fizer, comentar ou
+    questionar é valioso — é assim que identificamos o que precisa melhorar. Inverti a ordem da sua
+    versão original (&quot;não estamos avaliando você, e sim o produto&quot;) para abrir com
+    afirmação positiva em vez de negação. Lê mais leve. Card 2 — Pense em voz alta Título: Pense em
+    voz alta durante a navegação. Descrição: Compartilhe suas impressões, dúvidas e expectativas
+    enquanto realiza as tarefas. Isso nos ajuda a entender o seu raciocínio e como o produto apoia
+    (ou não) as suas decisões. Mudei o foco do card: antes o título era sobre &quot;tarefas
+    práticas&quot; (o o quê), mas essa informação é óbvia — qualquer teste tem tarefas. O insight
+    que o participante precisa internalizar é o como: pensar em voz alta. Esse é o comportamento que
+    você precisa que ele adote. Card 3 (novo) — Sem pressa Título: Não há pressa. Descrição: Leve o
+    tempo que precisar em cada tarefa. Se em algum momento você travar ou quiser pular, é só avisar.
+    Promovi a frase solta a um card próprio. Isso resolve a hierarquia estranha e ainda abre espaço
+    para mencionar a regra de bloqueio que você já tem no escopo (~1,5 min), sem verbalizar o tempo
+    — que poderia pressionar o participante. CTA Prosseguir para a introdução ao teste → Minúscula
+    em &quot;introdução&quot; (frase contínua, não título). Apenas uma micro-correção. Resumo das
+    mudanças ElementoAntesDepoisAberturaLista de ações específicas (criar vendas, gerenciar
+    agenda...)Posicionamento do produto + transição para os lembretesCard 1 títuloFrase dupla com
+    negaçãoAfirmação diretaCard 2 título&quot;Tarefas práticas que simulam situações
+    reais&quot;&quot;Pense em voz alta&quot; (comportamento desejado)&quot;Não há pressa&quot;Texto
+    solto centralizadoCard próprio, paralelo aos outros&quot;Lembre-se:&quot;Parágrafo de
+    transiçãoRemovido (os cards já se explicam sozinhos) Quer que eu ajuste algum tom (mais
+    formal/menos formal), ou que reescreva algum card com ênfase diferente?Você disse: Agora baseado
+    no objetivo nº 1 do doc, me dê o conteúdo para eu aplicar aqui, de forma que não enviese o
+    participanteAgora baseado no objetivo nº 1 do doc, me dê o conteúdo para eu aplicar aqui, de
+    forma que não enviese o participante23 de abr.Claude respondeu: Boa — essa é uma tela sensível,
+    porque é nela que o viés pode entrar com mais facilidade.Boa — essa é uma tela sensível, porque
+    é nela que o viés pode entrar com mais facilidade. Vou começar apontando o problema antes de
+    propor o conteúdo. O que está enviesando no template atual Olhando a tela que você me mandou
+    (que parece ser um exemplo de outro contexto, do módulo de Vendas), dá pra ver o padrão do viés:
+    &quot;Crie um pedido&quot;, &quot;Gere um link&quot;, &quot;Localize o cliente&quot;,
+    &quot;selecione o produto&quot;, &quot;Configure o link&quot; — todos esses verbos descrevem a
+    solução do sistema, não a necessidade do usuário. No momento em que o participante lê &quot;gere
+    um link de pagamento&quot;, você já entregou qual é o caminho. Ele vai procurar o botão
+    &quot;Gerar link&quot;, não vai raciocinar sobre como faria aquilo. &quot;Aba
+    Participantes&quot;, &quot;Painel do Dia&quot;, &quot;check-in&quot; — nomes de telas/elementos
+    enviesam em dobro. Se sua missão é avaliar se o nome &quot;Participantes&quot; é compreendido,
+    você não pode usá-lo na instrução. Listar passos como &quot;objetivos&quot; faz o participante
+    tratar como checklist, não como jornada. Ele vai marcar mentalmente &quot;fiz 1, fiz 2&quot; em
+    vez de navegar pela própria lógica. A regra que eu aplico é: descreva a situação, não a tarefa.
+    Diga o que aconteceu no mundo real, o que precisa ser resolvido, e pare. O participante que
+    decide o caminho. Conteúdo proposto — Missão 1 Agora me referindo ao seu doc atual (Módulo de
+    Agenda): Missão 1: Acessar a Agenda e localizar as atividades do dia Contexto: &quot;Você está
+    iniciando o seu dia de trabalho na plataforma. Localize as atividades programadas para
+    hoje.&quot; Essa missão tem baixo risco de viés porque o contexto já é naturalmente genérico.
+    Mas dá pra melhorar. Aqui vai: Título Contextualizando — Missão 1 Troquei &quot;Objetivo Nº
+    1&quot; por &quot;Missão 1&quot;. Motivo: &quot;objetivo&quot; sugere um alvo único a ser
+    cumprido (o participante fica ansioso pra &quot;acertar&quot;), enquanto &quot;missão&quot;
+    convida a explorar. Também combina com a linguagem do seu doc de escopo, que já usa
+    &quot;Missão&quot;. Parágrafo de contexto (situação real, sem solução) Você está iniciando o seu
+    dia de trabalho na Retrilhar. Como gestor da operação, precisa se organizar para saber o que vai
+    acontecer hoje — quais saídas estão programadas, quais equipes estão escaladas e o que pode
+    exigir atenção antes do início das atividades. Esse parágrafo dá situação + motivação, mas não
+    diz nem &quot;entre na agenda&quot;, nem &quot;clique em hoje&quot;, nem &quot;abra o painel do
+    dia&quot;. Deixa o participante descobrir. Em vez de &quot;Seus principais objetivos são:&quot;
+    → reformulação O template atual lista subtarefas como &quot;objetivos&quot; em cards. Isso é
+    justamente o que enviesa. Minha sugestão é trocar a estrutura: em vez de dois cards com passos,
+    um único bloco com a pergunta orientadora. Opção A — Card único com a pergunta: Sua tarefa: Se
+    organize para entender o que vai acontecer na operação hoje. E só. Um card, uma frase. Opção B —
+    Dois cards, mas com linguagem de intenção (não de ação do sistema): Card 1: Entenda o que está
+    programado para hoje Veja quais saídas acontecem, em que horários e com quais equipes. Card 2:
+    Se aprofunde em uma das atividades que chamar sua atenção Escolha uma das saídas de hoje e
+    explore mais detalhes sobre ela. Note: nenhum dos cards menciona &quot;calendário&quot;,
+    &quot;painel do dia&quot;, &quot;aba&quot;, &quot;visualização de mês/semana/dia&quot;,
+    &quot;interna da atividade&quot;. O participante vai ter que descobrir esses caminhos — que é
+    exatamente o que a missão quer medir, conforme seu objetivo de observação: &quot;avaliar se o
+    usuário consegue se orientar no calendário... se as visualizações são intuitivas e se o ponto de
+    entrada para a interna da atividade é claro&quot;. Minha recomendação é a Opção B, porque a
+    missão original do seu doc tem dois momentos distintos (localizar atividades + acessar uma
+    delas) — e o participante precisa saber que a tarefa não termina só em &quot;olhar a
+    lista&quot;. Frase de transição + CTA Quando estiver pronto(a), podemos começar. Iniciar missão
+    → Troquei &quot;Iniciar Teste&quot; por &quot;Iniciar missão&quot;. O teste já começou desde a
+    tela de boas-vindas — cada missão é uma missão, não um teste novo. Resumo: a regra para as
+    próximas 4 missões Para você replicar esse padrão nas próximas telas, o checklist anti-viés: ❌
+    Não escrever✅ EscreverNomes de telas/abas/botões do sistemaSituação real (o que
+    aconteceu)Verbos de ação do produto (&quot;gere&quot;, &quot;clique&quot;,
+    &quot;acesse&quot;)Verbos de intenção (&quot;entenda&quot;, &quot;organize&quot;,
+    &quot;resolva&quot;)Passo a passo numeradoObjetivo único ou dois objetivos
+    complementaresFeatures específicas (&quot;filtros rápidos&quot;,
+    &quot;multi-select&quot;)Necessidade (&quot;identifique quem já chegou&quot;, &quot;marque
+    presença do grupo&quot;) Se quiser, posso já reescrever as missões 2 a 5 seguindo essa mesma
+    lógica — é só avisar.Você disse: Sim, faça issoSim, faça isso23 de abr.Claude respondeu:
+    Beleza.Beleza. Antes de começar, vou reler as missões do seu doc pra garantir que não invento
+    detalhes, e depois proponho o conteúdo de cada uma seguindo o mesmo padrão da Missão 1. Com base
+    no seu escopo: Missão 2 — Explorar a Visão Geral de uma atividade (Trilha Pico do Itacolomi)
+    Missão 3 — Gerenciar participantes e realizar check-in (com seguro obrigatório, individual +
+    grupo) Missão 4 — Consultar e registrar atualizações (guia cancelou) Missão 5 — Concluir a
+    atividade e encerrar o dia Vou aplicar a mesma regra: situação real, sem nomes de telas/botões,
+    sem passo a passo. Missão 2 Título Contextualizando — Missão 2 Parágrafo de contexto Daqui a
+    pouco começa uma das saídas de hoje: a Trilha Pico do Itacolomi. Como gestor, você quer chegar
+    ao ponto de encontro com tudo sob controle — sabendo quem vai, quantos são, como está o tempo e
+    quem está na equipe. Sem mencionar &quot;Visão Geral&quot;, &quot;aba&quot;, &quot;clima&quot;,
+    &quot;guias escalados&quot;. A situação &quot;chegar ao ponto de encontro com tudo sob
+    controle&quot; é o que naturalmente leva o participante a procurar esse painel de preparação.
+    Card único (ou dois, se preferir manter o ritmo visual) Opção A — Card único: Sua tarefa: Se
+    prepare para essa saída. Reúna as informações que você precisaria antes de encontrar a equipe e
+    os clientes no local. Opção B — Dois cards: Card 1: Revise os dados da saída Confira o que está
+    previsto para essa atividade e se está tudo como deveria. Card 2: Verifique se há algo que
+    mereça atenção antes do início Alguma condição externa, ajuste de última hora ou detalhe que
+    exija ação. A segunda opção é melhor pra avaliar se o participante percebe a previsão climática
+    como informação acionável (não só decorativa) e se entende que adicionar guias à escala é uma
+    ação disponível. Recomendo a Opção B. Transição + CTA Quando estiver pronto(a), vamos avançar.
+    Iniciar missão → Missão 3 Essa é a mais delicada — é a missão mais densa e onde você mais
+    precisa tomar cuidado com viés, porque o objetivo é observar descoberta de multi-select, filtros
+    e alertas de saúde. Qualquer menção a &quot;filtros&quot;, &quot;marcar todos&quot; ou
+    &quot;alertas&quot; mata a observação. Título Contextualizando — Missão 3 Parágrafo de contexto
+    A saída da Trilha Pico do Itacolomi está prestes a começar. Os clientes começaram a chegar ao
+    ponto de encontro e você precisa recebê-los. Antes de liberar cada pessoa para seguir com a
+    equipe, você quer garantir que a reserva está em ordem — inclusive em relação ao pagamento — e
+    registrar que o cliente chegou. Essa formulação cria a necessidade natural de: (1) olhar quem
+    chegou, (2) verificar pagamento, (3) registrar presença. Sem dizer &quot;check-in&quot;, sem
+    dizer &quot;status&quot;. Cards (aqui recomendo três, porque são três momentos distintos) Card
+    1: Dona Marta chegou e vai participar sozinha Ela é uma das primeiras a chegar. Receba ela e
+    confirme que está tudo certo com a reserva antes de liberá-la para a equipe. Card 2: A família
+    Oliveira chegou junta — são 4 pessoas Todos vieram no mesmo carro e estão prontos para começar.
+    Receba o grupo de uma forma prática, sem precisar atender cada pessoa individualmente. Card 3:
+    Essa atividade exige seguro Alguns clientes ainda não têm o seguro vinculado à reserva. Resolva
+    essa pendência antes de prosseguir com eles. Algumas decisões importantes aqui: Nomeei os
+    personagens (&quot;Dona Marta&quot;, &quot;família Oliveira&quot;) em vez de dizer &quot;um
+    participante individual&quot; e &quot;uma reserva em grupo&quot;. Isso ativa pensamento
+    operacional (você está atendendo pessoas, não clicando em linhas de uma tabela) e remove a dica
+    semântica de que existe distinção técnica entre &quot;reserva individual&quot; e &quot;reserva
+    em grupo&quot; no sistema. No Card 2, &quot;de uma forma prática, sem precisar atender cada
+    pessoa individualmente&quot; sinaliza que existe uma ação em massa sem dizer como fazer. Se o
+    participante não descobrir o multi-select, isso é um achado. Omiti &quot;alertas de saúde&quot;
+    de propósito. Pelo seu doc, o objetivo é avaliar se o alerta é percebido no momento certo — ou
+    seja, espontaneamente, sem ser solicitado. Se você pedir pra ele identificar o alerta, você vai
+    ter 100% de acerto e zero aprendizado. Atenção do moderador (não vai na tela): se ao final da
+    missão o participante não tiver comentado sobre o alerta de saúde, pergunte no pós-teste:
+    &quot;Você notou alguma informação específica sobre algum dos participantes durante o
+    atendimento?&quot; Transição + CTA Quando estiver pronto(a), vamos começar. Iniciar missão →
+    Missão 4 Título Contextualizando — Missão 4 Parágrafo de contexto A atividade já começou. Nesse
+    momento, você recebe um aviso: um dos guias escalados cancelou a participação. Você precisa
+    entender o impacto disso na operação e comunicar sua equipe sobre a situação. Cards Card 1:
+    Entenda o cenário atual da atividade Além desse cancelamento, pode haver outras pendências em
+    andamento. Se oriente antes de tomar uma decisão. Card 2: Comunique sua equipe Deixe registrado
+    um aviso para que todos os envolvidos na operação fiquem cientes da situação. Nenhum dos dois
+    cards menciona &quot;aba Atualizações&quot;, &quot;log&quot;, &quot;sumário de avisos&quot;,
+    &quot;backlog&quot; ou &quot;campo de texto&quot;. O objetivo da missão é exatamente avaliar se
+    sumário vs. listagem é legível como hierarquia — se você usar essas palavras, você dá a
+    resposta. A frase &quot;Além desse cancelamento, pode haver outras pendências&quot; é
+    estratégica: força o participante a olhar o sumário para descobrir outros tipos de alerta, sem
+    dizer &quot;olhe o sumário&quot;. Transição + CTA Quando estiver pronto(a), vamos avançar.
+    Iniciar missão → Missão 5 Essa também é sensível por causa do ponto que levantei na análise
+    inicial: você precisa testar o bloqueio do fechamento do dia, não só o caminho feliz. Título
+    Contextualizando — Missão 5 Parágrafo de contexto A Trilha Pico do Itacolomi terminou. Todos os
+    clientes voltaram bem, a equipe está se desmobilizando e você quer registrar o fim dessa saída
+    no sistema. Depois disso, o seu dia de trabalho está quase acabando — mas antes de ir embora,
+    você quer deixar o dia fechado, com tudo registrado. Dois momentos, duas necessidades, duas
+    motivações reais. Sem dizer &quot;concluir atividade&quot;, &quot;fechamento de atividade&quot;,
+    &quot;encerramento do dia&quot;, &quot;CTA travado&quot;. Cards Card 1: Registre o fim da Trilha
+    Pico do Itacolomi A saída foi concluída. Deixe isso formalizado no sistema antes de seguir. Card
+    2: Encerre o seu dia de trabalho Finalize o dia operacional. Se algo estiver impedindo isso,
+    resolva antes de sair. O &quot;se algo estiver impedindo isso, resolva antes de sair&quot; é a
+    chave. Essa frase funciona de dois jeitos: Se você montar o cenário com uma atividade ainda
+    pendente (como sugeri na análise), o participante vai bater no bloqueio e precisar descobrir o
+    caminho de volta. A frase o autoriza a fazer esse trabalho de resolução, sem dizer onde nem
+    como. Se todas as atividades já estiverem concluídas, a frase passa despercebida — não enviesa o
+    caminho feliz. Transição + CTA Quando estiver pronto(a), podemos finalizar. Iniciar missão →
+    Padrões que ficaram consolidados entre as 5 missões Pra facilitar se você quiser padronizar no
+    design: ElementoPadrãoTítulo&quot;Contextualizando — Missão N&quot;Parágrafo 1Situação real, 2-4
+    frases, zero nomes de telaCardsEntre 1 e 3, conforme complexidade; título = intenção, descrição
+    = contexto adicionalTransição&quot;Quando estiver pronto(a), vamos [avançar / começar /
+    finalizar]&quot; — pequenas variações para não ficar mecânicoCTA&quot;Iniciar missão →&quot;
+    (não &quot;Iniciar teste&quot;) Uma decisão que vale alinhar com o Cristiano Na Missão 3 eu
+    assumi nomes fictícios (&quot;Dona Marta&quot;, &quot;família Oliveira&quot;). Isso depende dos
+    dados que estiverem no protótipo Figma Make. Se os dados já estão populados com nomes
+    específicos, use esses nomes. Se não, defina-os agora e documente junto do protótipo —
+    consistência entre o roteiro e a tela é crítica pra não quebrar a imersão do participante. Quer
+    que eu prepare isso num formato específico para aplicar direto no Figma — ou em uma mensagem pro
+    Cristiano revisar antes?
+  </li>
+</ol>

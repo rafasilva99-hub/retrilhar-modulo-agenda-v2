@@ -1,0 +1,782 @@
+<h3>Guia Profissional: Claude Code para SaaS em Produção</h3>
+<p>
+  <strong>Para:</strong> Luana (UXNaut) + Cristiano (Backend) <strong>Projeto:</strong> Retrilhar —
+  Painel Administrativo v2 <strong>Stack:</strong> Next.js 16 · React 19 · Tailwind 4 · shadcn/ui ·
+  HugeIcons
+</p>
+<hr />
+<h4>Os 3 Problemas Reais (e por que acontecem)</h4>
+<h5>Problema 1: IA não entende mudanças do produto, docs ficam desatualizados</h5>
+<p>
+  <strong>Causa raiz:</strong> CLAUDE.md é tratado como &quot;escreve uma vez e esquece&quot;. O
+  modelo lê essa documentação toda sessão, mas se ela não reflete o estado atual, o resultado
+  diverge. É como dar um mapa de 2024 pra alguém dirigir em 2026.
+</p>
+<h5>Problema 2: Frontend despadronizado apesar de mil regras</h5>
+<p>
+  <strong>Causa raiz:</strong> Regras demais = regras ignoradas. A Anthropic documentou isso
+  oficialmente: &quot;If your CLAUDE.md is too long, Claude ignores half of it because important
+  rules get lost in the noise.&quot; Além disso, regras textuais são <strong>sugestões</strong> —
+  não são garantias. A IA pode &quot;decidir&quot; que outro padrão faz mais sentido e ignorar sua
+  instrução.
+</p>
+<h5>Problema 3: Gaps de integração frontend-backend</h5>
+<p>
+  <strong>Causa raiz:</strong> Front e back estão trabalhando contra contratos diferentes (ou sem
+  contrato nenhum). O front usa dados mock que não batem com a API real. Os testes passam isolados
+  porque testam contra mocks — não contra o schema real.
+</p>
+<hr />
+<h4>Parte 1: Arquitetura de Documentação Viva</h4>
+<h5>Princípio fundamental: Progressive Disclosure</h5>
+<p>
+  &quot;Não diga ao Claude tudo que ele poderia precisar saber. Diga onde encontrar a informação
+  quando precisar.&quot; — Documentação oficial da Anthropic
+  <strong>Hierarquia de contexto do Claude Code:</strong>
+</p>
+<pre><code>CLAUDE.md (raiz)          → Carrega TODA sessão (alta prioridade)
+.claude/rules/*.md        → Carrega por PATH (alta prioridade, scoped)
+Skills (.claude/skills/)  → Carrega sob DEMANDA (baixa prioridade até invocado)
+Docs (docs/*.md)          → NÃO carrega automaticamente — precisa ser referenciado
+
+</code></pre>
+<h5>Estrutura recomendada para o Retrilhar</h5>
+<pre><code>retrilhar/
+├── CLAUDE.md                          # ≤100 linhas. Só o universal.
+├── .claude/
+│   ├── rules/
+│   │   ├── icons.md                   # Scoped: **/*.tsx, **/*.ts
+│   │   ├── components.md              # Scoped: components/**/*
+│   │   ├── layout-shell.md            # Scoped: app/(dashboard)/layout*, components/custom/sidebar*, top-bar*, mobile-*
+│   │   ├── api-contracts.md           # Scoped: **/*.ts (regras de tipagem e contracts)
+│   │   └── styling.md                 # Scoped: **/*.tsx, **/*.css
+│   ├── settings.json                  # Hooks de automação
+│   └── commands/
+│       ├── audit-component.md         # /project:audit-component
+│       ├── new-page.md                # /project:new-page
+│       └── sync-api.md               # /project:sync-api
+├── docs/
+│   ├── ARCHITECTURE.md                # Visão geral da arquitetura
+│   ├── API_CONTRACTS.md               # Schema de todas as APIs (fonte de verdade)
+│   ├── COMPONENT_REGISTRY.md          # Lista de componentes existentes com uso
+│   ├── DECISIONS.md                   # ADRs (Architecture Decision Records)
+│   └── CHANGELOG.md                   # O que mudou e quando
+
+</code></pre>
+<h5>CLAUDE.md — Enxuto e Cirúrgico (≤100 linhas)</h5>
+<pre><code class="language-markdown"># Retrilhar Admin Panel v2
+
+## Stack
+- Next.js 16 (App Router) + React 19 + TypeScript strict
+- Tailwind CSS 4 (CSS-first config, NO tailwind.config)
+- shadcn/ui (components/ui/) — NUNCA recrie, use `npx shadcn@latest add`
+- HugeIcons (icon font CDN) — ver .claude/rules/icons.md para nomes válidos
+
+## Comandos
+- `pnpm dev` — dev server
+- `pnpm build` — build (DEVE passar sem erros antes de commitar)
+- `pnpm lint` — ESLint
+- `pnpm typecheck` — TypeScript strict
+
+## Regras Inegociáveis
+- NUNCA use hex/rgb hardcoded. Use classes Tailwind ou CSS variables de globals.css
+- NUNCA crie componente que já existe em components/ui/ ou components/custom/
+- NUNCA invente nomes de ícones. Consulte .claude/rules/icons.md
+- NUNCA use lucide-react fora de components/ui/. No app, use &lt;Icon name=&quot;...&quot;&gt;
+- ANTES de criar qualquer componente, verifique: ls components/custom/ components/ui/
+
+## Contracts
+- Tipos de API ficam em types/api/. O frontend CONSOME esses tipos, nunca cria tipos soltos
+- Dados mock DEVEM seguir o schema de types/api/. Ver docs/API_CONTRACTS.md
+- Se a API mudou, PRIMEIRO atualize types/api/, DEPOIS ajuste os componentes
+
+## Quando compactar
+- Preserve: lista de arquivos modificados, comandos de teste, decisões de arquitetura
+- Descarte: outputs longos de lint, conteúdo completo de arquivos lidos
+
+</code></pre>
+<p>
+  <strong>Por que ≤100 linhas?</strong> Pesquisa da comunidade mostra que modelos frontier seguem
+  ~150-200 instruções com consistência. Cada linha a mais compete pela atenção. Se o CLAUDE.md tem
+  300 linhas, as regras do meio são efetivamente invisíveis.
+</p>
+<h5>Rules com Path Scoping — O Game Changer</h5>
+<p>
+  A mágica do scoping: regras só carregam quando o Claude está mexendo nos arquivos que batem com os
+  paths. Isso significa que quando ele está trabalhando numa página de vendas, ele NÃO recebe as
+  regras de layout do shell — e vice-versa. <strong>Exemplo:</strong>
+  <strong>.claude/rules/components.md</strong>
+</p>
+<pre><code class="language-yaml">---
+paths:
+  - &quot;components/**/*.tsx&quot;
+  - &quot;app/**/*.tsx&quot;
+---
+# Regras de Componentes
+
+## Antes de criar QUALQUER componente
+1. Verifique se já existe: ls components/custom/ components/ui/
+2. Se existe em shadcn, use: npx shadcn@latest add [componente]
+3. Se é custom, siga o padrão dos existentes em components/custom/
+
+## Imports obrigatórios
+- Ícones: import { Icon } from &quot;@/components/custom/icon&quot; (NUNCA lucide-react no app)
+- shadcn: import { Button } from &quot;@/components/ui/button&quot; (NUNCA recrie)
+
+## Padrão de componente custom
+- Arquivo: components/custom/[nome].tsx
+- Export: named export + barrel em components/custom/index.ts
+- Props: interface [Nome]Props com JSDoc
+- Sem lógica de negócio — componentes são PUROS
+
+## Exemplos de referência
+Para padrão de componente, ver: components/custom/company-switcher.tsx
+Para padrão de página, ver: app/(dashboard)/vendas/page.tsx
+
+</code></pre>
+<p><strong>Exemplo:</strong> <strong>.claude/rules/api-contracts.md</strong></p>
+<pre><code class="language-yaml">---
+paths:
+  - &quot;types/**/*.ts&quot;
+  - &quot;lib/api/**/*.ts&quot;
+  - &quot;app/**/actions.ts&quot;
+  - &quot;hooks/**/*.ts&quot;
+---
+# Contracts de API
+
+## Fonte de verdade
+- Schemas da API ficam em types/api/. Isso é o CONTRATO.
+- Se o backend muda, types/api/ muda PRIMEIRO.
+- Componentes e hooks CONSOMEM esses tipos — nunca criam tipos inline.
+
+## Checklist para qualquer integração
+1. O tipo existe em types/api/? Se não, PARE e crie primeiro.
+2. O mock em __mocks__/ bate com o schema? Verifique campos obrigatórios.
+3. O hook usa o tipo correto de types/api/? Sem `any`, sem tipo inline.
+4. O componente consome via hook (nunca fetch direto)?
+
+## Quando a API muda
+1. Atualize types/api/[entidade].ts
+2. Rode pnpm typecheck — vai quebrar onde precisa atualizar
+3. Atualize hooks/use[Entidade].ts
+4. Atualize componentes que consomem
+5. Atualize docs/API_CONTRACTS.md
+
+</code></pre>
+<hr />
+<h4>Parte 2: Forçando Padrões com Hooks (Garantias, não sugestões)</h4>
+<h5>Por que regras textuais falham</h5>
+<p>
+  A documentação oficial da Anthropic é clara: &quot;Prompts are great for suggestions; hooks are
+  guarantees.&quot; Regras no CLAUDE.md são sugestões que o modelo pode ignorar. Hooks são scripts
+  que RODAM — é código, não conversa.
+</p>
+<h5>Hooks essenciais para o Retrilhar</h5>
+<p><strong>.claude/settings.json</strong> <strong>:</strong></p>
+<pre><code class="language-json">{
+  &quot;hooks&quot;: {
+    &quot;PostToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Edit|Write&quot;,
+        &quot;hooks&quot;: [
+          {
+            &quot;type&quot;: &quot;command&quot;,
+            &quot;command&quot;: &quot;\&quot;$CLAUDE_PROJECT_DIR\&quot;/.claude/hooks/post-edit.sh&quot;
+          }
+        ]
+      }
+    ],
+    &quot;PreToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Edit|Write&quot;,
+        &quot;hooks&quot;: [
+          {
+            &quot;type&quot;: &quot;command&quot;,
+            &quot;command&quot;: &quot;\&quot;$CLAUDE_PROJECT_DIR\&quot;/.claude/hooks/pre-edit.sh&quot;
+          }
+        ]
+      }
+    ],
+    &quot;Stop&quot;: [
+      {
+        &quot;matcher&quot;: &quot;&quot;,
+        &quot;hooks&quot;: [
+          {
+            &quot;type&quot;: &quot;command&quot;,
+            &quot;command&quot;: &quot;\&quot;$CLAUDE_PROJECT_DIR\&quot;/.claude/hooks/quality-gate.sh&quot;
+          }
+        ]
+      }
+    ]
+  }
+}
+
+</code></pre>
+<h5>Hook 1: Post-Edit — Auto-format após cada edição</h5>
+<p><strong>.claude/hooks/post-edit.sh</strong> <strong>:</strong></p>
+<pre><code class="language-bash">#!/bin/bash
+# Roda Prettier em arquivos .tsx/.ts/.css após edição
+INPUT=$(cat)
+FILE_PATH=$(echo &quot;$INPUT&quot; | jq -r &#39;.tool_input.file_path // empty&#39;)
+
+if [[ -z &quot;$FILE_PATH&quot; ]]; then exit 0; fi
+
+# Só formata arquivos do projeto
+if echo &quot;$FILE_PATH&quot; | grep -qE &#39;\.(tsx?|css)$&#39;; then
+  npx prettier --write &quot;$FILE_PATH&quot; 2&gt;/dev/null
+fi
+
+exit 0
+
+</code></pre>
+<h5>Hook 2: Pre-Edit — Bloqueia padrões proibidos</h5>
+<p><strong>.claude/hooks/pre-edit.sh</strong> <strong>:</strong></p>
+<pre><code class="language-bash">#!/bin/bash
+# Bloqueia edições que violam regras do projeto
+INPUT=$(cat)
+FILE_PATH=$(echo &quot;$INPUT&quot; | jq -r &#39;.tool_input.file_path // empty&#39;)
+CONTENT=$(echo &quot;$INPUT&quot; | jq -r &#39;.tool_input.content // .tool_input.new_str // empty&#39;)
+
+if [[ -z &quot;$FILE_PATH&quot; || -z &quot;$CONTENT&quot; ]]; then exit 0; fi
+
+# Bloqueia hex hardcoded em .tsx (exceto components/ui/)
+if echo &quot;$FILE_PATH&quot; | grep -qE &#39;\.tsx$&#39; &amp;&amp; ! echo &quot;$FILE_PATH&quot; | grep -q &#39;components/ui/&#39;; then
+  if echo &quot;$CONTENT&quot; | grep -qE &#39;#[0-9a-fA-F]{3,8}[^-]&#39;; then
+    echo &quot;BLOQUEADO: Cor hex hardcoded detectada em $FILE_PATH. Use classes Tailwind ou CSS variables.&quot; &gt;&amp;2
+    exit 2
+  fi
+fi
+
+# Bloqueia import de lucide-react fora de components/ui/
+if echo &quot;$FILE_PATH&quot; | grep -qE &#39;\.tsx$&#39; &amp;&amp; ! echo &quot;$FILE_PATH&quot; | grep -q &#39;components/ui/&#39;; then
+  if echo &quot;$CONTENT&quot; | grep -q &#39;lucide-react&#39;; then
+    echo &quot;BLOQUEADO: Import de lucide-react fora de components/ui/. Use &lt;Icon name=\&quot;...\&quot;&gt; do HugeIcons.&quot; &gt;&amp;2
+    exit 2
+  fi
+fi
+
+# Bloqueia SVG inline em componentes custom
+if echo &quot;$FILE_PATH&quot; | grep -q &#39;components/custom/&#39;; then
+  if echo &quot;$CONTENT&quot; | grep -qE &#39;&lt;svg[ &gt;]&#39;; then
+    echo &quot;BLOQUEADO: SVG inline em componente custom. Use &lt;Icon name=\&quot;...\&quot;&gt;.&quot; &gt;&amp;2
+    exit 2
+  fi
+fi
+
+exit 0
+
+</code></pre>
+<h5>Hook 3: Quality Gate — Roda no fim de cada turno</h5>
+<p><strong>.claude/hooks/quality-gate.sh</strong> <strong>:</strong></p>
+<pre><code class="language-bash">#!/bin/bash
+# Roda typecheck rápido no fim de cada turno do Claude
+cd &quot;$CLAUDE_PROJECT_DIR&quot; || exit 0
+
+# TypeScript check (falha rápida, não o build completo)
+ERRORS=$(npx tsc --noEmit --pretty false 2&gt;&amp;1 | head -20)
+if [ $? -ne 0 ]; then
+  echo &quot;⚠️ TypeScript errors detectados:&quot; &gt;&amp;2
+  echo &quot;$ERRORS&quot; &gt;&amp;2
+  exit 2  # Força o Claude a corrigir antes de continuar
+fi
+
+exit 0
+
+</code></pre>
+<p><strong>O que esses hooks garantem:</strong></p>
+<ul>
+  <li>Formatação consistente SEM depender do Claude lembrar</li>
+  <li>Bloqueio FÍSICO de padrões proibidos (hex hardcoded, lucide-react, SVG inline)</li>
+  <li>TypeScript valida a cada turno — erros de tipo são pegos imediatamente</li>
+</ul>
+<hr />
+<h4>Parte 3: Eliminando Gaps Frontend ↔ Backend</h4>
+<h5>O problema real: Contratos inexistentes</h5>
+<p>
+  Quando o front usa { userName: string } e o back retorna { user_name: string }, o teste unitário
+  passa (porque testa contra mock errado), mas a integração quebra. Isso é um problema de
+  <strong>contrato</strong> , não de teste.
+</p>
+<h5>Solução: Contract-First Development</h5>
+<pre><code>types/api/
+├── venda.ts          # Schema da entidade Venda
+├── afiliado.ts       # Schema da entidade Afiliado
+├── carrinho.ts       # Schema da entidade Carrinho
+├── pedido.ts         # Schema da entidade Pedido
+├── cobranca.ts       # Schema da entidade Cobrança
+└── index.ts          # Barrel export
+
+</code></pre>
+<p><strong>Exemplo:</strong> <strong>types/api/venda.ts</strong></p>
+<pre><code class="language-typescript">/**
+ * Schema da entidade Venda — CONTRATO entre front e back.
+ * 
+ * Este arquivo é a fonte de verdade.
+ * Se a API muda, este arquivo muda PRIMEIRO.
+ * Frontend e backend DEVEM concordar com estes tipos.
+ * 
+ * Última sync com backend: 2026-02-26
+ * Endpoint: GET /api/vendas, POST /api/vendas
+ */
+
+// === Response Types (o que a API retorna) ===
+
+export interface Venda {
+  id: string
+  numero: string
+  status: VendaStatus
+  cliente: VendaCliente
+  itens: VendaItem[]
+  pagamentos: VendaPagamento[]
+  canal_venda: CanalVenda
+  vendedor_id: string | null
+  afiliado_id: string | null
+  cupom_codigo: string | null
+  valor_bruto: number
+  valor_desconto: number
+  valor_liquido: number
+  created_at: string  // ISO 8601
+  updated_at: string  // ISO 8601
+}
+
+export type VendaStatus = 
+  | &quot;aberto&quot; 
+  | &quot;confirmado&quot; 
+  | &quot;pago&quot; 
+  | &quot;cancelado&quot; 
+  | &quot;perdido&quot;
+
+export type CanalVenda = 
+  | &quot;ecommerce&quot; 
+  | &quot;balcao&quot; 
+  | &quot;marketplace&quot; 
+  | &quot;afiliado&quot; 
+  | &quot;vendedor_link&quot;
+
+export interface VendaCliente {
+  id: string
+  nome: string
+  email: string
+  telefone: string | null
+  documento: string | null
+}
+
+export interface VendaItem {
+  id: string
+  produto_id: string
+  produto_nome: string
+  tarifa_id: string
+  tarifa_nome: string
+  quantidade: number
+  valor_unitario: number
+  valor_total: number
+  adicionais: VendaAdicional[]
+}
+
+export interface VendaAdicional {
+  id: string
+  nome: string
+  quantidade: number
+  valor_unitario: number
+}
+
+export interface VendaPagamento {
+  id: string
+  forma_pagamento: FormaPagamento
+  conta_recebimento_id: string
+  valor_bruto: number
+  taxa: number
+  valor_liquido: number
+  parcelas: number
+  status: CobrancaStatus
+  link_pagamento: string | null
+}
+
+export type FormaPagamento = &quot;pix&quot; | &quot;cartao_credito&quot; | &quot;cartao_debito&quot; | &quot;dinheiro&quot; | &quot;boleto&quot;
+
+export type CobrancaStatus = 
+  | &quot;aprovado&quot; 
+  | &quot;pendente&quot; 
+  | &quot;chargeback&quot; 
+  | &quot;autorizado&quot; 
+  | &quot;erro&quot; 
+  | &quot;rejeitado&quot; 
+  | &quot;estornado&quot; 
+  | &quot;parcialmente_estornado&quot; 
+  | &quot;parcialmente_pago&quot; 
+  | &quot;cancelado&quot;
+
+// === Request Types (o que o front envia) ===
+
+export interface CriarVendaRequest {
+  cliente_id: string
+  itens: CriarVendaItemRequest[]
+  forma_pagamento: FormaPagamento
+  conta_recebimento_id: string
+  cupom_codigo?: string
+  vendedor_id?: string
+  observacoes?: string
+}
+
+export interface CriarVendaItemRequest {
+  produto_id: string
+  tarifa_id: string
+  quantidade: number
+  saida_id?: string  // data/horário específico
+  adicionais?: { adicional_id: string; quantidade: number }[]
+}
+
+// === Filtros (query params para listagem) ===
+
+export interface VendaFiltros {
+  periodo_inicio?: string
+  periodo_fim?: string
+  status?: VendaStatus
+  canal_venda?: CanalVenda
+  produto_id?: string
+  vendedor_id?: string
+  cliente_busca?: string  // nome, email ou documento
+  page?: number
+  per_page?: number
+}
+
+export interface VendaListResponse {
+  data: Venda[]
+  total: number
+  page: number
+  per_page: number
+  resumo: {
+    total_vendas: number
+    valor_total: number
+    ticket_medio: number
+  }
+}
+
+</code></pre>
+<h5>Mocks que DERIVAM do contrato</h5>
+<pre><code class="language-typescript">// __mocks__/vendas.ts
+import type { Venda, VendaListResponse } from &quot;@/types/api/venda&quot;
+
+// O TypeScript GARANTE que o mock bate com o schema.
+// Se o tipo muda e o mock não atualiza, dá erro de compilação.
+
+export const vendaMock: Venda = {
+  id: &quot;v-001&quot;,
+  numero: &quot;VND-2026-0001&quot;,
+  status: &quot;pago&quot;,
+  cliente: {
+    id: &quot;c-001&quot;,
+    nome: &quot;João Silva&quot;,
+    email: &quot;joao@email.com&quot;,
+    telefone: &quot;(11) 99999-0001&quot;,
+    documento: &quot;123.456.789-00&quot;
+  },
+  itens: [
+    {
+      id: &quot;i-001&quot;,
+      produto_id: &quot;p-001&quot;,
+      produto_nome: &quot;Rapel na Cachoeira&quot;,
+      tarifa_id: &quot;t-001&quot;,
+      tarifa_nome: &quot;Adulto&quot;,
+      quantidade: 2,
+      valor_unitario: 150,
+      valor_total: 300,
+      adicionais: [
+        { id: &quot;a-001&quot;, nome: &quot;Almoço&quot;, quantidade: 2, valor_unitario: 35 }
+      ]
+    }
+  ],
+  pagamentos: [
+    {
+      id: &quot;pg-001&quot;,
+      forma_pagamento: &quot;pix&quot;,
+      conta_recebimento_id: &quot;cr-001&quot;,
+      valor_bruto: 370,
+      taxa: 7.40,
+      valor_liquido: 362.60,
+      parcelas: 1,
+      status: &quot;aprovado&quot;,
+      link_pagamento: null
+    }
+  ],
+  canal_venda: &quot;ecommerce&quot;,
+  vendedor_id: null,
+  afiliado_id: null,
+  cupom_codigo: null,
+  valor_bruto: 370,
+  valor_desconto: 0,
+  valor_liquido: 370,
+  created_at: &quot;2026-02-20T14:30:00Z&quot;,
+  updated_at: &quot;2026-02-20T14:35:00Z&quot;
+}
+
+</code></pre>
+<p>
+  <strong>O segredo:</strong> Se alguém muda o tipo Venda e esquece de atualizar o mock, pnpm
+  typecheck <strong>QUEBRA</strong> . Isso é enforcement por compilador, não por boa vontade.
+</p>
+<h5>Workflow de sync front↔back</h5>
+<pre><code>1. Backend define/muda endpoint
+   ↓
+2. Cristiano atualiza types/api/[entidade].ts  ← CONTRATO
+   ↓
+3. pnpm typecheck quebra onde precisa mudar     ← ENFORCEMENT
+   ↓
+4. Frontend atualiza hooks, componentes, mocks  ← CASCATA
+   ↓
+5. pnpm build passa                             ← VALIDAÇÃO
+
+</code></pre>
+<p>
+  <strong>Slash command para automatizar:</strong> <strong>.claude/commands/sync-api.md</strong>
+</p>
+<pre><code class="language-markdown">Quando um endpoint de API mudar:
+
+1. Leia o arquivo types/api/ correspondente à entidade
+2. Pergunte: &quot;O que mudou na API?&quot; 
+3. Atualize o tipo em types/api/
+4. Rode: pnpm typecheck
+5. Para CADA erro de tipo, corrija o arquivo apontado
+6. Rode: pnpm typecheck novamente até passar
+7. Atualize o mock correspondente em __mocks__/
+8. Rode: pnpm build
+9. Atualize docs/API_CONTRACTS.md com a mudança e a data
+
+$ARGUMENTS contém a entidade que mudou (ex: &quot;venda&quot;, &quot;afiliado&quot;)
+
+</code></pre>
+<hr />
+<h4>Parte 4: Documentação Viva — Como Manter Atualizado</h4>
+<h5>O problema de &quot;docs ficam velhos&quot;</h5>
+<p>
+  Docs ficam desatualizados quando atualizar é um passo manual separado. A solução: fazer a doc ser
+  parte do workflow, não um extra.
+</p>
+<h5>Strategy 1: CHANGELOG.md como hábito de commit</h5>
+<p>Adicione ao CLAUDE.md:</p>
+<pre><code class="language-markdown">## Commits
+- Após cada feature/fix, adicione uma linha em docs/CHANGELOG.md
+- Formato: `- [YYYY-MM-DD] [módulo] Descrição curta da mudança`
+
+</code></pre>
+<h5>Strategy 2: DECISIONS.md (Architecture Decision Records)</h5>
+<pre><code class="language-markdown"># Decisões de Arquitetura
+
+## ADR-001: Ícones via HugeIcons CDN (não Lucide)
+- **Data:** 2026-02-15
+- **Status:** Aceita
+- **Contexto:** Lucide era usado no e-commerce, mas o admin precisa de set mais amplo
+- **Decisão:** HugeIcons stroke-rounded via CDN, componente &lt;Icon&gt; wrapper
+- **Consequências:** Componentes shadcn/ui mantêm Lucide internamente. No app, só HugeIcons.
+
+## ADR-002: Contract-First para APIs
+- **Data:** 2026-02-26
+- **Decisão:** types/api/ é fonte de verdade. Front e back sincronizam por esses tipos.
+- **Consequências:** Mocks derivam dos tipos. TypeScript pega divergências em compilação.
+
+</code></pre>
+<h5>Strategy 3: COMPONENT_REGISTRY.md</h5>
+<pre><code class="language-markdown"># Registro de Componentes
+
+## components/ui/ (shadcn — NÃO modificar diretamente)
+| Componente | Uso no projeto |
+|-----------|---------------|
+| Button | Ações primárias, secundárias, destructive |
+| DropdownMenu | Company switcher, ações de tabela |
+| Sheet | Painéis laterais (drawer) |
+| Table | Listagens padrão |
+| Badge | Status (pago, pendente, cancelado) |
+| Tabs | Navegação por abas em formulários |
+
+## components/custom/ (projeto — nossos componentes)
+| Componente | Arquivo | Onde usa |
+|-----------|---------|---------|
+| Icon | icon.tsx | Todo o app |
+| CompanySwitcher | company-switcher.tsx | TopBar |
+| SidebarMenu | sidebar-menu.tsx | Layout dashboard |
+| TopBar | top-bar.tsx | Layout dashboard |
+| MobileTabBar | mobile-tab-bar.tsx | Layout dashboard (mobile) |
+| StatCard | stat-card.tsx | Dashboard |
+| DataTable | data-table.tsx | Listagens |
+
+&gt; **Regra:** Antes de criar componente, verifique esta lista.
+&gt; Se existe algo parecido, ESTENDA — não crie novo.
+
+</code></pre>
+<h5>Strategy 4: Hook de SessionStart para contexto fresco</h5>
+<p>Adicione ao settings.json:</p>
+<pre><code class="language-json">{
+  &quot;hooks&quot;: {
+    &quot;SessionStart&quot;: [
+      {
+        &quot;matcher&quot;: &quot;&quot;,
+        &quot;hooks&quot;: [
+          {
+            &quot;type&quot;: &quot;command&quot;,
+            &quot;command&quot;: &quot;echo &#39;## Estado atual do projeto:&#39; &amp;&amp; echo &#39;&#39; &amp;&amp; echo &#39;### Últimas mudanças:&#39; &amp;&amp; head -10 \&quot;$CLAUDE_PROJECT_DIR/docs/CHANGELOG.md\&quot; &amp;&amp; echo &#39;&#39; &amp;&amp; echo &#39;### Erros de tipo pendentes:&#39; &amp;&amp; cd \&quot;$CLAUDE_PROJECT_DIR\&quot; &amp;&amp; npx tsc --noEmit --pretty false 2&gt;&amp;1 | head -5 || echo &#39;Nenhum erro&#39;&quot;
+          }
+        ]
+      }
+    ]
+  }
+}
+
+</code></pre>
+<p>
+  Isso injeta no início de cada sessão: as últimas mudanças do changelog e erros de TypeScript
+  pendentes. O Claude começa sabendo o que está acontecendo.
+</p>
+<hr />
+<h4>Parte 5: Workflow Diário na Prática</h4>
+<h5>Para Luana (Design + Front)</h5>
+<pre><code>1. Abrir Claude Code
+2. SessionStart hook carrega: changelog + erros de tipo
+3. Modo Plan (Shift+Tab 2x) para tarefas complexas
+4. Sempre referênciar: &quot;siga o padrão de components/custom/company-switcher.tsx&quot;
+5. Hooks garantem: sem hex, sem lucide, sem SVG inline
+6. Fim de cada turno: typecheck automático via Stop hook
+7. Antes de commitar: pnpm build DEVE passar
+8. Após feature pronta: atualizar CHANGELOG.md e COMPONENT_REGISTRY.md
+
+</code></pre>
+<h5>Para Cristiano (Backend)</h5>
+<pre><code>1. API muda → atualizar types/api/[entidade].ts PRIMEIRO
+2. Commitar o tipo atualizado separado (é o contrato)
+3. Luana puxa o commit → typecheck quebra onde precisa mudar
+4. Ambos podem rodar /project:sync-api para cascata automática
+5. pnpm build passa = integração está ok
+
+</code></pre>
+<h5>Checklist de setup (uma vez)</h5>
+<ul>
+  <li>[ ] CLAUDE.md ≤100 linhas (podar imediatamente)</li>
+  <li>[ ] Rules com path scoping em .claude/rules/</li>
+  <li>[ ] Hooks em .claude/settings.json (post-edit, pre-edit, quality-gate)</li>
+  <li>[ ] types/api/ com schemas das entidades principais</li>
+  <li>[ ] Mocks tipados que derivam de types/api/</li>
+  <li>[ ] docs/CHANGELOG.md iniciado</li>
+  <li>[ ] docs/DECISIONS.md com ADRs existentes</li>
+  <li>[ ] docs/COMPONENT_REGISTRY.md com componentes atuais</li>
+  <li>[ ] Slash commands para workflows repetitivos</li>
+</ul>
+<hr />
+<h4>Parte 6: Anti-patterns a Evitar</h4>
+<h5>❌ O que NÃO fazer</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Anti-pattern</th>
+      <th>Por que falha</th>
+      <th>O que fazer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CLAUDE.md com 300+ linhas</td>
+      <td>Modelo ignora metade</td>
+      <td>Podar para ≤100, mover resto para rules/</td>
+    </tr>
+    <tr>
+      <td>&quot;Use shadcn&quot; sem exemplos</td>
+      <td>Vago demais, modelo adivinha</td>
+      <td>Apontar arquivo específico como referência</td>
+    </tr>
+    <tr>
+      <td>Docs separados do código</td>
+      <td>Ninguém atualiza</td>
+      <td>Types como contrato, hooks como enforcement</td>
+    </tr>
+    <tr>
+      <td>Corrigir o mesmo erro 3x</td>
+      <td>Contexto poluído com falhas</td>
+      <td>/clear + reescrever prompt melhor</td>
+    </tr>
+    <tr>
+      <td>Mock com dados inventados</td>
+      <td>Não bate com API real</td>
+      <td>Mock tipado que deriva de types/api/</td>
+    </tr>
+    <tr>
+      <td>Regras apenas como texto</td>
+      <td>Sugestão, não garantia</td>
+      <td>Hooks para enforcement determinístico</td>
+    </tr>
+    <tr>
+      <td>Nunca atualizar CLAUDE.md</td>
+      <td>Mapa desatualizado</td>
+      <td>Revisar a cada sprint/quinzena</td>
+    </tr>
+    <tr>
+      <td>@file para embedar docs</td>
+      <td>Consome contexto toda sessão</td>
+      <td>&quot;Para X, consulte docs/X.md&quot;</td>
+    </tr>
+  </tbody>
+</table>
+<h5>✅ Regras de ouro</h5>
+<ol>
+  <li>
+    <strong>Se o Claude erra a mesma coisa 2x, é problema de contexto, não do Claude.</strong>
+    Adicione uma rule ou um hook.
+  </li>
+  <li>
+    <strong
+      >CLAUDE.md é para o que é universal. Rules para o que é scoped. Hooks para o que é
+      inegociável.</strong
+    >
+  </li>
+  <li>
+    <strong>Docs que não são referenciados automaticamente não existem.</strong> Conecte docs ao
+    workflow via hooks e types.
+  </li>
+  <li>
+    <strong>TypeScript é seu melhor linter de integração.</strong> Se front e back compartilham
+    tipos, divergências viram erros de compilação.
+  </li>
+  <li>
+    <strong>Sessões curtas &gt; sessões longas.</strong> /clear entre features. Contexto limpo =
+    resultado melhor.
+  </li>
+</ol>
+<hr />
+<h4>Referências</h4>
+<ul>
+  <li>
+    <a href="https://code.claude.com/docs/en/best-practices">Best Practices for Claude Code</a> —
+    Documentação oficial
+  </li>
+  <li>
+    <a href="https://blog.sshh.io/p/how-i-use-every-claude-code-feature"
+      >How I Use Every Claude Code Feature</a
+    >
+    — Shrivu Shankar (Abnormal Security)
+  </li>
+  <li>
+    <a href="https://code.claude.com/docs/en/hooks-guide">Automate workflows with hooks</a> — Docs
+    oficiais de hooks
+  </li>
+  <li>
+    <a href="https://claudefa.st/blog/guide/mechanics/rules-directory"
+      >Claude Code Rules Directory</a
+    >
+    — Guia de rules com scoping
+  </li>
+  <li>
+    <a href="https://www.humanlayer.dev/blog/writing-a-good-claude-md">Writing a good CLAUDE.md</a>
+    — HumanLayer Blog
+  </li>
+  <li>
+    <a href="https://allahabadi.dev/blogs/ai/7-claude-md-mistakes-developers-make/"
+      >7 CLAUDE.md Mistakes</a
+    >
+    — Frontend Master
+  </li>
+  <li>
+    <a
+      href="https://blog.devgenius.io/claude-code-use-hooks-to-enforce-end-of-turn-quality-gates-5bed84e89a0d"
+      >End-of-Turn Quality Gates</a
+    >
+    — JP Caparas
+  </li>
+</ul>

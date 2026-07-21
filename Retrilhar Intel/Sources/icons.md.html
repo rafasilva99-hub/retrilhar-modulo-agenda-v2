@@ -1,0 +1,787 @@
+<hr />
+<p>paths:</p>
+<ul>
+  <li>&quot;**/*.tsx&quot;</li>
+  <li>&quot;**/*.ts&quot;</li>
+</ul>
+<hr />
+<h3>Regras de Ícones</h3>
+<p>O projeto usa DOIS sistemas de ícones. Cada um tem seu lugar.</p>
+<h4>HugeIcons — Ícones da aplicação</h4>
+<p>Usados em TODOS os componentes custom, páginas, widgets, sidebar, topbar, etc.</p>
+<pre><code class="language-tsx">// ✅ CORRETO — Sempre assim
+import { Icon } from &quot;@/components/ui/icon&quot;;
+
+&lt;Icon name=&quot;search-01&quot; size={20} className=&quot;text-slate-500&quot; /&gt;
+&lt;Icon name=&quot;calendar-03&quot; size={16} className=&quot;text-brand-400&quot; /&gt;
+&lt;Icon name=&quot;shopping-cart-01&quot; size={24} /&gt;
+
+</code></pre>
+<p>O componente</p>
+<i class="hgi-stroke hgi-{name}">
+  <h4>Como funciona a nomenclatura HugeIcons</h4>
+  <p>
+    A font é hgi-stroke-rounded com 4.696 ícones gratuitos. CDN:
+    https://cdn.hugeicons.com/font/hgi-stroke-rounded.css
+  </p>
+  <h5>Padrão de nomes</h5>
+  <ul>
+    <li>
+      Sempre <strong>kebab-case</strong> (minúsculas com hífens): shopping-cart-01, arrow-down-01
+    </li>
+    <li>Variantes recebem sufixo numérico: -01, -02, -03, -04, -05</li>
+    <li>Alguns ícones existem SEM número (versão base): user, home, check, alert</li>
+    <li>Outros existem SOMENTE com número: home-01, search-01, calendar-03</li>
+    <li>Nomes descritivos compostos: shopping-cart-check-in-01, arrow-data-transfer-vertical</li>
+    <li>NUNCA camelCase, NUNCA PascalCase, NUNCA underscores</li>
+  </ul>
+  <h5>Regra de validação OBRIGATÓRIA</h5>
+  <p>
+    <strong>NUNCA invente ou adivinhe nomes de ícones.</strong> Use SOMENTE nomes desta referência
+    abaixo. Se precisar de um ícone que NÃO está na lista, busque em:
+    https://hugeicons.com/icons?style=Stroke&amp;type=Rounded A URL de cada ícone segue o padrão:
+    hugeicons.com/icon/{nome}-stroke-rounded
+  </p>
+  <h4>Referência — Ícones confirmados para o projeto</h4>
+  <h5>Navegação e Layout</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>home-01</td>
+        <td>Dashboard/Início</td>
+      </tr>
+      <tr>
+        <td>home-02</td>
+        <td>Variante casa</td>
+      </tr>
+      <tr>
+        <td>sidebar-left</td>
+        <td>Toggle sidebar (abrir)</td>
+      </tr>
+      <tr>
+        <td>sidebar-right</td>
+        <td>Toggle sidebar (fechar)</td>
+      </tr>
+      <tr>
+        <td>menu-01</td>
+        <td>Menu hamburger</td>
+      </tr>
+      <tr>
+        <td>menu-02</td>
+        <td>Variante menu</td>
+      </tr>
+      <tr>
+        <td>arrow-left-01</td>
+        <td>Voltar</td>
+      </tr>
+      <tr>
+        <td>arrow-right-01</td>
+        <td>Avançar</td>
+      </tr>
+      <tr>
+        <td>arrow-down-01</td>
+        <td>Dropdown/expandir</td>
+      </tr>
+      <tr>
+        <td>arrow-up-01</td>
+        <td>Recolher</td>
+      </tr>
+      <tr>
+        <td>more-horizontal</td>
+        <td>Menu de ações (...)</td>
+      </tr>
+      <tr>
+        <td>more-vertical</td>
+        <td>Menu de ações vertical</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Busca e Filtros</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>search-01</td>
+        <td>Campo de busca</td>
+      </tr>
+      <tr>
+        <td>search-02</td>
+        <td>Variante busca</td>
+      </tr>
+      <tr>
+        <td>filter</td>
+        <td>Filtros</td>
+      </tr>
+      <tr>
+        <td>filter-horizontal</td>
+        <td>Filtros horizontais</td>
+      </tr>
+      <tr>
+        <td>arrange-by-letters-a-z</td>
+        <td>Ordenar A-Z</td>
+      </tr>
+      <tr>
+        <td>arrange-by-letters-z-a</td>
+        <td>Ordenar Z-A</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Usuários e Perfis</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>user</td>
+        <td>Usuário genérico</td>
+      </tr>
+      <tr>
+        <td>user-group</td>
+        <td>Grupo de usuários</td>
+      </tr>
+      <tr>
+        <td>user-add-01</td>
+        <td>Adicionar usuário</td>
+      </tr>
+      <tr>
+        <td>user-add-02</td>
+        <td>Variante adicionar</td>
+      </tr>
+      <tr>
+        <td>user-check-01</td>
+        <td>Usuário verificado</td>
+      </tr>
+      <tr>
+        <td>add-team</td>
+        <td>Adicionar equipe</td>
+      </tr>
+      <tr>
+        <td>account-setting-01</td>
+        <td>Config conta</td>
+      </tr>
+      <tr>
+        <td>profile</td>
+        <td>Perfil</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Comércio e Vendas</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>shopping-cart-01</td>
+        <td>Carrinho</td>
+      </tr>
+      <tr>
+        <td>shopping-cart-02</td>
+        <td>Variante carrinho</td>
+      </tr>
+      <tr>
+        <td>shopping-bag-01</td>
+        <td>Sacola de compras</td>
+      </tr>
+      <tr>
+        <td>shopping-bag-02</td>
+        <td>Variante sacola</td>
+      </tr>
+      <tr>
+        <td>store-01</td>
+        <td>Loja</td>
+      </tr>
+      <tr>
+        <td>store-02</td>
+        <td>Variante loja</td>
+      </tr>
+      <tr>
+        <td>tag-01</td>
+        <td>Tag/etiqueta (cupom)</td>
+      </tr>
+      <tr>
+        <td>tag-02</td>
+        <td>Variante tag</td>
+      </tr>
+      <tr>
+        <td>discount-01</td>
+        <td>Desconto</td>
+      </tr>
+      <tr>
+        <td>receipt-01</td>
+        <td>Recibo</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Dinheiro e Financeiro</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>money-bag-01</td>
+        <td>Saco de dinheiro</td>
+      </tr>
+      <tr>
+        <td>money-bag-02</td>
+        <td>Variante</td>
+      </tr>
+      <tr>
+        <td>dollar-01</td>
+        <td>Cifrão</td>
+      </tr>
+      <tr>
+        <td>dollar-02</td>
+        <td>Variante cifrão</td>
+      </tr>
+      <tr>
+        <td>wallet-01</td>
+        <td>Carteira</td>
+      </tr>
+      <tr>
+        <td>wallet-02</td>
+        <td>Variante carteira</td>
+      </tr>
+      <tr>
+        <td>credit-card</td>
+        <td>Cartão de crédito</td>
+      </tr>
+      <tr>
+        <td>bank</td>
+        <td>Banco</td>
+      </tr>
+      <tr>
+        <td>invoice-01</td>
+        <td>Fatura/Nota fiscal</td>
+      </tr>
+      <tr>
+        <td>invoice-02</td>
+        <td>Variante fatura</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Calendário e Agenda</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>calendar-01</td>
+        <td>Calendário básico</td>
+      </tr>
+      <tr>
+        <td>calendar-02</td>
+        <td>Variante calendário</td>
+      </tr>
+      <tr>
+        <td>calendar-03</td>
+        <td>Variante calendário</td>
+      </tr>
+      <tr>
+        <td>calendar-check-in-01</td>
+        <td>Check-in em data</td>
+      </tr>
+      <tr>
+        <td>calendar-check-in-02</td>
+        <td>Variante check-in</td>
+      </tr>
+      <tr>
+        <td>calendar-user</td>
+        <td>Agenda do usuário</td>
+      </tr>
+      <tr>
+        <td>clock-01</td>
+        <td>Relógio/horário</td>
+      </tr>
+      <tr>
+        <td>clock-02</td>
+        <td>Variante relógio</td>
+      </tr>
+      <tr>
+        <td>time-schedule</td>
+        <td>Agendamento</td>
+      </tr>
+      <tr>
+        <td>alarm-clock</td>
+        <td>Alarme</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Status e Alertas</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>check</td>
+        <td>Check simples</td>
+      </tr>
+      <tr>
+        <td>checkmark-circle-01</td>
+        <td>Check com círculo</td>
+      </tr>
+      <tr>
+        <td>checkmark-circle-02</td>
+        <td>Variante</td>
+      </tr>
+      <tr>
+        <td>alert-01</td>
+        <td>Alerta triângulo</td>
+      </tr>
+      <tr>
+        <td>alert-02</td>
+        <td>Variante alerta</td>
+      </tr>
+      <tr>
+        <td>alert-circle</td>
+        <td>Alerta circular</td>
+      </tr>
+      <tr>
+        <td>cancel-01</td>
+        <td>Cancelar/fechar</td>
+      </tr>
+      <tr>
+        <td>cancel-02</td>
+        <td>Variante cancelar</td>
+      </tr>
+      <tr>
+        <td>cancel-circle</td>
+        <td>X com círculo</td>
+      </tr>
+      <tr>
+        <td>information-circle</td>
+        <td>Info</td>
+      </tr>
+      <tr>
+        <td>help-circle</td>
+        <td>Ajuda</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Notificações</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>notification-01</td>
+        <td>Sino/notificação</td>
+      </tr>
+      <tr>
+        <td>notification-02</td>
+        <td>Variante sino</td>
+      </tr>
+      <tr>
+        <td>notification-03</td>
+        <td>Variante sino</td>
+      </tr>
+      <tr>
+        <td>notification-off-01</td>
+        <td>Notificação desligada</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Gráficos e Analytics</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>analytics-01</td>
+        <td>Gráfico genérico</td>
+      </tr>
+      <tr>
+        <td>analytics-02</td>
+        <td>Variante gráfico</td>
+      </tr>
+      <tr>
+        <td>analytics-up</td>
+        <td>Gráfico subindo</td>
+      </tr>
+      <tr>
+        <td>analytics-down</td>
+        <td>Gráfico descendo</td>
+      </tr>
+      <tr>
+        <td>chart</td>
+        <td>Chart genérico</td>
+      </tr>
+      <tr>
+        <td>chart-line-data-01</td>
+        <td>Gráfico de linhas</td>
+      </tr>
+      <tr>
+        <td>dashboard-speed-01</td>
+        <td>Dashboard/velocímetro</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Arquivos e Documentos</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>file-01</td>
+        <td>Arquivo genérico</td>
+      </tr>
+      <tr>
+        <td>file-02</td>
+        <td>Variante arquivo</td>
+      </tr>
+      <tr>
+        <td>folder-01</td>
+        <td>Pasta</td>
+      </tr>
+      <tr>
+        <td>folder-02</td>
+        <td>Variante pasta</td>
+      </tr>
+      <tr>
+        <td>document-attachment</td>
+        <td>Documento com anexo</td>
+      </tr>
+      <tr>
+        <td>note</td>
+        <td>Nota/anotação</td>
+      </tr>
+      <tr>
+        <td>note-01</td>
+        <td>Variante nota</td>
+      </tr>
+      <tr>
+        <td>pdf-01</td>
+        <td>PDF</td>
+      </tr>
+      <tr>
+        <td>csv-01</td>
+        <td>CSV</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Ações</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>add-01</td>
+        <td>Adicionar</td>
+      </tr>
+      <tr>
+        <td>add-02</td>
+        <td>Variante adicionar</td>
+      </tr>
+      <tr>
+        <td>add-circle</td>
+        <td>Adicionar circular</td>
+      </tr>
+      <tr>
+        <td>delete-01</td>
+        <td>Excluir</td>
+      </tr>
+      <tr>
+        <td>delete-02</td>
+        <td>Variante excluir</td>
+      </tr>
+      <tr>
+        <td>edit-01</td>
+        <td>Editar</td>
+      </tr>
+      <tr>
+        <td>edit-02</td>
+        <td>Variante editar</td>
+      </tr>
+      <tr>
+        <td>copy-01</td>
+        <td>Copiar</td>
+      </tr>
+      <tr>
+        <td>copy-02</td>
+        <td>Variante copiar</td>
+      </tr>
+      <tr>
+        <td>download-01</td>
+        <td>Download</td>
+      </tr>
+      <tr>
+        <td>download-02</td>
+        <td>Variante download</td>
+      </tr>
+      <tr>
+        <td>upload-01</td>
+        <td>Upload</td>
+      </tr>
+      <tr>
+        <td>upload-02</td>
+        <td>Variante upload</td>
+      </tr>
+      <tr>
+        <td>share-01</td>
+        <td>Compartilhar</td>
+      </tr>
+      <tr>
+        <td>share-02</td>
+        <td>Variante compartilhar</td>
+      </tr>
+      <tr>
+        <td>print</td>
+        <td>Imprimir</td>
+      </tr>
+      <tr>
+        <td>refresh</td>
+        <td>Atualizar</td>
+      </tr>
+      <tr>
+        <td>save-energy-01</td>
+        <td>Salvar</td>
+      </tr>
+      <tr>
+        <td>link-01</td>
+        <td>Link</td>
+      </tr>
+      <tr>
+        <td>link-02</td>
+        <td>Variante link</td>
+      </tr>
+      <tr>
+        <td>archive-01</td>
+        <td>Arquivar</td>
+      </tr>
+      <tr>
+        <td>archive-02</td>
+        <td>Variante arquivar</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Comunicação</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>mail-01</td>
+        <td>Email</td>
+      </tr>
+      <tr>
+        <td>mail-02</td>
+        <td>Variante email</td>
+      </tr>
+      <tr>
+        <td>message-01</td>
+        <td>Mensagem</td>
+      </tr>
+      <tr>
+        <td>message-02</td>
+        <td>Variante mensagem</td>
+      </tr>
+      <tr>
+        <td>whatsapp</td>
+        <td>WhatsApp</td>
+      </tr>
+      <tr>
+        <td>phone-call-01</td>
+        <td>Ligação</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Configurações</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>setting-01</td>
+        <td>Engrenagem config</td>
+      </tr>
+      <tr>
+        <td>setting-02</td>
+        <td>Variante config</td>
+      </tr>
+      <tr>
+        <td>setting-03</td>
+        <td>Variante config</td>
+      </tr>
+      <tr>
+        <td>setup-01</td>
+        <td>Setup/instalação</td>
+      </tr>
+      <tr>
+        <td>tools</td>
+        <td>Ferramentas</td>
+      </tr>
+      <tr>
+        <td>wrench-01</td>
+        <td>Chave de fenda</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5>Específicos do Retrilhar</h5>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Uso</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>affiliate</td>
+        <td>Afiliados</td>
+      </tr>
+      <tr>
+        <td>adventure</td>
+        <td>Aventura/experiências</td>
+      </tr>
+      <tr>
+        <td>ticket-01</td>
+        <td>Ingresso/ticket</td>
+      </tr>
+      <tr>
+        <td>ticket-02</td>
+        <td>Variante ingresso</td>
+      </tr>
+      <tr>
+        <td>qr-code</td>
+        <td>QR Code (check-in)</td>
+      </tr>
+      <tr>
+        <td>location-01</td>
+        <td>Localização</td>
+      </tr>
+      <tr>
+        <td>location-02</td>
+        <td>Variante localização</td>
+      </tr>
+      <tr>
+        <td>map-01</td>
+        <td>Mapa</td>
+      </tr>
+      <tr>
+        <td>route-01</td>
+        <td>Rota</td>
+      </tr>
+      <tr>
+        <td>bus-01</td>
+        <td>Transporte</td>
+      </tr>
+      <tr>
+        <td>agreement-01</td>
+        <td>Contrato/acordo</td>
+      </tr>
+      <tr>
+        <td>agreement-02</td>
+        <td>Variante contrato</td>
+      </tr>
+    </tbody>
+  </table>
+  <h4>Lucide React — Apenas dentro de shadcn/ui</h4>
+  <p>
+    Lucide é usado SOMENTE dentro dos componentes em components/ui/ que vieram do shadcn. Exemplos:
+    accordion.tsx usa ChevronDownIcon, dialog.tsx usa XIcon, etc.
+  </p>
+  <pre><code class="language-tsx">// ✅ OK — Dentro de components/ui/accordion.tsx (shadcn)
+import { ChevronDownIcon } from &quot;lucide-react&quot;;
+
+// ❌ PROIBIDO — Em qualquer outro lugar
+import { Search } from &quot;lucide-react&quot;; // NÃO FAÇA ISSO
+
+</code></pre>
+  <h4>NUNCA faça</h4>
+  <ul>
+    <li>
+      NUNCA invente nomes de ícone — use SOMENTE a referência acima ou busque em hugeicons.com
+    </li>
+    <li>NUNCA use SVG inline:</li>
+    <li>
+      NUNCA injete CSS de icon font no código (o CSS vem via CDN, não precisa de @font-face local)
+    </li>
+    <li>NUNCA importe de lucide-react fora de components/ui/</li>
+    <li>NUNCA crie ícones com pseudo-elementos CSS (::before, ::after)</li>
+    <li>NUNCA use emoji como ícone em componentes de produção</li>
+    <li>
+      NUNCA use camelCase ou PascalCase em nomes de ícone (é shopping-cart-01, não shoppingCart01)
+    </li>
+  </ul>
+  <h4>Exceção única</h4>
+  <p>
+    SVGs de logos de marca (Google, Microsoft, etc.) em app/login/page.tsx são aceitáveis porque não
+    existem como ícones genéricos.
+  </p>
+  <h4>Dica para inverter ícones</h4>
+  <p>Se um ícone aparece espelhado (ex: sidebar-right apontando pro lado errado):</p>
+  <pre><code class="language-tsx">&lt;Icon name=&quot;sidebar-right&quot; className=&quot;scale-x-[-1]&quot; /&gt;
+
+</code></pre>
+  <p>
+    Use scale-x-[-1] via Tailwind para inverter horizontalmente. NUNCA use CSS transform inline.
+  </p>
+</i>

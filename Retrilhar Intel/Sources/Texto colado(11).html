@@ -1,0 +1,137 @@
+<p>
+  Baseado nas documentações que temos, avalie se a função &quot;Não compareceram&quot; (ou no-show)
+  é destrutiva ou neutra. Não compareceu pode significar coisas muito diferentes dependendo da regra
+  do negócio:
+</p>
+<p>
+  Apenas marca status (operacional, reversível) → não é destrutiva, fluxo simples com toast de
+  feedback
+</p>
+<p>
+  Cancela a reserva e bloqueia reembolso (financeiro) → é destrutiva, precisa modal de confirmação
+  forte
+</p>
+<p>
+  Marca status + dispara políticas automáticas (cobrança de multa, bloqueio em lista de espera,
+  registro de comportamento) → é altamente destrutiva, precisa transparência total das consequências
+</p>
+<p>4 de mai.</p>
+<p>
+  Claude respondeu: Vou pesquisar a documentação do projeto para entender como o &quot;Não
+  compareceu&quot; está definido nas regras de negócio do Retrilhar.
+</p>
+<p>
+  Vou pesquisar a documentação do projeto para entender como o &quot;Não compareceu&quot; está
+  definido nas regras de negócio do Retrilhar.
+</p>
+<p>Searched project for “não compareceu no-show participante status”</p>
+<p>Searched project for “não compareceu no-show participante status”</p>
+<p>
+  Tenho informação suficiente sobre a regra base. Vou buscar especificamente sobre políticas
+  automáticas, multas, reembolso e cobrança vinculadas ao no-show para confirmar o nível de
+  destrutividade.
+</p>
+<p>Searched project for “no show política reembolso multa cobrança”</p>
+<p>Searched project for “no show política reembolso multa cobrança”</p>
+<p>
+  Tenho clareza total. A documentação é explícita sobre a natureza do No Show no Retrilhar. Vou
+  estruturar a avaliação.
+</p>
+<p>Avaliação: &quot;Não compareceu&quot; (No Show) — destrutiva ou neutra?</p>
+<p>Veredito: Neutra / operacional reversível — fluxo simples com toast</p>
+<p>
+  Baseado na documentação (RPP002 Painel de Operações, Alinhamento 15/04 com Cristiano e RNPN 002),
+  o No Show no Retrilhar é explicitamente o oposto do Cancelamento — e essa distinção é a regra de
+  negócio fundadora do estado.
+</p>
+<p>O que a documentação diz</p>
+<p>Definição formal (RPP002 — Máquina de Estados):</p>
+<p>
+  &quot;No Show: Reserva não utilizada pois o participante não compareceu para o dia e horário
+  adquiridos.&quot;
+</p>
+<p>
+  Ações permitidas: Remarcar reserva | Confirmar reserva | Cancelar reserva Transições possíveis: →
+  Confirmada / → Cancelada / → Agendada (se houve débito por diferença de tarifa na remarcação)
+</p>
+<p>Fala do Cristiano (Alinhamento 15/04, 53:09):</p>
+<p>
+  &quot;Volta o conceito de adiar e cancelar — se ele falou &#39;ah, não posso hoje, mas eu quero
+  ir&#39;, ele vai dar no show. O cancelar é se ele falou &#39;eu não quero mais isso, eu vou
+  cancelar e nunca vou&#39;, aí é cancelar.&quot;
+</p>
+<p>E em 50:43:</p>
+<p>
+  &quot;No show é porque eu não fui, mas em algum momento ainda vou usar — ele vai poder ser
+  remarcado, dependendo da política da empresa.&quot;
+</p>
+<p>Por que é neutro/operacional, não destrutivo</p>
+<p>Critério de destrutividade No Show no Retrilhar</p>
+<p>Cancela a reserva? ❌ Não — reserva continua viva</p>
+<p>Bloqueia reembolso? ❌ Não — reembolso só se houver Cancelada</p>
+<p>Libera vaga ao estoque? ❌ Não (vaga só volta no Cancelada)</p>
+<p>Dispara cobrança automática de multa? ❌ Não há regra documentada</p>
+<p>Bloqueia o cliente em lista de espera? ❌ Não há regra documentada</p>
+<p>É reversível? ✅ Sim — transita para Confirmada, Cancelada ou Agendada</p>
+<p>Exige motivo obrigatório? ❌ Não (só Cancelada exige)</p>
+<p>
+  O No Show é um marcador de presença que mantém a reserva ativa para remarcação futura. Toda
+  consequência financeira (multa, retenção, estorno parcial) depende de uma ação posterior — e essa
+  ação é &quot;Cancelar reserva&quot;, não &quot;Marcar no show&quot;.
+</p>
+<p>
+  A pegadinha é semântica: o nome da ação induz medo (&quot;não compareceu&quot; soa terminal), mas
+  na máquina de estados ele é equivalente a um &quot;fica em standby&quot;.
+</p>
+<p>Recomendação de UX</p>
+<p>Padrão: ação operacional de fluxo simples, sem modal de confirmação forte.</p>
+<p>
+  Componente: dropdown da badge de status (mesmo padrão validado para transições simples 1:1 que
+  vocês definiram para o painel)
+</p>
+<p>
+  Confirmação: toast com undo (5–8s) — coerente com a fala do Cristiano em 52:12: &quot;acontece
+  muito do operador cancelar sem querer&quot;. O mesmo se aplica a marcar no show por engano em vez
+  de check-in
+</p>
+<p>
+  Motivo: opcional (não obrigatório), porque a transição não tem efeito financeiro. Se o cliente da
+  política exigir, transformar em campo livre no toast/drawer secundário, nunca em modal bloqueante
+</p>
+<p>Texto da ação: &quot;Marcar como não compareceu&quot; (verbo neutro, descritivo)</p>
+<p>Texto do toast: &quot;Participante marcado como não compareceu. Desfazer&quot;</p>
+<p>
+  Onde mora: dropdown da badge ✓ (transição direta, reversível). NÃO no menu de três pontos (esse é
+  reservado para ações compostas, como Cancelar com motivo + estorno)
+</p>
+<p>Onde a destrutividade realmente mora</p>
+<p>
+  A ação destrutiva equivalente é &quot;Cancelar reserva&quot; (a partir de Confirmada ou No Show),
+  porque:
+</p>
+<p>Exige motivo obrigatório (regra geral da máquina de estados)</p>
+<p>Devolve vaga ao estoque</p>
+<p>Aciona consulta à política de reembolso e estorno</p>
+<p>Esse sim merece modal forte com confirmação explícita</p>
+<p>
+  Vale reforçar essa diferenciação visual entre as duas ações no painel de participantes — se
+  &quot;Cancelar&quot; e &quot;Não compareceu&quot; estiverem visualmente equivalentes no dropdown,
+  o operador vai confundir, principalmente sob pressão do dia da operação.
+</p>
+<p>Ponto de atenção para alinhar com Cristiano</p>
+<p>
+  A documentação atual não define se o no show vai disparar políticas automáticas no futuro (multa,
+  registro de comportamento recorrente, bloqueio). Cristiano mencionou em 52:58 que &quot;depende da
+  política da empresa&quot; — ou seja, há uma intenção de parametrização por cliente.
+</p>
+<p>
+  Se isso vier: o no show muda de categoria e passa a ser destrutivo condicional. Nesse cenário
+  futuro, o padrão correto é manter o fluxo simples, mas exibir as consequências configuradas no
+  toast/drawer (&quot;Esta ação registrará multa de R$ X conforme a política&quot;), preservando
+  transparência sem modal travante.
+</p>
+<p>
+  Vale documentar essa pergunta no bloco de questões abertas para o próximo alinhamento — se há
+  intenção de no futuro vincular políticas automáticas ao no show, isso afeta a arquitetura da ação
+  desde já (precisa de slot para exibir consequências dinamicamente no toast).
+</p>

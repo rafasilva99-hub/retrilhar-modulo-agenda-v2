@@ -1,0 +1,174 @@
+<p>
+  <strong>RETRILHAR · MÓDULO DE AGENDA</strong>
+  <strong>To-Do List do Figma</strong>
+  <em
+    >Lista de tarefas para estruturação do módulo de Agenda. Esta semana o foco é avançar nos fluxos
+    que ainda não existem no Figma. Os ajustes da área de Participantes entram por último, já que o
+    card recebeu muita atenção nas últimas iterações.</em
+  >
+  <strong>Prioridades</strong>
+  <strong>Crítica</strong> bloqueia testes <strong>Alta</strong> fecha módulo
+  <strong>Média</strong> refinamento <strong>Baixa</strong> pós-MVP
+  <strong>1. Nova Atividade — Fluxo de Criação</strong>
+  <strong>Botão já existe no calendário, fluxo interno não. Foco da semana.</strong>
+  <strong>Crítica</strong> Estruturar tela/drawer de criação de evento (decidir entre tela cheia ou
+  drawer lateral) <strong>Crítica</strong> Seção Dados básicos Título do evento (obrigatório)
+  Produto/experiência vinculado (select com busca, opcional) Descrição / observações
+  <strong>Crítica</strong> Seção Data e horário Data e horário de início (obrigatório) Data e
+  horário de término (obrigatório) — suportar multi-dia Múltiplos horários no mesmo dia — botão
+  &#39;+ Adicionar horário&#39; Recorrência (diário / semanal / mensal / personalizado) + data final
+  + exceções <strong>Alta</strong> Seção Capacidade Capacidade mínima (tag de saída confirmada
+  quando atingida) Capacidade máxima (herda do produto quando vinculado) <strong>Alta</strong> Seção
+  Local Campo livre ou select de local cadastrado <strong>Alta</strong> Seção Equipe Multi-select de
+  colaboradores Alerta de conflito de horário do guia <strong>Alta</strong> Seção Visibilidade
+  Toggle Interno (só equipe) / Público (exibido na loja online) Link do grupo WhatsApp (opcional)
+  <strong>Alta</strong> Seção Segmentação por grupos de cliente Multi-select: assinantes, grupos
+  corporativos, parceiros <strong>Crítica</strong> Rodapé com CTAs Criar e Cancelar + validações
+  inline + toast de sucesso <strong>Alta</strong> Editar evento — reaproveitar componente em modo
+  edição <strong>Alta</strong> Modal &#39;Aplicar alteração a…&#39; para eventos recorrentes (esta /
+  futuras / todas) <strong>Alta</strong> Cancelar evento — modal com motivo obrigatório + aviso de
+  notificação aos pedidos vinculados <strong>Média</strong> Excluir evento — modal destrutivo (só
+  quando não há pedidos vinculados) <strong>Baixa</strong> Arrastar e soltar nas visões Semana e Dia
+  <strong>2. Mapa de Vagas — Tela Nova</strong>
+  <strong>Cristiano sinalizou como prioridade na reunião. Base: RPP002 §3.1.</strong>
+  <strong>Crítica</strong> Cabeçalho com totalizadores gerais Taxa de ocupação geral (%) Dias com
+  atividades confirmadas no período Total de vagas vendidas Total de vagas disponíveis
+  <strong>Crítica</strong> Filtros Período (padrão próximos 30 dias) Produto (multi-select) Status
+  (Pendente / Confirmada / Cancelada) Com vagas disponíveis / Esgotados Guia responsável Botão
+  Atualizar (refresh manual) <strong>Crítica</strong> Card de evento Nome do produto + data e
+  horário(s) Capacidade mín/máx + tag de saída confirmada Vagas vendidas e disponíveis Status da
+  saída (cor distinta) Equipe escalada ou alerta &#39;Nenhuma equipe&#39; Itens adicionais vendidos
+  (contagem) Ícones de alerta: saúde, adicionais, esgotado, recurso compartilhado, vagas bloqueadas
+  CTA &#39;Ver reservas&#39; → Painel de Reservas filtrado <strong>Média</strong> Ação Bloquear
+  vagas — modal com quantidade, prazo e motivo + ícone no card <strong>Média</strong> Ação Bloquear
+  vendas (fechar vendas sem cancelar reservas existentes) <strong>Média</strong> Alerta de conflito
+  de recurso compartilhado (barco, van em dois eventos simultâneos) <strong>Média</strong> Alerta de
+  conflito de horário da equipe <strong>Alta</strong> Proposta de estrutura mobile (cards não
+  escalam bem — avaliar lista densa ou accordion por data) <strong>Média</strong> Estado vazio (sem
+  eventos no período) <strong>Média</strong> Skeleton / loading <strong>Alta</strong> Card esgotado
+  (100%) — destaque visual <strong>Média</strong> Card Day Use / Hospedagem — entradas e saídas no
+  mesmo dia diferenciadas
+  <strong>3. Listas e Manifestos — Tela Nova</strong>
+  <strong>Atalho já existe no header de Participantes. Destino vazio. Base: RPP002 §3.4.</strong>
+  <strong>Crítica</strong> Cabeçalho com filtros globais (produto, data, horário, status da reserva)
+  <strong>Crítica</strong> Interface de seleção de ficha — grid de cards ou lista com CTA Gerar por
+  ficha <strong>Alta</strong> Ficha 1 — Lista de Presença (com assinatura)
+  <strong>Alta</strong> Ficha 2 — Manifesto de Transporte (ANTT) <strong>Alta</strong> Ficha 3 —
+  Manifesto de Pontos de Embarque (agrupado por ponto) <strong>Alta</strong> Ficha 4 — Dados de
+  Saúde e Segurança (acesso restrito por perfil + bloqueio visual quando sem permissão)
+  <strong>Média</strong> Ficha 5 — Dados Completos dos Participantes <strong>Alta</strong> Ficha 6 —
+  Ficha de Operação (com equipe e inventário a retirar) <strong>Alta</strong> Ficha 7 — Checklist de
+  Inventário por Tarifa e Adicional <strong>Alta</strong> Tela de preview da ficha gerada com CTAs
+  Download PDF, Download Excel, Imprimir <strong>Alta</strong> Destaque visual para participantes
+  com problemas de saúde e menores (regra transversal) <strong>Média</strong> Cabeçalho do PDF com
+  logo da empresa e data de geração
+  <strong>4. Conclusão de Atividade — Ajustes</strong>
+  <strong>Drawer já estruturado. Ajustes da reunião 15/04 + máquina de estados.</strong>
+  <strong>Média</strong> &#39;Início real&#39; preenchido automaticamente com o horário cadastrado
+  da atividade (editável) <strong>Média</strong> &#39;Término real&#39; preenchido automaticamente
+  com o horário do dispositivo na abertura do drawer (editável) <strong>Média</strong> &#39;Duração
+  total&#39; calculada automaticamente em tempo real <strong>Alta</strong> Criar coluna/card
+  &#39;Não compareceram (no-show)&#39; no resumo, separada de &#39;Cancelaram&#39;
+  <strong>Alta</strong> Revisar layout do resumo: Compareceram / Cancelaram / No-show / Total
+  esperado (4 indicadores) <strong>Alta</strong> Estruturar fluxo expandido de &#39;Sim, registrar
+  ocorrência&#39; Tipo de ocorrência (dropdown — aguardando lista definitiva do Cristiano) Grau de
+  severidade (Baixo / Médio / Alto) Aviso de notificação automática quando Severidade = Alta Campo
+  de descrição (texto livre) Upload de evidências (fotos, arquivos) <strong>Alta</strong> Cenário de
+  bloqueio: seguro obrigatório não contratado (mensagem específica) <strong>Média</strong> Revisar
+  copy do bloqueio existente (check-ins pendentes) para alinhar com novo cenário
+  <strong>Baixa</strong> Toast de sucesso com identificação do operador e horário (&#39;Encerrada
+  por X às HH:MM&#39;)
+  <strong>5. Calendário e Atividades do Dia</strong>
+  <strong>Visualizações existentes + estados e atalhos pendentes.</strong>
+  <strong>Alta</strong> Proposta de UX para navegar entre múltiplos horários da mesma atividade no
+  Painel do Dia (segmentação por grupos) <strong>Média</strong> Estruturar Visão de Lista (4ª
+  visualização do calendário) <strong>Média</strong> Filtro por Produto nas visualizações de
+  calendário <strong>Média</strong> Indicação visual de atraso em eventos do dia (passou do horário
+  sem abertura do check-in) <strong>Média</strong> Revisar tags de status — cobrir Aguardando Início
+  / Em Andamento / Concluído / Cancelado (máquina de estados) <strong>Média</strong> Alinhar com
+  Cristiano o destino do botão &#39;Ficha de Operação&#39; (atalho para Ficha 6 ou tela
+  intermediária) <strong>Média</strong> Estruturar a tela/preview de destino depois da decisão acima
+  <strong>Média</strong> Estado vazio: dia sem atividades (com CTA &#39;Criar nova atividade&#39;)
+  <strong>Baixa</strong> Estado: dia de feriado sem atividades (diferenciado do vazio normal)
+  <strong>Média</strong> Estado: todas as atividades já encerradas (badge &#39;Dia encerrado&#39; +
+  CTAs desabilitados) <strong>Média</strong> Navegação dia anterior / próximo no header de
+  Atividades do Dia (sem voltar ao calendário)
+  <strong>6. Visão Geral e Atualizações</strong>
+  <strong>Duas abas já estruturadas — completar ações e estados.</strong>
+  <strong>Alta</strong> Fluxo &#39;+ Adicionar guia&#39; — drawer/modal de busca e seleção
+  <strong>Alta</strong> Badge de aceite de escala por guia (aceitou / pendente de aceite)
+  <strong>Média</strong> Ação &#39;Remover guia&#39; com modal de confirmação e motivo opcional
+  <strong>Média</strong> Estado &#39;Sem equipe atribuída&#39; com CTA primário destacado
+  <strong>Média</strong> Link para editar a atividade dentro da Visão Geral
+  <strong>Baixa</strong> Estado da previsão climática quando a API do OpenWeather falhar
+  (placeholder + retry) <strong>Alta</strong> Seletor de categoria antes do envio (avisos / saúde /
+  pagamento / observação) <strong>Média</strong> Tornar o sumário lateral clicável como filtro da
+  timeline <strong>Média</strong> Estado focado do campo de mensagem (toolbar B I U ativa)
+  <strong>Média</strong> Estado de envio (loading) e pós-envio <strong>Média</strong> Ação
+  &#39;Marcar como resolvido&#39; em registros que são tasks (equipamento, transporte, seguro)
+  <strong>Baixa</strong> Ação &#39;Editar registro próprio&#39; dentro de X minutos da criação
+  <strong>Média</strong> Definir regra do badge &#39;+9&#39; no menu lateral (não lidos? severidade
+  alta? alerta pendente?)
+  <strong>7. Design Debt Transversal do Módulo</strong>
+  <strong>Sistemas que atravessam várias telas.</strong>
+  <strong>Alta</strong> Componente &#39;Ordenar por&#39; em todas as listagens Atividades do Dia
+  (por horário — padrão, por status, por ocupação) Mapa de Vagas (por data — padrão, por ocupação,
+  por produto) <strong>Alta</strong> Estados de listagem em todas as telas (vazio sem filtros, vazio
+  com filtros, erro, skeleton) <strong>Alta</strong> Adaptação mobile — Calendário (Mês, Semana,
+  Dia) <strong>Alta</strong> Adaptação mobile — Atividades do Dia <strong>Alta</strong> Adaptação
+  mobile — Visão Geral da Atividade <strong>Média</strong> Adaptação mobile — Atualizações
+  <strong>—</strong> Adaptação mobile — Mapa de Vagas (proposta específica já listada na seção 2)
+  <strong>Alta</strong> Versão das telas para perfil Operador/Guia (visão reduzida, sem dados
+  financeiros) <strong>Alta</strong> Consolidar drawer lateral padrão (variantes S/M/L documentadas)
+  <strong>Alta</strong> Consolidar modal de confirmação destrutiva (cancelar evento, excluir evento,
+  cancelar reserva) <strong>Média</strong> Componente genérico de upload (fotos/arquivos) — usado em
+  ocorrências <strong>Média</strong> Componente datepicker + time picker (usados na criação de
+  evento)
+  <strong>8. Participantes — Ajustes Futuros</strong>
+  <strong
+    >Área que já recebeu várias iterações nas últimas semanas. Entra por último nesta
+    sprint.</strong
+  >
+  <strong>Média</strong> Segmentar card expandido em 3 blocos (Alertas / Observações do operador /
+  Dados do pedido) <strong>Média</strong> Sistema de ícones para tipos de alerta (saúde, alimentar,
+  uso de imagem, menor, seguro) <strong>Média</strong> Indicador visual na linha colapsada (bolinha
+  colorida ao lado do nome) <strong>Baixa</strong> Truncar nomes longos com &#39;…&#39; na linha
+  colapsada <strong>Média</strong> Substituir título &#39;Reserva em Grupo&#39; pelo nome do
+  comprador (tipo vira subtítulo) <strong>Média</strong> Reativar checkbox de seleção geral (header
+  da lista) <strong>Média</strong> Checkbox individual em cada linha (padrão global por
+  participante) <strong>Média</strong> Barra de ações em massa: check-in, seguro, confirmar,
+  cancelar, marcar como realizada <strong>Baixa</strong> Contador sequencial (1, 2, 3…) em cada
+  linha <strong>Média</strong> Filtro &#39;Uso de imagem&#39; (Autorizou / Não autorizou)
+  <strong>Baixa</strong> Verificar cobertura dos agrupadores do RPP002 nos filtros atuais
+  <strong>Baixa</strong> Área &#39;Pedidos adicionais&#39; no bloco C do card expandido
+  <strong>Baixa</strong> Menu de três pontinhos — estruturar ações individuais completas Ver
+  detalhes completos, editar, observação, WhatsApp, ligar, reenviar voucher, comprovante, remarcar,
+  cancelar, no-show, seguro, histórico <strong>Média</strong> Novos estados do participante:
+  No-show, Cancelada visível, Realizada (pós-conclusão) <strong>Média</strong> Tela/drawer de
+  Detalhes Completos da Reserva (todos os campos do RPP002 §3.2) <strong>Baixa</strong> Seção de
+  totalizadores de tarifas e adicionais do evento <strong>Baixa</strong> Componente &#39;Ordenar
+  por&#39; (alfabética, ID pedido, data da reserva) <strong>Baixa</strong> Componente de agrupamento
+  (distinto de filtros) — ponto embarque, saúde, tarifa, horário, imagem, menor, estrangeiro,
+  pagamento, seguro
+  <strong>9. Bloqueios — Levar ao Próximo Alinhamento</strong>
+  <strong>Itens que dependem de retorno do cliente antes de avançar.</strong>
+  <strong>Crítica</strong> Lista definitiva de tipos de ocorrência (Cristiano se comprometeu a
+  enviar) <strong>Alta</strong> Comportamento de atividades multi-dia no encerramento agregado do
+  dia <strong>Alta</strong> Participantes sem check-in até o encerramento — bloquear ou só avisar?
+  <strong>Média</strong> Existe limite de tempo / lembrete automático para fechar o dia?
+  <strong>Média</strong> Destino exato do botão &#39;Ficha de Operação&#39; (atalho direto para
+  Ficha 6 ou tela intermediária?) <strong>Alta</strong> &#39;Gestor Operacional&#39; do RPP002 é
+  novo perfil ou é o Gestor Comercial? <strong>Alta</strong> Atividade com seguro obrigatório pode
+  ser encerrada com participantes sem seguro? <strong>Alta</strong> Ações em massa — quais são
+  globais (por participante) e quais só fazem sentido por reserva em grupo?
+  <strong>Média</strong> Cadastro de grupos de cliente vive em qual módulo? (depende da segmentação
+  por grupos)
+  <em
+    >Documento vivo — atualizar conforme itens forem concluídos. Seções 1 a 3 são o foco da semana;
+    seção 8 (Participantes) fica por último.</em
+  >
+  <em
+    >Fontes: Retrilhar — Escopo, Proposta e Planejamento; RPP002 — Painel Operacional v3.0; Reunião
+    de Alinhamento 15/04/2026.</em
+  >
+</p>

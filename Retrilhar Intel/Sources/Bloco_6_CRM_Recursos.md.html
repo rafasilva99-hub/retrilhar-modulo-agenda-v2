@@ -1,0 +1,402 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 6 de N — Módulos: CRM (3) + Recursos e Equipe (1)</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> Escopo (§4 CRM com sub-seções Funil de Vendas, Base de Clientes,
+  Qualidade Pós-Venda; §14 Recursos e Equipe), RPP002 §3.7 (Gestão de Equipe em Campo, que se
+  conecta a Recursos), reunião 25/03 (decisão sobre CRUDs genéricos que impacta Base de Clientes),
+  backlog atual do projeto. <strong>Contexto do bloco:</strong> CRM e Recursos são módulos
+  &quot;quentes&quot; — alimentam diretamente Vendas e Agenda, respectivamente. CRM não teve
+  discussões específicas em reunião (é área que vem do escopo). Recursos e Equipe apareceu nas
+  reuniões em contexto tangencial (quando se falou de escala de guias em atividades).
+  <strong>Decisão relevante do Cristiano (reunião 25/03, 01:08:22)</strong> sobre &quot;fluxo de
+  clientes&quot; — foi explicitamente mencionado junto com produtos na fala:
+  <em
+    >&quot;esses CRUDs aí a gente nem vai construir tela, vai já construir direto no sistema. A
+    gente não vai precisar fazer no Figma porque é padrão, vou ter formulário e vou ter tabela de
+    resultado&quot;</em
+  >
+  . Mesma ressalva do Bloco 4 (Produtos): aplicável a Base de Clientes? Ver observação específica na
+  Tarefa 2.
+</p>
+<hr />
+<h3>Parte A — CRM</h3>
+<h4>Tarefa 1 — Funil de Vendas (Kanban)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CRM] Funil de Vendas (Kanban)
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Interface visual em kanban para gerenciar oportunidades comerciais.
+  Permite ao vendedor acompanhar leads desde a prospecção até o fechamento, com drag-and-drop entre
+  etapas e drawer de detalhes. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §4.1 define colunas fixas do kanban: Prospecção, Orçamento Enviado, Negociação, Venda
+    Concluída, Perdido.
+  </li>
+  <li>
+    Escopo: cards de oportunidade contêm nome do lead/cliente, valor estimado, produto de interesse,
+    data da última interação, responsável (avatar), indicador de follow-up atrasado (ícone
+    vermelho).
+  </li>
+  <li>
+    Escopo: drawer lateral ao clicar no card com dados do lead (nome, empresa, telefone, e-mail),
+    produto de interesse, valor estimado, probabilidade de fechamento, responsável, histórico de
+    interações (timeline), ações (agendar follow-up, adicionar nota, converter em venda, marcar como
+    perdido com motivo).
+  </li>
+  <li>Escopo: filtros por responsável, período, produto. <strong>OBSERVAÇÕES</strong></li>
+  <li>Converter em venda abre fluxo de Novo Pedido (Módulo Vendas) — integração entre módulos.</li>
+  <li>
+    Marcar como perdido exige motivo obrigatório (padrão similar ao cancelamento de reservas).
+  </li>
+  <li>Agendar follow-up gera lembrete — integração com módulo de notificações.</li>
+  <li>
+    Módulo mais complexo que uma listagem padrão (kanban com drag-and-drop + drawer dinâmico) — não
+    é um CRUD genérico. Justifica design dedicado. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Indicador de follow-up atrasado: qual critério? Dias sem interação configurável ou fixo?</li>
+  <li>
+    Probabilidade de fechamento no drawer: cálculo automático com base na etapa ou campo editável
+    pelo vendedor?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>
+    [ ] Kanban com 5 colunas fixas (Prospecção, Orçamento Enviado, Negociação, Venda Concluída,
+    Perdido)
+  </li>
+  <li>
+    [ ] Cards de oportunidade (nome, valor, produto, última interação, responsável, indicador de
+    atraso)
+  </li>
+  <li>[ ] Drag-and-drop entre colunas</li>
+  <li>[ ] Filtros (responsável, período, produto)</li>
+  <li>[ ] CTA &quot;+ Nova Oportunidade&quot;</li>
+  <li>[ ] Drawer lateral ao clicar no card</li>
+  <li>[ ] Drawer: dados do lead (nome, empresa, telefone, e-mail)</li>
+  <li>[ ] Drawer: probabilidade de fechamento</li>
+  <li>[ ] Drawer: timeline de interações</li>
+  <li>[ ] Drawer: agendar follow-up (data/hora + lembrete)</li>
+  <li>[ ] Drawer: adicionar nota/interação</li>
+  <li>[ ] Drawer: converter em venda (abre fluxo de Novo Pedido)</li>
+  <li>[ ] Drawer: marcar como perdido (motivo obrigatório)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Coluna vazia — placeholder com CTA de arrastar card</li>
+  <li>[ ] [vazio] Kanban sem oportunidades ainda — onboarding</li>
+  <li>[ ] [loading] Skeleton do kanban durante carregamento</li>
+  <li>[ ] [erro] Falha ao salvar movimentação (drag-and-drop) — reverter card e mostrar retry</li>
+  <li>
+    [ ] [exceção] Movimento para &quot;Venda Concluída&quot; sem pedido vinculado — forçar conversão
+  </li>
+  <li>[ ] [exceção] Lead duplicado (mesmo e-mail/CPF) — sugerir merge</li>
+  <li>[ ] [exceção] Card de outro responsável — permissões de movimentação</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Base de Clientes</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CRM] Base de Clientes <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Registro único de clientes com dados persistentes entre compras. Agrega
+  histórico, saúde, acompanhantes frequentes e tags. Substitui o re-preenchimento manual toda vez
+  que o cliente faz nova reserva. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §4.2 define lista de clientes com colunas: nome, e-mail, telefone, documento, data
+    cadastro, total de compras, última compra.
+  </li>
+  <li>
+    Escopo: filtros busca (nome/e-mail/documento), período de cadastro, com compras / sem compras.
+  </li>
+  <li>
+    Escopo: ficha do cliente com 4 abas — Dados Pessoais, Saúde e Perfil (persistente entre
+    compras), Histórico de Compras, Acompanhantes Frequentes.
+  </li>
+  <li>Escopo: ações em lote (exportar, enviar e-mail, aplicar tag).</li>
+  <li>
+    Reunião 25/03 (Cristiano, 01:08:22): &quot;fluxo de clientes&quot; foi incluído junto com
+    produtos na categoria de CRUDs que &quot;não precisa fazer no Figma&quot;.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    A decisão do Cristiano sobre &quot;CRUD genérico sem Figma&quot; criou tensão com a complexidade
+    real da ficha do cliente (4 abas, persistência de dados de saúde, histórico de compras
+    vinculado). Mesma situação do Cadastro de Produto (Bloco 4).
+  </li>
+  <li>Aba de Saúde tem acesso restrito por perfil (dados sensíveis LGPD — ver RPP002 §3.2).</li>
+  <li>
+    Dados de saúde persistentes entre compras é decisão importante: cliente não precisa
+    re-preencher, mas sistema precisa alertar se dados ficaram desatualizados.
+  </li>
+  <li>
+    Tags (VIP, Recorrente, Atenção especial) exigem CRUD de tags — tela adicional.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Reconfirmar com o cliente: Ficha do Cliente precisa de design no Figma ou vai como &quot;CRUD
+    genérico&quot; conforme dito em 25/03? A complexidade das abas (especialmente Saúde e Histórico)
+    sugere que sim, mas a fala foi explícita.
+  </li>
+  <li>
+    Conflito de dados de saúde (cliente × reserva): qual prevalece? Cliente altera e atualiza
+    histórico, ou reserva mantém snapshot do momento?
+  </li>
+  <li>
+    Merge de clientes duplicados (mesmo CPF em cadastros diferentes): fluxo automático ou manual?
+  </li>
+  <li>Exclusão de cliente com compras históricas (LGPD): anonimização em vez de exclusão?</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de clientes (template de listagem padrão)</li>
+  <li>[ ] Filtros (busca, período de cadastro, com / sem compras)</li>
+  <li>[ ] Colunas (nome, e-mail, telefone, documento, cadastro, total compras, última compra)</li>
+  <li>[ ] CTA &quot;Novo Cliente&quot;</li>
+  <li>[ ] Ações em lote (exportar, enviar e-mail, aplicar tag)</li>
+  <li>[ ] Gestão de Tags (VIP, Recorrente, Atenção especial)</li>
+  <li>[ ] Ficha do cliente — header com nome, badges, última compra</li>
+  <li>
+    [ ] Ficha — Aba Dados Pessoais (nome, e-mail, telefone, CPF, RG/Passaporte, nascimento,
+    endereço)
+  </li>
+  <li>[ ] Ficha — Aba Saúde e Perfil (restrições alimentares, condições, observações)</li>
+  <li>[ ] Ficha — Aba Histórico de Compras (lista com link para detalhe)</li>
+  <li>[ ] Ficha — Aba Acompanhantes Frequentes</li>
+  <li>[ ] Exportar base completa para Excel</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum cliente cadastrado</li>
+  <li>[ ] [vazio] Filtros sem resultado</li>
+  <li>[ ] [loading] Carregamento do histórico de compras (para clientes com histórico grande)</li>
+  <li>[ ] [exceção] Conflito de dados de saúde (cliente × reserva)</li>
+  <li>[ ] [exceção] Cliente duplicado (mesmo CPF em cadastros diferentes) — merge</li>
+  <li>[ ] [exceção] Menor de idade sem responsável vinculado</li>
+  <li>[ ] [permissão] Aba Saúde oculta para perfis sem permissão</li>
+  <li>[ ] [destrutivo] Exclusão de cliente com compras históricas (LGPD)</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 3 — Qualidade (Pós-Venda)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CRM] Qualidade Pós-Venda (NPS)
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Pesquisas de satisfação automatizadas pós-atividade. Dispara pesquisa
+  após mudança de status para &quot;Realizada&quot; (via e-mail ou WhatsApp), agrega respostas em
+  dashboard NPS e alerta gestor sobre detratores críticos.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §4.3 define configuração da pesquisa: template, gatilho de envio (após status
+    &quot;Realizada&quot;), canal (e-mail/WhatsApp).
+  </li>
+  <li>
+    Escopo: dashboard de qualidade com NPS geral (gauge ou número grande), nota média por
+    experiência, nota média por guia, gráfico de evolução do NPS, distribuição Promotores / Neutros
+    / Detratores (pizza).
+  </li>
+  <li>Escopo: lista de respostas recebidas com detalhes da resposta individual.</li>
+  <li>
+    RPP002 §3.2 (nota de comportamento esperado): &quot;após a atividade: disparar automaticamente o
+    questionário de satisfação para os participantes com status Realizada&quot;.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Integração com módulo de Comunicação (templates de mensagem) — a pesquisa é um template
+    específico.
+  </li>
+  <li>
+    NPS geral é indicador de alto nível, ideal para dashboard. Nota por guia alimenta relatório de
+    equipe (ver RPP002 §3.7).
+  </li>
+  <li>
+    Módulo tem baixa prioridade porque depende de volume de respostas — só faz sentido quando há
+    operação estabilizada. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Detrator crítico (nota 0-2): como é disparado o alerta ao gestor? E-mail? WhatsApp? Notificação
+    in-app?
+  </li>
+  <li>
+    Editor de template da pesquisa: reutiliza editor de Templates de Mensagem (Config 15.3) ou tem
+    particularidades (escalas, múltipla escolha)?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Configuração da pesquisa (template, gatilho, canal)</li>
+  <li>[ ] Lista de respostas recebidas</li>
+  <li>[ ] Detalhes da resposta individual</li>
+  <li>[ ] Dashboard de qualidade (NPS, nota média, evolução)</li>
+  <li>[ ] NPS geral em gauge ou número grande</li>
+  <li>[ ] Nota média por experiência</li>
+  <li>[ ] Nota média por guia</li>
+  <li>[ ] Gráfico de evolução do NPS</li>
+  <li>[ ] Distribuição Promotores / Neutros / Detratores (pizza)</li>
+  <li>[ ] Alerta automático ao gestor em caso de detrator crítico</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Ainda sem respostas no período</li>
+  <li>[ ] [vazio] Período sem atividades &quot;Realizadas&quot; — sem gatilhos</li>
+  <li>[ ] [loading] Agregação de dados para gráficos</li>
+  <li>[ ] [erro] Falha no envio da pesquisa (canal indisponível)</li>
+  <li>[ ] [exceção] Detrator crítico (nota 0-2) — alerta automático ao gestor</li>
+  <li>[ ] [exceção] Cliente não recebeu pesquisa (canal inválido) — reenvio manual</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h3>Parte B — Recursos e Equipe</h3>
+<h4>Tarefa 4 — Recursos (Guias, Veículos, Equipamentos)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [RECURSOS] Recursos e Equipe <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> CRUD de recursos operacionais (guias, veículos como van e barco,
+  equipamentos). Alimenta Agenda e Mapa de Vagas — quando uma atividade é criada, os recursos
+  vinculados verificam disponibilidade e bloqueiam conflitos.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §14: categorias Guias, Veículos (van, barco), Equipamentos. Lista por categoria com nome,
+    capacidade (se aplicável), status, disponibilidade.
+  </li>
+  <li>Escopo: cadastro com nome, tipo, capacidade, custo, observações.</li>
+  <li>
+    Escopo define regra crítica: &quot;recurso não pode ser escalado em dois produtos no mesmo
+    horário&quot;.
+  </li>
+  <li>
+    RPP002 §3.1 (Mapa de Vagas): exibe ícone 🔗 quando há recurso compartilhado entre atividades.
+    §3.1 também trata &quot;Conflito de Recurso Compartilhado&quot; — alerta visual quando ocupação
+    somada excede capacidade.
+  </li>
+  <li>
+    RPP002 §3.7 (Gestão de Equipe em Campo): complementa Recursos com funcionalidades específicas
+    para guias (aceite de escala, conflito de horário da equipe, ficha da equipe para o
+    colaborador). <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Embora o escopo diga &quot;1 tela&quot;, na prática é um CRUD com comportamento especial por
+    causa da regra de não-duplicação e do histórico de alocações.
+  </li>
+  <li>
+    Guias aqui cruzam com Vendedores/Afiliados (Bloco 3) em alguns contextos — um guia freelancer
+    pode ser também vendedor. Precisa clarificar se Guia em Recursos é a mesma entidade do usuário
+    &quot;Operador/Guia&quot; do sistema ou se é só um registro de recurso (sem conta no sistema).
+  </li>
+  <li>
+    Alta prioridade porque bloqueia validação de conflitos na Agenda e no Mapa de Vagas — sem
+    Recursos cadastrados, as tarefas 2 e 12 do Bloco 1 (Nova Atividade e Mapa de Vagas) não
+    conseguem detectar conflitos. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Guia em Recursos é a mesma entidade do usuário &quot;Operador/Guia&quot;? Ou são registros
+    separados (um é recurso operacional, outro é conta no sistema)?
+  </li>
+  <li>
+    Capacidade do recurso se aplica a todos os tipos? Veículos têm capacidade de passageiros,
+    equipamentos têm quantidade — modelo de dados unificado ou separado?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Listagem por categoria (Guias, Veículos, Equipamentos)</li>
+  <li>[ ] Cadastro (nome, tipo, capacidade, custo, observações)</li>
+  <li>[ ] Edição de recurso</li>
+  <li>[ ] Status e disponibilidade (ativo / inativo / manutenção)</li>
+  <li>[ ] Histórico de alocações por recurso</li>
+  <li>[ ] Busca e filtros por categoria</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum recurso cadastrado em categoria</li>
+  <li>[ ] [exceção] Tentativa de escalar recurso em dois produtos no mesmo horário — bloqueio</li>
+  <li>[ ] [exceção] Desativar recurso com escalas futuras — aviso de impacto</li>
+  <li>[ ] [destrutivo] Exclusão bloqueada quando há histórico de alocações</li>
+  <li>[ ] [loading] Cálculo de disponibilidade em períodos longos</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 6</h4>
+<p>
+  <strong>Total de tarefas:</strong> 4 (3 CRM + 1 Recursos e Equipe)
+  <strong>Por status sugerido:</strong>
+</p>
+<ul>
+  <li>
+    <strong>BACKLOG (4):</strong> todas. Nenhuma ainda em design ativo.
+    <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>
+    Reconfirmar se Base de Clientes precisa de design no Figma ou vai como CRUD genérico (fala do
+    Cristiano em 25/03 sobre &quot;fluxo de clientes&quot;).
+  </li>
+  <li>Conflito de dados de saúde (cliente × reserva): qual prevalece?</li>
+  <li>Merge de clientes duplicados (mesmo CPF): fluxo automático ou manual?</li>
+  <li>Exclusão de cliente com compras históricas (LGPD): anonimização?</li>
+  <li>Funil de Vendas — indicador de follow-up atrasado: qual critério?</li>
+  <li>Funil de Vendas — probabilidade de fechamento: automática ou editável?</li>
+  <li>Qualidade — detrator crítico: como dispara alerta ao gestor?</li>
+  <li>
+    Qualidade — editor de template da pesquisa reutiliza o de Comunicação ou tem particularidades?
+  </li>
+  <li>Recursos — Guia é a mesma entidade do Operador/Guia usuário do sistema?</li>
+  <li>
+    Recursos — modelo de capacidade unificado para todos os tipos ou separado?
+    <strong>Observações transversais:</strong>
+  </li>
+</ol>
+<ul>
+  <li>
+    <strong>Funil de Vendas é o item de maior complexidade</strong> do bloco — não é CRUD genérico,
+    é interface rica em drag-and-drop, drawer dinâmico, conversão em venda. Justifica design
+    dedicado.
+  </li>
+  <li>
+    <strong>Base de Clientes está em zona cinzenta</strong> — escopo define complexidade (4 abas,
+    tags, histórico), mas Cristiano indicou que seria &quot;CRUD genérico sem Figma&quot;. Decisão
+    macro do Cristiano precisa ser reconfirmada.
+  </li>
+  <li>
+    <strong>Qualidade Pós-Venda é baixa prioridade</strong> — só faz sentido com volume de
+    respostas, portanto pós-MVP.
+  </li>
+  <li>
+    <strong>Recursos tem prioridade Alta</strong> apesar de ser &quot;1 tela&quot; do escopo —
+    porque bloqueia validação de conflitos em Nova Atividade e Mapa de Vagas. Sem ele, o sistema
+    opera sem trava contra duplicação de recursos.
+  </li>
+  <li>
+    Guia (em Recursos) × Operador/Guia (em Autenticação/Usuários): entidade única ou separada é
+    decisão arquitetural importante que afeta escopo do trabalho.
+  </li>
+</ul>
+<hr />
+<p>
+  <strong>Fim do Bloco 6.</strong> Próximo bloco: Configurações (6 features — usuários, perfis,
+  templates, termos, integrações, gerais).
+</p>

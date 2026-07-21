@@ -1,0 +1,500 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 7 de N — Módulo: Configurações e Administrativo (6 sub-módulos)</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> Escopo (Módulo 8 — Configurações e Administrativo, com
+  sub-seções 8.1 a 8.5), RPP002 (referências cruzadas a Configurações 14.1 quando trata de perfis de
+  acesso e dados de saúde), backlog atual do projeto.
+  <strong>Contexto do bloco:</strong> Configurações é um módulo &quot;administrativo&quot; —
+  ferramentas que o gestor usa para configurar o sistema, não para operar o dia a dia. Não teve
+  discussão específica em reuniões porque são fluxos padrão. A maioria é prioridade média/baixa
+  segundo o próprio escopo.
+  <strong>Decisão relevante do Cristiano (reunião 25/03, 01:08:22):</strong> CRUDs genéricos não
+  precisam de Figma. Várias telas deste bloco caem nessa definição (Dados da Empresa, Minha Conta,
+  Meu Plano). A ressalva é a mesma dos Blocos 4 e 6: validar caso a caso o que é CRUD puro vs. o que
+  tem particularidades de fluxo.
+</p>
+<hr />
+<h4>Tarefa 1 — Usuários</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONFIG] Usuários <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Gestão de usuários internos da empresa. Lista com ações de edição,
+  desativação, reenvio de convite e reset de senha. Convite é feito por e-mail com definição do
+  perfil de acesso. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §8.1 explicita: &quot;Revisar fluxo atual de autocadastro (reclamação de cliente)&quot; —
+    há insatisfação reportada com o fluxo existente de autocadastro de usuários. Precisa de
+    investigação e refinamento.
+  </li>
+  <li>Escopo define lista com colunas: nome, e-mail, perfil, status, último acesso.</li>
+  <li>Escopo define ações inline: editar, desativar, reenviar convite, resetar senha.</li>
+  <li>
+    Modal &quot;Convidar Usuário&quot; com campos: e-mail, perfil de acesso (select), mensagem
+    personalizada (opcional). Ao enviar, usuário recebe e-mail com link para criar senha e completar
+    cadastro. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Convite de usuário interno aqui é distinto do convite de Vendedor/Afiliado (Bloco 5, Tarefa 4) —
+    usuário interno tem acesso a múltiplos módulos conforme perfil, vendedor/afiliado é perfil
+    específico com interface limitada.
+  </li>
+  <li>Reset de senha de usuário ativo força relogin — é ação destrutiva na prática.</li>
+  <li>
+    Desativação de usuário com histórico de ações: histórico precisa permanecer no log de auditoria
+    (RPP002 §3.2 reforça importância do log). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Qual é a reclamação específica sobre o fluxo atual de autocadastro? Precisa ser investigada
+    antes de desenhar.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de usuários (nome, e-mail, perfil, status, último acesso)</li>
+  <li>[ ] Ações inline (editar, desativar, reenviar convite, resetar senha)</li>
+  <li>[ ] Botão &quot;Convidar Usuário&quot;</li>
+  <li>[ ] Modal &quot;Convidar Usuário&quot; (e-mail, perfil, mensagem opcional)</li>
+  <li>[ ] Revisão do fluxo atual de autocadastro (após investigação da reclamação)</li>
+  <li>[ ] Filtros (perfil, status, busca por nome/e-mail)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum usuário cadastrado além do admin</li>
+  <li>[ ] [destrutivo] Desativação de usuário com histórico de ações</li>
+  <li>[ ] [destrutivo] Reset de senha de usuário ativo — força relogin</li>
+  <li>[ ] [exceção] Reenvio de convite com convite ativo (sobrescreve o anterior)</li>
+  <li>[ ] [exceção] Convite já utilizado — mensagem clara</li>
+  <li>[ ] [erro] E-mail inválido no convite</li>
+  <li>[ ] [erro] Falha no envio do convite — CTA de retry</li>
+  <li>[ ] [permissão] Usuário Admin tentando desativar a própria conta — bloqueio</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Perfis de Acesso</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONFIG] Perfis de Acesso <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Configuração da matriz de permissões do sistema. Cada perfil define o
+  que pode fazer em cada módulo (visualizar, criar, editar, excluir). Controla acesso a dados
+  sensíveis (saúde, financeiro) e operações destrutivas.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>Escopo §8.1 define perfis base: Gestor, Operador, Financeiro, Marketing, Vendedor, Admin.</li>
+  <li>
+    Escopo: edição de perfil inclui nome, lista de permissões por módulo (checkbox: visualizar,
+    criar, editar, excluir), módulos que o perfil pode acessar.
+  </li>
+  <li>
+    Escopo: &quot;Matriz de permissões será definida durante o projeto&quot; — não há matriz
+    concreta ainda.
+  </li>
+  <li>
+    RPP002 §3.2, §3.4 e §3.5 fazem referências cruzadas a &quot;Módulo 14.1 — Perfis de Acesso&quot;
+    quando tratam de: Bloco de Saúde com acesso restrito (§3.2), Ficha 4 de Dados de Saúde com
+    acesso restrito (§3.4), Líder de Operação sem dados financeiros (§3.5).
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Este módulo é pré-requisito para várias regras de negócio de outros módulos — especialmente
+    Agenda (Participantes, Listas, Painel do Líder) e Vendas (Detalhes do Pedido).
+  </li>
+  <li>
+    Duplicar perfil é útil para criar variantes (ex: &quot;Gestor Júnior&quot; a partir de
+    &quot;Gestor&quot; removendo algumas permissões).
+  </li>
+  <li>
+    Granularidade das permissões (4 ações × N módulos) gera matriz potencialmente grande — UI
+    precisa de agrupamento visual. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Matriz de permissões concreta: quais são as combinações padrão dos 6 perfis base? Escopo diz que
+    &quot;será definida durante o projeto&quot; — precisa ser decidida antes de implementar o motor
+    de permissões.
+  </li>
+  <li>
+    Permissões especiais (acesso a saúde, a dados financeiros): são flags separadas da matriz
+    principal ou fazem parte dela?
+  </li>
+  <li>
+    Alteração de permissões em tempo real: aplica imediatamente ou precisa do usuário relogar?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de perfis (Gestor, Operador, Financeiro, Marketing, Vendedor, Admin)</li>
+  <li>[ ] Edição de perfil (nome, matriz de permissões)</li>
+  <li>[ ] Matriz de permissões (visualizar, criar, editar, excluir por módulo)</li>
+  <li>[ ] Seleção de módulos acessíveis pelo perfil</li>
+  <li>[ ] Duplicar perfil</li>
+  <li>[ ] Flag especial &quot;Acesso a dados de saúde&quot;</li>
+  <li>[ ] Flag especial &quot;Acesso a dados financeiros&quot;</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>
+    [ ] [destrutivo] Exclusão de perfil com usuários vinculados — bloqueio + fluxo de migração
+  </li>
+  <li>[ ] [exceção] Alteração de permissões em tempo real (impacto imediato ou após relogin)</li>
+  <li>[ ] [exceção] Remoção de permissão de Admin — bloqueio (precisa de pelo menos um Admin)</li>
+  <li>[ ] [exceção] Perfil customizado conflitando com perfil base do mesmo nome</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 3 — Templates de Mensagem</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONFIG] Templates de Mensagem
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Biblioteca de templates de comunicação (WhatsApp e E-mail) disparados
+  automaticamente pelo sistema em momentos específicos (confirmação de compra, lembrete de
+  atividade, pesquisa de satisfação, recuperação de carrinho).
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §8.2 define templates por gatilho: confirmação de compra, lembrete de atividade, pesquisa
+    de satisfação, recuperação de carrinho.
+  </li>
+  <li>
+    Escopo define editor: assunto (para e-mail), corpo da mensagem, tags dinâmicas disponíveis
+    ({nome}, {produto}, {data}, {horario}, {link_pagamento}, etc.), preview.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Editor de template aqui é reutilizável em outros contextos: pesquisa de qualidade (CRM §4.3),
+    termos e políticas (§8.3), templates de contrato (Módulo 5). Vale construir editor genérico de
+    &quot;texto rico + tags + preview&quot;.
+  </li>
+  <li>
+    Gatilhos de envio são integrações com outros módulos — definição de quando cada template é
+    disparado vem de Vendas (carrinho abandonado), Agenda (lembrete de atividade), CRM (satisfação).
+  </li>
+  <li>
+    Testar envio (para o próprio gestor) é importante para validar antes de ativar em produção.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Envio de WhatsApp depende de integração com provider (WhatsApp Business API ou similar). Qual
+    provider? Aguardando decisão — ver Tarefa 5 (Integrações).
+  </li>
+  <li>
+    Templates podem ter múltiplas versões (ex: teste A/B)? Ou cada gatilho tem uma versão única?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de templates por tipo (WhatsApp, E-mail)</li>
+  <li>[ ] Templates por gatilho (confirmação, lembrete, satisfação, recuperação)</li>
+  <li>[ ] Editor com assunto (para e-mail) e corpo</li>
+  <li>[ ] Painel lateral com tags disponíveis ({nome}, {produto}, etc.)</li>
+  <li>[ ] Clique em tag insere no texto</li>
+  <li>[ ] Preview do template preenchido com dados de exemplo</li>
+  <li>[ ] Testar envio (para o próprio gestor)</li>
+  <li>[ ] Duplicar template</li>
+  <li>[ ] Ativar / desativar template</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum template cadastrado</li>
+  <li>[ ] [erro] Template com tag inexistente — validação inline</li>
+  <li>
+    [ ] [erro] Falha no envio de teste — mensagem clara (provider indisponível, credenciais
+    inválidas)
+  </li>
+  <li>[ ] [exceção] Template ativo usado em automação — aviso ao tentar desativar</li>
+  <li>[ ] [destrutivo] Exclusão bloqueada quando há automação vinculada</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 4 — Termos e Políticas</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONFIG] Termos e Políticas <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Biblioteca de templates legais que são vinculados a produtos (política
+  de cancelamento, termo de responsabilidade, termo de uso de imagem). Cliente aceita esses termos
+  na hora da reserva com validade jurídica (IP, hash, timestamp).
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §8.3 define templates-base: Política de Cancelamento, Termo de Responsabilidade, Termo de
+    Uso de Imagem.
+  </li>
+  <li>Escopo: editor igual ao de contratos (texto rico + tags).</li>
+  <li>Escopo: vincular template a produtos específicos ou usar como padrão.</li>
+  <li>
+    RPP002 §3.2 (Detalhes Completos da Reserva) reforça importância jurídica: aceite digital tem IP
+    do dispositivo, hash do documento, timestamp. Botão de download em PDF com validade jurídica.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Editor é o mesmo de Templates de Contrato (Módulo 5) — padronizar o componente.</li>
+  <li>
+    Versionamento é crítico: se o termo muda, reservas antigas mantêm referência à versão aceita no
+    momento da compra.
+  </li>
+  <li>
+    Template pode ser &quot;padrão&quot; (aplica a todos os produtos sem vínculo específico) ou
+    &quot;específico&quot; (vinculado a um ou mais produtos). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Versionamento de termos: como tratar? Cada alteração vira nova versão automaticamente? Permite
+    editar em rascunho antes de publicar?
+  </li>
+  <li>
+    Conflito de termos: se um produto tem termo específico E existe termo padrão, qual prevalece?
+    (escopo parece dizer &quot;específico sobrescreve padrão&quot;, mas vale confirmar).
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>
+    [ ] Lista de templates (Política de Cancelamento, Termo de Responsabilidade, Termo de Uso de
+    Imagem)
+  </li>
+  <li>[ ] Editor texto rico + tags (reutiliza componente de Templates de Contrato)</li>
+  <li>[ ] Preview preenchido com dados de exemplo</li>
+  <li>[ ] Vincular template a produtos específicos</li>
+  <li>[ ] Usar template como padrão (aplica a todos os produtos sem vínculo específico)</li>
+  <li>[ ] Duplicar template</li>
+  <li>[ ] Versionamento (publicar nova versão, manter histórico)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum template cadastrado</li>
+  <li>
+    [ ] [exceção] Alteração de template com aceites ativos (reservas existentes mantêm versão
+    antiga)
+  </li>
+  <li>[ ] [exceção] Produto sem termo vinculado — usa padrão se existir, senão alerta</li>
+  <li>[ ] [destrutivo] Exclusão bloqueada quando vinculado a produto com reservas</li>
+  <li>[ ] [erro] Template com tag inválida — validação inline</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 5 — Integrações</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONFIG] Integrações <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Painel de gerenciamento das integrações externas do sistema. Cada
+  integração tem status (conectado/desconectado), configuração específica (credenciais, API keys) e
+  pode ser ativada/desativada pelo gestor. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>Escopo §8.4 marca como prioridade Baixa.</li>
+  <li>
+    Escopo lista integrações previstas: Google Contatos, Google Agenda, Google Analytics, Gateway de
+    Pagamento, SendPulse (ou equivalente de marketing).
+  </li>
+  <li>
+    Escopo: status de cada (conectado/desconectado), botão conectar/desconectar, modal de
+    configuração com campos específicos (API key, credenciais).
+  </li>
+  <li>
+    Backlog atual amplia lista com: API de Seguradora, API de Emissão de NF-e, WhatsApp Business.
+  </li>
+  <li>
+    RPP002 §3.3 menciona que &quot;a agenda deve poder ser sincronizada com o Google Agenda via
+    integração do Módulo 9.3&quot; — Google Agenda é integração operacional, não só administrativa.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Disponibilidade por plano (RPP002): Google Agenda só a partir do Quero Crescer.</li>
+  <li>
+    Gateway de Pagamento é crítico para o funcionamento do sistema — na prática não é
+    &quot;opcional&quot;, é core. Pode justificar tratamento especial (não como &quot;integração
+    comum&quot;).
+  </li>
+  <li>
+    API de Seguradora é crítica para produtos com seguro obrigatório (ver máquina de estados do
+    seguro em RPP002 §3.6).
+  </li>
+  <li>
+    API de NF-e tem complexidade fiscal (CFOP, NCM, SEFAZ) — pode justificar fluxo dedicado fora
+    desta tela genérica. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Lista definitiva de integrações do MVP vs. pós-MVP: quais são obrigatórias no lançamento?</li>
+  <li>
+    Gateway de Pagamento e API de NF-e: tratam como integrações genéricas nesta tela ou têm fluxos
+    dedicados (pelo impacto operacional)?
+  </li>
+  <li>Provider de WhatsApp: qual? (afeta Templates de Mensagem — Tarefa 3).</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de integrações disponíveis</li>
+  <li>[ ] Status de cada (conectado / desconectado)</li>
+  <li>[ ] Botão conectar / desconectar</li>
+  <li>[ ] Modal de configuração com credenciais por integração</li>
+  <li>[ ] Integração Google Contatos</li>
+  <li>[ ] Integração Google Agenda</li>
+  <li>[ ] Integração Google Analytics</li>
+  <li>[ ] Integração Gateway de Pagamento</li>
+  <li>[ ] Integração SendPulse (ou equivalente de marketing)</li>
+  <li>[ ] Integração API de Seguradora</li>
+  <li>[ ] Integração API de Emissão de NF-e</li>
+  <li>[ ] Integração WhatsApp Business</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] Falha na conexão (credenciais inválidas)</li>
+  <li>[ ] [erro] Token expirado — re-autenticação automática</li>
+  <li>[ ] [erro] Limite de API atingido — mensagem com janela de reset</li>
+  <li>[ ] [exceção] Desconectar integração com dados dependentes — aviso de impacto</li>
+  <li>[ ] [exceção] Integração indisponível no plano atual — bloqueio com CTA de upgrade</li>
+  <li>[ ] [permissão] Apenas Admin pode configurar credenciais</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 6 — Configurações Gerais</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONFIG] Configurações Gerais
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Reunir 3 telas administrativas simples: Dados da Empresa, Minha Conta,
+  Meu Plano. São as telas mais próximas do &quot;CRUD genérico&quot; mencionado pelo Cristiano —
+  formulários padrão. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>Escopo §8.5 marca as 3 telas como prioridade Baixa.</li>
+  <li>
+    Escopo: Dados da Empresa inclui razão social, CNPJ, endereço, telefone, e-mail, logo,
+    configurações fiscais.
+  </li>
+  <li>
+    Escopo: Minha Conta inclui dados pessoais, alterar senha, foto de perfil, preferências de
+    notificação.
+  </li>
+  <li>
+    Escopo: Meu Plano inclui plano atual, funcionalidades inclusas, uso atual (se houver limites),
+    histórico de faturas do plano, botão upgrade. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Destas três, Meu Plano tem a única complexidade relevante: upgrade/downgrade afeta acesso a
+    features conforme matriz de disponibilidade por plano (RPP002 §Disponibilidade por Plano).
+  </li>
+  <li>
+    Dados da Empresa e Minha Conta são CRUDs simples — candidatos diretos à abordagem &quot;sem
+    Figma&quot; do Cristiano.
+  </li>
+  <li>
+    Preferências de notificação se integram com Templates de Mensagem e Integrações
+    (e-mail/WhatsApp). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Reconfirmar com o cliente: essas 3 telas vão como CRUD genérico sem Figma ou entram no design
+    padrão?
+  </li>
+  <li>
+    Downgrade de plano com limites excedidos: como tratar? (aviso + período de graça, ou bloqueio
+    imediato de features?)
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela Dados da Empresa (razão social, CNPJ, endereço, logo, fiscais)</li>
+  <li>[ ] Tela Minha Conta (dados pessoais, senha, foto, preferências de notificação)</li>
+  <li>[ ] Tela Meu Plano (plano atual, funcionalidades, uso, histórico de faturas)</li>
+  <li>[ ] CTA upgrade de plano</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [exceção] Upgrade de plano durante período de teste</li>
+  <li>[ ] [exceção] Downgrade com limites excedidos — aviso de quais features serão perdidas</li>
+  <li>[ ] [erro] Falha no upload de logo (formato inválido, tamanho excessivo)</li>
+  <li>[ ] [exceção] CNPJ já cadastrado em outra empresa no sistema</li>
+  <li>[ ] [permissão] Apenas Admin pode editar Dados da Empresa</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 7</h4>
+<p>
+  <strong>Total de tarefas:</strong> 6 (Usuários, Perfis de Acesso, Templates de Mensagem, Termos,
+  Integrações, Configurações Gerais) <strong>Por status sugerido:</strong>
+</p>
+<ul>
+  <li>
+    <strong>BACKLOG (6):</strong> todas. Nenhuma ainda em design ativo.
+    <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>
+    Qual é a reclamação específica sobre o fluxo atual de autocadastro de usuários? (Usuários)
+  </li>
+  <li>Matriz de permissões concreta dos 6 perfis base. (Perfis de Acesso)</li>
+  <li>
+    Permissões especiais (saúde, financeiro) são flags separadas ou parte da matriz principal?
+    (Perfis de Acesso)
+  </li>
+  <li>
+    Alteração de permissões em tempo real: aplica imediatamente ou precisa relogin? (Perfis de
+    Acesso)
+  </li>
+  <li>Provider de WhatsApp para templates de mensagem. (Templates + Integrações)</li>
+  <li>Templates podem ter múltiplas versões (A/B) ou cada gatilho tem versão única? (Templates)</li>
+  <li>Versionamento de termos: como tratar alterações com aceites ativos? (Termos)</li>
+  <li>Conflito de termos: específico de produto vs padrão global — qual prevalece? (Termos)</li>
+  <li>Lista definitiva de integrações do MVP. (Integrações)</li>
+  <li>
+    Gateway de Pagamento e API de NF-e: tratam nesta tela ou têm fluxo dedicado? (Integrações)
+  </li>
+  <li>
+    Dados da Empresa, Minha Conta, Meu Plano: CRUD genérico sem Figma ou design padrão? (Gerais)
+  </li>
+  <li>
+    Downgrade com limites excedidos: aviso + graça ou bloqueio imediato? (Meu Plano)
+    <strong>Observações transversais:</strong>
+  </li>
+</ol>
+<ul>
+  <li>
+    <strong>Perfis de Acesso é o sub-módulo mais crítico</strong> do bloco — é pré-requisito para
+    regras de negócio de Agenda (Participantes, Ficha 4, Painel do Líder) e Vendas (dados
+    financeiros). Justifica design dedicado.
+  </li>
+  <li>
+    <strong>Editor de texto rico + tags</strong> aparece em 3 lugares (Templates de Mensagem,
+    Termos, Templates de Contrato do Módulo 5). Vale construir componente genérico reutilizável —
+    economiza trabalho de design e implementação.
+  </li>
+  <li>
+    <strong>Configurações Gerais é o candidato mais forte</strong> ao &quot;CRUD genérico sem
+    Figma&quot; mencionado pelo Cristiano. Das 3 telas, só Meu Plano tem alguma complexidade
+    (upgrade/downgrade).
+  </li>
+  <li>
+    <strong>Integrações é prioridade baixa no escopo</strong> , mas algumas integrações específicas
+    (Gateway de Pagamento, API de Seguradora, API de NF-e) são críticas para features core. Pode
+    valer a pena separar essas em tarefas próprias fora desta listagem genérica.
+  </li>
+</ul>
+<hr />
+<p>
+  <strong>Fim do Bloco 7.</strong> Próximo bloco: Módulos &quot;frios&quot; agrupados — Contratos,
+  Financeiro, BI, Marketing, Loja, Marketplace, Sala de Negócios (13 features em tratamento mais
+  enxuto).
+</p>

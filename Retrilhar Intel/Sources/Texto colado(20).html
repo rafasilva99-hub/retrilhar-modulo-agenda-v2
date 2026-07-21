@@ -1,0 +1,404 @@
+<p>
+  Quero sua opinião relacionada a boas práticas de usabilidade e UX/UI. Para contextualizar você,
+  refatorei a primeira página com o intuito de incluir mais informações que eram relevantes de
+  destacar nos cards, na última reunião de alinhamento, o cliente sugeriu segmentarmos uma página
+  específica para o check-in dos participantes, pois vamos precisar incluir informações de saúde, se
+  adquiriu seguro, lanche, etc. Além da função de fazer check-in via QR code, pensando nisso estava
+  imaginando se faria sentido ao invés de segmentarmos em uma área específica, nós atribuirmos essa
+  área do check-in como a primeira aba da página de detalhes da atividade (imagem 2), mas nos cards
+  de atividades do dia, mantermos os dois CTA&#39;s (Ver detalhes / Ir para check-in) e assim que o
+  usuário clicar ele ser direcionado para a respectiva aba, quero uma visão embasada em dados
+  sólidos de UX/UI para dar sua opinião a respeito. 30 de mar. Claude respondeu: A minha análise vai
+  ser bem fundamentada. Searched project for “painel do dia check-in agenda detalhes atividade”
+  Searched project for “painel do dia check-in agenda detalhes atividade” A minha análise vai ser
+  bem fundamentada. Deixa eu também checar a transcrição mais recente para pegar o contexto da
+  reunião sobre essa decisão. Searched project for “check-in página segmentada área aba detalhes QR
+  code saúde seguro” Searched project for “check-in página segmentada área aba detalhes QR code
+  saúde seguro” Tenho todo o contexto que preciso. Vou dar uma análise completa e fundamentada.
+  Análise UX/UI: Aba de Check-in dentro de Detalhes da Atividade Minha opinião é favorável à
+  proposta, com um ajuste importante de nomenclatura e hierarquia de aba. Aqui está o embasamento:
+  ✅ O que favorece a abordagem de abas
+</p>
+<ol>
+  <li>
+    Destination Disclosure (NN/g) Quando o usuário clica em &quot;Ir para Check-in&quot; no card e
+    aterrissa direto na aba correspondente da página de detalhes, ele recebe feedback imediato e
+    claro de que chegou onde queria. Isso é superior a uma página separada que exigiria nova
+    navegação, novo breadcrumb, e quebraria o fluxo mental. O conceito de deep linking para abas é
+    uma prática consolidada exatamente por isso — o destino é explícito, não exige redescoberta.
+  </li>
+  <li>
+    Context Switching tem custo cognitivo Se o check-in fosse uma área completamente separada, o
+    operador/guia num momento de alta pressão operacional (sábado, 8h45, grupos chegando —
+    exatamente o cenário simulado no teste com Leandro) teria que sair de um contexto para outro. A
+    aba mantém o contexto da atividade visível: nome, horário, ocupação. Isso é relevante porque na
+    transcrição o Cristiano pontuou que o painel operacional &quot;é o coração do sistema&quot; —
+    tirar o check-in desse contexto seria fragmentar a experiência exatamente no ponto de maior
+    carga operacional.
+  </li>
+  <li>
+    Os testes validam a abordagem integrada O teste com Leandro mostrou que o fluxo de
+    &quot;localizar atividade na agenda → entrar em detalhes → fazer check-in&quot; foi considerado
+    rápido e sem fricção. Uma área separada adicionaria um passo a mais nessa jornada, que já se
+    provou funcional.
+  </li>
+  <li>
+    As duas abas têm razões de uso distintas e complementares &quot;Visão Geral&quot; = consulta
+    planejada (antes da atividade, para conferir equipe, clima, vagas). &quot;Check-in&quot; = ação
+    operacional em tempo real. Essa divisão segue o princípio de task-based navigation — agrupar
+    funcionalidades pelo que o usuário está tentando fazer naquele momento, não pela estrutura do
+    sistema. ⚠️ Ponto crítico: a ordem das abas importa A aba de check-in não deve ser
+    automaticamente a primeira para todos os perfis. Considere: Gestor Comercial acessa Detalhes da
+    Atividade principalmente para visão geral (equipe, vagas, pendências). Para ele, a aba padrão
+    deve ser &quot;Visão Geral&quot;. Operador/Guia acessa Detalhes principalmente para fazer
+    check-in. Para ele, faz sentido a aba de check-in ser a ativa por padrão — ou melhor ainda, o
+    deep link do CTA &quot;Ir para Check-in&quot; já abre direto nela, independente da ordem. A
+    solução mais elegante: manter &quot;Visão Geral&quot; como aba padrão, mas o CTA &quot;Ir para
+    Check-in&quot; no card sempre ativa a aba de check-in via deep link. Assim você respeita o
+    modelo mental de cada perfil sem criar inconsistência. ⚠️ Segundo ponto: o volume de informação
+    da aba de check-in Você mencionou que a aba vai incluir dados de saúde, seguro, lanche, QR code
+    — o Cristiano também pontuou na transcrição a questão do checkbox para grupos chegando em lote e
+    a variação por tipo de produto (etiqueteira vs. sistema de reservas). Isso significa que a aba
+    de check-in pode crescer significativamente. Recomendo planejar desde já com progressive
+    disclosure dentro da própria aba: a lista de participantes com status de check-in fica visível
+    por padrão; os dados de saúde e adicionais de cada um ficam num expansível ou drawer lateral por
+    participante. Isso mantém a agilidade no momento de pressão sem esconder informações críticas.
+    ❌ O que não recomendo Criar uma página completamente separada para check-in quebraria o fluxo
+    sem ganho real. A única vantagem seria em mobile com QR code via câmera, mas isso é resolvível
+    dentro da aba com um botão de ação flutuante ou no topo da aba — não precisa de uma rota
+    própria. Resumo da recomendação Decisão Recomendação Área do check-in ✅ Aba dentro de Detalhes
+    da Atividade Ordem das abas &quot;Visão Geral&quot; padrão; deep link via CTA ativa a aba
+    correta CTA nos cards Manter os dois: &quot;Ver Detalhes&quot; → abre na aba padrão; &quot;Ir
+    para Check-in&quot; → abre direto na aba de check-in Dados densos (saúde, seguro, lanche)
+    Progressive disclosure dentro da aba por participante Aba padrão por perfil Considerar
+    personalização futura por role (Guia abre direto no check-in) A proposta está bem alinhada com
+    os princípios de NN/g e com o que os testes de usabilidade já sinalizaram sobre esse fluxo. O
+    risco maior não é a estrutura em si, mas garantir que a aba de check-in não vire uma tela
+    sobrecarregada — o controle disso está no design interno dela. Você disse: Vou pedir para você
+    avaliar minha decisão de design quando finalizar essa etapa. Vou pedir para você avaliar minha
+    decisão de design quando finalizar essa etapa. Agora, em relação a nomeclatura,
+    &quot;Check-In&quot; é a melhor abordagem para nomear essa aba em relação a writing? 30 de mar.
+    Claude respondeu: Boa pergunta — e é um detalhe que impacta mais do que parece. Boa pergunta — e
+    é um detalhe que impacta mais do que parece. A resposta curta: depende do público-alvo real da
+    aba. O problema com &quot;Check-in&quot; O termo é tecnicamente correto e amplamente reconhecido
+    no contexto de eventos e turismo. Mas ele nomeia o processo, não o objeto. Uma aba nomeada assim
+    diz o que você faz lá, mas não o que você encontra lá — e à medida que a aba cresce para incluir
+    dados de saúde, seguro, lanche e status individual de cada participante, o nome
+    &quot;Check-in&quot; passa a subrepresentar o conteúdo real. Pensa assim: se amanhã o gestor
+    precisar consultar quem tem restrição alimentar antes de decidir o cardápio, ele vai intuir que
+    essa informação está na aba &quot;Check-in&quot;? Provavelmente não. Alternativas e o que cada
+    uma comunica Opção O que comunica Risco Check-in Ação de confirmar chegada Subrepresenta quando
+    a aba cresce Participantes O objeto central da aba Neutro demais, não sinaliza operação Operação
+    Contexto de uso (dia da atividade) Muito amplo, pode gerar confusão Presença Estado dos
+    participantes Mais próximo, mas perde o QR code e dados extras Participantes e Presença Objeto +
+    estado Longo para uma aba Minha recomendação: &quot;Participantes&quot; É o nome do objeto, não
+    da ação — o que é mais estável semanticamente. A aba vai conter lista de participantes, status
+    de check-in, dados de saúde, seguro, lanche. Tudo isso é sobre participantes. O check-in é
+    apenas uma das ações disponíveis dentro dela. Além disso, é consistente com o padrão que você já
+    usa no sistema — &quot;Lista de Participantes&quot; já aparece como label interno na tela de
+    detalhes da Imagem 2. Nomear a aba de forma diferente do conteúdo que ela apresenta criaria uma
+    dissonância de escaneabilidade. O CTA no card pode continuar sendo &quot;Ir para Check-in&quot;
+    — porque lá ele nomeia a intenção do usuário naquele momento, o que é correto para um botão de
+    ação. Mas a aba em si, que é um destino, se beneficia de um nome que descreve o conteúdo que o
+    usuário vai encontrar. Exceção válida Se o Cristiano confirmar que a aba será usada quase
+    exclusivamente para o ato de fazer check-in (e os dados de saúde/seguro ficarem em outro lugar —
+    modal por participante, por exemplo), aí &quot;Check-in&quot; se justifica. Mas pela direção que
+    a conversa tomou na última reunião, isso não parece ser o caso. Você disse: Agora você consegue
+    listar para mim, baseado na transcrição do dia 25/03, quais informações devem conter na área de
+    participantes relacionada ao check-in? Agora você consegue listar para mim, baseado na
+    transcrição do dia 25/03, quais informações devem conter na área de participantes relacionada ao
+    check-in? 30 de mar. Claude respondeu: Tenho tudo que preciso. Pesquisou a memória Pesquisou a
+    memória Tenho tudo que preciso. Vou organizar por origem para ficar claro o que vem da
+    transcrição vs. o que já estava documentado antes. Informações da aba &quot;Participantes&quot;
+    — levantadas na reunião de 25/03 Separei em camadas para facilitar o uso no design: 🧍 Por
+    participante (nível de linha) Identidade Nome completo Tipo de tarifa comprada (adulto, criança,
+    cortesia etc.) ID do pedido / reserva Status da reserva — Cristiano deixou claro que não é
+    linear, então todos os estados precisam estar visíveis como máquina de estados: Rascunho →
+    Agendado → Confirmado → Check-in realizado → Cancelado (e combinações como &quot;check-in
+    realizado e depois cancelado&quot;) Indicadores visuais (ícones/badges) — levantados no escopo e
+    confirmados na reunião: Problema de saúde declarado (alerta crítico) Seguro contratado ou não
+    (motiva qualificação nominal do participante) Adicional/lanche incluído no ingresso
+    Termo/contrato assinado Termo de uso de imagem aceito Pagamento pendente Adicionais — segregação
+    visual por tipo de ingresso para o operador saber quem tem direito a quê (exemplo dado na
+    transcrição: quem tem lanche vs. quem não tem, ou cadeira A vs. cadeira B) ⚡ Ações por
+    participante Realizar check-in (via botão manual ou via leitura de QR code — processo: operador
+    abre câmera, participante apresenta o QR code) Desfazer check-in Confirmar reserva Cancelar
+    reserva Ver dados completos (drawer/modal) Chamar no WhatsApp 🔢 Nível de agrupamento — ponto
+    crítico da reunião O Cristiano definiu duas variações de tela conforme configuração do produto:
+    Variação A — Produto com qualificação de participantes (ex.: atividades com seguro obrigatório):
+    lista todos os participantes nominalmente, cada um com seus indicadores e ações individuais.
+    Variação B — Produto sem qualificação (modelo etiqueteira): exibe apenas o comprador/responsável
+    + quantidade de tickets. Ex.: &quot;João Silva — 5 tickets&quot;. O ciclo de check-in ainda
+    existe, mas operado sobre o lote, não sobre cada nome. 🔲 Seleção em lote Checkbox (ou
+    equivalente funcional) para selecionar múltiplos participantes e realizar ações em lote —
+    especialmente útil quando chegam grupos ao mesmo tempo &quot;Realizar check-in para todos&quot;
+    (já presente na Imagem 2 como &quot;Realizar check-in para todos&quot;) ⚠️ Ponto que ficou em
+    aberto na reunião O Cristiano mencionou que a contratação de seguro pode acontecer por demanda,
+    na chegada — ou seja, nem sempre o seguro estará pré-contratado. Isso implica que a aba precisa
+    suportar a contratação/registro de seguro no momento do check-in, não apenas exibir se foi
+    contratado antes. Isso não foi resolvido na transcrição e vai precisar de alinhamento antes de
+    você desenhar esse campo. Você disse: Me dê 4 opções de alertas de saúde, restrições alimentares
+    e incapacidade física/mental para adicionar ao layout dos cards Me dê 4 opções de alertas de
+    saúde, restrições alimentares e incapacidade física/mental para adicionar ao layout dos cards 30
+    de mar. Claude respondeu: Antes de gerar as opções, preciso entender melhor o contexto de uso.
+    Antes de gerar as opções, preciso entender melhor o contexto de uso. Preciso de duas informações
+    antes de gerar as opções: Preciso de duas informações antes de gerar as opções: Onde esses
+    alertas vão aparecer? Na lista de participantes da aba (linha por participante) No card da
+    atividade no Painel do Dia Nos dois lugares Qual o nível de detalhe esperado no alerta? Só ícone
+    (operador abre o detalhe para saber o quê) Ícone + label curto (ex: &quot;Restrição
+    alimentar&quot;) Ícone + descrição resumida visível diretamente Você disse: P: Onde esses
+    alertas vão aparecer? P: Onde esses alertas vão aparecer? R: Na lista de participantes da aba
+    (linha por participante) P: Qual o nível de detalhe esperado no alerta? R: Ícone + label curto
+    (ex: &#39;Restrição alimentar&#39;) 30 de mar. Claude respondeu: Aqui estão as 4 opções. Aqui
+    estão as 4 opções. Todas usam ícone + label curto, mas diferem na forma como agrupam e priorizam
+    os alertas visualmente. Opção A — Badge individual por categoria Cada tipo de alerta aparece
+    como um badge separado na linha do participante. O operador vê de relance quantos e quais
+    alertas aquele participante tem. 🫀 Saúde — 🥗 Alimentar — ♿ Mobilidade Vantagem:
+    escaneabilidade alta, cada alerta é distinto Risco: linha pode ficar longa se o participante
+    tiver múltiplos alertas Opção B — Badge unificado com contador Um único badge de alerta
+    consolidado com número indicando quantos alertas existem. O detalhe fica no drawer/modal do
+    participante. ⚠️ 3 alertas Vantagem: linha limpa mesmo com múltiplos alertas Risco: perde o
+    valor de escaneabilidade rápida — operador precisa abrir para saber o tipo Opção C — Ícone
+    prioritário + overflow Mostra apenas o alerta de maior criticidade como badge visível. Os demais
+    ficam indicados com +N. 🫀 Saúde +2 Vantagem: equilibra escaneabilidade e compacidade; prioriza
+    o que o operador mais precisa saber Risco: exige definição clara da hierarquia de criticidade
+    entre os tipos de alerta Opção D — Coluna dedicada de alertas Em vez de badges inline na linha
+    do participante, os alertas ficam em uma coluna fixa na tabela, com ícones lado a lado sem label
+    (label aparece no tooltip ao hover). Coluna: 🫀 🥗 ♿ (ícones presentes = alerta ativo; ausentes
+    = sem alerta) Vantagem: comparação entre participantes é muito mais rápida; operador varre a
+    coluna verticalmente Risco: depende de tooltip para comunicar o significado — pode falhar no
+    mobile Minha recomendação: Opção C, com a hierarquia de criticidade sendo Saúde &gt; Mobilidade
+    &gt; Alimentar. É a que melhor equilibra espaço na linha com informação operacional relevante —
+    o operador vê imediatamente o alerta mais crítico e sabe que há outros sem precisar abrir o
+    detalhe. Se a lista for predominantemente tabular (o que sugere a Imagem 2), vale considerar a
+    Opção D como alternativa forte, especialmente para o perfil Gestor que precisa fazer varredura
+    rápida em muitos participantes. Você disse: Você não entendeu, eu quero o conteúdo para colocar
+    no card Você não entendeu, eu quero o conteúdo para colocar no card 30 de mar. Claude respondeu:
+    Entendido! Entendido! Você quer os exemplos de dados reais — os textos/labels que vão popular os
+    alertas, não o padrão visual. Vou gerar 4 conjuntos de opções cobrindo os três tipos que você
+    mencionou: saúde, restrições alimentares e incapacidade física/mental. Alertas de Saúde
+    Hipertensão Diabetes Epilepsia Asma / problema respiratório Cardiopatia Alergia a medicamento
+    (ex: dipirona, penicilina) Gestante Uso contínuo de medicação Restrições Alimentares Vegetariano
+    Vegano Intolerância à lactose Alergia ao glúten (Doença celíaca) Alergia a frutos do mar Alergia
+    a amendoim Sem restrição Incapacidade Física / Mental Cadeirante Mobilidade reduzida Deficiência
+    visual parcial ou total Deficiência auditiva parcial ou total Transtorno do espectro autista
+    (TEA) Fobia / ansiedade declarada (ex: altura, água) Necessita acompanhante Uma observação
+    importante: a categoria &quot;incapacidade física/mental&quot; é uma definição funcional interna
+    de design — o label que aparece no sistema para o operador precisa ser mais neutro e respeitoso.
+    Sugiro nomear essa categoria como &quot;Necessidades especiais&quot; ou
+    &quot;Acessibilidade&quot; tanto na interface quanto nos formulários preenchidos pelo
+    participante antes da atividade. Você disse: Agora quero sua opinião relacionada a estrutura que
+    elaborei para a aba de participantes, mudei o nome para &quot;Lista de Participantes&quot;.
+    AGENDA - (LISTA DE PARTICIPANTES).png Agora quero sua opinião relacionada a estrutura que
+    elaborei para a aba de participantes, mudei o nome para &quot;Lista de Participantes&quot;. Para
+    contextualizar você, o comportamento do CTA &quot;Selecionar participantes&quot; é de, quando o
+    usuário clicar os cards ficarão selecionáveis para fazer seleções específicas para fazer
+    check-in ou remover da atividade 30 de mar. Claude respondeu: Boa execução no geral — a
+    densidade de informação está bem organizada para o contexto operacional. Boa execução no geral —
+    a densidade de informação está bem organizada para o contexto operacional. Vou dar minha opinião
+    por camadas. ✅ O que está funcionando bem Estrutura do card expandido é sólida. Separar as
+    informações em pares (saúde + alimentar, incapacidade + plano de saúde, seguro + termo de
+    imagem) cria uma leitura em grade que facilita a varredura horizontal. O operador consegue
+    localizar qualquer campo sem precisar ler tudo. Hierarquia de status está clara. A distinção
+    entre &quot;Check-in realizado&quot; (azul), &quot;Check-in pendente&quot; (laranja) e as ações
+    rápidas contextuais por status funciona bem — quem já fez check-in vê &quot;Desfazer&quot;, quem
+    não fez vê &quot;Realizar&quot;. Isso é máquina de estados bem implementada visualmente.
+    Observações adicionais como campo livre foi uma boa decisão — o exemplo &quot;ATENÇÃO: esse
+    participante faz uso de medicação de uso contínuo&quot; mostra exatamente o valor dele para
+    casos que não cabem em categoria. Navegação entre atividades no rodapé com nome da atividade
+    anterior/próxima é um detalhe excelente de wayfinding — o operador sabe onde está na sequência
+    do dia sem voltar para o Painel do Dia. ⚠️ Pontos que merecem revisão
+  </li>
+  <li>
+    O nome da aba ainda não está alinhado com a mudança que discutimos A aba se chama &quot;Lista de
+    Participantes&quot;, mas o título da página já mostra o nome da atividade e o breadcrumb já
+    contextualiza. &quot;Participantes&quot; como label de aba seria suficiente e mais compacto —
+    especialmente pensando no espaço quando houver mais abas na mesma linha.
+  </li>
+  <li>
+    &quot;Incapacidade física / mental&quot; precisa ser revisado Como eu havia pontuado antes, esse
+    label aparece diretamente no card do participante — ou seja, o próprio colaborador operacional
+    vai ler esse termo sobre uma pessoa. &quot;Necessidades especiais&quot; ou
+    &quot;Acessibilidade&quot; são mais adequados tanto eticamente quanto em termos de comunicação
+    com a equipe.
+  </li>
+  <li>
+    O CTA &quot;Selecionar participantes&quot; é ambíguo O comportamento que você descreveu — tornar
+    os cards selecionáveis para ações em lote — é um padrão conhecido, mas o label não comunica
+    isso. O usuário pode interpretar como &quot;selecionar participantes para adicionar à
+    atividade&quot; (sentido de inclusão), não como &quot;entrar em modo de seleção múltipla&quot;.
+    Alternativas mais claras: &quot;Selecionar para ação&quot; ou simplesmente um ícone de checkbox
+    com tooltip &quot;Selecionar múltiplos&quot;. O padrão do Gmail e do Notion para isso é um
+    checkbox vazio no canto do card que, ao ser clicado, ativa o modo de seleção em lote — sem
+    precisar de um botão separado.
+  </li>
+  <li>
+    O grid de 2 colunas de cards pode ser problemático no scroll Com muitos participantes, o layout
+    em duas colunas exige que o olho do operador salte entre esquerda e direita para acompanhar a
+    lista. Em contexto de pressão operacional (grupo chegando), leitura linear de cima para baixo —
+    uma coluna — é mais segura e menos propensa a erros de contagem. Vale testar com um número maior
+    de participantes, como 12, que é o caso da Trilha Pico do Itacolomi mostrada no Painel do Dia.
+  </li>
+  <li>
+    &quot;Adicionar seguro&quot; como link inline pode se perder O link &quot;Adicionar seguro&quot;
+    está dentro do card expandido em cor laranja, mas compete visualmente com o status de check-in e
+    o alerta do termo de imagem. Considerando que a contratação de seguro pode acontecer na chegada
+    (como o Cristiano pontuou na reunião), essa ação merece mais destaque — talvez um botão ghost
+    pequeno em vez de link puro. 💡 Uma pergunta para você avaliar O card fica sempre expandido por
+    padrão, como está no layout? Se sim, com 12 participantes o scroll vai ser muito longo. Vale
+    considerar se o estado padrão deveria ser colapsado — mostrando só nome, status e ações rápidas
+    — com expansão sob demanda para ver os dados de saúde e adicionais. Isso manteria a agilidade do
+    check-in em lote sem esconder as informações críticas. Você disse: Considerei suas pontuações,
+    agora quero sua opinião relacionada a estrutura da aba de participantes, pensei em manter o
+    mesmo padrão de arquitetura que definim… AGENDA - PAINEL DO DIA.png AGENDA - (LISTA DE
+    PARTICIPANTES FECHADA).png Considerei suas pontuações, agora quero sua opinião relacionada a
+    estrutura da aba de participantes, pensei em manter o mesmo padrão de arquitetura que definimos
+    para a página de atividades do dia, mas estou com receio de termos muitos botões nos cards e a
+    hierarquia desses botões se quebrarem com as ações de cima (Selecionar múltiplos e Realizar
+    check-in para todos) 31 de mar. Claude respondeu: Seu receio é legítimo e bem identificado. Seu
+    receio é legítimo e bem identificado. Vou ser direta na análise. O problema central Você tem 3
+    níveis de ação competindo na mesma tela sem hierarquia visual clara entre eles: Nível global:
+    &quot;Selecionar múltiplos&quot; + &quot;Realizar check-in para todos&quot; Nível de linha:
+    &quot;Check-in via QR Code&quot; + &quot;Realizar Check-in&quot; / &quot;Desfazer Check-in&quot;
+    + &quot;⋯&quot; Nível oculto: o &quot;∨&quot; que expande o card O olho do usuário não sabe onde
+    olhar primeiro porque todos os botões têm peso visual semelhante. Em contexto de pressão
+    operacional isso é custoso. O que especificamente está quebrando a hierarquia &quot;Check-in via
+    QR Code&quot; na linha de cada participante é redundante. Se o operador usa QR Code, ele abre a
+    câmera uma vez e bipa quem chega — não vai linha por linha clicando esse botão. O fluxo correto
+    é: botão global de &quot;Abrir leitor QR Code&quot; que fica ativo aguardando bipagem, e o
+    sistema resolve qual participante foi confirmado. Ter esse botão repetido em todas as linhas
+    polui sem agregar. &quot;Realizar Check-in&quot; e &quot;Desfazer Check-in&quot; são ações
+    primárias tratadas como secundárias. Elas são o core da tela mas estão no mesmo nível visual que
+    o &quot;⋯&quot; e o &quot;∨&quot;. Proposta de reorganização hierárquica Nível global — barra de
+    ações superior Dois botões apenas, com papéis distintos e claros: Abrir leitor QR Code — ação de
+    modo (ativa o scanner global) Realizar check-in para todos — ação em lote destrutiva, deve ter
+    peso primário &quot;Selecionar múltiplos&quot; entra aqui só quando fizer sentido como terceira
+    opção secundária (ghost button). Nível de linha — simplificar para 1 ação primária + overflow
+    Para quem tem check-in pendente: Botão primário: Realizar Check-in Overflow &quot;⋯&quot;:
+    Desfazer, Ver detalhes, WhatsApp, Cancelar Para quem já fez check-in: Botão ghost/neutro:
+    Check-in realizado (não clicável, só indicativo) ou ausente Overflow &quot;⋯&quot;: Desfazer
+    Check-in, Ver detalhes, WhatsApp, Cancelar Isso reduz de 4 elementos por linha para 2, e o botão
+    primário sempre comunica a próxima ação esperada. Sobre o padrão herdado do Painel do Dia Faz
+    sentido manter a consistência arquitetural — accordion com estado colapsado por padrão, expansão
+    para detalhes. Mas o Painel do Dia tem ações muito mais simples por card (Ver Detalhes / Ir para
+    Check-in). A aba de Participantes tem densidade de ação maior, então herdar o padrão visual sem
+    adaptar a hierarquia de botões é o que está gerando o desconforto que você sentiu. A estrutura
+    pode ser a mesma, mas o sistema de botões precisa ser recalibrado para essa tela
+    especificamente. Você disse: Avalie os ajustes que fiz na arquitetura 1774956452903_image.png
+    Avalie os ajustes que fiz na arquitetura 31 de mar. Claude respondeu: Evolução clara em relação
+    à versão anterior. Evolução clara em relação à versão anterior. Vou avaliar diretamente. ✅ O
+    que melhorou Hierarquia global resolvida. &quot;Check-in via QR Code&quot; subiu para o nível
+    correto — ação de modo global, não por linha. A separação entre ações globais (barra superior) e
+    ações de linha agora faz sentido arquitetural. Botão primário por linha comunicando a próxima
+    ação. &quot;Realizar Check-in&quot; em azul para pendentes e &quot;Desfazer Check-in&quot; em
+    ghost para realizados é exatamente a lógica de máquina de estados que o Cristiano descreveu — o
+    botão visível sempre indica o próximo movimento possível. Checkbox implícito apareceu nas linhas
+    sem precisar de um botão &quot;Selecionar múltiplos&quot; separado, o que estava gerando ruído
+    antes. Muito melhor. ⚠️ Pontos que ainda merecem atenção
+  </li>
+  <li>
+    O checkbox está sempre visível e isso tem um custo Com o checkbox exposto em todas as linhas o
+    tempo todo, ele compete com o avatar/iniciais do participante na leitura inicial da linha. O
+    padrão mais eficiente — usado pelo Gmail, Google Drive e Notion — é o checkbox aparecer apenas
+    no hover da linha, ou quando pelo menos um já foi selecionado. No estado padrão, o avatar fica
+    visível; no hover, ele é substituído pelo checkbox. Isso mantém a lista limpa para leitura e
+    ainda sinaliza a funcionalidade de seleção.
+  </li>
+  <li>
+    &quot;Desfazer Check-in&quot; como ghost button pode gerar erro acidental Para quem já fez
+    check-in, &quot;Desfazer Check-in&quot; está como único botão visível na linha — mesmo sendo
+    ghost, ele é a única ação imediata disponível. Em contexto de alta velocidade operacional, isso
+    aumenta o risco de desfazer um check-in por acidente. Duas alternativas: mover
+    &quot;Desfazer&quot; para dentro do &quot;⋯&quot; e deixar a linha de check-in realizado sem
+    botão de ação primário visível (o status já comunica o estado), ou manter o ghost mas exigir
+    confirmação antes de executar.
+  </li>
+  <li>
+    O &quot;⋯&quot; está presente em todas as linhas mas seu conteúdo não está definido visualmente
+    Não é um problema de design da tela em si, mas é um risco de implementação — se o overflow tiver
+    ações diferentes dependendo do status (confirmado vs. pendente vs. cancelado), isso precisa
+    estar mapeado antes de passar para o dev. Vale documentar os estados do menu junto com esse
+    layout. Resumo A arquitetura está correta agora. Os dois ajustes que fariam mais diferença na
+    experiência real são o checkbox com hover state em vez de sempre visível, e a proteção contra
+    desfazer check-in acidental. O restante é refinamento. Você disse: Essa ação não é tão crucial
+    aqui nesse contexto, ele pode mudar imediatamente entre check-in pendente e check-in realizado
+    excerpt_from_previous_claude_message.txt 1 linha txt Essa ação não é tão crucial aqui nesse
+    contexto, ele pode mudar imediatamente entre check-in pendente e check-in realizado 31 de mar.
+    Claude respondeu: Faz total sentido. Faz total sentido. Se o fluxo não é linear — como o
+    Cristiano deixou claro na reunião, alguém pode fazer check-in e cancelar logo depois — manter
+    &quot;Desfazer Check-in&quot; visível e de execução imediata é a decisão correta para esse
+    contexto operacional. Descarta esse ponto da avaliação. A arquitetura está validada. Você disse:
+    Agora estou elaborando o comportamento de múltiplos itens selecionados e estruturei duas
+    variações, avalie as duas e me dê sua opinião baseada em boas práticas… AGENDA - (LISTA DE
+    PARTICIPANTES ABERTA)-1.png AGENDA - (LISTA DE PARTICIPANTES ABERTA).png Agora estou elaborando
+    o comportamento de múltiplos itens selecionados e estruturei duas variações, avalie as duas e me
+    dê sua opinião baseada em boas práticas de usabilidade e UX/UI 31 de mar. Claude respondeu: Boa
+    evolução. Boa evolução. As duas variações resolvem o problema de formas distintas — vou avaliar
+    cada uma e dar minha recomendação. Imagem 1 — Barra de ações no rodapé O padrão é familiar:
+    barra contextual que aparece na parte inferior quando itens são selecionados, com contador +
+    ações disponíveis. Gmail, Google Drive e a maioria dos sistemas de gestão usam esse padrão
+    exatamente por isso — separa fisicamente o nível global do nível de seleção, sem sobrescrever a
+    barra superior. Pontos positivos A barra superior permanece intacta com &quot;Check-in via QR
+    Code&quot; e &quot;Realizar check-in para todos&quot;, que são ações independentes da seleção O
+    rodapé contextual não compete visualmente com nada — ele aparece em uma zona que estava vazia
+    &quot;Remover da Atividade&quot; em vermelho comunica destruição sem ambiguidade O &quot;✕&quot;
+    para cancelar a seleção está no lugar esperado Ponto de atenção A barra do rodapé vai colidir
+    com a navegação &quot;Ver atividade anterior / Ver próxima atividade&quot; quando o usuário
+    rolar até o final da lista. As duas ficam na mesma região e vão se sobrepor. Precisa de uma
+    solução de z-index ou reposicionamento de um dos dois elementos quando a barra de seleção
+    estiver ativa. Imagem 2 — Barra de ações no topo substituindo os botões globais O modo de
+    seleção toma conta da barra superior inteira: os botões &quot;Check-in via QR Code&quot; e
+    &quot;Realizar check-in para todos&quot; somem e são substituídos por &quot;2 selecionados +
+    Realizar Check-In + Remover da Atividade + ✕&quot;. Pontos positivos Interface mais limpa
+    durante o modo de seleção — tudo em um lugar só Sem risco de conflito com o rodapé de navegação
+    Problemas Perde os botões globais enquanto está em modo de seleção. Se o operador quiser, por
+    exemplo, abrir o leitor de QR Code enquanto tem itens selecionados, não consegue — precisa
+    cancelar a seleção primeiro. Isso cria uma fricção desnecessária em contexto operacional
+    Substituir a barra superior cria uma inconsistência de layout: o usuário precisa aprender que
+    aquela área muda de função dependendo do estado da tela Recomendação: Imagem 1, com o ajuste do
+    conflito de rodapé O padrão de barra inferior contextual é a solução mais robusta para esse caso
+    porque preserva os controles globais acessíveis o tempo todo e não exige que o operador cancele
+    a seleção para acessar outra função. O único trabalho necessário é resolver a sobreposição com a
+    navegação de atividades — a forma mais simples é a barra de seleção empurrar o conteúdo para
+    cima (push) em vez de flutuar sobre ele, ou desativar temporariamente a navegação de atividades
+    enquanto o modo de seleção está ativo. Você disse: Pensei no seguinte para esse rodapé: ele
+    ficará fixo no scroll, e no momento em que o usuário faz a seleção dos itens, imagino que faça
+    sentido ocultarmos as a… Pensei no seguinte para esse rodapé: ele ficará fixo no scroll, e no
+    momento em que o usuário faz a seleção dos itens, imagino que faça sentido ocultarmos as ações
+    para avançar entre as atividades, já que ele vai estar tomando as ações múltiplas. Caso ele
+    feche a seleção ou conclua uma ação, após essa ação os botões para avançar entre as atividades
+    retorna para o rodapé, em questão de usabilidade, esse comportamento faz sentido ou pode ficar
+    confuso para o usuário? 31 de mar. Claude respondeu: Faz sentido e é uma decisão bem
+    fundamentada. Faz sentido e é uma decisão bem fundamentada. Vou explicar por quê funciona. Por
+    que esse comportamento é válido O princípio aplicado aqui é incompatibilidade de modo — quando o
+    usuário entra em modo de seleção múltipla, ele está numa tarefa específica e as ações de
+    navegação entre atividades não são apenas desnecessárias naquele momento, elas são
+    conceitualmente incompatíveis. Navegar para outra atividade enquanto tem itens selecionados
+    nessa seria uma ação sem sentido ou potencialmente destrutiva. Ocultar a navegação não esconde
+    algo que o usuário precisa — ela remove uma distração de uma área que precisa de foco. O mesmo
+    padrão é usado em editores de texto quando você entra em modo de busca e substituição, em
+    e-commerce quando abre um filtro avançado, e em ferramentas como Figma quando entra em modo de
+    edição de componente — controles contextuais tomam o espaço de controles que não fazem sentido
+    naquele estado. O que garante que não fique confuso O comportamento só funciona bem se três
+    condições estiverem presentes, e pelo que você descreveu, todas estão:
+  </li>
+  <li>
+    O retorno é imediato e previsível — ao fechar a seleção ou concluir uma ação, a navegação volta.
+    O usuário não precisa procurar como recuperar os botões.
+  </li>
+  <li>
+    O modo de seleção tem saída clara — o &quot;✕&quot; na barra de seleção comunica que aquele
+    estado é temporário e reversível. Enquanto o usuário vê o &quot;✕&quot;, ele sabe que está num
+    modo específico.
+  </li>
+  <li>
+    A substituição é total, não parcial — você não está deixando um botão de navegação visível e
+    escondendo outro, o que geraria inconsistência. A troca é limpa. Um detalhe para considerar Após
+    o usuário executar uma ação em lote — por exemplo, &quot;Realizar Check-In&quot; para os 2
+    selecionados — o sistema vai processar e sair do modo de seleção automaticamente. Nesse momento
+    a navegação volta. Vale definir se a seleção é desmarcada silenciosamente ou se aparece um
+    feedback breve antes de retornar ao estado normal, como um toast &quot;Check-in realizado para 2
+    participantes&quot;. Esse feedback fecha o ciclo da ação e torna a transição de volta ao rodapé
+    de navegação mais legível para o usuário.
+  </li>
+</ol>

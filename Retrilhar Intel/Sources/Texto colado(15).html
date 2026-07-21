@@ -1,0 +1,897 @@
+<p>
+  me fala exatamente o que tem que ser feito, sei que tem q priorizar afiliados, se tiver errado me
+  corrige, a ideia é vc me retordar a lista de demandas pra fazer no figma 25 de fev. Claude
+  respondeu: Com base na reunião e nos documentos, a prioridade que o Cristiano definiu é entregar o
+  fluxo completo do afiliado primeiro (porque já existe no sistema e ele … Organizou demandas Figma
+  priorizando afiliados conforme reunião Organizou demandas Figma priorizando afiliados conforme
+  reunião Com base na reunião e nos documentos, a prioridade que o Cristiano definiu é entregar o
+  fluxo completo do afiliado primeiro (porque já existe no sistema e ele consegue trabalhar em
+  paralelo), depois vendedor (estrutura parecida), e por último a gestão comercial (mais complexa).
+  A ordem está no próprio documento de telas que a Kátia fez. Aqui vai a lista organizada por
+  prioridade: PRIORIDADE 1 — Gestão de Afiliados (visão do gestor) Painel de afiliados com lista
+  (código, nome, CPF, status, ações: ver afiliado, copiar link) Cadastro de afiliado em drawer
+  (nome, cpf/cnpj/passaporte, telefone, e-mail, código gerado pelo sistema mas editável, produtos
+  que pode vender, comissão) Totalizadores: total de afiliados ativos, vendas do último mês,
+  comissões a pagar, top 3 afiliados Filtros: status, nome, código, pagamento (pendente/quitado)
+  Tela de ver afiliado: seção de informações + seção de produtos habilitados, ações de copiar link
+  específico ou geral, editar dados Botão de compartilhar (além do copiar link, para mobile abrir o
+  share nativo do browser — pedido do Cristiano) Painel de acompanhamento de desempenho: tabela com
+  venda por afiliado por mês, controle de pagamento, extrato de comissões pagas/a pagar com
+  referência à venda que originou, relatório de vendas dos afiliados com filtros (período, status da
+  venda, status da comissão, produto, valor, nome cliente, número carrinho), somatório de valores e
+  comissão, exportar PDF e Excel Paginação na tabela (10 itens) PRIORIDADE 2 — Painel do Afiliado
+  (spin-off — o que o afiliado vê quando loga) Layout simplificado (sem menu completo do admin)
+  Lista de pedidos realizados por ele Lista de pedidos realizados mas não pagos Lista de vendas
+  Extrato de comissões (recebidas e a receber) Configurações (dados pessoais, dados bancários)
+  Consultar produtos habilitados com link de cada um + link geral Consultar comissão por produto
+  Solicitar filiação para produto novo PRIORIDADE 3 — Gestão de Vendedores (visão do gestor) Mesma
+  estrutura do afiliado, adaptada ao contexto do vendedor Campos adicionais: meta de vendas (valor),
+  porcentagem ou valor de comissão Fluxo de criação com convite por e-mail (o vendedor recebe e
+  finaliza o cadastro — não vai ter o fluxo completo de permissões agora, isso fica pra depois)
+  Código do vendedor copiável (mesma lógica do afiliado) PRIORIDADE 4 — Painel do Vendedor (spin-off
+  — o que o vendedor vê quando loga) Layout simplificado Lista de todas as vendas dele (originadas
+  offline pelo PDV ou online pelo link) Filtros: período, carrinho/pedido/orçamento, status, nome
+  cliente, tipo de venda (online/offline), forma de pagamento, canal de vendas Criar novo pedido Ver
+  e editar pedido Dar baixa em pedido (marcar como pago) Outros vendedores podem ver vendas dele
+  (quando ele não está disponível) Extrato de comissões Configurações PRIORIDADE 5 — Gestão
+  Comercial (a mais complexa) Tela de Pedidos/Vendas: totalizadores + tabela com filtros avançados
+  (em drawer: período, status, meio de pagamento, nome cliente, canal de vendas, produto), barra de
+  busca com botão de pesquisar, ações em lote (selecionar múltiplos pedidos para exportar/imprimir),
+  botão de exportar com base nos filtros aplicados (PDF/Excel), colunas: nº pedido, cliente,
+  produto, data, meio de pagamento, valor, status, canal de vendas, vendedor — lembrar que canal e
+  vendedor são colunas separadas (uma venda pode ter os dois) Totalizadores dinâmicos: quando o
+  usuário filtra, os totalizadores atualizam para mostrar o somatório do que foi filtrado (ex: total
+  de vendas só em Pix) Detalhe da venda (drawer): dados do comprador, itens comprados
+  (quantidade/tipo), dados de pagamento (forma, proxy/conta, parcelamento com datas de cada parcela
+  e taxas), comissão do vendedor, cupom aplicado, link de afiliado se houver, valor residual, canal
+  de venda, NF emitida (atalho), histórico de ações com usuário que fez a ação + data/hora,
+  observações internas, atalho para reservas no painel operacional Criar Pedido Manual: fluxo em
+  etapas (cliente, produto/data/horário/quantidade/tarifa, pagamento, confirmação), carrinho
+  lateral, gerar link de pagamento com tempo de expiração, botão copiar link Checkout de Balcão
+  (PDV): interface otimizada para vendas rápidas, leitor de QR code Ações pós-venda: cancelamento
+  parcial (1 ingresso de 10), venda complementar (adicionar produtos a venda já paga, gerar link só
+  da diferença), edição de pedidos em aberto, adicionar dados de participantes após pagamento
+  Carrinhos Abandonados: lista com filtros, ações de remarketing Cupom de Desconto: lista de cupons,
+  criar/editar cupom, resumo de quais vendas usaram cada cupom com somatório Ajustes pendentes já
+  discutidos na reunião: Dashboard do gestor comercial: já foi complementada com widgets de vendas
+  (ranking vendedores, top produtos, meios de pagamento, vendas por canal, dia da semana que mais
+  vende — lembrar das duas vertentes: dia da atividade vs dia da compra) Agenda: resolver o
+  totalizador por dia no calendário mensal (os clientes usam muito), manter a solução de feriados
+  Banner de migração para sistema antigo: versão aprovada foi a barra no topo com botão de fechar
+  (reaparece ao trocar de página) Histórico em todos os lugares: padronizar componente com ação +
+  data/hora + usuário Não apagar pedidos, só cancelar (manter histórico sempre) Você disse: me envia
+  a lista formatada sem travessao num box cmd para whatsapp de forma que fique clara as demandas me
+  envia a lista formatada sem travessao num box cmd para whatsapp de forma que fique clara as
+  demandas 25 de fev. Estruturou formato de lista clara em box cmd para WhatsApp Estruturou formato
+  de lista clara em box cmd para WhatsApp LISTA DE DEMANDAS — CENTRAL DE VENDAS (FIGMA) Ordem de
+  prioridade definida pelo Cristiano 🔴 PRIORIDADE 1 — GESTÃO DE AFILIADOS (visão do gestor)
+</p>
+<ol>
+  <li>
+    Painel de afiliados com lista (código, nome, CPF, status, ações: ver afiliado, copiar link)
+  </li>
+  <li>
+    Cadastro de afiliado em drawer (nome, cpf/cnpj/passaporte, telefone, e-mail, código gerado pelo
+    sistema mas editável, produtos que pode vender, comissão)
+  </li>
+  <li>
+    Totalizadores: total de afiliados ativos, vendas do último mês, comissões a pagar, top 3
+    afiliados
+  </li>
+  <li>Filtros: status, nome, código, pagamento (pendente/quitado)</li>
+  <li>
+    Tela de ver afiliado: seção de informações + seção de produtos habilitados, ações de copiar link
+    específico ou geral, editar dados
+  </li>
+  <li>Botão de compartilhar no mobile (abre share nativo do browser, pedido do Cristiano)</li>
+  <li>
+    Painel de acompanhamento de desempenho: tabela com venda por afiliado por mês, controle de
+    pagamento, extrato de comissões pagas/a pagar com referência à venda que originou
+  </li>
+  <li>
+    Relatório de vendas dos afiliados com filtros (período, status da venda, status da comissão,
+    produto, valor, nome cliente, nº carrinho), somatório de valores e comissão, exportar PDF e
+    Excel
+  </li>
+  <li>
+    Paginação na tabela (10 itens) 🔴 PRIORIDADE 2 — PAINEL DO AFILIADO (spin-off, o que o afiliado
+    vê quando loga)
+  </li>
+  <li>Layout simplificado sem menu completo do admin</li>
+  <li>Lista de pedidos realizados por ele</li>
+  <li>Lista de pedidos realizados mas não pagos</li>
+  <li>Lista de vendas</li>
+  <li>Extrato de comissões (recebidas e a receber)</li>
+  <li>Configurações (dados pessoais, dados bancários)</li>
+  <li>Consultar produtos habilitados com link de cada um + link geral</li>
+  <li>Consultar comissão por produto</li>
+  <li>
+    Solicitar filiação para produto novo 🟡 PRIORIDADE 3 — GESTÃO DE VENDEDORES (visão do gestor)
+  </li>
+  <li>Mesma estrutura do afiliado adaptada ao contexto do vendedor</li>
+  <li>Campos adicionais: meta de vendas (valor), porcentagem ou valor de comissão</li>
+  <li>
+    Fluxo de criação com convite por e-mail (vendedor recebe e finaliza cadastro, sem fluxo completo
+    de permissões por enquanto)
+  </li>
+  <li>
+    Código do vendedor copiável (mesma lógica do afiliado) 🟡 PRIORIDADE 4 — PAINEL DO VENDEDOR
+    (spin-off, o que o vendedor vê quando loga)
+  </li>
+  <li>Layout simplificado</li>
+  <li>Lista de todas as vendas dele (offline pelo PDV ou online pelo link)</li>
+  <li>
+    Filtros: período, carrinho/pedido/orçamento, status, nome cliente, tipo de venda
+    (online/offline), forma de pagamento, canal de vendas
+  </li>
+  <li>Criar novo pedido</li>
+  <li>Ver e editar pedido</li>
+  <li>Dar baixa em pedido (marcar como pago)</li>
+  <li>Outros vendedores podem ver vendas dele (quando ele não está disponível)</li>
+  <li>Extrato de comissões</li>
+  <li>Configurações 🟠 PRIORIDADE 5 — GESTÃO COMERCIAL Tela de Pedidos/Vendas:</li>
+  <li>
+    Totalizadores + tabela com filtros avançados em drawer (período, status, meio de pagamento, nome
+    cliente, canal de vendas, produto)
+  </li>
+  <li>Barra de busca com botão de pesquisar (não autobusca)</li>
+  <li>Ações em lote (selecionar múltiplos pedidos para exportar/imprimir)</li>
+  <li>Botão de exportar com base nos filtros aplicados (PDF/Excel)</li>
+  <li>
+    Colunas: nº pedido, cliente, produto, data, meio de pagamento, valor, status, canal de vendas,
+    vendedor (canal e vendedor são colunas separadas, uma venda pode ter os dois)
+  </li>
+  <li>
+    Totalizadores dinâmicos: quando filtra, os totalizadores atualizam mostrando somatório do filtro
+    Detalhe da Venda (drawer): 7. Dados do comprador 8. Itens comprados (quantidade/tipo) 9. Dados
+    de pagamento: forma, proxy/conta, parcelamento com datas de cada parcela e taxas 10. Comissão do
+    vendedor 11. Cupom aplicado 12. Link de afiliado se houver 13. Valor residual 14. Canal de venda
+    15. NF emitida com atalho 16. Histórico de ações com usuário que fez a ação + data/hora 17.
+    Observações internas 18. Atalho para reservas no painel operacional Criar Pedido Manual: 19.
+    Fluxo em etapas (cliente, produto/data/horário/quantidade/tarifa, pagamento, confirmação) 20.
+    Carrinho lateral 21. Gerar link de pagamento com tempo de expiração 22. Botão copiar link
+    Checkout de Balcão (PDV): 23. Interface otimizada para vendas rápidas 24. Leitor de QR code
+    Ações pós-venda: 25. Cancelamento parcial (1 ingresso de 10) 26. Venda complementar (adicionar
+    produtos a venda já paga, gerar link só da diferença) 27. Edição de pedidos em aberto 28.
+    Adicionar dados de participantes após pagamento Carrinhos Abandonados: 29. Lista com filtros e
+    ações de remarketing Cupom de Desconto: 30. Lista de cupons, criar/editar cupom 31. Resumo de
+    quais vendas usaram cada cupom com somatório ⚙️ AJUSTES PENDENTES JÁ DISCUTIDOS
+  </li>
+  <li>
+    Dashboard do gestor comercial: complementar com widgets de vendas (ranking vendedores, top
+    produtos, meios de pagamento, vendas por canal, dia da semana que mais vende nas duas vertentes:
+    dia da atividade vs dia da compra)
+  </li>
+  <li>Agenda: resolver totalizador por dia no calendário mensal (clientes usam muito)</li>
+  <li>Agenda: manter solução de feriados</li>
+  <li>
+    Banner de migração para sistema antigo: barra no topo com botão de fechar (reaparece ao trocar
+    de página)
+  </li>
+  <li>Histórico: padronizar componente com ação + data/hora + usuário em todos os lugares</li>
+  <li>
+    Pedidos nunca são apagados, só cancelados (manter histórico sempre) Você disse: me ajuda a uma
+    msg mais coesa e q faça sentido Bom dia pessoal td bem? me ajuda a uma msg mais coesa e q faça
+    sentido Bom dia pessoal td bem? devido ao carnaval tiramos dayoff na sexta e ainda estamos
+    trabalhando na finalizacao de alguns conceitos para a reuniao de hoje, se nao se importarem
+    gostaria de saber se podemos alterar nossa reuniao de hoje para as 16h, conseguem? Ainda estamos
+    finalizando algumas coisas e gostariamos de levar algo mais adiantado para voces, juntamente com
+    o front-end que vou subir das telas Trabalha essa msg para ficar mais humana nao tao repetitiva
+    e bem profissional e formata ela para envia whatsapp envia num box cmd Message Bom dia, pessoal,
+    tudo bem? Por conta do Carnaval, tivemos day off na sexta e ainda estamos finalizando alguns
+    conceitos importantes para a reunião. Para conseguirmos apresentar algo mais completo, incluindo
+    o front end das telas que vou subir, gostaria de saber se podemos ajustar nossa reunião de hoje
+    para as 16h. Faz sentido para vocês? Obrigada pela compreensão 🙂 Se quiser, posso deixar mais
+    formal ou mais casual. Só modifica a mensagem para o seguinte Mande pessoal, tudo bem. Pessoal,
+    na sexta passada a gente só folgou na Pessoal, na semana passada a gente só folgou na sexta por
+    conta do carnaval e acabou que como a gente tirou esse dia de folga, a gente não sei na verdade
+    parece que eu tô dando uma desculpa e tu mínimo desejar PT tá, mas basicamente falar que a gente
+    a gente folgou na sexto e aí a gente tá ainda trabalhando para entregar o que a gente combinou,
+    né? E aí eu queria entregar uma coisa mais substancial e completa para eles e pra isso a gente
+    precisava de +1 tempinho aqui, né? eh e aí queria ver se somente hoje, né, devido a esse esse
+    feriado que a gente tirou na semana passada, a gente pode alterar a reunião aí pras pras 16
+    horas, se não for um problema. eh porque eu quero entregar, além do do fluxo de login, os
+    ajustes da parte da da parte de vendas e o painel de afiliados, já o front disso também. Uma
+    coisa mais substancial para a gente também entregar um pouco maior aí antes do mês acabar. E aí
+    para isso queria pedir esse tempo maior para eles, né? Message Pessoal, tudo bem? Na semana
+    passada folgamos na sexta por conta do Carnaval e desde então seguimos trabalhando para
+    finalizar o que combinamos. Queremos aproveitar para levar algo mais substancial e completo para
+    vocês, incluindo o fluxo de login, os ajustes da parte de vendas e o painel de afiliados já com
+    o front evoluído. Por isso, queria ver se excepcionalmente hoje conseguimos ajustar a reunião
+    para as 16h, para termos esse tempinho extra e apresentar um avanço mais consistente antes do
+    fechamento do mês. Se não for um problema para vocês, nos ajuda bastante 🙂 Se quiser, deixo
+    mais direto ou mais executivo. deixa mais enxuta e humana Message Pessoal, tudo bem? Como
+    folgamos na sexta por conta do Carnaval, seguimos finalizando algumas entregas e queremos levar
+    algo mais completo para vocês, com o fluxo de login, ajustes de vendas e o painel de afiliados
+    já com o front evoluído. Podemos, excepcionalmente hoje, ajustar a reunião para as 16h? Assim
+    conseguimos apresentar um avanço mais consistente 🙂 Se quiser, deixo ainda mais curto. n faz
+    sentido a msg falando q como folgamos, ta sem sentido, só falar q precisamos de mais tempo pra
+    finalizar algumas coisas Message Pessoal, tudo bem? Estamos finalizando algumas frentes e
+    gostaríamos de um pouco mais de tempo para consolidar tudo e levar uma apresentação mais
+    completa, com o fluxo de login, ajustes de vendas e o painel de afiliados já com o front
+    evoluído. Podemos ajustar a reunião de hoje para as 16h? 🙂 Se quiser, deixo mais firme ou mais
+    informal. Mostrar menos 25 de fev. Pensando em refinar uma mensagem profissional e concisa para
+    solicitar adiamento de reunião Pensando em refinar uma mensagem profissional e concisa para
+    solicitar adiamento de reunião Pessoal, tudo bem? Estamos finalizando algumas frentes e
+    gostaríamos de um pouco mais de tempo para consolidar tudo e levar uma apresentação mais
+    completa, com o fluxo de login, ajustes de vendas e o painel de afiliados já com o front
+    evoluído. Podemos ajustar a reunião de hoje para as 16h? 🙂 Você disse: ajustei Pessoal, tudo
+    bem? ajustei Pessoal, tudo bem? Estamos finalizando algumas frentes e precisamos de um tempinho
+    a mais para consolidar tudo e levar uma apresentação mais completa, com o fluxo de login,
+    ajustes de vendas e o painel de afiliados já com o front evoluído Podemos, excepcionalmente
+    hoje, ajustar a reunião de hoje para as 16h? 🙂 queria.citar q folgamos na sexta so pra verem q
+    enfim 25 de fev. Recalibrou tom para evitar desculpas desnecessárias Recalibrou tom para evitar
+    desculpas desnecessárias Pessoal, tudo bem? Com o feriado de Carnaval na sexta, estamos
+    finalizando algumas frentes e precisamos de um tempinho a mais para consolidar tudo e levar uma
+    apresentação mais completa, com o fluxo de login, ajustes de vendas e o painel de afiliados já
+    com o front evoluído. Podemos, excepcionalmente hoje, ajustar a reunião para as 16h? 🙂 Você
+    disse: Já temos o que foi solicitado de informação na página de afiliados do gestor, porém, na
+    nossa versão, adicionamos também o e-mail e telefone do afiliado, faz s… Afiliado Backup.png Já
+    temos o que foi solicitado de informação na página de afiliados do gestor, porém, na nossa
+    versão, adicionamos também o e-mail e telefone do afiliado, faz sentido manter essas informações
+    baseado no que o cliente solicitou ou mantemos essa tabela mais enxuta com as informações que
+    pediram? 25 de fev. Claude respondeu: Olhando o que foi solicitado no documento de telas, a
+    lista de afiliados pede: Confrontou requisitos do cliente com design atual da tabela Confrontou
+    requisitos do cliente com design atual da tabela Olhando o que foi solicitado no documento de
+    telas, a lista de afiliados pede: código, nome, CPF, status, ações (ver afiliado, copiar link)
+    E-mail e telefone não foram pedidos na listagem. Mas antes de tirar, pensa no seguinte: o gestor
+    pode precisar entrar em contato rápido com o afiliado sem abrir o detalhe. Isso é útil no dia a
+    dia. Minha sugestão seria manter, mas com um argumento pronto caso questionem. Tipo: &quot;a
+    gente adicionou e-mail e telefone na listagem pra facilitar contato rápido sem precisar abrir o
+    detalhe do afiliado, mas se preferirem mais enxuto a gente tira.&quot; Se quiser deixar mais
+    enxuto pra não gerar discussão desnecessária agora, tira e deixa essas infos só na tela de
+    &quot;ver afiliado&quot; — que é onde o cliente especificou a seção de informações completas.
+    Quer que eu te ajude a formatar uma mensagem sobre isso pra mandar pra eles? Você disse: Eles
+    citaram se a comissão dos vendedores pode ser classificada por porcentagem ou valor em reais (R
+    $)?$ $Eles citaram se a comissão dos vendedores pode ser classificada por porcentagem ou valor
+    em reais (R$ )? 25 de fev. Claude respondeu: Sim, foi citado. Verificou documentos e transcrição
+    para confirmar comissão flexível Verificou documentos e transcrição para confirmar comissão
+    flexível Sim, foi citado. Na própria reunião a Luana mencionou na parte de criar vendedor:
+    &quot;definir a porcentagem da comissão do vendedor ou o valor da comissão&quot; E no documento
+    de escopo geral, no cadastro de vendedor, consta: &quot;percentual de comissão&quot; Então a
+    ideia é que no cadastro tanto de vendedor quanto de afiliado, a comissão suporte os dois
+    formatos: porcentagem (%) ou valor fixo (R$). Provavelmente com um toggle ou select pra escolher
+    o tipo antes de preencher o valor. Quer que eu te ajude a pensar no componente pra isso no
+    Figma? Você disse: E qualquer um desses formatos será aplicado para qualquer atividade vendida?
+    E qualquer um desses formatos será aplicado para qualquer atividade vendida? 25 de fev. Claude
+    respondeu: Não necessariamente. Investigou variabilidade de comissões por produto específico
+    Investigou variabilidade de comissões por produto específico Não necessariamente. Olhando o
+    documento, na parte do painel do afiliado consta: &quot;consultar quanto é a comissão de cada
+    produto que estou habilitado a vender&quot; E no cadastro do afiliado: &quot;produtos que pode
+    vender, comissão&quot; Isso indica que a comissão é por produto, não uma taxa única para tudo.
+    Ou seja, o afiliado pode ter 10% no Rapel e R$50 fixo na Trilha, por exemplo. Então no fluxo de
+    cadastro de afiliado/vendedor, quando vincular os produtos que ele pode vender, cada produto
+    teria seu próprio campo de comissão (com o toggle de % ou R$). Resumindo: a comissão é definida
+    produto a produto no momento em que habilita quais produtos aquele afiliado/vendedor pode
+    vender. Você disse: Foi solicitado algum tipo de ranqueamento dentro do fluxo de vendedores? Foi
+    solicitado algum tipo de ranqueamento dentro do fluxo de vendedores? 25 de fev. Claude
+    respondeu: Sim, foi solicitado. Investigou solicitações de ranqueamento em vendedores Investigou
+    solicitações de ranqueamento em vendedores Sim, foi solicitado. No documento de solicitações do
+    gestor comercial: item 28: &quot;quero saber o ranking dos melhores vendedores&quot; item 29:
+    &quot;quero saber quanto e o que cada vendedor e afiliado vendeu&quot; Na reunião, ficou
+    definido que isso seria resolvido em dois lugares: Dashboard do gestor comercial — widget de
+    ranking de vendedores (visão rápida) Tabela de vendedores — possibilidade de ordenar por quem
+    vendeu mais para quem vendeu menos Então não é uma tela dedicada de ranking, mas sim a
+    combinação do widget na dash + ordenação na própria listagem de vendedores. Para o fluxo de
+    afiliados, o equivalente seria o totalizador de &quot;top 3 afiliados&quot; que já consta na
+    tela que vocês fizeram, mais a tabela de acompanhamento de desempenho com vendas por afiliado.
+    Quer que eu levante mais algum ponto específico dos documentos? Você disse: o fluxo de afiliados
+    tá pronto no figma, o que passo pro figma make para ele se basear no estilo e criar essa tela? o
+    fluxo de afiliados tá pronto no figma, o que passo pro figma make para ele se basear no estilo e
+    criar essa tela? crie um plano de acao 25 de fev. Claude respondeu: Aqui vai o plano de ação
+    formatado pra você passar pro Figma Make: Estruturou plano de ação para replicar estilo de
+    afiliados Estruturou plano de ação para replicar estilo de afiliados Aqui vai o plano de ação
+    formatado pra você passar pro Figma Make: PLANO DE AÇÃO — TELA DE VENDEDORES Base: usar o fluxo
+    de Afiliados já pronto como referência de estilo e estrutura 📋 O QUE REAPROVEITAR DO AFILIADO
+    (mesmo estilo, mesmos componentes)
+  </li>
+  <li>Layout geral: sidebar + header + área de conteúdo</li>
+  <li>Estrutura de totalizadores (4 cards no topo)</li>
+  <li>Barra de pesquisa + botão Filtros + Ações em lote + botão CTA principal</li>
+  <li>Tabela com colunas, badges de status, paginação (10 itens)</li>
+  <li>Drawer de cadastro (mesma estrutura de formulário)</li>
+  <li>Tela de detalhe do vendedor (mesma estrutura de seções)</li>
+  <li>
+    Ícone de copiar link/código 🔄 O QUE MUDA EM RELAÇÃO AO AFILIADO Totalizadores (adaptar textos):
+  </li>
+</ol>
+<ul>
+  <li>Total de Vendedores (era Total Afiliados)</li>
+  <li>Vendedores Ativos (era Afiliados Ativos)</li>
+  <li>Vendas dos Vendedores - Últimos 30 dias (era Vendas dos Afiliados)</li>
+  <li>Comissões a Pagar (mantém igual) Colunas da tabela:</li>
+  <li>Cód. vendedor (com ícone copiar, igual ao afiliado)</li>
+  <li>Vendedor (nome + CPF, igual ao afiliado)</li>
+  <li>E-mail</li>
+  <li>Telefone</li>
+  <li>Vendas no período (coluna NOVA que não tem no afiliado)</li>
+  <li>Comissão acumulada (coluna NOVA que não tem no afiliado)</li>
+  <li>Status (Ativo/Inativo, igual ao afiliado) Botão CTA principal:</li>
+  <li>
+    &quot;Novo Vendedor&quot; (era &quot;Novo Afiliado&quot;) 📝 DRAWER DE CADASTRO — NOVO VENDEDOR
+    Campos (formulário no drawer):
+  </li>
+</ul>
+<ol>
+  <li>Nome completo</li>
+  <li>CPF/CNPJ</li>
+  <li>Telefone</li>
+  <li>E-mail</li>
+  <li>Código do vendedor (gerado pelo sistema, editável)</li>
+  <li>Tipo de comissão: toggle ou select entre % ou R$ (NOVO)</li>
+  <li>Valor da comissão</li>
+  <li>Meta de vendas em R$ (NOVO, campo que não existe no afiliado)</li>
+  <li>
+    Produtos habilitados para vender (multi-select ou lista com checkbox)
+    <ul>
+      <li>Cada produto com seu próprio campo de comissão (% ou R$)</li>
+    </ul>
+  </li>
+  <li>Observações (campo de texto livre) Ação de salvar:</li>
+</ol>
+<ul>
+  <li>Ao salvar, dispara convite por e-mail para o vendedor finalizar cadastro</li>
+  <li>
+    Mostrar feedback: &quot;Convite enviado para [email]&quot; 👁️ TELA DE VER VENDEDOR (detalhe)
+    Seção 1 — Informações:
+  </li>
+  <li>Dados pessoais (nome, CPF, e-mail, telefone)</li>
+  <li>Código do vendedor (com botão copiar)</li>
+  <li>Link de vendas (com botão copiar + botão compartilhar no mobile)</li>
+  <li>Meta de vendas</li>
+  <li>Status Seção 2 — Produtos habilitados:</li>
+  <li>Lista de produtos com comissão individual de cada um</li>
+  <li>Link de venda por produto (com botão copiar)</li>
+  <li>
+    Ações: editar comissão, habilitar/desabilitar produto Seção 3 — Desempenho (NOVO, não existe no
+    afiliado):
+  </li>
+  <li>Vendas realizadas no período</li>
+  <li>Comissão acumulada</li>
+  <li>Comissão paga</li>
+  <li>Comissão pendente Ações no topo:</li>
+  <li>Editar dados</li>
+  <li>
+    Desativar vendedor 📊 PAINEL DE ACOMPANHAMENTO DE DESEMPENHO Reaproveitar mesma estrutura do
+    afiliado:
+  </li>
+  <li>Tabela com venda (valor) de cada vendedor por mês</li>
+  <li>Controle de pagamento de comissões</li>
+  <li>Extrato de comissões pagas/a pagar com referência à venda</li>
+  <li>
+    Relatório com filtros (período, status venda, status comissão, produto, valor, nome cliente, nº
+    carrinho)
+  </li>
+  <li>Somatório de valores e comissão no resultado</li>
+  <li>Exportar PDF e Excel ⚠️ DIFERENÇAS IMPORTANTES EM RELAÇÃO AO AFILIADO</li>
+</ul>
+<ol>
+  <li>Vendedor tem META DE VENDAS (afiliado não tem)</li>
+  <li>Vendedor tem coluna de VENDAS NO PERÍODO e COMISSÃO ACUMULADA na tabela principal</li>
+  <li>Comissão é POR PRODUTO com toggle entre % e R$</li>
+  <li>Cadastro dispara CONVITE POR E-MAIL (afiliado não necessariamente)</li>
+  <li>Vendedor pode vender tanto online (link) quanto offline (PDV)</li>
+  <li>
+    Ranking de vendedores aparece também na dashboard do gestor como widget Basicamente: 80% da
+    estrutura é igual ao afiliado, o Figma Make só precisa adaptar os textos, adicionar os campos
+    novos (meta, comissão por produto com toggle %, R$) e a seção de desempenho no detalhe. Você
+    disse: qual tela é necessária pra passar pro make e a IA ter nocao? Captura de Tela 2026-02-25
+    às 13.52.23.png Captura de Tela 2026-02-25 às 13.52.30.png Captura de Tela 2026-02-25 às
+    13.52.35.png qual tela é necessária pra passar pro make e a IA ter nocao? 25 de fev. Claude
+    respondeu: Para o Make ter noção do estilo e replicar para vendedores, passa todas as 3, mas
+    cada uma tem um papel: Identificou padrões visuais essenciais para replicar design system
+    Identificou padrões visuais essenciais para replicar design system Para o Make ter noção do
+    estilo e replicar para vendedores, passa todas as 3, mas cada uma tem um papel: Imagem 1
+    (obrigatória) — é a mais importante porque mostra os dois padrões principais de uma vez: a
+    listagem (totalizadores, tabela, filtros, botão CTA) e o drawer de criação (formulário com
+    campos, seção de produtos com toggle de comissão %). É a base que ele vai replicar. Imagem 2
+    (obrigatória) — mostra os dois drawers de detalhe e performance, que são telas novas que o
+    vendedor também vai ter. O Make precisa ver a estrutura do drawer de performance (cards,
+    gráfico, extrato de comissões) pra replicar com as adaptações do vendedor. Imagem 3
+    (complementar) — mostra o drawer de edição, que é praticamente igual ao de criação mas com dados
+    preenchidos. Se quiser economizar, essa é a que pode pular, porque o Make já entende o padrão
+    pelo drawer da imagem 1. Resumo: manda as 3, mas se precisar priorizar, a 1 e a 2 são
+    indispensáveis. Junto com as imagens, cola aquele plano de ação que te passei antes pra ele
+    saber exatamente o que muda em relação ao afiliado. Você disse: Passei as 3 agora cria o prompt
+    pro figma make gerar a tela q quero Passei as 3 agora cria o prompt pro figma make gerar a tela
+    q quero 25 de fev. Formulou estratégia para replicar telas de afiliados como vendedores Formulou
+    estratégia para replicar telas de afiliados como vendedores PROMPT PARA FIGMA MAKE — TELA DE
+    VENDEDORES Contexto: Estou criando um painel administrativo para uma plataforma de turismo
+    chamada Retrilhar. Já tenho o fluxo completo de Afiliados pronto (as 3 imagens anexadas são
+    referência de estilo, componentes e estrutura). Preciso que você crie o fluxo de Vendedores
+    seguindo exatamente o mesmo padrão visual, mesmos componentes, mesma estrutura de layout, apenas
+    adaptando o conteúdo ao contexto de vendedores. Use as imagens anexadas como referência fiel de
+    estilo: cores, tipografia, espaçamentos, componentes, sidebar, header, totalizadores, tabela,
+    drawers, badges e botões. TELA 1 — LISTAGEM DE VENDEDORES (referência: imagem 1, lado esquerdo)
+    Título da página: &quot;Vendedores&quot; Subtítulo: &quot;Gerencie sua equipe de vendas.&quot; 4
+    cards totalizadores no topo:
+  </li>
+</ol>
+<ul>
+  <li>Total de Vendedores (número + variação % vs. mês anterior)</li>
+  <li>Vendedores Ativos (número + variação vs. mês anterior)</li>
+  <li>Vendas dos Vendedores - Últimos 30 dias (número + variação %)</li>
+  <li>
+    Comissões a Pagar (valor em R$ + variação %) Barra de ações: campo de pesquisa com botão buscar,
+    botão &quot;Filtros&quot;, botão &quot;Ações em lote&quot;, botão CTA verde &quot;Novo
+    Vendedor&quot; Tabela com as colunas:
+  </li>
+  <li>Checkbox de seleção</li>
+  <li>Cód. vendedor (com ícone de copiar, igual ao cód. afiliado)</li>
+  <li>Vendedor (nome + CPF embaixo, mesmo padrão do afiliado)</li>
+  <li>E-mail</li>
+  <li>Telefone</li>
+  <li>Vendas no período (valor em R$)</li>
+  <li>Comissão acumulada (valor em R$)</li>
+  <li>Status (badge &quot;Ativo&quot; verde ou &quot;Inativo&quot; cinza)</li>
+  <li>
+    Menu de ações (três pontos) Paginação no rodapé: &quot;Página 1 de 10&quot; com navegação
+    Sidebar e header idênticos às imagens de referência. O item ativo na sidebar deve ser
+    &quot;Vendas&quot; com submenu aberto mostrando &quot;Vendedores&quot; selecionado. TELA 2 —
+    DRAWER DE NOVO VENDEDOR (referência: imagem 1, lado direito) Drawer lateral direito com título
+    &quot;Novo Vendedor&quot; e botão X para fechar. Seção &quot;INFORMAÇÕES DO VENDEDOR&quot;:
+  </li>
+  <li>Nome completo (input text)</li>
+  <li>
+    Código do vendedor (input com placeholder &quot;Ex.: JOAORETRILHAR2026&quot; e texto auxiliar:
+    &quot;O código é gerado automaticamente mas você pode preencher, se preferir.&quot;)
+  </li>
+  <li>E-mail (input)</li>
+  <li>Telefone (input)</li>
+  <li>Documento (select com opções CPF/CNPJ/Passaporte) + Nº do documento (input ao lado)</li>
+  <li>
+    Meta de vendas em R$ (input numérico — campo NOVO que não existe no afiliado) Seção
+    &quot;PRODUTOS&quot; com ícone de info (i):
+  </li>
+  <li>Select para adicionar produto: &quot;Selecione um produto para adicionar&quot;</li>
+  <li>
+    Lista de produtos adicionados, cada um com:
+    <ul>
+      <li>Thumbnail do produto + nome + localização</li>
+      <li>Ícone de lixeira para remover</li>
+      <li>
+        Toggle entre &quot;Pct. (%)&quot; e &quot;Valor (R$)&quot; + campo de valor da comissão
+        (mesmo padrão visual do afiliado) Rodapé do drawer: botão &quot;Cancelar&quot; (texto
+        vermelho) + botão &quot;Criar Novo Vendedor&quot; (botão verde preenchido) TELA 3 — DRAWER
+        DE DETALHES DO VENDEDOR (referência: imagem 2, lado esquerdo) Drawer lateral direito com
+        título &quot;Detalhes do Vendedor&quot; e botão X. Topo: Avatar com iniciais + Nome do
+        vendedor + Código (com ícone copiar) + ícone de compartilhar link Dados do vendedor:
+      </li>
+    </ul>
+  </li>
+  <li>E-mail</li>
+  <li>Telefone</li>
+  <li>Documento (tipo + número)</li>
+  <li>Vendedor desde (data)</li>
+  <li>Meta de vendas: R$ XX.XXX Seção &quot;PRODUTOS (X)&quot;:</li>
+  <li>
+    Lista de produtos habilitados com:
+    <ul>
+      <li>Thumbnail + nome + localização</li>
+      <li>Toggle Pct/Valor + valor da comissão (somente leitura)</li>
+      <li>
+        Link de venda individual do vendedor para aquele produto (com ícone copiar) Rodapé: botão
+        &quot;Fechar aba&quot; + botão &quot;Editar Dados do Vendedor&quot; com ícone de lápis TELA
+        4 — DRAWER DE PERFORMANCE DO VENDEDOR (referência: imagem 2, lado direito) Drawer lateral
+        direito com título &quot;Detalhes do Vendedor&quot; e botão X. Botão &quot;Exportar&quot; no
+        canto superior direito do drawer. Aba ou seção de performance (mesmo padrão visual do
+        afiliado): Cards no topo (2x2):
+      </li>
+    </ul>
+  </li>
+  <li>Total de Vendas (número + variação %)</li>
+  <li>Comissões Totais R$ (valor + variação %)</li>
+  <li>Comissões Pagas R$ (valor)</li>
+  <li>Pendente a Pagar R$ (valor) Seção &quot;VENDAS POR MÊS&quot;:</li>
+  <li>Subtítulo: &quot;Evolução de vendas e comissões nos últimos 6 meses&quot;</li>
+  <li>Gráfico de linha (mesmo estilo do afiliado) Resumo abaixo do gráfico:</li>
+  <li>Período de análise</li>
+  <li>Total de comissões no período em R$ Seção &quot;EXTRATO DE COMISSÕES&quot;:</li>
+  <li>Subtítulo: &quot;Histórico detalhado de comissões e respectivas vendas&quot;</li>
+  <li>
+    Lista de comissões com:
+    <ul>
+      <li>
+        Código da venda (ex: VND-001234) + badge &quot;Comissão paga&quot; ou &quot;Pendente&quot;
+      </li>
+      <li>Data do pagamento</li>
+      <li>Cliente + Data/hora da venda</li>
+      <li>
+        Valor da venda + Valor da comissão Rodapé: botão &quot;Fechar aba&quot; + botão &quot;Editar
+        Dados do Vendedor&quot; TELA 5 — DRAWER DE EDITAR VENDEDOR (referência: imagem 3) Mesmo
+        layout do drawer de &quot;Novo Vendedor&quot; mas com:
+      </li>
+    </ul>
+  </li>
+  <li>Título: &quot;Editar Dados do Vendedor&quot;</li>
+  <li>Campos preenchidos com dados existentes</li>
+  <li>Campo de meta de vendas preenchido</li>
+  <li>Produtos já vinculados com comissões definidas</li>
+  <li>
+    Botão do rodapé: &quot;Cancelar&quot; + &quot;Salvar Alterações&quot; (botão verde) OBSERVAÇÕES
+    GERAIS:
+  </li>
+  <li>
+    Manter exatamente o mesmo design system das imagens: cores, border-radius, sombras, tipografia,
+    espaçamentos
+  </li>
+  <li>Sidebar com &quot;Vendas&quot; expandido e &quot;Vendedores&quot; como item ativo</li>
+  <li>Header com busca global, empresa vinculada e ícone de notificações</li>
+  <li>Todos os badges, ícones e componentes devem ser idênticos aos das imagens de referência</li>
+  <li>
+    Gerar as 5 telas em frames separados Você disse: seu prompt ta incorreto, o figma make ja
+    implementou as 3 imagens q citou pra codigo e a ideia é construir essa nova tela ai utilizando
+    os padroes etc seu prompt ta incorreto, o figma make ja implementou as 3 imagens q citou pra
+    codigo e a ideia é construir essa nova tela ai utilizando os padroes etc 25 de fev. Recalibrou
+    estratégia para aproveitar componentes já implementados Recalibrou estratégia para aproveitar
+    componentes já implementados Crie o fluxo de Vendedores reutilizando os mesmos componentes e
+    padrões já implementados nas telas de Afiliados. A estrutura é praticamente idêntica, só muda o
+    conteúdo e alguns campos novos. TELA 1 — LISTAGEM DE VENDEDORES Replicar a tela de listagem de
+    Afiliados com as seguintes mudanças:
+  </li>
+  <li>Título: &quot;Vendedores&quot; / Subtítulo: &quot;Gerencie sua equipe de vendas.&quot;</li>
+  <li>Botão CTA: &quot;Novo Vendedor&quot;</li>
+  <li>
+    Sidebar: item ativo deve ser &quot;Vendas&quot; com submenu &quot;Vendedores&quot; selecionado
+    Totalizadores (mesmos 4 cards, só muda o texto):
+  </li>
+</ul>
+<ol>
+  <li>Total de Vendedores</li>
+  <li>Vendedores Ativos</li>
+  <li>Vendas dos Vendedores - Últimos 30 dias</li>
+  <li>Comissões a Pagar Tabela — mesmas colunas do afiliado, mas adicionar 2 colunas novas:</li>
+</ol>
+<ul>
+  <li>Vendas no período (valor em R$)</li>
+  <li>
+    Comissão acumulada (valor em R$) Coluna &quot;Cód. afiliado&quot; vira &quot;Cód.
+    vendedor&quot;. Resto igual. TELA 2 — DRAWER NOVO VENDEDOR Replicar o drawer de Novo Afiliado
+    com as seguintes mudanças:
+  </li>
+  <li>Título: &quot;Novo Vendedor&quot;</li>
+  <li>Seção: &quot;INFORMAÇÕES DO VENDEDOR&quot;</li>
+  <li>
+    Adicionar campo novo: &quot;Meta de vendas em R$&quot; (input numérico, posicionar após o campo
+    de documento)
+  </li>
+  <li>Seção de produtos e comissão por produto: manter idêntico</li>
+  <li>
+    Botão: &quot;Criar Novo Vendedor&quot; TELA 3 — DRAWER DETALHES DO VENDEDOR Replicar o drawer de
+    Detalhes do Afiliado com as seguintes mudanças:
+  </li>
+  <li>Título: &quot;Detalhes do Vendedor&quot;</li>
+  <li>Adicionar campo: &quot;Meta de vendas: R$ XX.XXX&quot; na seção de dados</li>
+  <li>Adicionar em cada produto: link de venda individual do vendedor com ícone copiar</li>
+  <li>
+    Botão: &quot;Editar Dados do Vendedor&quot; TELA 4 — DRAWER PERFORMANCE DO VENDEDOR Replicar o
+    drawer de Performance do Afiliado sem mudanças de estrutura, só trocar os textos de
+    &quot;afiliado&quot; para &quot;vendedor&quot;. TELA 5 — DRAWER EDITAR VENDEDOR Replicar o
+    drawer de Editar Afiliado com as seguintes mudanças:
+  </li>
+  <li>Título: &quot;Editar Dados do Vendedor&quot;</li>
+  <li>Incluir campo de meta de vendas preenchido</li>
+  <li>
+    Botão: &quot;Salvar Alterações&quot; Você disse: agora um prompt pra essa tela aqui 🔴
+    PRIORIDADE 2 — PAINEL DO AFILIADO (spin-off, o que o afiliado vê quando loga)1. agora um prompt
+    pra essa tela aqui 🔴 PRIORIDADE 2 — PAINEL DO AFILIADO (spin-off, o que o afiliado vê quando
+    loga)1. Layout simplificado sem menu completo do admin2. Lista de pedidos realizados por ele3.
+    Lista de pedidos realizados mas não pagos4. Lista de vendas5. Extrato de comissões (recebidas e
+    a receber)6. Configurações (dados pessoais, dados bancários)7. Consultar produtos habilitados
+    com link de cada um + link geral8. Consultar comissão por produto9. Solicitar filiação para
+    produto novo 25 de fev. Delineou estrutura simplificada do painel afiliado com funcionalidades
+    essenciais Delineou estrutura simplificada do painel afiliado com funcionalidades essenciais
+    Crie o Painel do Afiliado, que é uma interface simplificada e separada do admin. É o que o
+    afiliado vê quando loga no sistema. Reutilize os mesmos componentes e padrões visuais já
+    implementados nas telas de Afiliados, mas com layout reduzido e foco apenas nas informações do
+    próprio afiliado. ESTRUTURA GERAL
+  </li>
+  <li>Sidebar simplificada com apenas 4 itens: Início, Vendas, Comissões, Configurações</li>
+  <li>
+    Header: logo Retrilhar + nome do afiliado logado + ícone de notificações (sem seletor de
+    empresa, sem busca global)
+  </li>
+  <li>
+    Mesmo design system das telas de Afiliados já implementadas TELA 1 — INÍCIO (dashboard do
+    afiliado) 4 cards totalizadores no topo:
+  </li>
+</ul>
+<ol>
+  <li>Vendas Realizadas - Mês atual (quantidade + variação %)</li>
+  <li>Valor Gerado em Vendas (R$ + variação %)</li>
+  <li>Comissão a Receber (R$)</li>
+  <li>Comissão já Recebida - Histórico (R$) Widget &quot;Vendas Recentes&quot;:</li>
+</ol>
+<ul>
+  <li>
+    Lista das últimas 5 vendas: data, produto, valor da venda, valor da comissão, status (badge
+    Pago/Pendente)
+  </li>
+  <li>CTA: &quot;Ver todas as vendas&quot; Widget &quot;Meu Link de Afiliado&quot;:</li>
+  <li>Link geral do afiliado com botão copiar + botão compartilhar</li>
+  <li>
+    Código do afiliado visível TELA 2 — VENDAS Mesma estrutura de listagem já implementada
+    (pesquisa, filtros, tabela, paginação), mas com dados apenas do afiliado logado. Totalizadores
+    no topo:
+  </li>
+</ul>
+<ol>
+  <li>Total de Vendas no período</li>
+  <li>Vendas Pagas</li>
+  <li>Vendas Pendentes</li>
+  <li>Carrinhos Abandonados via meu link Tabela com colunas:</li>
+</ol>
+<ul>
+  <li>Data da venda</li>
+  <li>Cliente</li>
+  <li>Produto</li>
+  <li>Valor da venda</li>
+  <li>Comissão</li>
+  <li>
+    Status (badge: Pago, Pendente, Cancelado) Filtros: período, status da venda, produto Clique na
+    linha abre drawer com detalhe da venda (somente leitura): data, cliente, produto, valor,
+    comissão, status do pagamento. TELA 3 — COMISSÕES Totalizadores no topo:
+  </li>
+</ul>
+<ol>
+  <li>Comissões Pagas (R$)</li>
+  <li>Pendente a Receber (R$)</li>
+  <li>Total de Comissões - Histórico (R$) Seção &quot;Extrato de Comissões&quot;:</li>
+</ol>
+<ul>
+  <li>
+    Reutilizar o mesmo componente de extrato do drawer de Performance do Afiliado (já implementado)
+  </li>
+  <li>
+    Lista: código da venda, badge (Paga/Pendente), data do pagamento, cliente, valor da venda, valor
+    da comissão
+  </li>
+  <li>Filtros: período, status da comissão Seção &quot;Evolução Mensal&quot;:</li>
+  <li>Gráfico de linha (mesmo estilo do drawer de Performance já implementado)</li>
+  <li>
+    Últimos 6 meses Botão &quot;Exportar&quot; (PDF e Excel) TELA 4 — CONFIGURAÇÕES Dividida em 3
+    seções (pode ser abas ou accordion): Seção &quot;Meus Dados&quot;:
+  </li>
+  <li>
+    Nome, e-mail, telefone, documento (somente leitura, com botão &quot;Solicitar alteração&quot;)
+  </li>
+  <li>Código do afiliado (somente leitura)</li>
+  <li>Link geral com botão copiar + compartilhar Seção &quot;Dados Bancários&quot;:</li>
+  <li>Banco, agência, conta, tipo de conta (editável)</li>
+  <li>Chave Pix</li>
+  <li>Botão &quot;Salvar Alterações&quot; Seção &quot;Meus Produtos&quot;:</li>
+  <li>
+    Lista de produtos habilitados, cada um com:
+    <ul>
+      <li>Thumbnail + nome + localização</li>
+      <li>Comissão definida (% ou R$, somente leitura)</li>
+      <li>Link individual do produto com botão copiar</li>
+    </ul>
+  </li>
+  <li>
+    Lista de produtos NÃO habilitados com:
+    <ul>
+      <li>Thumbnail + nome + localização</li>
+      <li>Botão &quot;Solicitar Filiação&quot;</li>
+      <li>
+        Ao clicar: feedback &quot;Solicitação enviada, aguarde aprovação&quot; Você disse: mudei de
+        ideia ao invés do make como eu já tenho um projeto de código puro com quase todas as telas
+        do retrilhar implementadas preciso de um prompt pro figma c… mudei de ideia ao invés do make
+        como eu já tenho um projeto de código puro com quase todas as telas do retrilhar
+        implementadas preciso de um prompt pro figma criar esse fluxo de afiliados, aí hoje funciona
+        assim tem que ir no menu e selecionar roberto lima que é o perfil afiliado aí dentro do
+        roberto lima que tem que ter essas telas, vale por no prompt pro claude analisar tudo que dá
+        pra reaproveitar das outras telas para manter consistencia, use engenharia de prompt 25 de
+        fev. Arquitetou prompt engenheiro para gerar painel afiliado reutilizando componentes
+        Arquitetou prompt engenheiro para gerar painel afiliado reutilizando componentes Você é um
+        desenvolvedor frontend especialista trabalhando no projeto Retrilhar, um painel
+        administrativo para turismo de experiências. O projeto já possui diversas telas
+        implementadas em código. CONTEXTO:
+      </li>
+    </ul>
+  </li>
+  <li>
+    O projeto já tem quase todas as telas do admin implementadas (dashboards, agenda, vendas,
+    afiliados do gestor, etc.)
+  </li>
+  <li>
+    Preciso criar o PAINEL DO AFILIADO, que é um spin-off: uma interface simplificada que o afiliado
+    vê quando loga
+  </li>
+  <li>
+    Para acessar, o usuário vai no menu de perfis e seleciona &quot;Roberto Lima&quot; que tem o
+    perfil de Afiliado
+  </li>
+  <li>
+    Dentro desse perfil, o afiliado só enxerga as telas dele, nada do admin completo ANTES DE
+    COMEÇAR: Analise TODO o código existente do projeto e identifique:
+  </li>
+</ul>
+<ol>
+  <li>
+    Quais componentes já existem que podem ser reutilizados (tabelas, cards, drawers, badges,
+    gráficos, filtros, paginação, botões)
+  </li>
+  <li>Qual o design system em uso (cores, tipografia, espaçamentos, border-radius, sombras)</li>
+  <li>Como a sidebar está estruturada para criar a versão simplificada</li>
+  <li>
+    Como os drawers de detalhes e performance do afiliado (visão do gestor) já estão implementados —
+    eles são referência direta
+  </li>
+  <li>
+    Como funciona a troca de perfil no menu para garantir que o &quot;Roberto Lima&quot; leve para
+    esse painel Após a análise, liste o que vai reaproveitar e o que precisa criar do zero. TELAS A
+    IMPLEMENTAR: TELA 1 — INÍCIO (Dashboard do Afiliado) Sidebar simplificada com apenas: Início,
+    Vendas, Comissões, Configurações Header reduzido: logo Retrilhar + nome &quot;Roberto Lima&quot;
+    + notificações (sem seletor de empresa, sem busca global) 4 cards totalizadores:
+  </li>
+</ol>
+<ul>
+  <li>Vendas Realizadas mês atual (qtd + variação %)</li>
+  <li>Valor Gerado em Vendas (R$ + variação %)</li>
+  <li>Comissão a Receber (R$)</li>
+  <li>
+    Comissão já Recebida (R$) Widget &quot;Vendas Recentes&quot;: lista das últimas 5 vendas (data,
+    produto, valor, comissão, status com badge). CTA &quot;Ver todas as vendas&quot; Widget
+    &quot;Meu Link de Afiliado&quot;: link geral com botão copiar + botão compartilhar, código do
+    afiliado visível TELA 2 — VENDAS Reutilizar a mesma estrutura de listagem já existente no
+    projeto (pesquisa, filtros, tabela, paginação), mas com dados apenas do afiliado 4
+    totalizadores: Total de Vendas, Vendas Pagas, Vendas Pendentes, Carrinhos Abandonados via meu
+    link Tabela: data, cliente, produto, valor da venda, comissão, status (badge) Filtros: período,
+    status da venda, produto Clique na linha abre drawer somente leitura com detalhe da venda TELA 3
+    — COMISSÕES 3 totalizadores: Comissões Pagas (R $), Pendente a Receber (R$ ), Total Histórico
+    (R$) Extrato de comissões: reutilizar o componente de extrato do drawer de Performance do
+    Afiliado que já existe na visão do gestor. Lista com código da venda, badge paga/pendente, data,
+    cliente, valor da venda, valor da comissão. Filtros por período e status. Gráfico de evolução
+    mensal: reutilizar o gráfico de linha do drawer de Performance (últimos 6 meses) Botão Exportar
+    (PDF e Excel) TELA 4 — CONFIGURAÇÕES 3 seções (abas ou accordion): &quot;Meus Dados&quot;: nome,
+    e-mail, telefone, documento (somente leitura com botão &quot;Solicitar alteração&quot;), código
+    do afiliado, link geral com copiar + compartilhar &quot;Dados Bancários&quot;: banco, agência,
+    conta, tipo de conta, chave Pix (editável). Botão &quot;Salvar Alterações&quot; &quot;Meus
+    Produtos&quot;:
+  </li>
+  <li>
+    Produtos habilitados: thumbnail + nome + localização + comissão (% ou R$) somente leitura + link
+    individual com botão copiar
+  </li>
+  <li>
+    Produtos NÃO habilitados: thumbnail + nome + localização + botão &quot;Solicitar Filiação&quot;
+    com feedback &quot;Solicitação enviada, aguarde aprovação&quot; REGRAS:
+  </li>
+  <li>Reutilize o máximo possível de componentes existentes para manter consistência</li>
+  <li>Mantenha o mesmo design system do projeto</li>
+  <li>A sidebar deve ser uma versão reduzida da sidebar principal</li>
+  <li>O header deve ser simplificado sem busca global e sem seletor de empresa</li>
+  <li>
+    Quando o perfil &quot;Roberto Lima&quot; for selecionado, toda a navegação muda para esse painel
+    simplificado
+  </li>
+  <li>
+    Dados de exemplo consistentes: use &quot;Roberto Lima&quot; como afiliado, código
+    &quot;ROBERTOLIMA2026&quot; Você disse: agora cria um prompt para o fluxo de painel deo vendedor
+    que no caso é a carla santos no menu agora cria um prompt para o fluxo de painel deo vendedor
+    que no caso é a carla santos no menu 25 de fev. Interpretou requisição para criar fluxo vendedor
+    Carla Santos Interpretou requisição para criar fluxo vendedor Carla Santos Você é um
+    desenvolvedor frontend especialista trabalhando no projeto Retrilhar, um painel administrativo
+    para turismo de experiências. O projeto já possui diversas telas implementadas em código,
+    incluindo o Painel do Afiliado (Roberto Lima) que acabou de ser criado. CONTEXTO:
+  </li>
+  <li>
+    O projeto já tem quase todas as telas do admin implementadas, incluindo agora o Painel do
+    Afiliado (Roberto Lima)
+  </li>
+  <li>
+    Preciso criar o PAINEL DO VENDEDOR, que é outro spin-off: uma interface simplificada que o
+    vendedor vê quando loga
+  </li>
+  <li>
+    Para acessar, o usuário vai no menu de perfis e seleciona &quot;Carla Santos&quot; que tem o
+    perfil de Vendedor
+  </li>
+  <li>Dentro desse perfil, a vendedora só enxerga as telas dela, nada do admin completo</li>
+  <li>
+    O Painel do Vendedor é MUITO parecido com o Painel do Afiliado, mas com mais autonomia: o
+    vendedor pode CRIAR vendas e dar BAIXA em pedidos, coisa que o afiliado não faz ANTES DE
+    COMEÇAR: Analise TODO o código existente do projeto e identifique:
+  </li>
+</ul>
+<ol>
+  <li>
+    O que já foi implementado no Painel do Afiliado (Roberto Lima) que pode ser reutilizado
+    diretamente — a estrutura é quase idêntica
+  </li>
+  <li>
+    Quais componentes de outras telas do admin podem ser reaproveitados (formulário de novo pedido,
+    drawer de detalhes de venda, etc.)
+  </li>
+  <li>
+    Como a sidebar simplificada do afiliado está estruturada para replicar com os itens do vendedor
+  </li>
+  <li>
+    Como funciona a troca de perfil no menu para garantir que a &quot;Carla Santos&quot; leve para
+    esse painel
+  </li>
+  <li>
+    O design system em uso para manter 100% de consistência Após a análise, liste o que vai
+    reaproveitar do Painel do Afiliado, o que vai reaproveitar de outras telas do admin e o que
+    precisa criar do zero. TELAS A IMPLEMENTAR: TELA 1 — INÍCIO (Dashboard do Vendedor) Sidebar
+    simplificada com: Início, Vendas, Comissões, Configurações (mesma estrutura do afiliado) Header
+    reduzido: logo Retrilhar + nome &quot;Carla Santos&quot; + notificações (sem seletor de empresa,
+    sem busca global) 4 cards totalizadores:
+  </li>
+</ol>
+<ul>
+  <li>Minhas Vendas mês atual (qtd + variação %)</li>
+  <li>Valor Vendido (R$ + variação %)</li>
+  <li>Comissão a Receber (R$)</li>
+  <li>
+    Meta do Mês (barra de progresso com % atingido — NOVO, não existe no afiliado) Widget
+    &quot;Minhas Vendas Recentes&quot;: lista das últimas 5 vendas (data, produto, valor, comissão,
+    status com badge). CTA &quot;Ver todas as vendas&quot; Widget &quot;Meu Link de Vendedor&quot;:
+    link geral com botão copiar + compartilhar, código da vendedora visível Botão flutuante ou em
+    destaque: &quot;+ Novo Pedido&quot; (NOVO, não existe no afiliado) TELA 2 — VENDAS Reutilizar a
+    mesma estrutura de listagem do Painel do Afiliado, mas com funcionalidades extras 4
+    totalizadores: Total de Vendas, Vendas Pagas, Vendas Pendentes, Pedidos em Aberto Tabela: data,
+    cliente, produto, valor, comissão, tipo de venda (badge Online/Offline — NOVO), status (badge)
+    Filtros: período, status, produto, tipo de venda (online/offline), forma de pagamento, canal de
+    vendas Clique na linha abre drawer de detalhe da venda com AÇÕES (diferente do afiliado que é
+    somente leitura) Ações no drawer de detalhe (NOVO):
+  </li>
+  <li>Editar pedido (se status &quot;Em aberto&quot;)</li>
+  <li>Dar baixa no pagamento (marcar como pago)</li>
+  <li>Cancelar pedido</li>
+  <li>Copiar link de pagamento</li>
+  <li>
+    Histórico de ações com usuário + data/hora Botão &quot;Novo Pedido&quot; no topo da listagem
+    (NOVO):
+  </li>
+  <li>Abre drawer ou fluxo de criação de pedido</li>
+  <li>Reutilizar o fluxo de criar pedido manual que já existe no admin se possível</li>
+  <li>
+    Campos: cliente (busca ou cadastro rápido), produto, data/horário, quantidade, tipo de tarifa,
+    forma de pagamento, observações
+  </li>
+  <li>Ao criar: gera link de pagamento com botão copiar para enviar ao cliente</li>
+  <li>
+    Tempo de expiração do link configurável Observação importante: outros vendedores podem ver as
+    vendas da Carla Santos (quando ela não está disponível e o cliente dela precisa de atendimento).
+    Isso é uma regra de negócio, não precisa de implementação visual agora, mas manter a estrutura
+    preparada. TELA 3 — COMISSÕES Reutilizar a tela de Comissões do Painel do Afiliado com as
+    seguintes mudanças: 3 totalizadores: Comissões Pagas (R $), Pendente a Receber (R$ ), Total
+    Histórico (R$) (igual ao afiliado) Adicionar: card de Meta do Mês com barra de progresso (NOVO)
+    Extrato, gráfico e exportação: idênticos ao afiliado, só trocar dados de exemplo para
+    &quot;Carla Santos&quot; TELA 4 — CONFIGURAÇÕES Reutilizar a tela de Configurações do Painel do
+    Afiliado com as seguintes mudanças: &quot;Meus Dados&quot;: mesmo layout do afiliado, dados de
+    &quot;Carla Santos&quot;, código &quot;CARLASANTOS2026&quot; &quot;Dados Bancários&quot;:
+    idêntico ao afiliado &quot;Meus Produtos&quot;:
+  </li>
+  <li>Produtos habilitados com comissão e link individual (igual ao afiliado)</li>
+  <li>Adicionar: informação de Meta de Vendas em R$ visível (NOVO)</li>
+  <li>
+    NÃO tem &quot;Solicitar Filiação&quot; — vendedor não solicita, quem habilita produtos é o
+    gestor DIFERENÇAS CHAVE ENTRE VENDEDOR E AFILIADO (resumo para referência):
+  </li>
+</ul>
+<ol>
+  <li>Vendedor tem BOTÃO DE CRIAR PEDIDO (afiliado não cria vendas)</li>
+  <li>
+    Vendedor tem AÇÕES no detalhe da venda: editar, dar baixa, cancelar (afiliado é somente leitura)
+  </li>
+  <li>Vendedor tem META DO MÊS com barra de progresso (afiliado não tem meta)</li>
+  <li>Vendedor tem coluna TIPO DE VENDA online/offline (afiliado só tem online)</li>
+  <li>Vendedor NÃO tem &quot;Solicitar Filiação&quot; em produtos</li>
+  <li>Vendedor tem filtros extras: tipo de venda, forma de pagamento, canal REGRAS:</li>
+</ol>
+<ul>
+  <li>Reutilize o máximo do Painel do Afiliado já implementado</li>
+  <li>Para o fluxo de criar pedido, verifique se já existe algo no admin que possa ser adaptado</li>
+  <li>Mantenha o mesmo design system do projeto inteiro</li>
+  <li>Sidebar e header seguem o mesmo padrão simplificado do afiliado</li>
+  <li>
+    Quando o perfil &quot;Carla Santos&quot; for selecionado, toda a navegação muda para esse painel
+  </li>
+  <li>
+    Dados de exemplo: use &quot;Carla Santos&quot; como vendedora, código
+    &quot;CARLASANTOS2026&quot;
+  </li>
+</ul>

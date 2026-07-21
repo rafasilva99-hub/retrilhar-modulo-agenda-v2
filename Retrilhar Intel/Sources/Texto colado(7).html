@@ -1,0 +1,136 @@
+<p>
+  Agora vamos focar no fluxo de mapa de vagas, gere um to-do list de quais telas devem ser feitas no
+  figma baseada nas especificações de documentação que temos 22 de abr. Claude respondeu: Vou buscar
+  nas especificações do projeto as informações sobre o fluxo de mapa de vagas. Vou buscar nas
+  especificações do projeto as informações sobre o fluxo de mapa de vagas. Pesquisou a memória
+  Pesquisou a memória Tenho uma base sólida das especificações. Agora vou organizar o to-do list
+  para o Figma, cobrindo todas as telas, estados e fluxos auxiliares do Mapa de Vagas. To-do list:
+  Mapa de Vagas (Figma) Tela principal — Listagem
+</p>
+<ol>
+  <li>
+    Mapa de Vagas — Desktop (visão padrão) Header com título, botão Atualizar (refresh), indicador
+    de última atualização Barra de filtros: período (próximos 7/15/30 dias + personalizado), produto
+    (dropdown com busca), status (multi-select: Pendente/Confirmada/Cancelada), guia/responsável
+    Chips de filtro rápido: &quot;Com vagas disponíveis&quot;, &quot;Esgotados&quot; Cards de resumo
+    agregado no topo: taxa de ocupação geral, total de dias com atividades confirmadas, total de
+    vagas vendidas, total de vagas disponíveis Lista/cards cronológicos por data → horário (cliente
+    pediu cards em vez de lista na reunião 15/04) Cada card/linha: data, horário, nome do produto,
+    capacidade máx, ocupação atual (barra de progresso), vagas restantes, badge de status, ícones de
+    alerta, qtd de adicionais, equipe escalada, ações 2. Mapa de Vagas — Mobile Mesma lógica em
+    cards empilhados, filtros em bottom sheet Priorizar info crítica no card fechado; detalhes
+    secundários só na expansão 3. Mapa de Vagas — Tablet (breakpoint intermediário, se escopo
+    permitir) Variações do card de evento 4. Card — Estado &quot;Confirmado&quot; (badge verde,
+    ocupação ≥ mínimo) 5. Card — Estado &quot;Pendente&quot; (badge amarelo, ainda não atingiu
+    mínimo) 6. Card — Estado &quot;Cancelado&quot; (badge vermelho, apresentação atenuada) 7. Card —
+    Estado &quot;Esgotado&quot; (100% ocupação, barra vermelha/badge destacado) 8. Card — Com
+    alertas múltiplos (ícones: saúde, adicionais, esgotado, recurso compartilhado, sem equipe
+    alocada) 9. Card — Com vagas bloqueadas (ícone 🔒 + indicação de quantas estão bloqueadas) 10.
+    Card — Com vendas bloqueadas (visual indicando que não aceita novas vendas) 11. Card — Conflito
+    de recurso compartilhado (ex: barco usado em 2 atividades — ocupação somada + aviso visual) 12.
+    Card — Conflito de horário da equipe (colaborador escalado em horários sobrepostos) 13. Card —
+    Sem equipe alocada (alerta amarelo destacado) 14. Card — Produto Day Use/Hospedagem (entrada e
+    saída no mesmo dia, visual distinto) Filtros e interações 15. Filtros expandidos — Desktop
+    (todos os campos abertos) 16. Filtros — Mobile (bottom sheet) com aplicar/limpar 17. Date Range
+    Picker — período personalizado 18. Dropdown de produto com busca Estados da tela 19. Estado
+    Loading (skeleton dos cards) 20. Estado Empty — sem eventos no período selecionado 21. Estado
+    Empty — filtros sem resultado (com CTA &quot;limpar filtros&quot;) 22. Estado de Erro (falha ao
+    carregar + retry) Fluxo — Bloquear Vagas 23. Modal/Drawer &quot;Bloquear Vagas&quot; — form:
+    quantidade de vagas, motivo/nota (grupo em negociação), data de validade do bloqueio (opcional)
+    24. Confirmação de bloqueio aplicado (toast + card atualizado com ícone 🔒) 25. Fluxo de
+    desbloqueio — visualizar bloqueios ativos e remover Fluxo — Bloquear Vendas 26. Modal/Drawer
+    &quot;Bloquear Vendas&quot; — confirmar bloqueio por produto/dia/horário, campo de motivo 27.
+    Estado — Vendas bloqueadas (card com indicação clara + ação de reverter) 28. Confirmação de
+    desbloqueio de vendas Detalhe expandido 29. Drawer lateral / expansão inline do card —
+    informação detalhada sem sair da tela: participantes resumidos, equipe, adicionais agrupados,
+    atalhos para ações 30. Mobile — expansão do card (acordion vertical já que drawer lateral não
+    cabe) Ações e navegação 31. Menu de ações (3 pontos) — bloquear vagas, bloquear vendas, ver
+    reservas, escalar equipe, atualizar 32. CTA &quot;Ver Reservas&quot; — redireciona para Painel
+    de Reservas com filtros aplicados (documentar transição) Entrada na tela 33. Atalho do Dashboard
+    Operacional → Mapa de Vagas com filtro de data pré-aplicado (documentar comportamento de
+    deep-link) 34. Atalho do Início (widget &quot;Ocupação por produto&quot;) → Mapa de Vagas Perfil
+    Guia/Operador 35. Mapa de Vagas — visão do Guia (filtrado automaticamente para apenas seus
+    eventos escalados; sem ações de bloqueio) Pontos em aberto para alinhar com Cristiano
+    antes/durante a execução Decisão cards vs. lista vs. tabela: Cristiano deixou como provocação na
+    reunião 15/04 — &quot;na web fizemos em cards, pensem o que ficaria melhor&quot; Ordenação: o
+    escopo não define critérios de &quot;ordenar por&quot; para o Mapa de Vagas (gap identificado em
+    todos os módulos) — precisa definir antes de avançar Vagas bloqueadas: duração padrão do
+    bloqueio? Expira automaticamente ou só manual? (coerência com o princípio &quot;fechamentos
+    sempre manuais&quot;) Produtos multi-dia (hospedagem): como representar exatamente entrada/saída
+    no mesmo card ou em cards separados? Recurso compartilhado: o &quot;aviso de conflito&quot; é
+    bloqueante ou apenas visual? Quer que eu monte esse to-do como um checklist estruturado em DOCX
+    (padrão UXNAUT, similar ao checklist de Agenda) para usar como referência durante a execução no
+    Figma? Você disse: Ilustre uma solução para a tela principal Ilustre uma solução para a tela
+    principal 22 de abr. Claude respondeu: Vou ilustrar uma proposta para a tela principal do Mapa
+    de Vagas. Vou ilustrar uma proposta para a tela principal do Mapa de Vagas. Deixa eu carregar o
+    módulo de design antes. Decisões de design que tomei nessa proposta e que vale validar com você:
+    Agrupamento por dia, cards em grid 2×N. Cristiano deixou a escolha entre lista e cards em
+    aberto. Fui de cards porque o operador precisa &quot;bater o olho&quot; (reunião 15/04) e
+    identificar rapidamente o status — e porque cards escalam melhor para mobile sem reestruturação.
+    O agrupamento por data com separador cronológico resolve a leitura temporal que uma lista plana
+    dá. Barra de progresso com cor semântica + linha do mínimo. Verde para ocupação saudável, âmbar
+    para pendente, vermelho para esgotado, azul para casos com vagas bloqueadas (hachurado). A linha
+    vertical na barra marca a quantidade mínima para confirmar a atividade — resolve o caso
+    &quot;mínimo não atingido&quot; sem precisar de texto extra. Alertas no rodapé do card, não no
+    topo. Segui o princípio que o Rafael mencionou na 15/04 de separar estados de alertas em áreas
+    distintas para não confundir. O badge de status fica junto do título (identidade do card) e os
+    alertas ficam na linha inferior, antes do CTA &quot;Ver reservas&quot;. Filtros ativos como
+    chips + filtros rápidos separados. Os filtros &quot;canônicos&quot; (período, produto, status,
+    guia) aparecem como chips com valor atual visível — estado persistente. Os filtros rápidos
+    (&quot;Com vagas&quot;, &quot;Esgotados&quot;, &quot;Com alertas&quot;) ficam depois de um
+    divisor, como pills toggleáveis, porque são views mais do que filtros compostos. Evita a
+    confusão tab-vs-filtro que já apareceu nos testes de usabilidade. Card de cancelada atenuado,
+    não escondido. Mantém a informação visível (útil para auditoria e reembolso) sem competir com os
+    cards ativos. Day use / hospedagem com dupla coluna entrada/saída. Resolve o requisito de exibir
+    entrada e saída distintas no mesmo dia sem criar dois cards separados — mais legível e respeita
+    o fato de que é a mesma unidade sendo ocupada em dois momentos. Pontos que deixei para discutir
+    depois: Os cards estão em grid 2 colunas no desktop; em listas com 60+ eventos (caso que o
+    Cristiano mencionou), dois cards por linha pode ficar longo de rolar. Alternativa: 3 colunas em
+    telas maiores, ou densidade compacta como opção de &quot;ver como lista&quot;. Não incluí o menu
+    de 3 pontos no card — ações como &quot;bloquear vagas/vendas&quot; poderiam morar ali. Prefiro
+    colocar só depois de definirmos se o CTA primário é &quot;Ver reservas&quot; ou se abrimos um
+    drawer com detalhes + ações. Ordenação está sinalizada mas sem dropdown aberto — é o gap que
+    identifiquei no to-do list. Quer que eu ilustre também o mobile, ou prefere explorar variações
+    dessa mesma tela (ex: densidade compacta, 3 colunas, ou uma versão em lista/tabela para
+    comparar)? Você disse: Refine a solução dos cards, de forma que consigamos usar a mesma
+    estrutura do card de atividades do dia 1776907640860_image.png Refine a solução dos cards, de
+    forma que consigamos usar a mesma estrutura do card de atividades do dia 22 de abr. Claude
+    respondeu: Vou ajustar a proposta para seguir a mesma estrutura do card de atividade do dia —
+    header com título + badges + ações à direita, linha de metadados com ícone e… Vou ajustar a
+    proposta para seguir a mesma estrutura do card de atividade do dia — header com título + badges
+    + ações à direita, linha de metadados com ícone em tile, e a barra de ocupação com a hachura
+    indicando a parte vaga. A resposta do Claude foi interrompida Você disse: Adapte com as
+    informações que devem estar no card, use apenas a estrutura de apoio Adapte com as informações
+    que devem estar no card, use apenas a estrutura de apoio 22 de abr. Claude respondeu: Entendi —
+    a estrutura (header com título + badges + ações à direita, metadados em ícone-tile, barra de
+    ocupação com hachura, rodapé de alertas) é o esqueleto. Entendi — a estrutura (header com título
+    + badges + ações à direita, metadados em ícone-tile, barra de ocupação com hachura, rodapé de
+    alertas) é o esqueleto. O conteúdo dentro dos tiles e metadados precisa ser o que o Mapa de
+    Vagas realmente pede, não o que estava no card de atividade do dia. Reorganizei os tiles com
+    base na especificação do Mapa de Vagas: Data e horário, Ocupação (texto X/Y), Equipe escalada,
+    Adicionais vendidos — e movi a barra de progresso para o lugar onde antes estava o resumo de
+    participantes. O que mudou em relação à versão anterior, mantendo a estrutura do card de
+    atividade do dia como esqueleto: Metadados do header (abaixo do título): agora mostram data +
+    horário — que é o que o Mapa de Vagas pede. Localização saiu (não faz parte do escopo dessa
+    tela). Os 4 tiles com ícone (a &quot;estrutura de apoio&quot; que você quer preservar) foram
+    remapeados para os dados canônicos do Mapa de Vagas: Capacidade máxima Vagas restantes
+    Adicionais vendidos Equipe escalada Barra de ocupação: mantida com o padrão visual do card de
+    referência (hachura na parte vaga, % ocupado à esquerda, % vago à direita). Para o caso
+    &quot;pendente com mínimo não atingido&quot;, adicionei o marcador vertical da quantidade mínima
+    na barra. Ações do header: agora duas ações principais + CTA — &quot;Bloquear vagas&quot; (ação
+    exclusiva do Mapa de Vagas), &quot;Bloquear vendas&quot; (como no card de referência) e
+    &quot;Ver reservas&quot; (navegação para o Painel de Reservas). No card Esgotado, &quot;Bloquear
+    vendas&quot; já aparece no estado aplicado (&quot;Vendas bloqueadas&quot;) para mostrar a
+    variação. Rodapé de alertas: badge que aparece quando há condições especiais — alerta de saúde,
+    recurso compartilhado, sem equipe. Só aparece se houver alerta, então o primeiro card sem alerta
+    teria só o corpo padrão. Pontos que ainda vale validar: Cabem 3 ações no header? No card de
+    referência tinham 2 (&quot;Bloquear vendas&quot; + &quot;Ir para atividade&quot;). Se 3 ficar
+    apertado em telas menores, dá pra consolidar &quot;Bloquear vagas&quot; + &quot;Bloquear
+    vendas&quot; dentro de um menu de 3 pontos e deixar só &quot;Ver reservas&quot; à direita. Ícone
+    da barra de ocupação: usei o mesmo tile de ícone-pessoas do card de referência. Talvez valha
+    trocar por um ícone mais neutro (barra/gráfico) pra não confundir com &quot;equipe&quot;.
+    &quot;Vagas restantes&quot; duplica a informação da barra? O Cristiano pediu o campo
+    explicitamente nas specs, mas visualmente convive com a barra. Posso remover o tile e deixar só
+    a barra, ou remover o contador X/Y da barra e deixar só o tile — o que achar mais limpo.
+  </li>
+</ol>

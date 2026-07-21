@@ -1,0 +1,658 @@
+<p>
+  A situação é a seguinte, eu fiz o design no Figma e passei para front-end com o Cloud Code, certo?
+  A sua ferramenta de desenvolver. E aí eu tenho no meu projeto, inclusive, um eu tenho um Cloud.md
+  que é recomendado, né? E aí no meu Cloud.md, eu vou até mandar o conteúdo pra você ver, mas tem as
+  instruções. Só que mesmo assim, aparentemente, o meu front-end não veio com a qualidade esperada.
+  Até mandei a transcrição da reunião com o cliente pra você ver. E aí a minha tarefa agora é
+  finalizar as o que eles chamam de estrutura, né? Que é menu e a barra superior. E aí primeiro,
+  antes de eu fazer novos componentes, eu preciso resolver primeiro aquele problema que ele falou do
+  ícone de de encolher menu. eh e segundo, ver como resolver isso, né? Porque aparentemente o meu
+  cloud.md não está funcionando. E aí a minha dúvida seria eu uso o cloud ainda pra front-end ou eu
+  uso o codex ou o anti-gravity e tudo mais. Preciso que você faça uma pesquisa. eh porque eu sei
+  que se eu falar pro Cloud Ah, faça uma revisão do código de front-end, não vai mudar muita coisa.
+  É, não sei se é um problema meio de direcionamento e tal, aí eu preciso entender como resolver
+  esses problemas que foram citados na reunião. Mostrar menos 26 de fev. Claude respondeu: Luana,
+  vou analisar o que aconteceu com base na transcrição da reunião e no seu CLAUDE. Analisou
+  problemas de arquitetura e direcionamento do Claude Code Analisou problemas de arquitetura e
+  direcionamento do Claude Code Luana, vou analisar o que aconteceu com base na transcrição da
+  reunião e no seu CLAUDE.md, e te dar um direcionamento prático. O diagnóstico Pela reunião, os
+  problemas que o Cristiano apontou são bem específicos: Ícone do sidebar: o Claude Code injetou CSS
+  inline (provavelmente um SVG inteiro ou um bloco de CSS enorme) em vez de usar o componente React
+  da biblioteca de ícones (Lucide React). Isso gera ~5MB de CSS desnecessário. Arquitetura
+  bagunçada: o Claude Code é bom em gerar código funcional, mas ruim em respeitar a arquitetura de
+  um projeto existente. Ele cria coisas do zero em vez de reutilizar. Componentes não seguindo
+  shadcn/ui: o sidebar, por exemplo, ficou customizado demais e quebrou quando o Cristiano portou
+  pro padrão. Por que o CLAUDE.md não está funcionando Seu CLAUDE.md está bem estruturado, mas tem
+  lacunas que explicam os problemas. Vou ser direta: O que está bom: grid system, anti-patterns,
+  template de página, imports obrigatórios. O que está faltando (e é o que causa os problemas):
+  Nenhuma instrução sobre ícones — não tem uma seção dizendo &quot;use Lucide React via import {
+  ChevronLeft } from &#39;lucide-react&#39;, nunca use SVG inline, nunca injete CSS de ícone&quot;
+  Nenhuma instrução sobre CSS — não tem uma regra clara tipo &quot;nunca injete CSS inline, sempre
+  use classes Tailwind ou CSS variables&quot; Nenhum exemplo real de componente existente — o
+  Cristiano falou exatamente isso: &quot;a IA precisa de exemplos de código pra seguir&quot;. Seu
+  CLAUDE.md tem templates genéricos mas não tem trechos reais do código que já existe Falta uma
+  seção de &quot;componentes existentes que DEVEM ser reutilizados&quot; — o Claude Code não sabe
+  que já existe um SidebarMenu, um TopBar, etc. Ele recria do zero O que fazer agora (ação prática)
+  Vou te ajudar em duas frentes: melhorar o CLAUDE.md e resolver o problema imediato do sidebar.
+  Quer que eu faça o seguinte? Você disse: faça uma pesquisa antes de me retornar, pesquisa
+  aprofundada em foruns de devs seniores front end etc reddit e vários outros e me dê uma resposta
+  assertiva faça uma pesquisa antes de me retornar, pesquisa aprofundada em foruns de devs seniores
+  front end etc reddit e vários outros e me dê uma resposta assertiva 26 de fev. Claude respondeu:
+  Vou fazer uma pesquisa aprofundada agora. Planejou pesquisa abrangente em comunidades
+  desenvolvedoras para resposta assertiva Planejou pesquisa abrangente em comunidades
+  desenvolvedoras para resposta assertiva Vou fazer uma pesquisa aprofundada agora. Deixa comigo.
+  Sintetizou pesquisa aprofundada para resposta assertiva Sintetizou pesquisa aprofundada para
+  resposta assertiva Pronto, Luana. Fiz uma pesquisa bem ampla — Reddit, Hacker News, DEV Community,
+  blogs de engenheiros seniores, documentação oficial da Anthropic, e comparativos entre
+  ferramentas. Aqui vai minha resposta assertiva. Veredicto: Continue com Claude Code, mas mude a
+  estratégia O problema não é a ferramenta, é como você está configurando ela. O consenso entre devs
+  seniores é claro: Claude Code continua sendo a melhor opção para projetos complexos de frontend
+  (72-80% no SWE-bench, liderando o mercado). Mas ele precisa de configuração séria — e seu
+  CLAUDE.md atual está no que a comunidade classifica como &quot;Nível 2&quot; (Scoped), quando
+  deveria estar no &quot;Nível 4&quot; (Abstracted) para o tamanho do projeto da Retrilhar. Os 3
+  problemas reais (validados pela pesquisa)
+</p>
+<ol>
+  <li>
+    Saturação de prioridade no CLAUDE.md A Anthropic confirmou oficialmente que o CLAUDE.md e os
+    arquivos de regras recebem &quot;alta prioridade&quot; no contexto. Quando tudo está no mesmo
+    arquivo, tudo compete por atenção — e nada ganha. Devs seniores relatam que quando o CLAUDE.md
+    passa de ~150 instruções, o modelo começa a ignorar tudo com mais frequência, não apenas as
+    regras do final do arquivo. A pesquisa do Buildcamp mostra que equipes de alta performance
+    mantêm o CLAUDE.md raiz com menos de 60 linhas. Seu CLAUDE.md tem grid system, anti-patterns,
+    templates, imports, CSS variables, navegação... tudo junto. É demais pro modelo absorver de uma
+    vez.
+  </li>
+  <li>
+    Falta de &quot;NUNCA faça X&quot; (anti-patterns concretos) A descoberta mais consistente nos
+    fóruns: instruções positivas (&quot;use Tailwind&quot;) são tratadas como sugestões. Instruções
+    negativas (&quot;NUNCA injete CSS inline&quot;) são tratadas como limites rígidos. O artigo mais
+    referenciado sobre skills de alta performance diz literalmente: &quot;Anti-patterns dão ao
+    Claude limites duros. Instruções positivas são sugestões. Os melhores skills são cheios de
+    regras &#39;NUNCA faça X&#39;, e é a maior razão pela qual o output deles se destaca.&quot; Seu
+    CLAUDE.md não tem nenhuma regra sobre ícones, nenhuma sobre CSS inline, nenhuma sobre não
+    recriar componentes existentes.
+  </li>
+  <li>
+    Sem exemplos reais de código Vários devs seniores no Reddit e o próprio Cristiano na reunião
+    disseram a mesma coisa: a IA precisa de exemplos de código real do projeto para seguir o padrão.
+    Sem exemplos, ela recria do zero usando padrões genéricos. Um artigo muito referenciado
+    (thrawn01.org) resume: &quot;Pense no Claude como um dev júnior com habilidades de savant. Ele é
+    bom em codificar, mas péssimo em arquitetura — a menos que você mostre a arquitetura.&quot; O
+    que fazer: Plano de ação em 3 etapas Etapa 1 — Reestruturar para regras por escopo (path-scoped
+    rules) A feature mais subutilizada do Claude Code são as regras por caminho. Em vez de um
+    CLAUDE.md gigante, você cria regras que só carregam quando o Claude está editando arquivos
+    daquele domínio: seu-projeto/ ├── CLAUDE.md # ← Enxuto: só contexto geral (~50 linhas) └──
+    .claude/ └── rules/ ├── layout-shell.md # paths: app/(dashboard)/layout.tsx ├── components-ui.md
+    # paths: components/ui/** ├── components-custom.md # paths: components/custom/** ├── pages.md #
+    paths: app/(dashboard)/**/ <em>.tsx</em> *└── icons.md # paths: *<em>/</em> .tsx (regras de
+    ícone globais) Cada arquivo de regra usa YAML frontmatter pra dizer quando carrega:
+  </li>
+</ol>
+<h4>yaml</h4>
+<p>paths:</p>
+<ul>
+  <li>&quot;components/custom/**/*.tsx&quot;</li>
+  <li>&quot;components/layout/**/*.tsx&quot;</li>
+</ul>
+<hr />
+<h3>Regras de Componentes Custom</h3>
+<ul>
+  <li>NUNCA recrie componentes que já existem em components/custom/</li>
+  <li>NUNCA use SVG inline. Use import { NomeDoIcone } from &#39;lucide-react&#39;</li>
+  <li>
+    NUNCA injete CSS. Use classes Tailwind ou CSS variables de globals.css Etapa 2 — CLAUDE.md raiz
+    enxuto + anti-patterns fortes O CLAUDE.md raiz deveria ter só o essencial universal: Stack
+    (Next.js 14, React 18, Tailwind 4, shadcn/ui) Estrutura de pastas (o ASCII do grid que você já
+    tem) Comandos de build/dev/test 10-15 regras &quot;NUNCA&quot; (os anti-patterns mais críticos)
+    Ponteiros para as regras detalhadas em .claude/rules/ As regras &quot;NUNCA&quot; que estão
+    faltando e causaram os problemas: markdown
+  </li>
+</ul>
+<h4>Anti-patterns CRÍTICOS</h4>
+<ul>
+  <li>NUNCA importe ícones via CSS ou SVG inline. Use: import { X } from &#39;lucide-react&#39;</li>
+  <li>NUNCA injete blocos de CSS inline. Use classes Tailwind ou CSS variables</li>
+  <li>NUNCA crie sidebar, topbar ou tabbar em páginas individuais</li>
+  <li>NUNCA recrie um componente que já existe em components/</li>
+  <li>NUNCA use valores hardcoded de cores (ex: bg-[#0B5ED7])</li>
+  <li>NUNCA crie novo layout.tsx dentro de páginas do dashboard</li>
+  <li>
+    NUNCA gere código sem antes verificar quais componentes já existem no projeto Etapa 3 —
+    Adicionar exemplos de referência Crie um arquivo de referência que o Claude pode ler antes de
+    gerar código. Devs seniores recomendam criar um diretório docs/ ou usar skills com exemplos
+    reais: markdown
+  </li>
+</ul>
+<h3>Exemplo de componente correto (referência)</h3>
+<h4>Ícone correto:</h4>
+<p>import { PanelLeftClose } from &#39;lucide-react&#39;</p>
+<h4>Ícone ERRADO (nunca fazer):</h4>
+<p>
+  Sobre Codex / Cursor / alternativas A pesquisa foi bem clara nisso: nenhuma troca de ferramenta
+  vai resolver se a configuração está ruim. O consenso em fevereiro de 2026 é que as três
+  ferramentas principais (Claude Code, Codex, Cursor) convergiram em qualidade de código — a
+  diferença real está em como você configura o contexto. Dito isso, uma estratégia que vários devs
+  seniores mencionam é usar ferramentas em combo: Claude Code para geração e tarefas complexas,
+  Cursor para iteração rápida visual no editor. Se você quiser experimentar, o Cursor tem um painel
+  de browser embutido que mostra o resultado visual em tempo real — bom pra frontend. Mas pra sua
+  situação específica (finalizar a carcaça do shell, resolver o ícone, entregar pro Cristiano),
+  ficar no Claude Code com as regras corrigidas é o caminho mais rápido. Quer que eu monte o
+  CLAUDE.md reestruturado completo + os arquivos de regras agora? Posso gerar tudo pronto pra você
+  copiar pro repositório. Você disse: Entendi, antes de montar um claude. Entendi, antes de montar
+  um claude.md novo e realizar tudo que falou, não faz mais sentido eu pedir para a ferramenta
+  explorar o front-end pra vc entender como devemos trabalhar? Ou vc já sabe? 26 de fev. Claude
+  respondeu: Faz total sentido. Reconheceu necessidade de explorar código antes de gerar diretrizes
+  específicas Reconheceu necessidade de explorar código antes de gerar diretrizes específicas Faz
+  total sentido. É exatamente o que a pesquisa apontou como diferencial — regras baseadas no código
+  real, não genéricas. Sem ver o código, eu vou gerar um CLAUDE.md &quot;bonitinho&quot; mas
+  genérico. Vendo o código, eu consigo: Mapear quais componentes já existem (pra criar as regras de
+  &quot;NUNCA recrie X&quot;) Ver como os ícones estão sendo usados hoje vs como deveriam ser
+  Entender a estrutura real de pastas (não a idealizada) Identificar os anti-patterns que o
+  Cristiano reclamou Criar exemplos de referência com código real do projeto Você consegue me dar
+  acesso? Pode ser de qualquer uma dessas formas: Você disse: eu tenho projeto rodando na pasta na
+  minha máquina e uso o cursor como IDE e o claude code via terminal, oq fazer? eu tenho projeto
+  rodando na pasta na minha máquina e uso o cursor como IDE e o claude code via terminal, oq fazer?
+  26 de fev. Claude respondeu: Perfeito. Deliberou estratégias para acessar projeto local via
+  navegador Deliberou estratégias para acessar projeto local via navegador Perfeito. Vou fazer o
+  seguinte — me deixa explorar pelo navegador. Abre o repositório no GitLab/GitHub no Chrome que eu
+  consigo navegar pela estrutura de pastas e ler os arquivos diretamente. Mas primeiro, deixa eu ver
+  o que você já tem aberto: Aguardou resposta da usuária para prosseguir Aguardou resposta da
+  usuária para prosseguir Sem o Chrome conectado, temos duas opções: Enquanto você decide, já te
+  adianto — os arquivos que eu mais preciso ver são estes (em ordem de prioridade): Estrutura de
+  pastas — um print da árvore do projeto no Cursor ou o resultado de tree -L 3 no terminal
+  app/(dashboard)/layout.tsx — o layout principal (onde está a carcaça) O componente do sidebar —
+  pra ver o problema do ícone que o Cristiano citou globals.css — pra entender os tokens/CSS
+  variables package.json — pra confirmar dependências Um componente custom qualquer — pra ver o
+  padrão que está sendo gerado Com esses 6 arquivos eu consigo fazer um diagnóstico real e montar
+  tudo certinho. Você disse: P: Como prefere compartilhar o código? P: Como prefere compartilhar o
+  código? R: Conectar a extensão do Chrome e abrir o repo no navegador 26 de fev. Claude respondeu:
+  Boa! Pensando en preferencias de compartición de código mediante extensión Chrome y repositorio en
+  navegador Pensando en preferencias de compartición de código mediante extensión Chrome y
+  repositorio en navegador Boa! Vou tentar conectar ao Chrome: Identificou ausência da extensão e
+  planejou orientação de instalação Identificou ausência da extensão e planejou orientação de
+  instalação Parece que a extensão não está conectada ainda. Para configurar: No Chrome, instala a
+  extensão &quot;Claude in Chrome&quot; (se ainda não tem) — está na Chrome Web Store Depois de
+  instalar, clica no ícone da extensão no Chrome e clica em &quot;Connect&quot; Volta aqui e me
+  avisa que conectou Enquanto isso, se quiser adiantar, já abre o repositório no GitLab/GitHub no
+  Chrome pra quando conectar eu já começar a explorar direto. Me avisa quando estiver pronto! Você
+  disse: instalei instalei uso arc 26 de fev. Claude respondeu: Beleza, vamos tentar conectar agora:
+  Hmm, ainda não está conectando. Thinking about concerns with this request Thinking about concerns
+  with this request Beleza, vamos tentar conectar agora: Investigou compatibilidade e testou
+  abordagem alternativa Investigou compatibilidade e testou abordagem alternativa Hmm, ainda não
+  está conectando. O Arc é baseado no Chromium, então a extensão deveria funcionar. Tenta o
+  seguinte: No Arc, clica no ícone da extensão (Claude in Chrome) na barra de extensões Deve
+  aparecer um botão &quot;Connect&quot; — clica nele Pode ser que peça pra você selecionar qual
+  conversa do Claude conectar Se não aparecer o ícone, tenta: Vai em arc://extensions e verifica se
+  a extensão está ativa Clica no ícone de puzzle 🧩 pra ver extensões e fixa a do Claude Me avisa
+  quando clicar em Connect que eu tento de novo! Você disse: só me passa um prompt para eu por no
+  claude code e eu te retornar com o que vc precisa saber só me passa um prompt para eu por no
+  claude code e eu te retornar com o que vc precisa saber 26 de fev. Claude respondeu: Perfeito,
+  muito mais prático. Ideated practical prompt structure for Claude Code execution Ideated practical
+  prompt structure for Claude Code execution Perfeito, muito mais prático. Cola isso no terminal do
+  Claude Code: Faça uma auditoria completa do projeto e retorne TUDO abaixo em um único arquivo
+  markdown chamado audit.md na raiz do projeto:
+</p>
+<ol>
+  <li>ÁRVORE DE PASTAS (tree -L 4, ignorando node_modules, .next, .git)</li>
+  <li>
+    CONTEÚDO COMPLETO destes arquivos (copie o conteúdo inteiro de cada um):
+    <ul>
+      <li>CLAUDE.md</li>
+      <li>app/(dashboard)/layout.tsx</li>
+      <li>app/layout.tsx</li>
+      <li>globals.css (ou app/globals.css)</li>
+      <li>package.json</li>
+      <li>O componente do sidebar (sidebar-menu.tsx ou similar)</li>
+      <li>O componente da topbar (top-bar.tsx ou similar)</li>
+      <li>O componente da tab bar mobile (se existir)</li>
+      <li>components/custom/index.ts (ou o barrel export)</li>
+      <li>components/ui/index.ts (ou o barrel export)</li>
+      <li>Qualquer arquivo dentro de .claude/rules/ (se existir)</li>
+    </ul>
+  </li>
+  <li>
+    DIAGNÓSTICO: Liste todos os locais onde encontrar:
+    <ul>
+      <li>SVG inline ou CSS de ícone injetado diretamente</li>
+      <li>Imports de ícone que NÃO usam lucide-react</li>
+      <li>Estilos inline (style={}) em componentes</li>
+      <li>
+        Componentes que duplicam funcionalidade do layout (sidebar, topbar, tabbar criados fora do
+        layout principal)
+      </li>
+      <li>
+        Valores de cor hardcoded (hex, rgb) em vez de CSS variables ou classes Tailwind NÃO resuma
+        nada. Copie o conteúdo completo dos arquivos. O objetivo é uma auditoria para reestruturar o
+        CLAUDE.md. Quando ele gerar o audit.md, sobe o arquivo aqui pra mim. Com isso eu consigo
+        fazer tudo.
+      </li>
+    </ul>
+  </li>
+</ol>
+<h3>
+  AUDITORIA COMPLETA DO PROJETO RETRILHAR-NEXT Data: 2026-02-26 --- ## 1. ÁRVORE DE PASTAS ``` .
+  ./.claude ./.claude/settings.local.json ./.cursorrules ./.gitignore ./.storybook
+  ./.storybook/main.ts ./.storybook/preview.ts ./.storybook/vitest.setup.ts ./CLAUDE.md ./README.md
+  ./app ./app/(dashboa
+</h3>
+<p>
+  pasted 26 de fev. Claude respondeu: Perfeito, agora tenho visão completa do projeto. Audited
+  codebase structure and architected documentation reorganization strategy Audited codebase
+  structure and architected documentation reorganization strategy Perfeito, agora tenho visão
+  completa do projeto. O diagnóstico revela coisas importantes que mudam a estratégia. Vou montar
+  tudo agora. Audited codebase and architected modular documentation structure Audited codebase and
+  architected modular documentation structure Análise completa. Agora vou gerar todos os arquivos. O
+  projeto está melhor do que parecia — o problema principal é que o CLAUDE.md está desatualizado
+  (diz Next 14/React 18, mas é Next 16/React 19) e longo demais, sem path-scoped rules. Vou criar
+  tudo agora. I cannot provide a summary because the user prompt is empty I cannot provide a summary
+  because the user prompt is empty Agora vou verificar tudo e copiar para o output: The user prompt
+  is empty, so there is no primary language to identify. However, based on the thinking block alone,
+  here is a summary: Orchestrated file creation and synthesis The user prompt is empty, so there is
+  no primary language to identify. However, based on the thinking block alone, here is a summary:
+  Orchestrated file creation and synthesis Pronto! Aqui vai o resumo do que encontrei e o que fiz:
+  Diagnóstico do audit.md — O projeto está mais sólido do que parecia na reunião. O layout é
+  centralizado, barrel exports funcionam, não tem duplicação de sidebar/topbar. Os problemas reais
+  são: CLAUDE.md dizia Next 14 / React 18, mas o projeto usa Next 16 / React 19 — isso confundia o
+  Claude Code sobre quais APIs usar Nenhuma menção a HugeIcons — o CLAUDE.md não explicava que o
+  projeto usa icon font via CDN, então o Claude Code improvisava com SVG/CSS inline Tudo num arquivo
+  só — 180 linhas competindo por atenção, sem prioridade clara Sem path-scoped rules — a feature
+  mais poderosa do Claude Code não estava sendo usada O que entreguei — 6 arquivos prontos para
+  copiar no projeto: Arquivo Linhas Função CLAUDE.md 67 Raiz enxuta com stack correta + 10 regras
+  &quot;NUNCA&quot; rules/icons.md 51 Explica HugeIcons vs Lucide com exemplos ✅/❌
+  rules/layout-shell.md 84 Grid system, áreas CSS, como adicionar rotas rules/pages.md 123 Templates
+  de página com componentes reais rules/components.md 98 Lista tudo que já existe + padrão para
+  criar novos rules/styling.md 114 Todas as escalas de cor, radius, shadows + regra do font-weight
+  400 O arquivo INSTRUCOES.md tem o passo a passo de como aplicar. Basicamente: substituir o
+  CLAUDE.md, criar .claude/rules/, e rodar um prompt de confirmação. Instrucoes Documento · MD
+  Claude Documento · MD Icons Documento · MD Layout shell Documento · MD Pages Documento · MD
+  Components Documento · MD Styling Documento · MD Você disse: Ao invés de usar mock queria usar
+  algo tipo {{cpf}} ja vi alguns devs fazendo isso, faz o front ai ao inves de mock poe as paradas
+  la q o backend dev tem q por… Ao invés de usar mock queria usar algo tipo {{cpf}} ja vi alguns
+  devs fazendo isso, faz o front ai ao inves de mock poe as paradas la q o backend dev tem q por e
+  no front fica aparecendo {{cpf}} o bom disso é que podemos até ver se ta corretamente ligado o
+  front ao back-end (que ainda nao chegou no caso), mas pesquisa pra validar essa minha hipótese 26
+  de fev. Claude respondeu: Boa pergunta, deixa eu pesquisar isso direito porque tem nuances
+  importantes. Investigou padrão de placeholder tokens para integração frontend-backend Investigou
+  padrão de placeholder tokens para integração frontend-backend Boa pergunta, deixa eu pesquisar
+  isso direito porque tem nuances importantes. Investigou padrão de template e validou hipótese de
+  desenvolvimento Investigou padrão de template e validou hipótese de desenvolvimento Pesquisei
+  bastante e vou te dar uma resposta honesta: o que você viu funciona em contextos específicos, mas
+  no caso do Retrilhar com React não é a melhor abordagem. Deixa eu explicar. O que você viu
+  provavelmente era isso: Frameworks de template server-side (Handlebars, Blade, Jinja, Twig) onde o
+  HTML literalmente tem {{cpf}} e o backend substitui na hora de renderizar. O dev backend abre o
+  template, vê {{cpf}}, e sabe exatamente o que precisa alimentar. Faz sentido nesses contextos
+  porque o HTML é um template estático que o servidor processa. Por que não funciona bem em
+  React/Next.js: No React, os componentes são funções JavaScript. Se você colocar {{cpf}} como
+  string literal no JSX, o que acontece é que literalmente renderiza o texto &quot;{{cpf}}&quot; na
+  tela — mas ele não tem nenhuma ligação técnica com nada. É só uma string visual. O Cristiano não
+  poderia &quot;plugar&quot; o backend ali porque React não funciona com substituição de template.
+  Ele teria que reescrever tudo de qualquer forma pra transformar &quot;{{cpf}}&quot; em {data.cpf}.
+  O que a indústria faz no lugar (e que resolve o mesmo problema que você quer resolver): O padrão
+  que está dominando se chama contract-first development. A ideia é: Front e back definem juntos um
+  &quot;contrato&quot; (a forma dos dados) antes de codar O front cria TypeScript interfaces que são
+  o contrato O front usa essas interfaces pra tipar tudo — e os dados vêm de hooks que hoje retornam
+  mock, mas amanhã apontam pro backend real No Retrilhar, vocês já estão quase fazendo isso. Olha a
+  estrutura que já existe: types/index.ts ← Aqui ficam as interfaces (o &quot;contrato&quot;)
+  hooks/useVendas.ts ← Hook que hoje retorna mock services/vendas.ts ← Serviço que vai chamar a API
+  real mocks/vendas.ts ← Dados mock O fluxo de integração fica: HOJE (sem backend): Componente →
+  useVendas() → services/vendas.ts → mocks/vendas.ts ↑ retorna dados fake QUANDO O BACKEND CHEGAR:
+  Componente → useVendas() → services/vendas.ts → fetch(&quot;/api/vendas&quot;) ↑ retorna dados
+  reais O componente não muda nada. O Cristiano só precisa trocar o que está dentro de
+  services/vendas.ts. A versão &quot;melhor dos dois mundos&quot; pra vocês: O que dá pra fazer que
+  resolve o que você quer (visualizar o que precisa vir do backend) sem quebrar a arquitetura React:
+  typescript // types/index.ts — O CONTRATO export interface Venda { id: string; // ← Cristiano vê:
+  preciso retornar isso cpf: string; // ← Cristiano vê: preciso retornar isso nomeCliente: string;
+  valor: number; status: &quot;pago&quot; | &quot;pendente&quot; | &quot;cancelado&quot;;
+  canalVenda: string; dataVenda: string; // ISO 8601 } Esse arquivo types/index.ts é efetivamente o
+  mapa que o Cristiano precisa pra saber o que alimentar. É o equivalente funcional do {{cpf}} mas
+  que realmente funciona na arquitetura. E se quiser um &quot;modo debug&quot; visual? Dá pra criar
+  uma flag de ambiente que mostra os nomes dos campos na UI: tsx // Modo debug: mostra nome do campo
+  quando não tem dados reais const DEBUG_BINDINGS = process.env.NEXT_PUBLIC_DEBUG_BINDINGS ===
+  &quot;true&quot;; <span>{venda.cpf || (DEBUG_BINDINGS &amp;&amp; &quot;{{cpf}}&quot;)}</span> Mas
+  honestamente, isso é mais trabalho do que valor. O types/index.ts já serve como documentação viva
+  do contrato. Resumindo: a intuição está certa (ter um mapa claro do que o backend precisa
+  alimentar), mas a execução no React é via TypeScript interfaces + camada de services, não via
+  tokens no template. E vocês já têm a estrutura pra isso — só precisa garantir que o types/index.ts
+  esteja completo e que o Cristiano use ele como referência. Você disse: Entendi, permanecemos assim
+  entao, agora que atualizei o claude rules e tem os novos . Entendi, permanecemos assim entao,
+  agora que atualizei o claude rules e tem os novos .md como faço para melhorar o que tem que
+  melhorar do esqueleto combinado em call 26 de fev. Claude respondeu: Deixa eu revisar o que foi
+  combinado na call pra montar o prompt certo. Localizou contexto de melhorias do esqueleto
+  discutidas previamente Localizou contexto de melhorias do esqueleto discutidas previamente Deixa
+  eu revisar o que foi combinado na call pra montar o prompt certo. Investigou melhorias do
+  esqueleto usando novas regras Claude Investigou melhorias do esqueleto usando novas regras Claude
+  Deixa eu buscar no transcript o que exatamente foi combinado sobre o esqueleto pra montar o prompt
+  certo. Identificou problemas de código e formulou prompt prático para Claude Identificou problemas
+  de código e formulou prompt prático para Claude Achei tudo. Pela auditoria que fizemos, os
+  problemas concretos no esqueleto atual são: Cores hardcoded em ~15 arquivos (maioria em configs de
+  Chart.js) Alguns inline styles desnecessários CLAUDE.md antigo dizia Next 14/React 18 (já
+  corrigido com os novos rules) O esqueleto em si está bem estruturado (layout centralizado, barrel
+  exports, grid CSS), então o trabalho é de limpeza, não de reestruturação. Aqui vai o prompt pra
+  colar no Claude Code. É dividido em 2 etapas pra não sobrecarregar: Prompt 1 — Validação (rodar
+  PRIMEIRO): Leia o CLAUDE.md e todos os arquivos em .claude/rules/ para confirmar que entendeu a
+  arquitetura. Depois, faça uma varredura no projeto e liste TODOS os arquivos que violam as regras
+  documentadas. Organize por categoria:
+</p>
+<ol>
+  <li>CORES HARDCODED: arquivos com hex/rgb que deveriam usar classes Tailwind ou CSS variables</li>
+  <li>INLINE STYLES: arquivos com style={{}} que NÃO sejam Chart.js ou valores dinâmicos</li>
+  <li>ÍCONES: imports de lucide-react fora de components/ui/ ou SVGs inline</li>
+  <li>IMPORTS: imports diretos que deveriam usar barrel exports Para cada violação, mostre:</li>
+</ol>
+<ul>
+  <li>Arquivo e linha</li>
+  <li>O que está errado</li>
+  <li>
+    O que deveria ser NÃO corrija nada ainda. Só liste. Prompt 2 — Correção (rodar DEPOIS de validar
+    a lista): Agora corrija todas as violações que você listou, seguindo rigorosamente as regras do
+    CLAUDE.md e .claude/rules/. Regras de correção:
+  </li>
+  <li>
+    Hex hardcoded → substituir pela classe Tailwind mais próxima (consultar
+    .claude/rules/styling.md)
+  </li>
+  <li>Inline styles estáticos → converter pra classes Tailwind</li>
+  <li>Inline styles em Chart.js → MANTER (é permitido)</li>
+  <li>
+    SVGs de logo (Google, Microsoft) A resposta do Claude foi interrompida Você disse: Entendi,
+    permanecemos assim entao, agora que atualizei o claude rules e tem os novos . Tô chegando a
+    fazer alguma coisa da 2 e da 4 porque eu peguei elas pra tocar aqui. Não, só 3 e 5. A 5 foi até
+    que parte? Até hoje o detalhe do pedido. Eu ia começar a criação do pedido manual, mas não tive
+    tempo. Aí, o resultado foi esse aqui. Beleza. É... Aquele vídeo que ela mandou lá no grupo
+    pasted Entendi, permanecemos assim entao, agora que atualizei o claude rules e tem os novos .md
+    como faço para melhorar o que tem que melhorar do esqueleto combinado em call 26 de fev. Claude
+    respondeu: Pela call, o Cristiano foi bem claro. Extraiu ações prioritárias para aperfeiçoar o
+    esqueleto da aplicação Extraiu ações prioritárias para aperfeiçoar o esqueleto da aplicação Pela
+    call, o Cristiano foi bem claro. Vou te dar o prompt exato baseado no que ele pediu. O combinado
+    foi: Finalizar a carcaça (shell) — não telas, só a estrutura compartilhada Switch de empresa —
+    ainda não existe, é prioridade Notificação simplificada — pode ser vazia mas precisa existir
+    Drawer Medium — variante nova (50% da tela) além do Small atual Uma tela simples perfeita —
+    Produtos foi a sugestão, só pra validar que a carcaça funciona Responsivo — desktop, tablet e
+    mobile redondos Cola isso no Claude Code: Leia o CLAUDE.md e todos os arquivos em .claude/rules/
+    antes de começar. CONTEXTO: Estamos finalizando a &quot;carcaça&quot; (shell) do sistema — a
+    estrutura compartilhada entre todas as telas. NÃO vamos mexer em conteúdo de páginas específicas
+    agora. Foco 100% no que é compartilhado. TAREFAS em ordem de prioridade:
+  </li>
+</ul>
+<ol>
+  <li>
+    SWITCH DE EMPRESA (Company Switcher)
+    <ul>
+      <li>Componente no header/topbar ao lado da logo</li>
+      <li>Dropdown com busca para filtrar empresas</li>
+      <li>Ao trocar, todo o contexto muda (simular com estado local por enquanto)</li>
+      <li>Mostrar nome da empresa selecionada + ícone de chevron</li>
+      <li>Super admin pode buscar qualquer empresa</li>
+      <li>Se usuário tem só 1 empresa, mostrar nome sem dropdown</li>
+      <li>Componente: components/custom/company-switcher.tsx</li>
+      <li>Adicionar no barrel export</li>
+    </ul>
+  </li>
+  <li>
+    NOTIFICAÇÃO SIMPLIFICADA
+    <ul>
+      <li>O componente NotificationDropdown já existe em components/custom/topbar/</li>
+      <li>
+        Verificar se está funcional: ícone de sino, badge com contador, dropdown com lista vazia ou
+        com placeholder
+      </li>
+      <li>
+        Se não estiver funcional, fazer versão mínima: sino clicável, dropdown com &quot;Nenhuma
+        notificação&quot;
+      </li>
+      <li>NÃO precisa de lógica real, só a estrutura visual</li>
+    </ul>
+  </li>
+  <li>
+    DRAWER MEDIUM (nova variante)
+    <ul>
+      <li>Hoje existe drawer small. Criar variante medium que ocupa ~50% da tela no desktop</li>
+      <li>Usar o Sheet do shadcn como base (já existe em components/ui/)</li>
+      <li>Criar wrapper: components/custom/drawer-medium.tsx</li>
+      <li>Props: open, onOpenChange, title, children</li>
+      <li>No mobile, drawer medium ocupa 100% (igual ao small)</li>
+    </ul>
+  </li>
+  <li>
+    RESPONSIVO DA CARCAÇA
+    <ul>
+      <li>Testar e ajustar: sidebar (desktop only), topbar (desktop only), tabbar (mobile only)</li>
+      <li>Tablet (768px-1024px): sidebar colapsada por padrão, topbar visível</li>
+      <li>Verificar que o grid CSS está correto em todas as breakpoints</li>
+      <li>Menu mobile: verificar se abre/fecha corretamente</li>
+    </ul>
+  </li>
+  <li>
+    PÁGINA DE VALIDAÇÃO (Produtos)
+    <ul>
+      <li>Em app/(dashboard)/produtos/page.tsx</li>
+      <li>Usar APENAS componentes existentes: PageContainer, PageHeader, DataTable, FilterBar</li>
+      <li>
+        Conteúdo mínimo: título &quot;Produtos&quot;, filtro de busca, tabela com colunas (foto,
+        nome, categoria, preço, status, ações)
+      </li>
+      <li>Dados mock simples (3-5 linhas)</li>
+      <li>Objetivo: provar que a carcaça funciona com uma tela real dentro REGRAS:</li>
+    </ul>
+  </li>
+</ol>
+<ul>
+  <li>Seguir TODAS as regras do CLAUDE.md (ícones via</li>
+  <li>Verificar componentes existentes antes de criar novos</li>
+  <li>Company Switcher é componente NOVO — criar seguindo o padrão de components.md</li>
+  <li>
+    Testar que build passa sem erros: npm run build Esse prompt cobre exatamente o que o Cristiano
+    pediu na call: &quot;deixa essa tela aí perfeita, redonda, aí acabou, passa o bastão pra
+    mim&quot;. O switch de empresa era o item mais urgente que ele mencionou, junto com a
+    notificação. A página de Produtos é só pra provar que a carcaça tá funcionando — ele disse que
+    não importa qual tela, pode ser qualquer uma simples. Você disse: o menu mobile nao abre e
+    fecha, ele é um tabbar pelo amor, vc botou isso nas coisas do rules do claude? o menu mobile nao
+    abre e fecha, ele é um tabbar pelo amor, vc botou isso nas coisas do rules do claude? tem q
+    corrigir 26 de fev. Claude respondeu: Tem razão, erro meu no prompt. Identificou erro no menu
+    mobile e revisou documentação para corrigir Identificou erro no menu mobile e revisou
+    documentação para corrigir Tem razão, erro meu no prompt. Deixa eu verificar o que está nos
+    rules que a gente criou. Identificou erro no prompt, não nas regras do Claude Identificou erro
+    no prompt, não nas regras do Claude Os rules estão corretos — o layout-shell.md já fala certo de
+    MobileTabBar como grid-area fixa, com flex-shrink: 0 e tudo. O erro foi só no prompt que eu te
+    dei, naquela tarefa 4 onde escrevi &quot;menu mobile abre/fecha&quot;. Corrige o item 4 do
+    prompt pra ficar assim:
+  </li>
+</ul>
+<ol start="4">
+  <li>
+    RESPONSIVO DA CARCAÇA
+    <ul>
+      <li>Desktop: sidebar expandida/colapsada + topbar visíveis</li>
+      <li>Tablet (768px-1024px): sidebar colapsada por padrão + topbar visível</li>
+      <li>
+        Mobile (&lt;768px): sidebar e topbar OCULTOS. TabBar fixa no rodapé (3 atalhos + botão
+        &quot;Mais&quot;)
+      </li>
+      <li>
+        O botão &quot;Mais&quot; da TabBar navega para a página de menu completo (mobile-menu-page)
+      </li>
+      <li>A TabBar é componente FIXO no grid (grid-area: tabbar), NÃO é menu que abre/fecha</li>
+      <li>
+        Verificar que o grid CSS mobile está correto: &quot;main&quot; em cima, &quot;tabbar&quot;
+        embaixo, height: 100dvh
+      </li>
+      <li>
+        Verificar que a TabBar não sobe com o scroll (flex-shrink: 0) Resumo: os .claude/rules/ que
+        a gente criou estão descrevendo certo (TabBar fixa, grid-area, 100dvh). O prompt é que tinha
+        o deslize. Troca só esse trecho e o resto do prompt tá ok pra rodar. Você disse: Tem um
+        ponto, tem coisas que já está bem feita. Tem um ponto, tem coisas que já está bem feita.
+        Então, antes de refazer, tem que ver o que tá bem feito e meio que dar um diagnóstico,
+        porque eu lembro que eu deixei isso funcionando bem, né? eh e a novos componentes, switcher,
+        tudo isso aí não é a prioridade agora. Eu quero só deixar o que já existe bem feito, tanto
+        web quanto mobile, em todas as resoluções, no caso. E uma outra coisa é o Cristiano reclamou
+        de uma coisa relacionada a um ícone que eu não vi você citando no prompt.<br />
+        26 de fev. Claude respondeu: Verdade, o Cristiano falou especificamente do ícone de
+        abrir/fechar a sidebar — que o Claude Code injetou o CSS inteiro da font no layout.
+        Identificou diagnóstico necessário e ícone invertido para corrigir Identificou diagnóstico
+        necessário e ícone invertido para corrigir Verdade, o Cristiano falou especificamente do
+        ícone de abrir/fechar a sidebar — que o Claude Code injetou o CSS inteiro da font no
+        layout.tsx (~5MB) e que o ícone ficou espelhado. Ele disse que já refatorou pra usar a
+        classe da biblioteca mas ficou invertido. O prompt certo então é esse: Leia o CLAUDE.md e
+        todos os arquivos em .claude/rules/ antes de começar. CONTEXTO: Estamos finalizando a
+        carcaça (shell) do sistema. A carcaça já existe e muita coisa já está funcionando bem. NÃO
+        crie componentes novos. NÃO refaça o que já funciona. TAREFA 1 — DIAGNÓSTICO (fazer ANTES de
+        qualquer alteração): Analise APENAS os arquivos da carcaça (estrutura compartilhada):
+      </li>
+    </ul>
+  </li>
+</ol>
+<ul>
+  <li>app/(dashboard)/layout.tsx</li>
+  <li>components/custom/sidebar-menu.tsx (e subcomponentes em sidebar/)</li>
+  <li>components/custom/top-bar.tsx (e subcomponentes em topbar/)</li>
+  <li>components/custom/mobile-tab-bar.tsx</li>
+  <li>components/custom/mobile-menu-page.tsx</li>
+  <li>components/layout/ (PageContainer, MobilePageContainer, etc)</li>
+  <li>
+    app/globals.css (só as partes do grid e layout) Para cada arquivo, classifique: ✅ OK — está
+    seguindo as regras, não mexer ⚠️ AJUSTE — funciona mas tem problemas menores (hex hardcoded,
+    import errado, etc) ❌ PROBLEMA — quebrado ou viola regras críticas Liste especificamente:
+  </li>
+  <li>
+    CSS de icon font injetado inline no layout.tsx (Cristiano reportou ~5MB de CSS inline dos ícones
+    HugeIcons. Isso PRECISA ser removido — os ícones devem vir via CDN font, não via CSS inline)
+  </li>
+  <li>Ícone de abrir/fechar sidebar espelhado (sidebar-right-01 aparece invertido)</li>
+  <li>Hex/RGB hardcoded que deveriam ser CSS variables ou Tailwind</li>
+  <li>Inline styles que não sejam Chart.js ou valores dinâmicos</li>
+  <li>
+    Qualquer componente de layout duplicado ou fora do lugar NÃO corrija nada ainda. Só apresente o
+    diagnóstico. TAREFA 2 — CORREÇÕES (só depois do diagnóstico): Corrigir APENAS o que foi
+    classificado como ⚠️ ou ❌. Especificamente:
+  </li>
+  <li>
+    Remover qualquer CSS inline de icon font do layout.tsx (os ícones HugeIcons já carregam via CDN
+    no , não precisa de CSS local)
+  </li>
+  <li>Corrigir o ícone de toggle da sidebar: verificar se está usando</li>
+  <li>Substituir cores hardcoded por classes Tailwind (consultar .claude/rules/styling.md)</li>
+  <li>Remover inline styles estáticos desnecessários Testar responsivo em 3 breakpoints:</li>
+  <li>Desktop (≥1024px): sidebar + topbar visíveis, conteúdo ao lado</li>
+  <li>Tablet (768-1024px): sidebar colapsada + topbar visível</li>
+  <li>
+    Mobile (&lt;768px): TabBar fixa no rodapé, sidebar e topbar ocultos NÃO crie componentes novos
+    (company-switcher, drawer-medium, etc — isso é pra depois). NÃO mexa em páginas de conteúdo
+    (dashboard, vendas, afiliados, etc). Rode npm run build no final para garantir que nada quebrou.
+    Esse prompt faz ele analisar primeiro e só mexer no que precisa, incluindo o problema exato do
+    ícone que o Cristiano apontou. Você disse: Tem +1 questão aí em vários lugares do projeto estava
+    não estava puxando os ícones corretamente, porque a IA não estava nomeando no padrão, não sei,
+    do Rio de … Tem +1 questão aí em vários lugares do projeto estava não estava puxando os ícones
+    corretamente, porque a IA não estava nomeando no padrão, não sei, do Rio de icons lá. Então
+    estava ficando sem ícone. E aí como é que eu faço para resolver isso aí, né? No caso, eu preciso
+    entender realmente como os ícones funcionam e são certos. Quais nomes tem no no Rio de icons pra
+    orientar bem a IA nisso. Não sei se tem que criar +1 item em rules. Eu vi que já tem um MD, um
+    icons.md, mas não sei se isso responde exatamente.
+  </li>
+</ul>
+<hr />
+<p>paths:</p>
+<ul>
+  <li>&quot;**/*.tsx&quot;</li>
+  <li>&quot;**/*.ts&quot;</li>
+</ul>
+<hr />
+<h3>Regras de Ícones</h3>
+<p>O projeto usa DOIS sistemas de ícones. Cada um tem seu lugar.</p>
+<h4>HugeIcons — Ícones da aplicação</h4>
+<p>Usados em TODOS os componentes custom, páginas, widgets, sidebar, topbar, etc.</p>
+<pre><code class="language-tsx">// ✅ CORRETO — Sempre assim
+import { Icon } from &quot;@/components/ui/icon&quot;;
+
+&lt;Icon name=&quot;search-01&quot; size={20} className=&quot;text-slate-500&quot; /&gt;
+&lt;Icon name=&quot;calendar-01&quot; size={16} className=&quot;text-brand-400&quot; /&gt;
+&lt;Icon name=&quot;shopping-cart-01&quot; size={24} /&gt;
+O componente &lt;Icon&gt; renderiza a icon font HugeIcons carregada via CDN no app/layout.tsx.
+A prop name é o nome do ícone HugeIcons (ex: search-01, calendar-01, user-group).
+
+## Lucide React — Apenas dentro de shadcn/ui
+
+Lucide é usado SOMENTE dentro dos componentes em components/ui/ que vieram do shadcn.
+Exemplos: accordion.tsx usa ChevronDownIcon, dialog.tsx usa XIcon, etc.
+
+// ✅ OK — Dentro de components/ui/accordion.tsx (shadcn)
+import { ChevronDownIcon } from &quot;lucide-react&quot;;
+
+// ❌ PROIBIDO — Em qualquer outro lugar
+import { Search } from &quot;lucide-react&quot;; // NÃO FAÇA ISSO
+## NUNCA faça
+
+NUNCA use SVG inline: &lt;svg viewBox=&quot;0 0 24 24&quot;&gt;...&lt;/svg&gt;
+NUNCA injete CSS de ícone: style={{ backgroundImage: &#39;url(...)&#39; }}
+NUNCA importe de lucide-react fora de components/ui/
+NUNCA crie ícones com pseudo-elementos CSS (::before, ::after)
+NUNCA use emoji como ícone em componentes de produção
+## Exceção única
+
+SVGs de logos de marca (Google, Microsoft, etc.) em app/login/page.tsx são aceitáveis
+porque não existem como ícones genéricos.
+
+
+</code></pre>
+<p>
+  Mostrar menos 26 de fev. Claude respondeu: O icons. Identificou lacuna na documentação de nomes
+  HugeIcons e pesquisará padrão correto Identificou lacuna na documentação de nomes HugeIcons e
+  pesquisará padrão correto O icons.md atual diz &quot;use
+</p>
+<ul>
+  <li>Ícones com nomes ERRADOS (que não renderizam): verificar TODOS os</li>
+</ul>
+<h3>Verifica se existe o componente sidebar do shadcn</h3>
+<p>
+  ls components/ui/sidebar.tsx 2&gt;/dev/null &amp;&amp; echo &quot;EXISTE sidebar shadcn&quot; ||
+  echo &quot;NÃO EXISTE sidebar shadcn&quot;
+</p>
+<h3>Verifica o que a sidebar atual usa</h3>
+<p>
+  head -30 components/custom/sidebar-menu.tsx Se components/ui/sidebar.tsx não existir, confirma que
+  não está usando shadcn. Se existir mas não estiver sendo importado na sidebar custom, mesmo
+  problema. A preocupação do Cristiano faz sentido — ele quer que tudo siga o padrão shadcn porque é
+  o que ele vai manter no backend. Se a sidebar é custom pura, ele vai ter que reescrever. Se já usa
+  a base shadcn, ele só ajusta. Quer que eu monte o comando completo pra você rodar e me passar o
+  resultado? Aí te digo exatamente o estado atual. Você disse: me da o prompt pro claude fazer essas
+  coisas na verdade me da o prompt pro claude fazer essas coisas na verdade 26 de fev. Claude
+  respondeu: Depois que ele responder, você me manda o resultado aqui e a gente decide o próximo
+  passo juntas — se precisa instalar o sidebar do shadcn (npx shadcn@latest a… Formulou prompt
+  diagnóstico para verificar problemas CSS e componentes Formulou prompt diagnóstico para verificar
+  problemas CSS e componentes Leia o CLAUDE.md e todos os arquivos em .claude/rules/ antes de
+  começar. CONTEXTO: Acabamos de rodar melhorias na carcaça do shell. Preciso que você faça uma
+  AUDITORIA de dois pontos específicos que foram reportados. NÃO corrija nada ainda — só me dê o
+  diagnóstico completo.
+</p>
+<hr />
+<p>
+  AUDITORIA 1 — CSS INLINE DE ICON FONT O dev backend reportou que havia ~5MB de CSS da font
+  HugeIcons injetado diretamente em arquivos .tsx (especificamente no layout.tsx). Isso é ERRADO —
+  os ícones carregam via CDN no , não precisa de CSS local. Faça uma busca COMPLETA no projeto:
+</p>
+<ol>
+  <li>
+    Procure em TODOS os arquivos .tsx, .ts e .css (exceto node_modules):
+    <ul>
+      <li>
+        Qualquer @font-face que mencione &quot;hgi&quot;, &quot;hugeicons&quot; ou
+        &quot;stroke-rounded&quot;
+      </li>
+      <li>
+        Qualquer bloco de CSS que contenha seletores .hgi-stroke ou .hgi- (que são definições da
+        icon font)
+      </li>
+      <li>Qualquer font-family que referencie &quot;hgi-stroke-rounded&quot;</li>
+      <li>Strings muito longas com conteúdo de CSS (indicativo de CSS injetado como string)</li>
+    </ul>
+  </li>
+  <li>
+    Verifique o app/layout.tsx especificamente:
+    <ul>
+      <li>
+        O <link /> do CDN (https://cdn.hugeicons.com/font/hgi-stroke-rounded.css) deve existir no
+      </li>
+      <li>NÃO deve existir nenhum</li>
+    </ul>
+  </li>
+</ol>

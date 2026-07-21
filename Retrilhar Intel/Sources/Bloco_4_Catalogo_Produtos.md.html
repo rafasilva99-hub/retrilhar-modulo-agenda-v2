@@ -1,0 +1,244 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 4 de N — Módulo: Catálogo de Produtos</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> Escopo (Módulo 7 — Catálogo de Produtos, RFP 001 mencionado como
+  referência futura para regras detalhadas), reunião 25/03 (discussão sobre configuração de produto
+  que afeta telas de venda/check-in), backlog atual do projeto.
+</p>
+<hr />
+<h4>⚠ Atenção antes de trabalhar este bloco</h4>
+<p>
+  <strong>Decisão relevante do cliente (reunião 25/03, 01:08:22, Cristiano Teles):</strong> quando o
+  Rafael perguntou sobre estruturar &quot;fluxo de produtos, fluxo de clientes, analytics&quot;, o
+  Cristiano respondeu:
+  <em
+    >&quot;Não preocupa com isso não, que isso aí vai ser bem genérico. A gente até combinou que
+    esses CRUDs aí a gente nem vai construir tela, vai já construir direto no sistema. A gente não
+    vai precisar fazer no Figma porque é padrão, vou ter formulário e vou ter tabela de
+    resultado.&quot;</em
+  >
+  <strong>Implicação:</strong> o Cadastro de Produto pode
+  <strong>não precisar de design no Figma</strong> — vai direto para construção no sistema. Isso
+  muda radicalmente a priorização deste módulo. <strong>Porém:</strong> o escopo original (Módulo 7)
+  especifica Cadastro de Produto como tela de formulário com múltiplas abas (Informações, Preços,
+  Disponibilidade, Capacidade, Adicionais, Recursos, Regras, SEO), indicando complexidade que pode
+  justificar design dedicado. Além disso, a configuração do produto afeta diretamente telas
+  operacionais (ver Tarefa 2) — algumas decisões de configuração precisam estar claras antes de
+  construir as telas dependentes. <strong>Recomendação:</strong> antes de priorizar este bloco,
+  reconfirmar com o cliente o escopo de design. Duas opções:
+</p>
+<ul>
+  <li>
+    <strong>(a) Design mínimo:</strong> apenas a listagem de produtos (porque dialoga com outras
+    telas via seleção). Cadastro/edição vai direto para construção &quot;genérica&quot; no sistema
+    conforme dito pelo Cristiano.
+  </li>
+  <li>
+    <strong>(b) Design completo:</strong> seguir o escopo original com as abas do cadastro.
+    Justificativa: complexidade das regras (tarifas, disponibilidade, regras de check-in) justifica
+    investimento em design. A recomendação fica registrada como bloqueio no resumo deste bloco.
+  </li>
+</ul>
+<hr />
+<h4>Tarefa 1 — Lista de Produtos</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [PRODUTOS] Lista de Produtos <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Listagem de produtos do catálogo com filtros e ações básicas (editar,
+  duplicar, desativar). É a tela de entrada do módulo e alimenta seleção de produto em várias outras
+  telas (Novo Pedido, Nova Atividade, Cupons, Afiliados).
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo (Módulo 7.1): colunas previstas — foto thumb, nome, categoria, preço base, status, ações.
+  </li>
+  <li>Escopo: filtros por categoria, status (ativo/inativo), com estoque / esgotado.</li>
+  <li>Escopo: ações na lista — editar, duplicar, desativar. <strong>OBSERVAÇÕES</strong></li>
+  <li>
+    Selecionar produto em outras telas (Novo Pedido, Nova Atividade, Cupons) depende de
+    busca/listagem — o componente de busca precisa ser pensado também para esses contextos.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Reconfirmar com o cliente: lista precisa de design no Figma ou vai direto para construção
+    genérica? (ver decisão do Cristiano em 25/03)
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista com foto thumb, nome, categoria, preço, status</li>
+  <li>[ ] Filtros (categoria, status, com / sem estoque)</li>
+  <li>[ ] Busca por nome</li>
+  <li>[ ] Ações inline (editar, duplicar, desativar)</li>
+  <li>[ ] CTA &quot;Novo Produto&quot;</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum produto cadastrado — CTA de onboarding</li>
+  <li>[ ] [vazio] Filtros sem resultado</li>
+  <li>[ ] [loading] Skeleton da lista</li>
+  <li>[ ] [erro] Falha ao carregar lista — CTA de retry</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Cadastro / Edição de Produto</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [PRODUTOS] Cadastro e Edição de Produto
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Formulário completo de cadastro e edição de produto com múltiplas abas,
+  cobrindo tudo que configura como o produto é vendido, operado e apresentado (informações, preços,
+  disponibilidade, capacidade, adicionais, recursos, regras, SEO).
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo (Módulo 7.2) usa &quot;template de formulário com abas&quot; e referencia &quot;documento
+    RFP 001 para detalhar todas as regras&quot; — o RFP 001 não foi fornecido, então as regras
+    detalhadas ficam pendentes dessa fonte.
+  </li>
+  <li>
+    Escopo define as 8 abas: Informações Básicas, Preços e Tarifas, Disponibilidade, Capacidade,
+    Adicionais, Recursos, Regras e Termos, SEO.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano, 39:31): &quot;Lá no produto ele configurou que precisa qualificar
+    essas 10 pessoas, então ele vai ter que botar o nome das 10 pessoas. Mas se tiver o produto que
+    ele falou que ele não quer qualificar, ele só quer saber quantas pessoas são, quantos tickets
+    são&quot;. A configuração de qualificação de participantes vive no produto e afeta Participantes
+    (aba de check-in).
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano, 41:13): &quot;A gente especializa telas de acordo com a configuração
+    do produto. Senão a gente fica batendo cabeça tentando botar uma complexidade muito grande nessa
+    tela&quot;. Princípio que se propaga para várias telas operacionais.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano, 41:35): produtos que não qualificam participantes resultam em variação
+    da tela de check-in que lista apenas comprador + quantidade de tickets, sem listar os
+    participantes individualmente. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    A aba &quot;Regras e Termos&quot; vincula templates (política de cancelamento, termo de
+    responsabilidade, termo de imagem) cadastrados em Configurações. Inclui flags booleanas
+    (obrigatório informar dados de saúde, obrigatório termo de imagem).
+  </li>
+  <li>
+    Aba &quot;Disponibilidade&quot; define tipo: data específica, recorrente (dias da semana), sob
+    demanda. Afeta diretamente como o produto aparece na Agenda.
+  </li>
+  <li>
+    Aba &quot;Recursos&quot; vincula guias, veículos e equipamentos — conecta com Recursos e Equipe.
+  </li>
+  <li>
+    Aba &quot;Adicionais&quot; define itens opcionais (almoço, equipamento, foto) com preço e
+    estoque.
+  </li>
+  <li>
+    Produto tem flag de &quot;seguro obrigatório&quot; — afeta fluxo de check-in e encerramento de
+    atividade (ver Agenda — Participantes e Conclusão).
+  </li>
+  <li>
+    Duplicar produto é útil para criar variantes (ex: mesmo passeio com horário diferente, mesmo
+    produto com capacidade diferente). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Reconfirmar se esse fluxo precisa de design no Figma ou vai direto para construção genérica (ver
+    decisão do Cristiano em 25/03).
+  </li>
+  <li>
+    Se precisar de design: o RFP 001 mencionado no escopo é a fonte canônica das regras detalhadas —
+    precisa ser obtido antes de desenhar.
+  </li>
+  <li>
+    Configurações de produto que afetam telas operacionais: validar com o cliente quais são as
+    variações (qualificar participantes ou não; seguro obrigatório ou não; peso/altura na reserva ou
+    não). Essas decisões impactam Participantes e Conclusão de Atividade.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Template de formulário com abas</li>
+  <li>
+    [ ] Aba Informações Básicas (nome, descrições curta e longa, categoria, fotos múltiplas com
+    ordenação)
+  </li>
+  <li>[ ] Aba Preços e Tarifas (adicionar/remover tarifas com regras de idade e preço)</li>
+  <li>[ ] Aba Disponibilidade (data específica / recorrente / sob demanda)</li>
+  <li>[ ] Aba Capacidade (máxima, mínima, antecedência mínima)</li>
+  <li>[ ] Aba Adicionais (nome, preço, estoque se aplicável)</li>
+  <li>[ ] Aba Recursos (vincular guias, veículos, equipamentos + quantidade)</li>
+  <li>
+    [ ] Aba Regras e Termos (política de cancelamento, termo de responsabilidade, obrigatoriedade de
+    saúde, obrigatoriedade de imagem)
+  </li>
+  <li>[ ] Aba SEO (título, meta description, URL amigável)</li>
+  <li>[ ] Flag &quot;seguro obrigatório&quot;</li>
+  <li>[ ] Flag &quot;qualificar participantes individualmente&quot; (ou só comprador)</li>
+  <li>[ ] Configuração de regras de peso/altura para check-in (quando aplicável)</li>
+  <li>[ ] Fluxo de duplicar produto</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [destrutivo] Modal de confirmação ao desativar produto</li>
+  <li>[ ] [destrutivo] Bloqueio de exclusão quando há pedidos vinculados</li>
+  <li>[ ] [exceção] Edição de produto com eventos futuros na agenda — aviso de impacto</li>
+  <li>[ ] [exceção] Remoção de tarifa com reservas existentes — validação</li>
+  <li>[ ] [exceção] Capacidade mínima maior que máxima</li>
+  <li>
+    [ ] [exceção] Alteração de flag &quot;qualificar participantes&quot; em produto com vendas
+    ativas — aviso de impacto nas telas operacionais
+  </li>
+  <li>[ ] [loading] Upload de fotos múltiplas</li>
+  <li>[ ] [erro] Falha no upload — preservar outras abas preenchidas</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 4</h4>
+<p><strong>Total de tarefas:</strong> 2 <strong>Por status sugerido:</strong></p>
+<ul>
+  <li>
+    <strong>BACKLOG (2):</strong> ambas com ressalva de reconfirmação de escopo.
+    <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>
+    <strong>Decisão macro:</strong> Cadastro de Produto precisa de design no Figma ou vai direto
+    para construção &quot;genérica&quot; no sistema (conforme dito pelo Cristiano em 25/03)?
+  </li>
+  <li>
+    <strong>Se sim ao Figma:</strong> obter o RFP 001 mencionado no escopo — é a fonte canônica das
+    regras detalhadas do produto.
+  </li>
+  <li>
+    <strong>Independente da decisão de design:</strong> mapear todas as configurações de produto que
+    afetam telas operacionais (qualificar participantes, seguro obrigatório, peso/altura, etc.).
+    Isso é pré-requisito para desenhar bem as variações na aba Participantes (Agenda) e na Conclusão
+    de Atividade. <strong>Observações transversais:</strong>
+  </li>
+</ol>
+<ul>
+  <li>
+    O princípio do Cristiano &quot;a gente especializa telas de acordo com a configuração do
+    produto&quot; é uma diretriz de arquitetura que precisa ser aplicada nas telas operacionais
+    (Agenda — Participantes, por exemplo). Não é só tema do módulo Produtos.
+  </li>
+  <li>
+    Lista de Produtos é menos crítica para desenho que o Cadastro, porque é padrão listagem. Mas
+    precisa existir minimamente porque alimenta busca/seleção em outros fluxos.
+  </li>
+</ul>
+<hr />
+<p>
+  <strong>Fim do Bloco 4.</strong> Próximo bloco: Autenticação, Início/Dashboards, CRM, ou o que
+  preferir.
+</p>

@@ -1,0 +1,128 @@
+<p>
+  Agora me passe a lista de ajustes solicitados pelo cliente na transcrição da última reunião 22 de
+  abr. Claude respondeu: Vou buscar na base de conhecimento do projeto a transcrição da última
+  reunião de alinhamento. Vou buscar na base de conhecimento do projeto a transcrição da última
+  reunião de alinhamento. Listar arquivos de transcrição/alinhamento ordenados para identificar o
+  mais recente Listar arquivos de transcrição/alinhamento ordenados para identificar o mais recente
+  A última reunião é a de 15/04. Vou ler o conteúdo para identificar os ajustes solicitados.
+  Executou 2 comandos Executou 2 comandos É na verdade um arquivo de texto UTF-8 com extensão .docx.
+  Vou ler diretamente. Visualizou 3 arquivos, executou um comando Visualizou 3 arquivos, executou um
+  comando Tenho todo o conteúdo da reunião. Agora vou compilar a lista de ajustes solicitados pelo
+  cliente (Cristiano, identificado como &quot;Retrilhar&quot; na transcrição). Ajustes solicitados
+  pelo cliente — Reunião 15/04 Organizei por área/fluxo, com o contexto e o timestamp aproximado
+  para facilitar a referência. 🎴 Cards de reserva / Lista de participantes
+</p>
+<ol>
+  <li>
+    Ícones de apoio rápido para alertas [11:03 – 12:55] Cristiano sentiu falta de apoio visual para
+    o operador &quot;bater o olho e saber&quot; — ler texto não é rápido o suficiente em campo.
+    Pediu algo como ícone ou bolinha colorida (semelhante à bolinha verde de pagamento confirmado)
+    antes do nome ou no campo de alertas. Rafael topou avaliar e pediu input seu também.
+  </li>
+  <li>
+    Card aberto por padrão + reformulação do título do card [14:32 – 17:21] Com os cards fechados, o
+    nome do participante some — aparece só &quot;Reserva individual&quot; ou &quot;Reserva em
+    grupo&quot;. Cristiano pediu para substituir esses rótulos pelo nome do comprador (com a
+    indicação &quot;reserva em grupo&quot; como informação secundária abaixo). Rafael confirmou que
+    vai ajustar.
+  </li>
+  <li>
+    Numeração sequencial das linhas [21:07 – 24:12] Ao aplicar filtros (ex: &quot;só quem tem alerta
+    de saúde&quot;), o operador precisa contar manualmente quantos registros retornaram. Cristiano
+    pediu um número sequencial ao lado do ícone de cada card para eliminar a contagem manual.
+  </li>
+  <li>
+    Segmentação visual entre dados operacionais e alertas do participante [26:08 – 29:43] Hoje o
+    campo mistura info do pedido (tarifas, pedidos adicionais, seguro) com info do participante
+    (alertas de saúde, autorização de imagem). Precisam ficar visualmente segmentados — um bloco
+    &quot;Operacional&quot; (pedido/venda) e outro para alertas do participante. Mantendo um padrão
+    consistente mesmo quando um dos blocos não tem conteúdo.
+  </li>
+  <li>
+    Truncamento de nomes longos + possível redução de caracteres [11:34] Nomes grandes devem ser
+    truncados com &quot;...&quot;, e a coluna do nome pode ser reduzida para dar espaço à coluna de
+    alertas. 🔲 Ações em massa 6. Manter check-box individual por linha + global [29:57 – 33:27]
+    Cristiano confirmou que as ações em massa devem ser globais (atendem melhor os dois perfis de
+    cliente — os que fazem só reserva individual e os que têm muita reserva em grupo). Mas pediu
+    checkbox em cada linha sem precisar expandir — e não só dentro do card expandido. Importante:
+    ações em massa não são só check-in — incluem confirmação de reserva, contratação de seguro e
+    cancelamento. 📅 Agenda / Calendário 7. Botão &quot;Nova Atividade&quot; [54:46] Pendência
+    confirmada — precisa ser estruturado no calendário da agenda.
+  </li>
+  <li>
+    Mapa de Vagas [37:56 – 39:01, 54:46] Precisa ser um resumo das atividades do dia com hora,
+    quantidade paga, participantes. Serve para planejamento mensal de vendas e marketing (&quot;já
+    vendi essa trilha, não preciso mais fazer marketing pra ela&quot;). Lista longa de eventos deve
+    permitir bater o olho e ver ocupação por produto/data. Cristiano provocou a equipe a avaliar se
+    no mobile o formato em cards ainda é o melhor — ou se lista funciona melhor.
+  </li>
+  <li>
+    Lista de Manifestos (atalho já existe no Painel do Dia) [41:43 – 44:23] Precisa permitir ao
+    operador baixar/imprimir listas especializadas (ex: todos com problema de saúde, quem autorizou
+    imagem), porque em campo eles trabalham offline. Cristiano vai enviar um documento com todas as
+    listas que precisam ser geradas. ✅ Encerramento da Atividade 10. Início real / Término real
+    editáveis [46:49 – 48:00] Início real: puxa automaticamente do horário da atividade, com
+    possibilidade de edição Término real: puxa do horário em que o operador abriu o drawer de
+    encerramento, também editável Duração total: calculada automaticamente a partir dos dois 11.
+    Registro automático de quem encerrou [51:10] Não precisa campo visível — usa o usuário logado.
+  </li>
+  <li>
+    Tipos de ocorrência [48:48 – 49:24] Cristiano vai criar a documentação dos tipos (ainda não
+    existe).
+  </li>
+  <li>
+    Conceito de &quot;No-show&quot; vs &quot;Cancelamento&quot; [49:44 – 53:27] Precisa distinguir
+    os dois na tela de encerramento: Cancelamento = não vem e não vai remarcar No-show = não
+    compareceu mas ainda pode ser remarcado (depende da política da empresa) Hoje o sistema não tem
+    esse conceito — será introduzido agora. O contador da atividade precisa refletir os dois
+    separadamente (ex: &quot;127 compareceram, 23 cancelaram, X no-show&quot;).
+  </li>
+  <li>
+    Reativar participante cancelado (desfazer cancelamento) [51:32 – 53:09] Cristiano confirmou: é
+    possível reativar. O operador cancela por engano com frequência. A distinção entre cancelar e
+    marcar como no-show depende da política da empresa — um participante que disse &quot;não posso
+    hoje, mas quero ir&quot; vira no-show, não cancelamento. 📊 Encerramento do Dia 15. Sem campo de
+    observação nessa tela [54:52 – 55:25] Cristiano confirmou: essa tela é só confirmação do que foi
+    concluído no dia. Não precisa campo de observação aqui.
+  </li>
+  <li>
+    Relatório compilado do dia [55:25 – 56:02] Fica para depois — será uma tela separada, fora do
+    escopo atual. 🧪 Teste de Usabilidade 17. Revisão das missões pelo cliente [01:08:55 – 01:09:26]
+    Cristiano vai revisar as 5 missões propostas pelo Rafael e dar parecer no mesmo dia. A princípio
+    está de acordo. 📝 Notas para seu acompanhamento Entregáveis do Rafael pós-reunião: mapeamento
+    global dos fluxos pendentes do módulo de agenda (prometido para o mesmo dia) + documento do
+    escopo de pendências. Entregáveis do Cristiano pós-reunião: documento com lista de manifestos
+    (listas especializadas) + documentação dos tipos de ocorrência + revisão das missões do teste.
+    Pontos que já estavam no seu radar e foram confirmados agora: tipos de ocorrência (você já tinha
+    flagado), início/término real com edição, encerramentos manuais. Quer que eu monte uma versão
+    desta lista em formato de checklist para adicionar ao seu controle de pendências, ou prefere que
+    eu já cruze estes itens com o que está marcado como concluído/pendente no seu último checklist
+    do Figma? Você disse: Ilustre a solução com as melhorias requisitadas para o card Ilustre a
+    solução com as melhorias requisitadas para o card 22 de abr. Claude respondeu: Vou ilustrar a
+    solução do card com as melhorias consolidadas. Vou ilustrar a solução do card com as melhorias
+    consolidadas. Deixa eu carregar o módulo de mockup antes. Vou criar o mockup mostrando os cards
+    antes/depois com todas as melhorias aplicadas. A ilustração cobre os 5 pontos que foram
+    consolidados especificamente para o card na reunião de 15/04: Decisões de design que tomei e que
+    valem revisar com você: Ícones de alerta em círculos coloridos no header — coração vermelho para
+    saúde, olho riscado âmbar para &quot;não autoriza imagem&quot;. Usei círculos para criar
+    ancoragem visual rápida que o Cristiano pediu (&quot;bater o olho&quot;). Limitei a dois ícones
+    críticos — se aparecer o quarto ou quinto tipo de alerta, vai precisar de um padrão de overflow
+    (ex: &quot;+2&quot;). Numeração com alinhamento à direita em 2 dígitos — preparando para listas
+    filtradas com 100+ itens sem quebrar o grid. No card fechado, alertas ficam como ícones; no card
+    aberto, viram badges textuais completos dentro da seção &quot;Participante&quot;. Assim o
+    Cristiano tem a leitura rápida que pediu sem perder o detalhamento quando expandir. Divisão
+    &quot;Participante&quot; vs &quot;Operacional&quot; com labels em caixa alta pequena. Coloquei
+    Participante primeiro porque é o que o operador precisa no momento da operação em campo — a
+    parte operacional/pedido funciona mais como contexto. Card #04 em no-show com opacidade
+    reduzida, para testar como fica a diferenciação visual dos estados terminais (no-show vs
+    cancelado vs ativo). Pontos que ainda ficam em aberto e que recomendo validar antes do Figma:
+    Quantidade máxima de ícones de alerta antes de overflow — vale definir uma regra (3? 2 +
+    contador?) antes de implementar no Figma. Hierarquia entre os tipos de alerta — se aparecerem
+    saúde + alimentar + imagem ao mesmo tempo, qual entra no card fechado? Sugiro: saúde sempre,
+    depois restrições operacionais (seguro pendente, termo não assinado), depois o resto.
+    Truncamento com &quot;...&quot; — apliquei no card #01 (João Silva Martins cabe, mas se fosse
+    maior truncaria). O Cristiano mencionou isso em [11:34] mas o limite de caracteres específico
+    não foi definido. Quer que eu faça uma variação mostrando o comportamento com muitos alertas (4+
+    simultâneos) ou já posso seguir para outro fluxo da lista?
+  </li>
+</ol>

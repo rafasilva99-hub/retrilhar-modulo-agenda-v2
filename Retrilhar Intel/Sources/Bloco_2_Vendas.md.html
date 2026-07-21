@@ -1,0 +1,613 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 2 de N — Módulo 4: Vendas / Central Comercial</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> Módulo Central de Vendas (escopo detalhado com user stories dos
+  perfis Gestor Comercial, Vendedor e Afiliado), RPP002 §3.6 (máquina de estados das reservas),
+  reuniões 25/03, 01/04, 08/04 e 15/04, testes de usabilidade #3, #4 e #5, backlog atual do projeto.
+  <strong>Achado transversal dos testes de usabilidade:</strong> o fluxo &quot;Novo Pedido&quot; foi
+  o ponto crítico de falha — testes #3 (Leandro, Roctrip) e #4 (Adri, EBP) falharam no objetivo de
+  registrar pedido manual, ambos precisaram de intervenção dos designers. Nomenclatura
+  &quot;Produto&quot; foi apontada como não intuitiva (sugestão do teste #4: &quot;Reservar&quot; ou
+  &quot;Reserva&quot;). &quot;Novo Pedido&quot; foi lido como &quot;criar algo do zero&quot; em vez
+  de &quot;registrar pedido que cliente solicitou&quot;. Isso impacta desenho da navegação,
+  nomenclatura e CTAs em toda esta seção.
+</p>
+<hr />
+<h4>Tarefa 1 — Lista de Pedidos</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Lista de Pedidos <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Visão geral de todas as transações comerciais. Lista com filtros e
+  totalizadores — permite ao gestor comercial responder rapidamente &quot;o que vendi, quanto vendi,
+  de onde veio, para qual conta foi&quot;. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas define colunas: número do pedido, nome cliente, nome produto, data,
+    meio de pagamento, valor, status, canal de vendas.
+  </li>
+  <li>
+    Escopo: filtros de período, status, meio de pagamento, nome cliente, canal de vendas, produto.
+    Na pesquisa, trazer resumo em caixas com total em quantidade e valores do que foi pesquisado.
+  </li>
+  <li>
+    Escopo prevê 4 listagens (vendas, orçamentos, pedidos, carrinhos) como abas — modelo a validar
+    no desenho.
+  </li>
+  <li>
+    Reunião 08/04: discussão sobre atalho rápido para copiar ID do pedido e posicionamento do link
+    &quot;Ver detalhes&quot; (cliente Cristiano defendeu que não precisa ir para outra tela — drawer
+    de overview é suficiente; caso queira detalhamento completo, três-pontinhos abre versão aberta).
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Totalizadores no topo: quantidade e valor de vendas, carrinhos abandonados, taxa de conversão,
+    porcentagem de meio de pagamento, porcentagem de canal.
+  </li>
+  <li>
+    Detalhamento da venda carrega: número, dados do comprador, itens, valor, meio de pagamento e
+    parcelas, taxas e proxy que processou, cupom usado, origem (canal ou afiliado), valor residual,
+    NF-e emitida, histórico de ações por usuário.
+  </li>
+  <li>Relatórios em PDF e Excel a partir da pesquisa filtrada. <strong>BLOQUEIOS</strong></li>
+  <li>
+    Modelo de abas (Vendas / Orçamentos / Pedidos / Carrinhos separados) vs. listagem única com
+    filtro de tipo — aguardando validação com cliente.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Listagem com totalizadores (vendas, conversão, ticket médio, abandono) [web]</li>
+  <li>[x] Drawer de filtros (status, período, canal, produto, vendedor) [web]</li>
+  <li>[ ] Busca por ID, cliente, CPF</li>
+  <li>[ ] Ordenação (data padrão, valor, cliente, status)</li>
+  <li>[ ] Ações em lote (exportar, reenviar voucher, cancelar em massa)</li>
+  <li>[ ] Paginação</li>
+  <li>[ ] Atalho rápido para copiar ID do pedido</li>
+  <li>[ ] Exportação em PDF e Excel a partir da pesquisa filtrada</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum pedido cadastrado</li>
+  <li>[ ] [vazio] Filtros sem resultado</li>
+  <li>[ ] [loading] Skeleton da lista durante carregamento</li>
+  <li>[ ] [erro] Falha ao carregar lista — CTA de retry</li>
+  <li>[ ] [erro] Falha na exportação — link alternativo</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Novo Pedido</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Novo Pedido <strong>Status:</strong> BK PRIORIDADE
+  <strong>Tags:</strong> critica · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Fluxo de criação manual de pedido. O vendedor seleciona produto,
+  data/horário, tarifas, cliente e gera link de pagamento com expiração configurável para enviar via
+  WhatsApp. É a entrada do fluxo de vendas offline e ponto crítico de falha identificado nos testes
+  de usabilidade. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas define campos do pedido manual: data, horário (se houver), quantidade e
+    tipo de itens (ex: 2 adultos, 1 criança), nome do cliente, forma de pagamento, vendedor,
+    observações.
+  </li>
+  <li>
+    Escopo: ao gerar o pedido, exibir dados inseridos, botão de copiar link para envio, cancelar
+    pedido, histórico de ações, editar (só se status = &quot;em aberto&quot;).
+  </li>
+  <li>
+    Teste de usabilidade #3 (Leandro Schin, Roctrip): não encontrou &quot;Novo Pedido&quot;
+    intuitivamente. Fala textual: &quot;tava montado o pedido, eu tive que clicar em novo pedido
+    como se eu fosse criar um pedido novo, mas ele já tava ali dentro. Na verdade, eu não entendi
+    nada&quot;. Leandro inicialmente buscou em &quot;Carrinhos&quot; porque na plataforma atual dele
+    é onde ficaria esse tipo de informação.
+  </li>
+  <li>
+    Teste de usabilidade #4 (Adri, EBP): falhou no objetivo 1 — navegou por &quot;vendas&quot; e
+    &quot;produto&quot;, mas a interface em &quot;produto&quot; ficou em branco. Precisou de
+    intervenção. Adri sugeriu: &quot;nomenclatura &#39;produto&#39; não foi intuitiva para a tarefa
+    de fazer uma reserva. Termos como &#39;reservar&#39; ou &#39;reserva&#39; seriam mais claros
+    para um menu de efetivação de reservas&quot;.
+  </li>
+  <li>
+    Teste de usabilidade #5 (Lueli): descreveu a abordagem como &quot;nominal&quot; — concluiu o
+    objetivo, mas citou &quot;falta de orientação preliminar devido à novidade do sistema&quot;.
+  </li>
+  <li>
+    Escopo: geração de link com tempo de expiração configurável para evitar bloqueio de inventário.
+    Botão de cópia rápida para envio via WhatsApp. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Escopo prevê 7 passos no fluxo (produto → data/horário → quantidade/tarifas → cliente →
+    participantes → adicionais → resumo/link).
+  </li>
+  <li>Aplicação de cupom de desconto e atribuição de vendedor/afiliado são parte do resumo.</li>
+  <li>
+    Pedido criado manualmente respeita máquina de estados de reserva (RPP002 §3.6): começa em
+    Rascunho, vai para Aguardando Pagamento (link gerado), Confirmada (pagamento confirmado) ou
+    Expirada (prazo vencido). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Nomenclatura do CTA &quot;Novo Pedido&quot; vs. &quot;Nova Reserva&quot; — decisão pendente com
+    base no feedback dos testes.
+  </li>
+  <li>
+    Posicionamento do CTA de entrada: como tornar descobrível a partir da Home/Dashboard, não só a
+    partir de Vendas &gt; Pedidos.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>
+    [ ] CTA de entrada com nomenclatura validada (&quot;Novo Pedido&quot; ou &quot;Nova
+    Reserva&quot;)
+  </li>
+  <li>[ ] Passo 1 — Seleção de produto (busca no catálogo)</li>
+  <li>[ ] Passo 2 — Seleção de data e horário</li>
+  <li>[ ] Passo 3 — Quantidade e tipos de tarifa (adulto, criança, cortesia)</li>
+  <li>[ ] Passo 4 — Dados do cliente (novo ou busca na base)</li>
+  <li>[ ] Passo 5 — Dados dos participantes</li>
+  <li>[ ] Passo 6 — Adicionais e observações</li>
+  <li>[ ] Passo 7 — Resumo e geração de link de pagamento</li>
+  <li>[ ] Aplicação de cupom de desconto</li>
+  <li>[ ] Atribuição de vendedor / afiliado</li>
+  <li>[ ] Geração de link de pagamento com expiração configurável</li>
+  <li>[ ] Botão de cópia rápida do link</li>
+  <li>[ ] Atalho de compartilhamento via WhatsApp</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [loading] Estado de geração de link</li>
+  <li>[ ] [erro] Falha ao criar pedido — preservar dados</li>
+  <li>[ ] [erro] Falha na geração do link de pagamento</li>
+  <li>[ ] [exceção] Capacidade esgotada durante a criação (vaga consumida entre passos)</li>
+  <li>[ ] [exceção] Cupom inválido ou expirado</li>
+  <li>[ ] [exceção] Cliente com CPF já cadastrado — oferecer vinculação</li>
+  <li>[ ] [exceção] Menor de idade sem responsável declarado</li>
+  <li>[ ] [exceção] Seguro obrigatório não incluído</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 3 — Detalhes do Pedido</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Detalhes do Pedido <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Tela de detalhamento completo do pedido. Reúne dados do comprador,
+  itens, pagamento, parcelas, taxas, histórico de ações e ações disponíveis de acordo com a máquina
+  de estados. É onde o gestor executa cancelamentos, vendas complementares e edições.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas define blocos do detalhamento: número do pedido, dados do comprador,
+    quantidade e tipo de itens, valor e meio de pagamento, taxas e proxy, ações do pedido, atalho
+    para reservas do pedido (link para painel operacional), cupom, origem (afiliado/canal), valor
+    residual, emissão de NF-e com atalho para a nota, histórico de ações com usuário.
+  </li>
+  <li>
+    Cancelamento parcial: escopo especifica &quot;cancelar 1 item de 10 ingressos comprados na mesma
+    venda&quot;, recalculando saldo automaticamente.
+  </li>
+  <li>
+    Venda complementar: função para adicionar produtos ou opcionais a uma venda já paga, gerando
+    link apenas para a diferença de valor.
+  </li>
+  <li>
+    Gestão de participantes: campo para inclusão/edição dos dados de quem vai realizar a atividade
+    (nome, CPF etc.) após a confirmação do pagamento.
+  </li>
+  <li>
+    CRM de pedido: campo de observações internas registra particularidades do cliente. Toda
+    interação (quem criou, editou, aprovou desconto) vai para log de auditoria visível para próximo
+    vendedor que assumir.
+  </li>
+  <li>
+    Reunião 08/04: discussão sobre atalho rápido para copiar ID e posicionamento de &quot;Ver
+    detalhes&quot; — decidido que overview em drawer é suficiente para maioria dos casos;
+    três-pontinhos abre versão completa. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Log completo com IP do dispositivo é do plano Voando Alto.</li>
+  <li>Emissão de NF-e tem CTA próprio no detalhamento.</li>
+  <li>
+    Cancelamentos e reembolsos seguem a máquina de estados da Cobrança (escopo define: Aprovado,
+    Pendente, Chargeback, Autorizado, Erro, Rejeitado, Estornado, Parcialmente estornado,
+    Parcialmente pago, Cancelado). <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Tela de Detalhes (produtos, informações do comprador, pagamento, histórico) [web]</li>
+  <li>[x] Drawer de Detalhes de Parcelamento [web]</li>
+  <li>[x] Log completo de auditoria (quem criou, editou, aprovou desconto) [web]</li>
+  <li>[ ] Emissão de NF-e (CTA &quot;Emitir NF-e&quot;)</li>
+  <li>[ ] Atalho &quot;Ver Reserva&quot; → Painel Operacional</li>
+  <li>[ ] Cancelamento parcial (1 de N ingressos, com recálculo automático)</li>
+  <li>[ ] Venda complementar (adicionar produtos a venda paga, link da diferença)</li>
+  <li>[ ] Gestão de participantes pós-pagamento (editar dados)</li>
+  <li>[ ] Reenvio de voucher</li>
+  <li>[ ] Chamada no WhatsApp</li>
+  <li>[ ] Campo de observações internas (CRM de pedido)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [destrutivo] Modal de cancelamento total (motivo + política de reembolso)</li>
+  <li>[ ] [destrutivo] Modal de cancelamento parcial (seleção de ingressos)</li>
+  <li>[ ] [destrutivo] Modal de reembolso</li>
+  <li>[ ] [exceção] Cancelamento após data da atividade</li>
+  <li>[ ] [exceção] Cancelamento com seguro já contratado</li>
+  <li>[ ] [exceção] Cancelamento de parcela já paga (estorno)</li>
+  <li>[ ] [exceção] Venda complementar em pedido cancelado — CTA oculto</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 4 — Checkout de Balcão (PDV)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Checkout de Balcão (PDV)
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Interface otimizada para venda presencial rápida e conferência de
+  chegada de clientes via leitura de QR Code do voucher.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas: &quot;funcionalidade para cadastrar vendas rápidas realizadas
+    presencialmente na empresa e fazer conferência rápida através de leitor de QR Code dos clientes
+    que chegaram&quot;. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Uso presencial sugere botões grandes, atalhos de teclado e impressão de comprovante.</li>
+  <li>
+    Fluxo é distinto do Novo Pedido (que gera link para pagamento remoto). PDV registra venda com
+    pagamento imediato. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Interface otimizada para venda presencial rápida</li>
+  <li>[ ] Leitor de QR Code para conferência de chegada</li>
+  <li>[ ] Atalhos de teclado e botões grandes</li>
+  <li>[ ] Registro de venda com pagamento imediato</li>
+  <li>[ ] Impressão de comprovante</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] Falha no leitor de QR Code — fallback manual</li>
+  <li>[ ] [erro] Impressora indisponível — envio por e-mail</li>
+  <li>[ ] [exceção] QR Code de pedido não confirmado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 5 — Desistências (Carrinhos Abandonados)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Desistências (Carrinhos Abandonados)
+  <strong>Status:</strong> DESIGN <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Painel de recuperação de vendas iniciadas no e-commerce que não foram
+  finalizadas. Permite ações de remarketing individuais ou em massa via CRM, com classificação por
+  temperatura (Quente / Morno / Frio). <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas: lista de clientes que iniciaram a compra mas não finalizaram, com
+    ações de remarketing via CRM.
+  </li>
+  <li>
+    Teste de usabilidade #3 (Leandro): &quot;os filtros de classificação (quente, morno, frio) para
+    reativação de carrinhos foram considerados muito úteis. A funcionalidade de copiar o link de
+    checkout para contato com o cliente foi aprovada como uma ferramenta valiosa para a recuperação
+    de vendas&quot;.
+  </li>
+  <li>
+    Teste de usabilidade #4 (Adri): &quot;O fluxo de recuperação de vendas foi considerado fluido e
+    intuitivo, com fácil acesso ao menu &#39;vendas&#39; e &#39;carrinhos&#39;. O painel exibiu
+    informações claras como a &#39;temperatura&#39; do carrinho e botões de contato, embora houvesse
+    dúvidas sobre o critério exato da temperatura&quot;.
+  </li>
+  <li>
+    Teste de usabilidade #5: &quot;banner de porcentagem de carrinhos abandonados facilitou a
+    identificação&quot;. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Critérios da classificação de temperatura precisam ser comunicados ao usuário (feedback direto
+    do teste 4 — houve dúvida).
+  </li>
+  <li>
+    Remarketing em massa exige definição de regras de disparo e templates de mensagem.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Critério de classificação de temperatura (Quente/Morno/Frio): precisa ser explicitado na
+    interface (tooltip ou legenda).
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Lista com totalizadores (carrinhos, valor perdido, abandono, recuperados) [web]</li>
+  <li>[x] Drawer de filtros (período, valor, produto) [web]</li>
+  <li>[ ] Classificação por temperatura (Quente, Morno, Frio) com explicação do critério</li>
+  <li>[ ] Detalhes do carrinho (histórico, dados do cliente, produtos)</li>
+  <li>[ ] Botão de cópia do link de checkout</li>
+  <li>[ ] Ações em lote (configurar remarketing em massa)</li>
+  <li>[ ] CTA &quot;Configurar Remarketing&quot; — fluxo de automação</li>
+  <li>[ ] Regras de disparo (tempo após abandono, temperatura)</li>
+  <li>[ ] Seleção de canal (e-mail, WhatsApp)</li>
+  <li>[ ] Seleção de template de mensagem</li>
+  <li>[ ] Ativação / desativação da automação</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum carrinho abandonado no período</li>
+  <li>[ ] [vazio] Filtros sem resultado</li>
+  <li>[ ] [loading] Skeleton da lista</li>
+  <li>[ ] [erro] Falha ao gerar link de checkout de carrinho expirado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 6 — Cupons de Desconto</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Cupons de Desconto <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Painel de cupons de desconto com listagem, criação, edição, duplicação e
+  resumo de uso. Cupom pode ser por percentual ou valor fixo, com limites, validade e produtos
+  aplicáveis. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas: painel com resumo (cupons criados, cupons ativos), lista, criar,
+    editar, ver resumo de usos (lista de vendas que usaram o cupom + somatório).
+  </li>
+  <li>
+    Escopo: campos do cupom incluem código, tipo (% ou R$), valor, mínimo de compra, limites total e
+    por cliente, validade (início e fim), produtos aplicáveis (todos ou específicos).
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    User story do gestor (ponto 22 do escopo): &quot;quero saber qual venda utilizou qual cupom de
+    desconto&quot; — cada cupom precisa de tela de detalhe com vendas vinculadas.
+  </li>
+  <li>
+    Reunião 08/04: Luana cita cupons como parte dos fluxos mais simples (tabelas e pesquisa) que
+    poderiam ser adiantados em paralelo à agenda. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Lista de cupons com indicadores (ativos, usos, desconto total, vendas geradas) [web]</li>
+  <li>[ ] Fluxo de criar cupom</li>
+  <li>[ ] Fluxo de editar cupom</li>
+  <li>[ ] Fluxo de duplicar cupom</li>
+  <li>[ ] Campos: código, tipo (% ou R$), valor, mínimo de compra</li>
+  <li>[ ] Campos: limites (total e por cliente), validade, produtos aplicáveis</li>
+  <li>[ ] Ação desativar cupom</li>
+  <li>[ ] Tela de detalhe com resumo de usos (vendas vinculadas + somatório)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [destrutivo] Modal de confirmação ao excluir cupom</li>
+  <li>[ ] [destrutivo] Bloqueio de exclusão quando há uso ativo</li>
+  <li>[ ] [exceção] Código duplicado (validação inline)</li>
+  <li>[ ] [exceção] Data de início posterior à de término</li>
+  <li>[ ] [exceção] Cupom esgotado (limite de usos atingido)</li>
+  <li>[ ] [vazio] Nenhum cupom cadastrado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 7 — Canais de Vendas</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Canais de Vendas <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> CRUD de canais de venda. Origens possíveis listadas no escopo: Site,
+  Balcão, Agência parceira. Cada venda é atribuída a um canal, alimentando relatórios e conferência
+  de caixa. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas lista Canais de Vendas como um dos itens de Gestão de Vendedores, com
+    as origens: Site, Balcão, Agência parceira.
+  </li>
+  <li>
+    Escopo (item &quot;Extrato de Contas&quot;): &quot;identificação de qual canal de venda
+    alimentou qual conta&quot;. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Cadastro simples (CRUD). Ativação/desativação de canal é configuração de Gestão Comercial.
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] CRUD de canais (Site, Balcão, Agência parceira)</li>
+  <li>[ ] Cadastro / edição de canal</li>
+  <li>[ ] Ativar / desativar canal</li>
+  <li>[ ] Identificação de qual canal alimentou qual conta</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [destrutivo] Bloqueio de exclusão quando há vendas vinculadas</li>
+  <li>[ ] [vazio] Nenhum canal cadastrado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 8 — Extrato de Contas</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Extrato de Contas <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Espelho das contas de recebimento para conferência comercial — não é o
+  módulo financeiro. Permite ao gestor conferir saldo por conta configurada e por forma de
+  pagamento. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas: &quot;não é o módulo financeiro, é somente um espelho das contas para
+    conferência comercial&quot;. Visualização do saldo recebido por conta configurada e por forma de
+    pagamento (exemplos do escopo: Banco Itaú, Caixa Físico, Conta Digital Proxy).
+  </li>
+  <li>Filtro por período para conferência de fechamento de caixa.</li>
+  <li>Identificação de qual canal de venda alimentou qual conta.</li>
+  <li>
+    User stories do gestor (pontos 7, 8, 9, 10 do escopo): quer saber em quanto tempo recebe, quanto
+    paga de taxa, quanto vendeu por proxy de pagamento, quanto cai na conta e quando (até última
+    parcela de cartão e PIX recorrente). <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Taxas são calculadas por pagamento individual — definidas pela Conta de Recebimento, não pela
+    forma de pagamento.
+  </li>
+  <li>
+    Cada conta define as próprias regras (percentual, fixo, parcelamento).
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Visualização de saldo por conta e forma de pagamento</li>
+  <li>[ ] Filtro por período (fechamento de caixa)</li>
+  <li>[ ] Relatório por canal de origem</li>
+  <li>[ ] Detalhamento de taxa por conta</li>
+  <li>[ ] Projeção de recebíveis (parcelas futuras de cartão, PIX recorrente)</li>
+  <li>[ ] Exportação em PDF e Excel</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Período sem movimentações</li>
+  <li>[ ] [loading] Cálculo de projeção de recebíveis</li>
+  <li>[ ] [erro] Falha ao consolidar dados — CTA de retry</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 9 — Relatórios de Performance</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [VENDAS] Relatórios de Performance
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Dashboard analítico — &quot;o que mais vende e quem mais vende&quot;.
+  Relatórios por produto, vendedor, afiliado, canal, conversão e ticket médio. Permite ao gestor
+  responder perguntas estratégicas (top clientes, melhores dias de venda, ranking de vendedores).
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo Central de Vendas: &quot;Relatórios de Performance: o que mais vende e quem mais
+    vende&quot;.
+  </li>
+  <li>
+    User stories do gestor exigem: quanto vendeu de cada produto (14), quanto vendeu de cada
+    evento/data (15), quais eventos venderam melhor (16), qual dia da semana vende melhor —
+    considerando dia do passeio e dia da compra (17), top 5 clientes que mais compraram (21),
+    ranking dos melhores vendedores (28), quanto e o que cada vendedor e afiliado vendeu (29).
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Relatórios densos (tabelas pivotadas, gráficos) — faz mais sentido em desktop. Adaptação mobile
+    pode ser simplificação/resumo, não paridade.
+  </li>
+  <li>
+    Exportação em PDF e Excel é requisito padrão (escopo reforça em vários pontos).
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Dashboard principal de relatórios</li>
+  <li>[ ] Relatório: Produtos mais vendidos</li>
+  <li>[ ] Relatório: Performance por vendedor</li>
+  <li>[ ] Relatório: Performance por afiliado</li>
+  <li>[ ] Relatório: Performance por canal</li>
+  <li>[ ] Relatório: Conversão por etapa</li>
+  <li>[ ] Relatório: Ticket médio por período</li>
+  <li>[ ] Relatório: Top 5 clientes que mais compraram</li>
+  <li>[ ] Relatório: Dia da semana com melhor venda (passeio vs. compra)</li>
+  <li>[ ] Exportação em PDF e Excel</li>
+  <li>[ ] Adaptar fluxo para mobile (versão resumida)</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Período sem dados suficientes para gráficos</li>
+  <li>[ ] [loading] Geração de relatórios pesados (feedback de progresso)</li>
+  <li>[ ] [erro] Falha na geração — CTA de retry</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 2</h4>
+<p><strong>Total de tarefas:</strong> 9 <strong>Por status sugerido:</strong></p>
+<ul>
+  <li>
+    <strong>BK PRIORIDADE (1):</strong> Novo Pedido (ponto crítico de falha nos testes, crítica para
+    o fluxo comercial)
+  </li>
+  <li>
+    <strong>DESIGN (4):</strong> Lista de Pedidos, Detalhes do Pedido, Desistências, Cupons de
+    Desconto
+  </li>
+  <li>
+    <strong>BACKLOG (4):</strong> Checkout de Balcão (PDV), Canais de Vendas, Extrato de Contas,
+    Relatórios de Performance
+    <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>
+    Modelo de listagem: abas separadas (Vendas / Orçamentos / Pedidos / Carrinhos) ou lista única
+    com filtro de tipo?
+  </li>
+  <li>
+    Nomenclatura do CTA de criação de pedido: manter &quot;Novo Pedido&quot; ou trocar por
+    &quot;Nova Reserva&quot;? (feedback direto dos testes #3 e #4)
+  </li>
+  <li>
+    Posicionamento do CTA de &quot;Novo Pedido&quot; — como tornar descobrível a partir da Home, não
+    só de Vendas &gt; Pedidos? (5/5 testes tiveram atrito)
+  </li>
+  <li>
+    Critério de classificação de temperatura em Desistências (Quente/Morno/Frio): precisa ser
+    explicitado na interface. <strong>Observações transversais sobre UX:</strong>
+  </li>
+</ol>
+<ul>
+  <li>
+    O feedback dos testes #3 e #4 sobre &quot;Produto&quot; vs. &quot;Reserva&quot; extrapola esta
+    seção — afeta nomenclatura do menu lateral e do Catálogo de Produtos. Registrar para discutir
+    com cliente antes de chegar ao bloco de Produtos.
+  </li>
+  <li>
+    Classificação de temperatura em Desistências foi elogiada em 3 testes, mas critério foi
+    questionado em 1 — vale adicionar tooltip ou legenda discreta.
+  </li>
+</ul>
+<hr />
+<p>
+  <strong>Fim do Bloco 2.</strong> Próximo bloco: Módulo 1 — Autenticação e Acesso (4 features), ou
+  Módulo 2 — Início/Dashboards (4 features). Qual preferir.
+</p>

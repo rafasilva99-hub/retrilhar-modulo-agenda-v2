@@ -1,0 +1,69 @@
+<h3>Retrilhar - Painel Administrativo</h3>
+<h4>Stack</h4>
+<ul>
+  <li>Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · shadcn/ui</li>
+  <li>Ícones: HugeIcons (CDN font) via</li>
+  <li>Gráficos: Chart.js · Animações: Motion · Tabelas: TanStack Table</li>
+  <li>Testes: Vitest + Playwright · Docs: Storybook 10</li>
+</ul>
+<h4>Estrutura</h4>
+<pre><code>app/(dashboard)/layout.tsx    ← Layout ÚNICO (sidebar + topbar + tabbar)
+app/(dashboard)/[pagina]/     ← Páginas do dashboard
+components/ui/                ← shadcn/ui (NÃO editar manualmente)
+components/custom/            ← Componentes do projeto
+components/layout/            ← PageContainer, MobilePageContainer
+components/pages/             ← Conteúdo de páginas complexas
+components/dashboard/widgets/ ← Widgets do dashboard
+environments/[perfil]/        ← Menu e dashboard por perfil
+hooks/                        ← Hooks com dados mock
+mocks/                        ← Dados mock
+services/                     ← Camada de API
+types/                        ← TypeScript types
+
+</code></pre>
+<h4>Comandos</h4>
+<pre><code class="language-bash">npm run dev          # Dev server (turbopack)
+npm run build        # Build de produção
+npm run storybook    # Storybook na porta 6006
+
+</code></pre>
+<h4>Regras Críticas — NUNCA faça</h4>
+<ol>
+  <li>NUNCA crie sidebar, topbar ou tabbar fora de app/(dashboard)/layout.tsx</li>
+  <li>NUNCA use SVG inline ou CSS para ícones. Use</li>
+  <li>
+    NUNCA importe ícones de lucide-react em componentes custom. Lucide é só para dentro de
+    components/ui/
+  </li>
+  <li>
+    NUNCA use valores hex/rgb hardcoded. Use CSS variables (var(--brand-500)) ou classes Tailwind
+    (text-brand-500)
+  </li>
+  <li>NUNCA injete CSS inline com style={{}} exceto para Chart.js ou transforms dinâmicos</li>
+  <li>NUNCA recrie um componente que já existe em components/custom/ ou components/ui/</li>
+  <li>NUNCA crie novo layout.tsx dentro de páginas do dashboard</li>
+  <li>
+    NUNCA importe componentes diretamente. Use barrel exports: @/components/ui, @/components/custom
+  </li>
+  <li>NUNCA use position: fixed para layout de página (o grid cuida disso)</li>
+  <li>NUNCA use font-weight: 600 ou 700. O projeto usa 400 para tudo (override no globals.css)</li>
+</ol>
+<h4>SEMPRE faça</h4>
+<ul>
+  <li>Toda página nova: app/(dashboard)/[nome]/page.tsx usando</li>
+  <li>Imports de UI: import { Button, Card } from &quot;@/components/ui&quot;</li>
+  <li>Imports custom: import { PageHeader, StatCard } from &quot;@/components/custom&quot;</li>
+  <li>Imports de ícone: import { Icon } from &quot;@/components/ui/icon&quot;</li>
+  <li>Cores: classes Tailwind (bg-brand-500, text-error-600, bg-success-50)</li>
+  <li>Antes de criar componente: verificar se já existe em components/custom/index.ts</li>
+</ul>
+<h4>Referências Detalhadas</h4>
+<p>Regras específicas por contexto estão em .claude/rules/:</p>
+<ul>
+  <li>icons.md → Como usar ícones corretamente</li>
+  <li>layout-shell.md → Grid system e layout</li>
+  <li>pages.md → Template para criar páginas</li>
+  <li>components.md → Padrões de componentes</li>
+  <li>styling.md → CSS variables, cores, espaçamentos Documentação do projeto em docs/:</li>
+  <li>CONVENTIONS.md · API_CONTRACTS.md · FRONTEND_GUIDE.md</li>
+</ul>

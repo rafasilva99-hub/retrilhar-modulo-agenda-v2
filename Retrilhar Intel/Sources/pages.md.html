@@ -1,0 +1,161 @@
+<hr />
+<p>paths:</p>
+<ul>
+  <li>&quot;app/(dashboard)/**/*.tsx&quot;</li>
+  <li>&quot;components/pages/**&quot;</li>
+</ul>
+<hr />
+<h3>Criando Páginas — Templates e Padrões</h3>
+<h4>Template Básico</h4>
+<p>Toda página do dashboard segue este padrão:</p>
+<pre><code class="language-tsx">// app/(dashboard)/[nome]/page.tsx
+import { PageContainer } from &quot;@/components/layout/page-container&quot;;
+import { PageHeader } from &quot;@/components/custom&quot;;
+
+export default function NomePage() {
+  return (
+    &lt;PageContainer&gt;
+      &lt;PageHeader
+        title=&quot;Título da Página&quot;
+        description=&quot;Descrição opcional&quot;
+      /&gt;
+      {/* Conteúdo */}
+    &lt;/PageContainer&gt;
+  );
+}
+
+</code></pre>
+<h4>Template com Stat Cards + Tabela</h4>
+<pre><code class="language-tsx">import { PageContainer } from &quot;@/components/layout/page-container&quot;;
+import { PageHeader, StatCard, DataTable, FilterBar } from &quot;@/components/custom&quot;;
+import { Card } from &quot;@/components/ui&quot;;
+
+export default function VendasPage() {
+  return (
+    &lt;PageContainer&gt;
+      &lt;PageHeader title=&quot;Vendas&quot; description=&quot;Gerencie seus pedidos&quot; /&gt;
+
+      {/* Cards de métricas — sempre 2x2 mobile, 4 colunas desktop */}
+      &lt;div className=&quot;grid grid-cols-2 md:grid-cols-4 gap-3 mb-6&quot;&gt;
+        &lt;StatCard title=&quot;Total&quot; value=&quot;R$ 10.000&quot; /&gt;
+        &lt;StatCard title=&quot;Pedidos&quot; value=&quot;142&quot; /&gt;
+        &lt;StatCard title=&quot;Ticket Médio&quot; value=&quot;R$ 70&quot; /&gt;
+        &lt;StatCard title=&quot;Conversão&quot; value=&quot;3.2%&quot; /&gt;
+      &lt;/div&gt;
+
+      {/* Filtros + Tabela */}
+      &lt;Card&gt;
+        &lt;FilterBar filters={[]} onFilterChange={() =&gt; {}} /&gt;
+        &lt;DataTable columns={[]} data={[]} /&gt;
+      &lt;/Card&gt;
+    &lt;/PageContainer&gt;
+  );
+}
+
+</code></pre>
+<h4>Template Mobile (com MobilePageContainer)</h4>
+<p>Para páginas que precisam de layout mobile específico:</p>
+<pre><code class="language-tsx">&quot;use client&quot;;
+import { useIsMobile } from &quot;@/components/ui/use-mobile&quot;;
+import { PageContainer } from &quot;@/components/layout/page-container&quot;;
+import { MobilePageContainer } from &quot;@/components/layout/mobile-page-container&quot;;
+
+export default function MinhaPage() {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      &lt;MobilePageContainer title=&quot;Título&quot; subtitle=&quot;Subtítulo&quot;&gt;
+        {/* Versão mobile */}
+      &lt;/MobilePageContainer&gt;
+    );
+  }
+
+  return (
+    &lt;PageContainer&gt;
+      {/* Versão desktop */}
+    &lt;/PageContainer&gt;
+  );
+}
+
+</code></pre>
+<h4>Páginas complexas → components/pages/</h4>
+<p>Se a página tem muita lógica, extrair conteúdo para components/pages/:</p>
+<pre><code class="language-tsx">// app/(dashboard)/vendas/pedidos/page.tsx
+import VendasPedidosPage from &quot;@/components/pages/vendas-pedidos&quot;;
+export default function Page() {
+  return &lt;VendasPedidosPage /&gt;;
+}
+
+</code></pre>
+<h4>Regras</h4>
+<ul>
+  <li>NUNCA crie layout.tsx dentro de subpastas do dashboard</li>
+  <li>NUNCA importe ou renderize SidebarMenu, TopBar ou MobileTabBar nas páginas</li>
+  <li>Sempre use PageContainer (desktop) ou MobilePageContainer (mobile)</li>
+  <li>Use &quot;use client&quot; apenas quando a página precisa de hooks ou estado</li>
+  <li>Dados vêm de hooks em hooks/ que consomem services em services/</li>
+</ul>
+<h4>Componentes disponíveis para páginas</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Componente</th>
+      <th>Import</th>
+      <th>Uso</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PageContainer</td>
+      <td>@/components/layout/page-container</td>
+      <td>Wrapper de toda página desktop</td>
+    </tr>
+    <tr>
+      <td>MobilePageContainer</td>
+      <td>@/components/layout/mobile-page-container</td>
+      <td>Wrapper mobile com topbar</td>
+    </tr>
+    <tr>
+      <td>PageHeader</td>
+      <td>@/components/custom</td>
+      <td>Título + descrição + botões</td>
+    </tr>
+    <tr>
+      <td>StatCard</td>
+      <td>@/components/custom</td>
+      <td>Card de métrica com trend</td>
+    </tr>
+    <tr>
+      <td>DataTable</td>
+      <td>@/components/custom</td>
+      <td>Tabela com ordenação e paginação</td>
+    </tr>
+    <tr>
+      <td>FilterBar</td>
+      <td>@/components/custom</td>
+      <td>Barra de filtros</td>
+    </tr>
+    <tr>
+      <td>EmptyState</td>
+      <td>@/components/custom</td>
+      <td>Estado vazio com ícone e ação</td>
+    </tr>
+    <tr>
+      <td>WidgetPanel</td>
+      <td>@/components/custom</td>
+      <td>Container de widget com CTA</td>
+    </tr>
+    <tr>
+      <td>StatusBadge</td>
+      <td>@/components/custom</td>
+      <td>Badge de status colorido</td>
+    </tr>
+    <tr>
+      <td>PlaceholderSlot</td>
+      <td>@/components/custom</td>
+      <td>Placeholder para seções futuras</td>
+    </tr>
+  </tbody>
+</table>

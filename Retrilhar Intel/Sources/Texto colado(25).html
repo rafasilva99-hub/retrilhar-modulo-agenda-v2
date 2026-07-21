@@ -1,0 +1,1259 @@
+<p>
+  Nesse momento vamos focar no fluxo de nova atividade, gere um to-do list de quais telas devem ser
+  feitas no figma baseada nas especificações de documentação que temos 22 de abr. Claude respondeu:
+  Vou buscar nas especificações do projeto as informações sobre o fluxo de nova atividade para
+  montar um to-do list preciso das telas do Figma. Vou buscar nas especificações do projeto as
+  informações sobre o fluxo de nova atividade para montar um to-do list preciso das telas do Figma.
+  Searched project for “fluxo nova atividade criação evento agenda” Searched project for “fluxo nova
+  atividade criação evento agenda” Boa, já tenho um panorama claro. Deixa eu buscar mais detalhes
+  específicos sobre recorrência, edição e cancelamento de evento. Searched project for “recorrência
+  eventos recorrentes edição cancelamento” Searched project for “recorrência eventos recorrentes
+  edição cancelamento” Agora vou verificar se há detalhes sobre conflitos de horário, validações ou
+  fluxos específicos do botão de nova atividade mencionado nas reuniões. Searched project for “botão
+  nova atividade conflito horário validação capacidade” Searched project for “botão nova atividade
+  conflito horário validação capacidade” Agora tenho contexto suficiente. Deixa eu buscar mais uma
+  coisa específica sobre múltiplos horários e segmentação de grupos, que foram pontos mencionados.
+  Searched project for “múltiplos horários mesmo dia segmentação grupos visibilidade evento”
+  Searched project for “múltiplos horários mesmo dia segmentação grupos visibilidade evento”
+  Perfeito. Tenho todo o contexto necessário. Agora vou montar o to-do list estruturado das telas do
+  Figma para o fluxo de Nova Atividade. 📋 To-Do List — Fluxo de Nova Atividade (Figma) Baseado no
+  RPP002 — Painel Operacional, no inventário do RNPN 002, e nas decisões registradas nos
+  alinhamentos (principalmente 15/04, onde o Cristiano pediu para priorizar o botão de Nova
+  Atividade como próximo tópico do inventário operacional). 🎯 1. Pontos de entrada (triggers) São
+  os lugares de onde o botão &quot;Nova Atividade&quot; parte. Não são telas novas, mas precisam ser
+  conferidas/ajustadas no Figma para garantir consistência do CTA. FAB / Botão &quot;Nova
+  Atividade&quot; na Agenda — visão mensal, semanal, diária e de lista (4 variações de
+  posicionamento) Atalho no Painel do Dia — validar se existe e onde se encaixa (atualmente não
+  previsto, confirmar com Cristiano) Entry point via clique em slot vazio (visão semanal/diária) —
+  abrir modal pré-preenchido com data/hora do slot clicado 📝 2. Formulário principal — Criação de
+  Evento Base: RPP002 §3.3 &quot;Criação de Eventos&quot;. Provavelmente um modal/side sheet no
+  desktop e tela cheia no mobile (seguindo o padrão de bottom sheet já usado no fechamento). Tela 01
+  — Modal/Tela de Nova Atividade (estado inicial / vazio) Título do Evento (obrigatório)
+  Produto/Experiência Vinculado (seleção opcional — ao selecionar, herda capacidade) Data e Hora de
+  Início + Término (obrigatórios) Local (campo livre ou seleção de local cadastrado) Capacidade
+  Mínima e Máxima (auto-preenchido se produto vinculado) Equipe Responsável (multi-seleção de
+  colaboradores) Link do Grupo WhatsApp Descrição/Observações Visibilidade (interno/público) —
+  toggle ou radio Segmentação de Grupo (multi-select) CTAs: Cancelar / Salvar Tela 02 — Estado com
+  Produto Vinculado (campos auto-preenchidos, capacidade herdada com visual de &quot;vindo do
+  produto&quot;) Tela 03 — Estado sem Produto Vinculado (atividade avulsa — capacidade manual) 🔁 3.
+  Recorrência de Eventos Tela 04 — Seção/Sub-modal de Recorrência com opções: Não se repete
+  (default) Diário Semanal (com seleção de dias da semana) Mensal Personalizado (intervalo
+  customizado + data final ou N ocorrências) Tela 05 — Preview das datas geradas (lista com datas
+  que serão criadas, permitindo desmarcar exceções) ⏰ 4. Múltiplos Horários no Mesmo Dia Tela 06 —
+  Seção &quot;Adicionar horário&quot; dentro do formulário (permite N horários para o mesmo
+  produto/evento no mesmo dia) Tela 07 — Estado com múltiplos horários adicionados (lista de slots
+  com possibilidade de remover cada um) ⚠️ 5. Estados de validação e conflito O escopo especifica:
+  &quot;O sistema deve alertar sobre conflitos de horário ao criar ou mover eventos&quot; +
+  &quot;Conflito de Recurso Compartilhado&quot; + &quot;Conflito de Horário da Equipe&quot;. Tela 08
+  — Erros de validação inline (campos obrigatórios não preenchidos, data fim antes da data início,
+  capacidade mínima &gt; máxima) Tela 09 — Alerta de conflito de horário da equipe (colaborador
+  escalado em outro evento sobreposto) Tela 10 — Alerta de conflito de recurso compartilhado (se
+  aplicável no MVP) Tela 11 — Estado de sucesso / toast de confirmação após criar ✏️ 6. Edição de
+  Evento Tela 12 — Modal de Edição (ocorrência única) — mesma estrutura do formulário de criação,
+  pré-preenchido Tela 13 — Dialog de escolha para eventos recorrentes — &quot;Editar apenas esta
+  ocorrência / Editar esta e as futuras / Editar toda a série&quot; 🚫 7. Cancelamento e Exclusão
+  Tela 14 — Dialog de Cancelamento de Evento com campo de motivo (obrigatório) — marca como
+  cancelado sem excluir do histórico; notifica pedidos vinculados Tela 15 — Dialog de Exclusão (só
+  disponível se não houver pedidos vinculados — estado habilitado) Tela 16 — Dialog de Exclusão
+  bloqueada (estado desabilitado com mensagem &quot;evento com pedidos confirmados — use
+  Cancelar&quot;) 📱 8. Responsivo O escopo determina que &quot;O sistema deve ser totalmente
+  responsivo para uso em celular&quot;. Replicar todas as telas críticas acima (01, 02, 04, 12, 14)
+  em versão mobile — seguindo padrão de bottom sheet já estabelecido no módulo 🟡 Pontos pendentes
+  de alinhamento com o Cristiano Antes de concluir o Figma, vale confirmar: Drag-and-drop para mover
+  evento (mencionado no RPP002 §3.3) — já estava flagado como baixa prioridade, continua fora do
+  escopo do fluxo de Nova Atividade? Segmentação de Grupo vs. Segmentação por grupos — você mesma já
+  tinha flaggado que havia duas features conflitadas; precisa resolver antes de finalizar esse campo
+  Visibilidade pode estar oculta se o modo de negócio for &quot;Só Reservas&quot; (sem loja online)
+  — o formulário deve adaptar? Alerta de conflito: é bloqueante ou apenas avisa e permite salvar?
+  (RPP002 fala &quot;alerta/bloqueia&quot; — ambíguo) Quer que eu transforme isso num documento
+  .docx com o visual UXNAUT (Sora + cores semânticas) pra compartilhar no time, ou prefere manter
+  como referência aqui no chat? Você disse: De que parte do material você tirou essas especificações
+  De que parte do material você tirou essas especificações 22 de abr. Claude respondeu: Boa pergunta
+  — vou te mostrar exatamente de onde saiu cada item. Boa pergunta — vou te mostrar exatamente de
+  onde saiu cada item. Deixa eu localizar os trechos nos documentos para você conseguir auditar.
+  Listar arquivos do projeto para mapear as fontes Listar arquivos do projeto para mapear as fontes
+  Vou mapear de forma transparente. Aqui vai a rastreabilidade de cada item do to-do list: 📍 Fonte
+  de cada parte do to-do list ✅ Itens que vieram diretamente das especificações 📄 RPP002 — PAINEL
+  OPERACIONAL (e sua versão idêntica RPP002 PAINEL DE OPERAÇÕES), seção §3.3 &quot;Criação de
+  Eventos&quot;: Todos os campos do formulário principal (Tela 01) saíram literalmente da tabela
+  &quot;Criação de Eventos&quot;: Título, Produto Vinculado, Data/Hora Início e Término, Local,
+  Capacidade Máx/Mín, Equipe Responsável, Link do Grupo WhatsApp, Recorrência, Múltiplos Horários,
+  Descrição, Visibilidade, Segmentação de Grupo, Checklist de Início/Fim. As opções de recorrência
+  (diário, semanal, mensal, personalizado) também saíram dessa mesma tabela: &quot;Opção de
+  configurar o evento como recorrente: diário, semanal, mensal ou personalizado. Permite selecionar
+  múltiplas datas de uma só vez.&quot; A seção de Edição e Exclusão (Telas 12–16) saiu da tabela
+  &quot;Edição e Exclusão de Eventos&quot; do mesmo documento: &quot;Para eventos recorrentes, a
+  edição pode ser aplicada apenas à ocorrência selecionada ou a todas as futuras.&quot;
+  &quot;Cancelar Evento: Marca o evento como cancelado sem excluí-lo do histórico.&quot;
+  &quot;Excluir Evento: Disponível apenas para eventos sem pedidos vinculados.&quot; Os alertas de
+  conflito (Telas 09 e 10) saíram de dois lugares desse mesmo documento: Do &quot;Comportamento
+  esperado&quot; da §3.3: &quot;O sistema deve alertar sobre conflitos de horário ao criar ou mover
+  eventos&quot; Da §3.1 (Mapa de Vagas): &quot;Conflito de Recurso Compartilhado&quot; e
+  &quot;Conflito de Horário da Equipe&quot; 📄 RNPN 002 — Módulo: Painel de Operações (inventário
+  com os ✅/❌/🆕): Foi a base para eu entender quais telas faltam (marcadas com ❌). Esse documento
+  lista explicitamente como pendentes: ❌ Fluxo de &quot;Nova Atividade&quot; — formulário de
+  criação de evento ❌ Recorrência de eventos ❌ Múltiplos horários no mesmo dia ❌ Edição de evento
+  — editar ocorrência única ou todas as futuras ❌ Cancelamento de evento Praticamente o meu to-do
+  espelha esse inventário, expandindo cada bullet em telas específicas. 📄 Alinhamento Retrilhar —
+  15/04: Foi de onde tirei o contexto de priorização — o Cristiano pediu explicitamente para
+  trabalhar esse fluxo: &quot;a gente trabalha essa questão do mapa de vagas o botão de Nova
+  atividade lá aí da desse calendário da agenda&quot; &quot;então seria a gente trabalhar essa
+  questão de inserir novas atividades ali na agenda&quot; ⚠️ Itens que são inferência minha (não
+  estão literalmente nos docs) Preciso ser honesta sobre isso: Pontos de entrada (seção 1) — o
+  RPP002 menciona que existe a criação, mas não detalha de onde o botão parte em cada visão. Inferi
+  de &quot;precisa existir em todas as visões da agenda&quot; porque a §3.3 lista as quatro
+  visualizações. Padrão modal vs. side sheet vs. tela cheia — nenhum documento define isso. Inferi
+  do padrão que você já estabeleceu no módulo (bottom sheet mobile para fechamento de atividade,
+  conforme consta na memória do projeto). &quot;Tela 05 — Preview das datas geradas&quot; — não está
+  explícito no documento. Inferi como boa prática de UX para recorrência personalizada. Estados de
+  erro de validação (Tela 08) — as regras específicas (&quot;data fim antes da data início&quot;,
+  &quot;capacidade mínima &gt; máxima&quot;) são inferência minha de validações óbvias. O documento
+  não lista validações. Responsivo (seção 8) — o escopo diz que o sistema deve ser responsivo, mas
+  não define quais telas específicas do fluxo de Nova Atividade precisam de variante mobile. A
+  escolha das 5 telas críticas foi decisão minha. 🟡 Pontos pendentes (final do to-do) Drag-and-drop
+  — está no RPP002 §3.3 (&quot;Edição e Exclusão&quot;) literalmente, mas já constava na memória
+  como baixa prioridade Conflito segmentação vs. segmentação por grupos — veio da sua própria flag
+  na memória do projeto, não dos docs Visibilidade em &quot;Só Reservas&quot; — inferência minha
+  cruzando a seção &quot;Visibilidade por Modelo&quot; do Escopo/Proposta com o campo
+  &quot;Visibilidade&quot; do formulário Alerta bloqueante vs. avisativo — inferência minha de uma
+  ambiguidade real no texto do RPP002 Quer que eu refaça o to-do separando visualmente o que está
+  documentado do que é inferência minha? Isso facilitaria a validação com o Cristiano — ele consegue
+  confirmar/negar os pontos inferidos antes de você investir tempo no Figma. Você disse: Somente a
+  capacidade é herdada? excerpt_from_previous_claude_message.txt 1 linha txt Somente a capacidade é
+  herdada? Existe algum outro campo que vai ser preenchido nesse cenário? 22 de abr. Claude
+  respondeu: Boa pergunta — vou verificar o que o documento diz literalmente e não inferir nada. Boa
+  pergunta — vou verificar o que o documento diz literalmente e não inferir nada. Searched project
+  for “produto vinculado herda configurações capacidade campos preenchidos automaticamente” Searched
+  project for “produto vinculado herda configurações capacidade campos preenchidos automaticamente”
+  Ótimo — encontrei o que preciso. Agora tenho a resposta precisa. Resposta direta: sim, há mais
+  campos que vêm do produto Eu fui conservadora demais no to-do. O RPP002 §3.3 literalmente diz
+  apenas: &quot;Produto/Experiência Vinculado — Opcional. Associa o evento a um produto do catálogo,
+  herdando suas configurações de capacidade.&quot; &quot;Capacidade Máxima — Preenchido
+  automaticamente se vinculado a um produto.&quot; Só a capacidade é explicitada como herdada nessa
+  tabela. Mas quando cruzo com o Módulo 7: Catálogo de Produtos (no Escopo/Proposta), vejo que o
+  produto carrega muito mais configuração que faz sentido vir junto: Produto tem aba
+  &quot;Disponibilidade&quot; com: Tipo (data específica, recorrente, sob demanda) Capacidade máxima
+  Quantidade mínima para confirmar (= Capacidade Mínima do evento) Antecedência mínima para reserva
+  Produto tem aba &quot;Recursos&quot; com: Guia, veículo, equipamento vinculados Quantidade de cada
+  recurso Produto tem aba &quot;Regras e Termos&quot; com: Política de cancelamento Termo de
+  responsabilidade Informações de saúde obrigatórias O que está documentado vs. o que é ambíguo
+  Documentado explicitamente que herda: Capacidade Máxima ✅ &quot;Configurações de capacidade&quot;
+  (genérico, plural — sugere que Capacidade Mínima também, mas não está escrito) Faz sentido herdar
+  (inferência minha, precisa de confirmação do Cristiano): Capacidade Mínima (o produto tem
+  &quot;quantidade mínima para confirmar&quot;) Tarifas vinculadas Recursos necessários (guia, van,
+  equipamento) Política de cancelamento e termos Adicionais disponíveis (almoço, foto, etc.) Campos
+  de saúde obrigatórios Não tem nada escrito sobre: Local — o produto não parece ter local fixo no
+  cadastro, então provavelmente não herda Equipe Responsável — não está no cadastro do produto,
+  então provavelmente não herda (é escalação pontual) Título do Evento — deve ser livre para
+  permitir nomear (&quot;Trilha Morro do Baú — Turma de Sábado&quot;), embora o nome do produto
+  possa sugerir um default 💡 Sugestão de pergunta para o Cristiano Vale mandar uma mensagem
+  objetiva pra ele antes de desenhar a tela, porque isso muda a arquitetura do formulário. Se muitas
+  coisas vêm do produto, o formulário fica bem mais enxuto quando há vínculo — praticamente só
+  data/hora, título e equipe. Quer que eu rascunhe essa mensagem pro Cristiano listando os campos e
+  pedindo confirmação item por item do que herda e do que não herda? Seria rápido de validar no
+  WhatsApp. Você disse: Vamos falar agora sobre o cenário de visibilidade da atividade interna,
+  especifique de forma objetiva esse fluxo e categorize os cenários Vamos falar agora sobre o
+  cenário de visibilidade da atividade interna, especifique de forma objetiva esse fluxo e
+  categorize os cenários 22 de abr. Claude respondeu: Vou buscar tudo que os documentos dizem sobre
+  visibilidade, para não inferir nada que não esteja lá. Vou buscar tudo que os documentos dizem
+  sobre visibilidade, para não inferir nada que não esteja lá. Searched project for “visibilidade
+  evento interno público loja online equipe” Searched project for “visibilidade evento interno
+  público loja online equipe” Deixa eu verificar se há menção específica ao modo &quot;Só
+  Reservas&quot; ou B2B que possam afetar a visibilidade. Searched project for “só reservas B2B
+  parceiro visibilidade modelo negócio agenda oculta” Searched project for “só reservas B2B parceiro
+  visibilidade modelo negócio agenda oculta” Agora vou ver se há menção específica do Cristiano
+  sobre atividades internas, particulares, privadas ou eventos não-vendidos nas transcrições.
+  Searched project for “atividade interna particular privada treinamento equipe sem venda reserva
+  interna” Searched project for “atividade interna particular privada treinamento equipe sem venda
+  reserva interna” Vou buscar uma última referência específica sobre bloqueio de vagas, que pode ter
+  conexão com o cenário de atividade interna. Searched project for “bloquear vagas bloquear vendas
+  grupo negociação evento sem público” Searched project for “bloquear vagas bloquear vendas grupo
+  negociação evento sem público” Agora tenho o panorama completo. Vou especificar o fluxo de forma
+  objetiva, deixando claro o que é documentado vs. inferência. 🔒 Fluxo de Visibilidade da Atividade
+  📖 O que a documentação diz (literal) O RPP002 §3.3 — tabela &quot;Criação de Eventos&quot; — tem
+  uma única linha sobre esse campo: Visibilidade — &quot;Definir se o evento é interno (visível
+  apenas para a equipe) ou público (exibido na loja online).&quot; E o &quot;Comportamento
+  esperado&quot; complementa: &quot;Ao criar um evento público vinculado a um produto, as vagas
+  ficam disponíveis na loja online.&quot; Também há um campo adjacente na mesma tabela: Segmentação
+  de Grupo — &quot;Definir quais grupos/perfis de cliente podem ver e reservar este evento
+  (assinantes, grupos corporativos, parceiros).&quot; Isso é tudo que está especificado. O resto é
+  interpretação. 🎯 Categorização dos cenários Cruzando Visibilidade × Produto Vinculado ×
+  Segmentação × Modelo de Negócio, chego em 4 cenários principais + 2 edge cases. Cenário 1 —
+  Atividade Interna sem produto vinculado Visibilidade: Interna Produto vinculado: Não Exemplo
+  típico: Treinamento de equipe, reunião operacional, vistoria de trilha, simulado de resgate,
+  confraternização interna, manutenção de equipamento em campo. Comportamento: Não aparece na loja
+  online ✅ (documentado) Não aparece no Mapa de Vagas como produto vendável Aparece na Agenda
+  (calendário interno) para toda a equipe Bloqueia disponibilidade de recursos compartilhados (van,
+  guias, equipamento) naquele horário — isso é inferência minha, mas faz sentido com a regra de
+  &quot;Conflito de Recurso Compartilhado&quot; Não tem participantes externos, não tem check-in de
+  cliente, não tem contratação de seguro para clientes Cenário 2 — Atividade Interna COM produto
+  vinculado Visibilidade: Interna Produto vinculado: Sim Exemplo típico: Grupo fechado de agência
+  B2B que já pagou por fora, evento corporativo contratado, passeio privativo exclusivo.
+  Comportamento: Não aparece na loja online ✅ Herda configurações do produto (capacidade, recursos,
+  termos) Pode ter participantes cadastrados manualmente (via reserva B2B sem venda) Aparece no Mapa
+  de Vagas da equipe, mas não para o público ⚠️ Aqui tem uma sobreposição importante com o Cenário 4
+  (Segmentação por grupo corporativo). Essa distinção precisa ser validada com o Cristiano — é o que
+  você já flaggou como &quot;duas features conflitadas&quot;. Cenário 3 — Atividade Pública (padrão
+  comercial) Visibilidade: Público Produto vinculado: Sim (obrigatório, senão não há o que vender)
+  Segmentação: Vazia (todos podem ver) Comportamento: Aparece na loja online ✅ (documentado) Vagas
+  disponíveis publicamente Fluxo comercial completo Cenário 4 — Atividade Pública com Segmentação
+  Visibilidade: Público Produto vinculado: Sim Segmentação: Grupos específicos (assinantes /
+  corporativos / parceiros) Comportamento: Visível apenas para clientes desses grupos ✅
+  (documentado no campo &quot;Segmentação de Grupo&quot;) Não aparece para público geral na loja
+  Edge case A — Modo de negócio &quot;Só Reservas&quot; Na tabela &quot;Visibilidade por
+  Modelo&quot; do Escopo: esse modelo não tem loja online. Então o campo &quot;Visibilidade&quot;
+  perde o sentido — toda atividade é, por definição, não-pública na loja. ➡️ Precisa decidir:
+  esconder o campo ou manter com opções reduzidas? Edge case B — Modo de negócio &quot;Só
+  Vendas&quot; Mesma tabela: Agenda fica oculta. Então esse cenário nem existe pra esse modelo. 🎨
+  Recorte do fluxo no formulário de Nova Atividade Especificando objetivamente o que o campo
+  Visibilidade precisa fazer: Estado default sugerido: Público (é o caso mais comum no modelo
+  &quot;Reservas + Pagamento&quot;) — exceto no modelo &quot;Só Reservas&quot; onde o default
+  deveria ser Interna. Interação: Toggle ou radio com 2 opções — &quot;Interna&quot; /
+  &quot;Público&quot; Dependências entre campos: Se Visibilidade = Interna → campo &quot;Segmentação
+  de Grupo&quot; fica oculto ou desabilitado (não faz sentido segmentar algo que ninguém externo vê)
+  Se Visibilidade = Interna + Produto vinculado = Não → capacidade pode ser opcional (não há venda,
+  só bloqueio de agenda) Se Visibilidade = Público + Produto vinculado = Não → impossível/inválido
+  (o que vai pra loja se não há produto?) — precisa de erro de validação ❓ Dúvidas concretas para
+  alinhar com o Cristiano Antes de desenhar, essas 5 perguntas vão definir o fluxo: Atividade
+  Interna sem produto é caso de uso real? (Treinamento, vistoria) — ou o Cristiano espera que tudo
+  seja vinculado a um produto? Como distinguir Atividade Interna com produto (Cenário 2) de
+  Segmentação por grupo corporativo (Cenário 4)? Ambos servem para &quot;grupo fechado B2B&quot;. Se
+  Visibilidade = Público mas não há produto vinculado, o sistema bloqueia o salvar ou permite e
+  mostra como &quot;interno por falta de produto&quot;? No modo &quot;Só Reservas&quot;, o campo
+  Visibilidade some ou permanece (por consistência)? Atividade Interna bloqueia vagas dos recursos
+  compartilhados? (Se sim, precisa aparecer em algum lugar do Mapa de Vagas mesmo sendo interna)
+  Quer que eu transforme essa especificação num fluxograma visual (diagrama de decisão mostrando as
+  bifurcações), ou prefere levar essas 5 perguntas pro Cristiano primeiro e depois a gente
+  consolida? Você disse: Faça um mockup da solução desse cenário Faça um mockup da solução desse
+  cenário 22 de abr. Claude respondeu: Antes de desenhar, preciso confirmar uma coisa — &quot;esse
+  cenário&quot; pode significar coisas bem diferentes, e cada uma leva a um mockup diferente: Antes
+  de desenhar, preciso confirmar uma coisa — &quot;esse cenário&quot; pode significar coisas bem
+  diferentes, e cada uma leva a um mockup diferente: Você disse: P: Qual cenário específico você
+  quer ver no mockup? P: Qual cenário específico você quer ver no mockup? R: Apenas a seção de
+  Visibilidade com estados Interna vs Pública P: Desktop ou mobile? R: Desktop (modal/side sheet) 22
+  de abr. Claude respondeu: Perfeito. Perfeito. Vou montar um mockup focado na seção de Visibilidade
+  dentro do side sheet de Nova Atividade — mostrando os dois estados principais e as dependências
+  dos campos adjacentes que identificamos na especificação. Alguns pontos de design que vale
+  destacar: Sobre a escolha do componente — usei radio cards lado a lado em vez de toggle/switch
+  porque cada opção tem um subtítulo explicativo curto (&quot;Só para a equipe&quot; / &quot;Exibida
+  na loja&quot;). Toggle funcionaria se fosse só on/off visual, mas aqui a distinção precisa de
+  contexto para o operador não errar. Sobre o helper contextual — mudei de cor (azul informacional →
+  verde sucesso) para reforçar que o estado público tem uma consequência ativa (as vagas vão pra
+  loja), enquanto o interno é apenas uma ausência dessa ação. É sutil mas ajuda o gestor a sentir o
+  peso da decisão ao publicar. Sobre o campo Segmentação desabilitado no estado Interna — optei por
+  manter visível com ícone de cadeado em vez de sumir completamente. Isso evita o salto de layout
+  quando o operador alterna entre os estados e ensina a relação entre os campos (se eu quiser
+  segmentar, preciso ser público). Mas se você preferir esconder completamente, é uma alteração
+  trivial. O que ainda depende do Cristiano antes de levar pro Figma: Confirmar que &quot;Interna +
+  sem produto&quot; é mesmo um caso de uso válido (treino de equipe, vistoria) — o mockup assume que
+  sim Se no modo &quot;Só Reservas&quot; o campo Visibilidade some ou permanece com
+  &quot;Pública&quot; desabilitado Se a Segmentação de Grupo é mesmo para atividades públicas ou se
+  tem sobreposição com B2B fechado (aquele conflito que você já tinha flaggado) Quer que eu faça a
+  variação mobile dessa mesma seção, ou prefere avançar pro fluxograma de decisão dos 4 cenários
+  para levar pro alinhamento com o Cristiano? Você disse: Em outra conversa você havia trago essas
+  informações (tipo de uso interno e as ações), de onde você extraiu elas? 1776877711805_image.png
+  Em outra conversa você havia trago essas informações (tipo de uso interno e as ações), de onde
+  você extraiu elas? 22 de abr. Claude respondeu: Boa pergunta — e vou ser direta com você: essas
+  informações não estão nos documentos do projeto. Boa pergunta — e vou ser direta com você: essas
+  informações não estão nos documentos do projeto. Vou buscar para confirmar e não deixar dúvida.
+  Searched project for “tipo de uso interno reserva externa bloqueio de agenda evento privado”
+  Searched project for “tipo de uso interno reserva externa bloqueio de agenda evento privado” Vou
+  confirmar olhando o escopo onde aparece &quot;Bloqueio&quot; e &quot;Novo Bloqueio&quot; — foi
+  isso que encontrei mais próximo do que eu tinha proposto antes. Executou 8 comandos Executou 8
+  comandos Estranho — o python está rodando em outro cwd. Vou usar paths absolutos: Executou 2
+  comandos Executou 2 comandos Os arquivos foram copiados mas o python-docx não está encontrando.
+  Deixa eu tentar com grep direto no conteúdo extraído: Executou 3 comandos Executou 3 comandos Ah —
+  os arquivos não são docx reais no /mnt/project, são outra coisa. Mas isso não afeta o ponto — eu
+  já tenho, via project_knowledge_search, o conteúdo completo das seções relevantes. Deixa eu fazer
+  uma última busca direcionada para fechar a rastreabilidade: Searched project for “Novo Bloqueio
+  agenda bloqueio data saída vagas” Searched project for “Novo Bloqueio agenda bloqueio data saída
+  vagas” Pronto, agora tenho uma resposta completa e transparente. Resposta direta: a categorização
+  &quot;Tipo de uso interno&quot; não está nos documentos Os termos &quot;Reserva externa&quot;,
+  &quot;Bloqueio de agenda&quot;, &quot;Evento privado&quot; e &quot;Outro&quot; — e também os
+  campos &quot;Razão do bloqueio&quot; e &quot;Expirar bloqueio automaticamente&quot; — não aparecem
+  em nenhum documento do projeto. Eu inventei essa taxonomia, ou em outra conversa ou nesta mesma ao
+  longo da discussão sobre os cenários. Do que eu parti (o que existe de verdade) Fiz uma extração
+  direta nos docs. O que existe literalmente é:
+</p>
+<ol>
+  <li>
+    No RPP002 §3.3 — Criação de Eventos: &quot;Visibilidade: Definir se o evento é interno (visível
+    apenas para a equipe) ou público (exibido na loja online).&quot; Isso é tudo sobre o campo
+    Visibilidade. Uma linha. Sem subtipos.
+  </li>
+  <li>
+    No Escopo/Proposta §2.3 — Agenda Operacional (que eu não tinha enfatizado antes), aparece um
+    conceito separado: &quot;Header: navegação mês (anterior/próximo), botão &#39;Novo
+    Bloqueio&#39;&quot; &quot;Tipo (saídas, bloqueios)&quot; &quot;Dias bloqueados: fundo cinza com
+    ícone de cadeado&quot; &quot;Legenda: Saída Confirmada (verde), Saída Pendente (amarelo),
+    Bloqueio (cinza)&quot; E tem um modal próprio especificado: Modal: Criar Bloqueio (Baixa)
+    &quot;Tipo: dia inteiro ou produto específico / Data ou range de datas / Produto (se específico)
+    / Motivo do bloqueio&quot;
+  </li>
+  <li>
+    No RPP002 §3.1 — Mapa de Vagas aparece &quot;Bloquear Vagas&quot; e &quot;Bloquear Vendas&quot;
+    como funcionalidades do Mapa de Vagas, não da Agenda. O que isso significa A documentação tem
+    dois conceitos separados, não um campo unificado: Atividade/Evento (com Visibilidade interna ou
+    pública) — fluxo em §3.3 Bloqueio (um item à parte na agenda, criado por &quot;Novo
+    Bloqueio&quot;) — modal próprio descrito no Escopo Minha proposta de mockup fundiu os dois em
+    uma única tela com &quot;Tipo de uso interno&quot;. Isso foi uma invenção minha — eu assumi que
+    fazia sentido unificar, mas os docs tratam como fluxos distintos. O escopo inclusive planeja
+    esses modais separadamente no cronograma (&quot;Agenda + Modais: Lista, Calendário, criação de
+    saída, bloqueio — 11h&quot;). Por que eu propus mesmo assim Quando você perguntou sobre cenários
+    de Visibilidade Interna, eu sabia de 4 situações reais de negócio pela lógica: Grupo B2B que
+    pagou por fora (existe no docs — &quot;reserva pode existir sem venda quando vem de parceiro
+    B2B&quot;) Treinamento/manutenção (inferência minha — não está nos docs) Grupo em negociação sem
+    venda fechada (existe no docs como &quot;Bloquear Vagas&quot;) Evento privado com venda externa
+    (inferência minha) E juntei tudo num campo &quot;Tipo de uso interno&quot; pra dar estrutura —
+    mas isso é design meu, não especificação. O que faz sentido fazer agora Duas alternativas
+    concretas, em ordem de aderência ao documentado: Alternativa A — Seguir o que o doc diz
+    literalmente: Campo &quot;Visibilidade: Interna / Pública&quot; no modal de Nova Atividade
+    (conforme §3.3) Modal separado &quot;Novo Bloqueio&quot; acessível pelo botão da agenda
+    (conforme §2.3 do Escopo) Sem &quot;Tipo de uso interno&quot; Alternativa B — Validar com o
+    Cristiano se a unificação faz sentido: Levar a pergunta: &quot;Atividade Interna e Bloqueio são
+    a mesma coisa na prática, ou são fluxos diferentes?&quot; Se forem a mesma coisa → a
+    categorização que propus pode virar spec real, mas precisa do aval dele Se forem diferentes →
+    seguir Alternativa A Quer que eu redesenhe o mockup seguindo a Alternativa A, ou prefere
+    rascunhar a pergunta pro Cristiano antes? Você disse: O que acontece no momento em que o usuário
+    seleciona a visibilidade da atividade interna? O que acontece no momento em que o usuário
+    seleciona a visibilidade da atividade interna? 22 de abr. Claude respondeu: Vou verificar o que
+    o documento diz literalmente sobre isso — quero separar o que está especificado do que seria
+    inferência. Vou verificar o que o documento diz literalmente sobre isso — quero separar o que
+    está especificado do que seria inferência. Pesquisou a memória Pesquisou a memória Agora tenho
+    clareza total. Deixa eu responder sua pergunta separando o que está documentado do que é decisão
+    de design pendente. O que acontece ao selecionar Visibilidade = Interna 📖 O que o documento diz
+    (literalmente) O RPP002 §3.3 dá apenas uma linha sobre o comportamento do campo:
+    &quot;Visibilidade: Definir se o evento é interno (visível apenas para a equipe) ou público
+    (exibido na loja online).&quot; E no &quot;Comportamento esperado&quot; da mesma seção tem o
+    contraponto do lado público: &quot;Ao criar um evento público vinculado a um produto, as vagas
+    ficam disponíveis na loja online.&quot; E no RNPN 002 há uma linha indireta relacionada:
+    &quot;Horários inativos NÃO exibem vagas na loja online&quot; Isso é tudo. A documentação não
+    detalha o que muda no formulário, nem como a atividade aparece depois na Agenda, nem se há
+    confirmação, nem comportamento dos campos dependentes. 🎯 O que é consequência direta e
+    garantida pelo documento Só dá pra afirmar com certeza uma coisa quando a Visibilidade = Interna
+    é selecionada: A atividade não é publicada na loja online. As vagas não ficam disponíveis para
+    compra pública. Isso é a negação lógica do que o doc afirma sobre o estado público — se o
+    &quot;efeito&quot; do público é publicar na loja, o &quot;efeito&quot; do interno é não
+    publicar. ⚠️ O que são decisões de design não documentadas (e precisam ser tomadas) Aqui é onde
+    eu vinha inferindo sem deixar claro. Estas decisões podem ir para o Figma, mas precisam ser
+    explicitadas como propostas suas — não como especificações:
+  </li>
+  <li>
+    A atividade interna ainda entra na Agenda? Intuitivamente sim (senão onde ela viveria?), mas o
+    doc não diz. Se sim, como ela aparece visualmente no calendário? Precisa de diferenciação visual
+    em relação às atividades públicas? O Escopo traz uma pista indireta: na legenda da Agenda
+    menciona &quot;Saída Confirmada (verde), Saída Pendente (amarelo), Bloqueio (cinza)&quot; — mas
+    atividade interna não é bloqueio (são conceitos diferentes, como discutimos).
+  </li>
+  <li>
+    Campos dependentes mudam de estado? A Segmentação de Grupo — que serve para definir quem da loja
+    pode ver o evento — perde o sentido quando a atividade não está na loja. Mas o doc não diz que
+    ela deve ser escondida, desabilitada ou ignorada no backend. O campo Link do Grupo WhatsApp —
+    que o doc diz ser &quot;incluído automaticamente no e-mail de confirmação de reserva ao
+    cliente&quot; — também perde o sentido se não há cliente para receber confirmação.
+  </li>
+  <li>
+    Produto vinculado vira opcional? O doc já diz que é opcional no geral. Mas em atividade pública,
+    sem produto não há o que vender na loja (seria uma contradição). Em atividade interna, a
+    ausência de produto é naturalmente aceitável — mas isso é inferência.
+  </li>
+  <li>
+    Há feedback visual do usuário ao selecionar? Nada no doc sobre helper text, toast, indicador de
+    mudança. Toda a experiência de seleção é design — não spec.
+  </li>
+  <li>
+    Atividade interna bloqueia recursos compartilhados (van, guia) naquele horário? Faz sentido pela
+    regra de &quot;Conflito de Recurso Compartilhado&quot; do RPP002 §3.1, mas o doc não liga
+    explicitamente Visibilidade Interna com bloqueio de recurso. 💡 Minha recomendação Pelo
+    histórico da nossa conversa, você já está identificando corretamente os gaps. A resposta honesta
+    pra sua pergunta é: O que acontece ao selecionar Visibilidade = Interna não está definido na
+    documentação além de &quot;não vai para a loja online&quot;. Todo o resto precisa ser decidido —
+    por você como designer propondo, e pelo Cristiano validando as regras de negócio. Sugiro duas
+    ações concretas:
+  </li>
+  <li>
+    Levar uma lista curta de perguntas específicas para o Cristiano — não mais &quot;o que é
+    atividade interna&quot;, mas questões operacionais: Atividade interna consome recurso
+    compartilhado da agenda? Segmentação de grupo pode continuar ativa, ou só faz sentido em
+    público? Atividade interna aparece no Mapa de Vagas? Tem alguma diferenciação visual esperada na
+    agenda? 2. Só depois das respostas, decidir o comportamento do formulário — se esses campos
+    somem, desabilitam ou permanecem, e o que aparece como feedback visual. Quer que eu rascunhe
+    essa mensagem pro Cristiano de forma consultiva — explicando que essas perguntas são necessárias
+    para fechar o fluxo — ou prefere avançar propondo hipóteses de comportamento para validar com
+    ele já desenhadas no Figma? Você disse: Faz sentido manter como melhoria esses select cards de
+    tipo de uso interno para esse bloco? 1776878319780_image.png Faz sentido manter como melhoria
+    esses select cards de tipo de uso interno para esse bloco? 22 de abr. Claude respondeu: Boa
+    pergunta. Boa pergunta. Vou pensar aqui honestamente, sem puxar pra um lado ou pro outro.
+    Argumentos a favor de manter os select cards
+  </li>
+  <li>
+    O conceito por trás deles é real e útil. Os quatro tipos que propus (reserva externa / bloqueio
+    de agenda / evento privado / outro) correspondem a casos de uso que existem na operação:
+    &quot;Reserva externa&quot; = o doc fala de B2B que paga por fora &quot;Bloqueio de agenda&quot;
+    = o Escopo descreve explicitamente um modal &quot;Criar Bloqueio&quot; com tipo + motivo + data
+    &quot;Evento privado&quot; = derivado do mesmo B2B mas com venda fechada &quot;Outro&quot; =
+    escape hatch Esses cenários acontecem no mundo real do Cristiano. A pergunta não é &quot;essa
+    taxonomia faz sentido?&quot;, é &quot;vale a pena codificá-la em UI?&quot;.
+  </li>
+  <li>
+    Afeta comportamento downstream. Se &quot;bloqueio de agenda&quot; tem data de expiração
+    automática e &quot;evento privado&quot; tem venda associada, a máquina de estados da reserva se
+    comporta diferente. Codificar isso no formulário ajuda o backend a saber o que fazer.
+  </li>
+  <li>
+    Resolve a ambiguidade do Cristiano. Ele chama de &quot;bloqueio&quot;, &quot;reserva B2B&quot;,
+    &quot;interno&quot; em momentos diferentes das reuniões — um vocabulário unificado na UI ajuda o
+    time a conversar. Argumentos contra manter
+  </li>
+  <li>
+    A documentação trata como dois conceitos distintos, não um só. Isso é o ponto mais forte. O
+    Escopo §2.3 especifica explicitamente: &quot;Tipo (saídas, bloqueios)&quot; na filtragem da
+    agenda Modal próprio chamado &quot;Criar Bloqueio&quot; com campos próprios (tipo dia
+    inteiro/produto, data, motivo) E um botão separado &quot;Novo Bloqueio&quot; no header Ou seja:
+    o Cristiano e a Kátia já desenharam mentalmente dois fluxos de entrada distintos — &quot;Nova
+    Atividade&quot; (com Visibilidade interna/pública) e &quot;Novo Bloqueio&quot; (modal próprio).
+    Unificar tudo em &quot;Nova Atividade &gt; Interna &gt; Tipo de uso&quot; é uma arquitetura de
+    informação diferente da que está documentada.
+  </li>
+  <li>
+    Aumenta a carga cognitiva do formulário. O campo Visibilidade originalmente é binário e rápido.
+    Com os select cards, o usuário precisa escolher duas vezes (Interna, depois que tipo de Interna)
+    e ler textos explicativos. Em um formulário de criação que já tem 14+ campos, cada clique
+    adicional conta — especialmente considerando o princípio de &quot;escritório de bolso&quot; que
+    o próprio escopo traz.
+  </li>
+  <li>
+    Induz dúvida onde antes não havia. Um gestor que só quer bloquear a agenda para uma manutenção
+    agora precisa escolher entre &quot;bloqueio de agenda&quot; e &quot;outro&quot;. Um parceiro B2B
+    novo — é &quot;reserva externa&quot; ou &quot;evento privado&quot;? A distinção &quot;com venda
+    / sem venda / fora do sistema&quot; é real mas não é trivial.
+  </li>
+  <li>
+    Risco de confundir com Segmentação de Grupo. Já existe um campo na especificação que segmenta
+    eventos por grupos (assinantes, corporativos, parceiros). Adicionar &quot;tipo de uso
+    interno&quot; cria uma segunda taxonomia paralela, e o operador pode não saber qual usar quando.
+  </li>
+  <li>
+    É design sem especificação. A origem desses campos é minha hipótese, não uma dor relatada pelo
+    cliente. Introduzir isso sem o Cristiano ter pedido é adicionar complexidade que pode nunca ser
+    usada. Minha recomendação honesta Não manter como melhoria agora. Mas levar a hipótese para o
+    Cristiano como provocação, não como proposta fechada. A razão: os select cards resolvem um
+    problema real (diferenciar os tipos de atividade interna), mas a documentação já propõe uma
+    solução diferente (separar &quot;atividade&quot; de &quot;bloqueio&quot; em dois fluxos).
+    Implementar os dois ao mesmo tempo seria redundante. Uma proposta mais enxuta pro MVP: Seguir o
+    doc literalmente: campo Visibilidade binário (Interna/Pública) no modal de Nova Atividade Manter
+    o modal &quot;Novo Bloqueio&quot; separado (como o Escopo já prevê) Adicionar um campo opcional
+    &quot;Observação interna&quot; quando Visibilidade = Interna — campo livre, não categorizado
+    Isso cobre 90% do valor dos select cards com 20% da complexidade. Se depois do MVP o Cristiano
+    notar que gestores estão escrevendo repetidamente &quot;treinamento&quot;, &quot;vistoria&quot;,
+    &quot;grupo B2B&quot; na observação, aí sim vale introduzir a categorização — baseada em uso
+    real, não em hipótese. Pergunta pro Cristiano, se quiser validar: &quot;Existe alguma diferença
+    operacional entre uma atividade criada como Interna e um Bloqueio criado pelo botão &#39;Novo
+    Bloqueio&#39; na agenda? Ou são conceitos que podem ser unificados em um fluxo só?&quot; A
+    resposta dele define se o caminho é simplificar (como propus agora) ou investir nos select cards
+    como um esquema unificado. Quer que eu refaça o mockup nessa versão mais enxuta — Visibilidade
+    binária + campo &quot;Observação interna&quot; opcional — pra você comparar lado a lado com os
+    select cards antes de decidir? Você disse: O select de grupo de clientes ainda existe na seleção
+    de visibilidade da atividade interna? O select de grupo de clientes ainda existe na seleção de
+    visibilidade da atividade interna? 22 de abr. Claude respondeu: Vou voltar ao documento para
+    responder isso com base no que está escrito, não no que eu imaginei. Vou voltar ao documento
+    para responder isso com base no que está escrito, não no que eu imaginei. Searched project for
+    “segmentação grupo clientes assinantes corporativos parceiros” Searched project for “segmentação
+    grupo clientes assinantes corporativos parceiros” Agora tenho o que preciso. Resposta objetiva:
+    Não faz sentido manter o campo Segmentação de Grupo quando Visibilidade = Interna Olhando o que
+    o RPP002 §3.3 diz literalmente sobre o campo: &quot;Segmentação de Grupo: Definir quais
+    grupos/perfis de cliente podem ver e reservar este evento (assinantes, grupos corporativos,
+    parceiros).&quot; A definição tem duas partes indissociáveis: quem vê + quem reserva. Ambas
+    pressupõem que a atividade está visível publicamente para algum segmento de clientes — o campo
+    existe justamente para restringir esse &quot;público&quot; a um subconjunto (só assinantes, só
+    corporativos, etc.), não para esconder de todos. Se Visibilidade = Interna, a atividade já não
+    aparece para cliente nenhum. Segmentar um grupo que já está todo fora da visualização é uma
+    operação sem efeito — é como ter um filtro sobre um conjunto vazio. Por que não esconder e sim
+    remover/ocultar é a decisão correta Existem três formas possíveis de tratar o campo no estado
+    Interna:
+  </li>
+  <li>
+    Mantê-lo visível e ativo — cria uma contradição lógica. O usuário preenche, o sistema aceita,
+    mas o valor nunca é usado. Gera bug de expectativa: &quot;configurei para corporativos, por que
+    não aparece?&quot;.
+  </li>
+  <li>
+    Mantê-lo visível mas desabilitado — foi o que propus no primeiro mockup. Funciona como
+    ensinamento da regra (&quot;se eu quiser segmentar, preciso ser público&quot;), mas ocupa espaço
+    e adiciona ruído em um formulário já extenso.
+  </li>
+  <li>
+    Ocultar completamente no estado Interna — mais limpo. Reduz densidade e remove um campo que não
+    tem nenhuma função ali. Minha recomendação mudou: ocultar. O argumento de &quot;ensinar a
+    relação&quot; que usei antes era fraco — o usuário não precisa aprender sobre um campo que ele
+    não vai usar naquele fluxo. O que fica de certeza Em Visibilidade = Interna: Segmentação de
+    Grupo: ocultar (não aparece no formulário) Link do Grupo WhatsApp: também perde função (o doc
+    diz que ele é &quot;incluído automaticamente no e-mail de confirmação de reserva ao
+    cliente&quot; — sem cliente, sem e-mail). Vale ocultar também. Ressalva importante Tudo acima
+    assume a leitura mais direta do que &quot;Segmentação de Grupo&quot; significa no doc —
+    visibilidade restrita na loja. Mas você mesma já flaggou na memória do projeto que há duas
+    features conflitadas (&quot;segmentação de grupos&quot; vs &quot;segmentação por grupos&quot;).
+    Se uma delas se referir a grupo operacional interno (equipe, guia designado para grupo X), aí o
+    campo poderia fazer sentido também em atividade interna. Antes de aplicar a regra de ocultar,
+    vale resolver esse conflito com o Cristiano — porque se &quot;Segmentação de Grupo&quot; tiver
+    um significado operacional além do comercial, a decisão de ocultar estaria errada. Quer que eu
+    atualize o mockup refletindo a decisão de ocultar (junto com o Link do WhatsApp), ou prefere
+    primeiro fechar a ambiguidade da segmentação com o Cristiano? Você disse: Esse campo é opcional?
+    Esse campo é opcional? 22 de abr. Claude respondeu: Deixa eu verificar literalmente no
+    documento, porque isso é uma dúvida que tenho e não quero inferir. Deixa eu verificar
+    literalmente no documento, porque isso é uma dúvida que tenho e não quero inferir. Searched
+    project for “Segmentação de Grupo obrigatório opcional campo” Searched project for “Segmentação
+    de Grupo obrigatório opcional campo” Resposta direta O documento não diz explicitamente se o
+    campo Segmentação de Grupo é obrigatório ou opcional. Olhando a tabela de Criação de Eventos do
+    RPP002 §3.3, a coluna &quot;Descrição&quot; dos campos marca de forma inconsistente:
+    Explicitamente obrigatórios: Título, Data/Hora Início, Data/Hora Término — todos dizem
+    &quot;Obrigatório&quot; Explicitamente opcionais: Produto Vinculado — diz &quot;Opcional&quot;
+    Sem marcação: Local, Capacidade Máxima, Capacidade Mínima, Equipe Responsável, Link WhatsApp,
+    Recorrência, Múltiplos Horários, Descrição, Visibilidade, Segmentação de Grupo, Checklist Ou
+    seja, o doc marca apenas 3 obrigatórios e 1 opcional, e deixa os outros 10 campos sem
+    classificação. Isso inclui Segmentação de Grupo. Minha leitura Pela convenção padrão de
+    formulários (não por spec), campos sem marcação explícita de obrigatoriedade costumam ser
+    tratados como opcionais. Pela lógica de negócio, Segmentação de Grupo também se comporta como
+    opcional: Se o campo fosse obrigatório, toda atividade pública precisaria ser restrita a algum
+    grupo específico — o que entraria em conflito com o caso de uso mais comum (atividade aberta
+    para todos os clientes da loja). O próprio texto do campo fala em &quot;assinantes, grupos
+    corporativos, parceiros&quot; como exemplos de segmentos — isso sugere que a segmentação é uma
+    exceção ao padrão, não a regra. Consequência para o mockup Segmentação de Grupo é opcional em
+    atividades públicas. Isso significa: O campo deve ter marcação visual de opcional (ex:
+    &quot;(opcional)&quot; ao lado do label, ou ausência do asterisco de obrigatoriedade) O valor
+    default deve ser algum equivalente a &quot;todos os clientes&quot; / &quot;sem segmentação&quot;
+    O formulário pode ser salvo sem que o usuário toque nesse campo E confirma o que conversamos
+    antes: se o campo é opcional e seu propósito é restringir visibilidade na loja, ocultá-lo quando
+    Visibilidade = Interna é uma decisão coerente — não estamos suprimindo um input crítico do
+    usuário. Ressalva Essa é uma leitura inferida, não documentada. Vale incluir na lista de
+    perguntas para o Cristiano: &quot;Segmentação de Grupo é obrigatório ou opcional? Qual é o
+    comportamento default — &#39;todos os clientes&#39; ou &#39;nenhum grupo selecionado&#39;?&quot;
+    Porque o default importa: se for &quot;todos&quot;, a atividade sem preenchimento fica pública
+    para qualquer cliente. Se for &quot;nenhum grupo&quot;, a atividade sem preenchimento fica
+    visível para ninguém — o que mudaria o risco de publicar algo invisível sem querer. Você disse:
+    Para não causarmos sobrecarga cognitiva no usuário, optei por setorizar essas informações em
+    três etapas, o primeiro sendo de dados da atividade e visibilidade… Para não causarmos
+    sobrecarga cognitiva no usuário, optei por setorizar essas informações em três etapas, o
+    primeiro sendo de dados da atividade e visibilidade (entram os campos de título, local, produto
+    a ser vinculado, capacidade da atividade - mín. e máx. Visibilidade da atividade pública ou
+    interna e grupos que podem visualizar). O segundo seriam para as atribuições de data e hora da
+    atividade e o último seria para a atribuição dos guias para a atividade. Separe os campos para
+    cada um desses passos 22 de abr. Claude respondeu: Boa decisão arquitetural — dividir em três
+    etapas resolve o problema de densidade do formulário sem perder nenhum campo. Boa decisão
+    arquitetural — dividir em três etapas resolve o problema de densidade do formulário sem perder
+    nenhum campo. Vou organizar os campos da tabela do RPP002 §3.3 nas três etapas que você definiu,
+    indicando obrigatoriedade e herança do produto. Etapa 1 — Dados da atividade e visibilidade
+    Foco: identidade + escopo comercial. Campos: Título do evento — obrigatório (explícito no doc)
+    Produto/Experiência vinculado — opcional (explícito no doc) Local — sem marcação no doc; campo
+    livre ou seleção de local cadastrado Capacidade máxima — auto-preenchida se houver produto
+    vinculado, editável Capacidade mínima — sem marcação no doc (tag &quot;Saída Confirmada&quot;
+    quando atingida) Visibilidade — Interna ou Pública (sem marcação de obrigatoriedade, mas é um
+    toggle então sempre tem valor) Segmentação de grupo — opcional, visível só quando Visibilidade =
+    Pública (conforme a decisão que fechamos) Observações sobre essa etapa: O título original da
+    etapa pode ser &quot;Identificação e visibilidade&quot; — fica mais claro do que &quot;dados da
+    atividade&quot;, que é vago. O campo &quot;Descrição/Observações&quot; do doc você pode colocar
+    aqui também como campo opcional no final da etapa, ou deixar para outra etapa se preferir — fica
+    a seu critério (não há regra no doc sobre onde ele mora). Etapa 2 — Data e hora Foco: quando a
+    atividade acontece. Campos: Data e hora de início — obrigatório (explícito no doc) Data e hora
+    de término — obrigatório (explícito no doc) Recorrência — opcional; diário, semanal, mensal ou
+    personalizado Múltiplos horários no mesmo dia — opcional; adiciona N horários para o mesmo
+    evento/dia Observações sobre essa etapa: Recorrência e múltiplos horários são conceitos
+    diferentes e não mutuamente exclusivos, mas no formulário é raro usar os dois juntos. Vale
+    pensar se um exclui o outro visualmente (ex: &quot;esta atividade se repete&quot; como toggle
+    principal → se ligado, recorrência aparece; se desligado, múltiplos horários aparece), ou se
+    permanecem como dois blocos independentes. O doc não resolve isso — é decisão sua. O Link do
+    grupo WhatsApp do doc é ambíguo sobre onde vive — ele é metadado do evento (não varia por dia).
+    Pode entrar aqui por proximidade conceitual com &quot;comunicação pré-evento&quot;, ou na etapa
+    1 junto à identificação. Sugiro etapa 1, mas não é crítico. Etapa 3 — Equipe Foco: quem conduz a
+    atividade. Campos: Equipe responsável — sem marcação no doc (seleção de um ou mais
+    colaboradores) Observações sobre essa etapa: Essa etapa ficou com apenas um campo, o que pode
+    ser um problema de balanço — as três etapas ficam visualmente desequilibradas (7 campos / 4
+    campos / 1 campo). Algumas alternativas: Opção A — Manter três etapas com equipe
+    &quot;enxuta&quot;: Aproveitar o espaço da etapa 3 para adicionar valor. Por exemplo, mostrar
+    visualmente quais guias estão disponíveis no horário (aproveitando o alerta de &quot;Conflito de
+    Horário da Equipe&quot; já especificado no RPP002 §3.1), ou puxar recursos compartilhados (van,
+    barco, equipamento) que o doc também menciona como vinculáveis. Isso transforma a etapa em algo
+    mais rico e operacional, não só um dropdown. Opção B — Consolidar em duas etapas: Juntar
+    data/hora + equipe numa etapa &quot;Quando e quem&quot;, e manter &quot;Identificação e
+    visibilidade&quot; como etapa 1. Faz sentido porque equipe se escala em função do horário —
+    conflitos de agenda dependem de ambos. Reduz passos, mas aumenta densidade da segunda etapa.
+    Opção C — Adicionar &quot;Checklist de início/fim&quot; e &quot;Observações&quot; na etapa 3
+    como campos complementares. O Checklist é descrito no doc como &quot;campo para registrar
+    horário de início, duração real, horário de término e notas sobre o que aconteceu durante a
+    atividade&quot; — tecnicamente é preenchido durante/depois a atividade, não na criação. Então
+    não encaixa bem aqui. Minha recomendação pessoal: Opção A. Três etapas equilibradas, com a etapa
+    3 virando uma tela operacional real (escala + recursos + alertas de conflito preventivo), não só
+    um dropdown perdido. Campos que sobraram / precisam de decisão Alguns campos do doc §3.3 não
+    entraram em nenhuma das três etapas que você descreveu. Vale confirmar onde vão:
+    Descrição/Observações — sugiro etapa 1 (identidade) Link do grupo WhatsApp — sugiro etapa 1
+    (comunicação vinculada à identidade) Checklist de início/fim da atividade — não é campo de
+    criação; preenchido durante/depois. Provavelmente fora desse fluxo. Quer que eu atualize o
+    mockup do side sheet mostrando essa estrutura em três etapas com um stepper no topo, ou prefere
+    decidir primeiro entre as Opções A, B ou C para a etapa 3? Você disse: Elabore um mockup do
+    passo II baseado nessa estrutura 1776880678534_image.png Elabore um mockup do passo II baseado
+    nessa estrutura 22 de abr. Claude respondeu: Vou manter a estrutura que você já estabeleceu —
+    stepper lateral à esquerda, área de conteúdo à direita, header fixo no topo e ações fixas no
+    rodapé. Vou manter a estrutura que você já estabeleceu — stepper lateral à esquerda, área de
+    conteúdo à direita, header fixo no topo e ações fixas no rodapé. Foco é preencher o conteúdo do
+    Passo II (Datas e horários) seguindo a especificação do RPP002 §3.3. Algumas decisões de design
+    que tomei e que vale chamar sua atenção: Hierarquia dos três blocos. Organizei em seções com
+    label tipo uppercase-tracking pequeno em vez de headers grandes — manter o visual mais próximo
+    de um formulário contínuo do que de uma sequência de &quot;mini-formulários&quot;. Isso reduz a
+    sensação de mais uma etapa dentro da etapa. Múltiplos horários como toggle desligado por
+    default. Optei por esconder a complexidade até o usuário pedir. O doc descreve como
+    &quot;adicionar vários horários para o mesmo evento no mesmo dia sem precisar criar eventos
+    separados&quot; — é funcionalidade de exceção, não padrão. Quando ativado, abaixo apareceria uma
+    lista com campo &quot;Adicionar horário&quot; (não desenhei esse estado; posso fazer uma
+    variação se quiser). Recorrência expandida por default no mockup. Deixei aberta para mostrar
+    todos os componentes da funcionalidade, mas na UI real ela começa colapsada (toggle desligado).
+    Considerei mostrar colapsada + expandir pra exemplificar o estado rico, mas ia reduzir a
+    utilidade do mockup para revisão com o Cristiano. Resumo em helper ao final da recorrência.
+    Quando há configuração de recorrência preenchida, um helper contextual calcula e mostra quantas
+    ocorrências serão criadas. Isso não está no doc, mas é padrão de mercado (Google Calendar,
+    Outlook) e mitiga o risco do usuário criar 300 eventos sem querer. Vale discutir se entra no
+    MVP. Conflito recorrência × múltiplos horários. No mockup, os dois blocos são independentes — o
+    que, tecnicamente, permite um evento recorrente semanal com múltiplos horários no mesmo dia (ex:
+    toda segunda, às 9h, 14h e 17h). Faz sentido operacional para empresas que oferecem várias
+    saídas de trilha no mesmo dia todo fim de semana. Se o Cristiano validar que esse caso existe, a
+    arquitetura está correta. Se ele disser que um exclui o outro, precisa mudar. Campos que deixei
+    de fora dessa etapa: Link do Grupo WhatsApp, Descrição/Observações. Minha sugestão anterior foi
+    colocá-los na Etapa 1, mas se você quiser trazer algum deles pra cá, me avisa. Quer que eu faça
+    a variação com recorrência colapsada (estado inicial real) ou com múltiplos horários ativado?
+    Você disse: Faça o mockup do cenário de Múltiplos horários no mesmo dia habilitado Faça o mockup
+    do cenário de Múltiplos horários no mesmo dia habilitado 22 de abr. Claude respondeu: Vou focar
+    só no estado com múltiplos horários ativado, mantendo a mesma estrutura. Vou focar só no estado
+    com múltiplos horários ativado, mantendo a mesma estrutura. Algumas decisões desse mockup que
+    vale chamar sua atenção: Hora fora do bloco superior. Ao ativar múltiplos horários, tirei os
+    campos de Hora de início/término do bloco &quot;Quando a atividade acontece&quot; e os movi para
+    dentro da lista. Isso evita o problema de ter dois lugares para configurar &quot;hora&quot; — um
+    no topo (que valeria pra quê?) e outro na lista. No topo sobra apenas Data de início e Data de
+    término, que definem o escopo de dia. Isso é uma decisão minha, não está no doc — vale confirmar
+    com o Cristiano se faz sentido que &quot;Múltiplos horários&quot; substitua o campo de hora
+    única, ou se são conceitos independentes. Capacidade por horário, não global. Coloquei o campo
+    Capacidade em cada linha de horário. O motivo: uma atividade pode ter capacidade 15 no turno da
+    manhã (mais guias) e 10 no turno da tarde (um guia só disponível). Isso também é inferência
+    minha e entra em conflito direto com a tabela de Criação de Eventos do RPP002, que define
+    Capacidade como campo único do evento. Precisa de validação — se o Cristiano disser que
+    capacidade é sempre do evento, não por slot, preciso tirar essa coluna e deixar só os horários.
+    Terceira linha em estado &quot;sendo adicionada&quot;. Desenhei a linha 3 destacada em azul
+    claro para mostrar o estado logo após o usuário clicar em &quot;Adicionar outro horário&quot; —
+    com o campo de Início já preenchido pelo sistema (17:30 seguindo o padrão de intervalo) e
+    aguardando o Término. É um detalhe de feedback visual que facilita completar, mas se preferir
+    que todas as linhas pareçam iguais (estado estático depois de salvas), é ajuste simples.
+    Recorrência convive com múltiplos horários. Mantive o toggle de Recorrência no final mesmo com
+    múltiplos horários ativo. O helper diz &quot;Programe a repetição desses horários em outros
+    dias&quot; — ou seja, se o usuário ativar recorrência com múltiplos horários, a lista inteira de
+    horários se repete nas datas selecionadas. Faz sentido operacionalmente (trilha toda quarta e
+    sábado, sempre 8h/13h/17h), mas é outro ponto de validação — o doc não resolve se as duas
+    features convivem ou se excluem. Ícones de lixeira sem confirmação. Seguindo o mesmo padrão de
+    &quot;desfazer check-in&quot; que você já estabeleceu como pattern do projeto (ação reversível
+    antes do salvar → sem dialog de confirmação). Como o usuário ainda não salvou a atividade,
+    remover um horário nessa etapa é recuperável. O que ainda falta nessa etapa ou depende de
+    alinhamento: Validação de sobreposição de horários (horário 2 termina antes do horário 1
+    começar) — não desenhei estado de erro Se o intervalo entre horários é livre ou precisa
+    respeitar a duração do produto (ex: trilha de 3h não cabe em slots de 2h) Comportamento quando o
+    usuário desativa o toggle depois de já ter adicionado horários — apaga tudo? Confirma antes?
+    Quer que eu faça o estado vazio (toggle ativado mas ainda sem nenhum horário adicionado) ou o
+    estado com erro de validação de sobreposição? Você disse: Porque cada horário gera uma saída
+    separada com controle próprio de vagas, check-in e escala de equipe. Porque cada horário gera
+    uma saída separada com controle próprio de vagas, check-in e escala de equipe. É uma regra
+    discutida em algum documento ou chegou a ser especificado? 22 de abr. Claude respondeu: Boa —
+    vou verificar isso literalmente no documento porque foi inferência minha e quero confirmar. Boa
+    — vou verificar isso literalmente no documento porque foi inferência minha e quero confirmar.
+    Searched project for “múltiplos horários saída separada vagas check-in escala equipe” Searched
+    project for “múltiplos horários saída separada vagas check-in escala equipe” Resposta direta:
+    essa afirmação é inferência minha, não está especificada em nenhum documento. O que eu coloquei
+    no helper do mockup &quot;Cada horário gera uma saída separada com controle próprio de vagas,
+    check-in e escala de equipe.&quot; Isso é uma conclusão minha baseada em pistas indiretas, não
+    uma regra documentada. O que o documento diz literalmente sobre múltiplos horários No RPP002
+    §3.3 tem apenas uma linha: &quot;Múltiplos Horários no Mesmo Dia: Adicionar vários horários para
+    o mesmo evento no mesmo dia sem precisar criar eventos separados.&quot; Só isso. A spec não diz
+    se cada horário tem sua própria capacidade, se a escala de equipe é por horário ou
+    compartilhada, nem se o check-in é separado. Pistas indiretas que sustentam parcialmente a
+    inferência Três trechos do docs sugerem que horário é um &quot;slot&quot; separado
+    operacionalmente, mas nenhum afirma que cada múltiplo horário funciona como saída independente:
+  </li>
+  <li>
+    RPP002 §3.4 — Filtros de Listas: &quot;Horário: Selecionar o horário específico (quando o evento
+    tem múltiplos horários).&quot; Indica que operacionalmente dá pra filtrar por horário — então o
+    sistema trata cada horário como uma unidade filtrável.
+  </li>
+  <li>
+    RNPN 002 — Visualização Multiproduto: &quot;Cada bloco de produto/horário funciona como uma
+    &#39;ilha&#39; de informação. Isso permite que o gestor veja, em uma única tela, que o João
+    Silva está na Trilha às 08:00 e a Dona Bento está no Café às 09:00.&quot; Sugere que
+    produto+horário é a unidade de visualização — mas fala de produtos diferentes em horários
+    diferentes, não de um mesmo produto com múltiplos horários.
+  </li>
+  <li>
+    RPP002 §3.1 — Funcionalidades do Mapa de Vagas: &quot;Bloquear Vendas: Bloquear novas vendas
+    para um produto/dia/horário específico.&quot; Indica que &quot;dia/horário&quot; é uma unidade
+    com granularidade para bloqueio comercial — mas isso não é a mesma coisa que dizer que cada
+    horário tem capacidade/equipe próprias no momento da criação. Onde entra a minha inferência
+    Pulei dessas pistas indiretas para três afirmações mais fortes, que o doc não faz: &quot;Cada
+    horário gera uma saída separada&quot; &quot;Controle próprio de vagas&quot; &quot;Escala de
+    equipe por horário&quot; A lógica do meu salto foi: se o sistema permite filtrar, bloquear e
+    visualizar por horário, provavelmente cada horário precisa ter seus próprios dados de ocupação e
+    equipe. Mas &quot;provavelmente&quot; não é spec — é design assumindo o que ainda precisa ser
+    decidido. Implicações práticas Isso afeta três decisões de UI que ainda estão em aberto:
+  </li>
+  <li>
+    Capacidade por horário vs. capacidade do evento — no mockup anterior eu desenhei uma coluna
+    &quot;Capacidade&quot; por linha de horário. Se a decisão do Cristiano for &quot;a capacidade é
+    do evento&quot;, essa coluna deve sair e a capacidade única fica no topo como estava
+    originalmente.
+  </li>
+  <li>
+    Escala de equipe por horário vs. por evento — na Etapa 3 que vamos desenhar, precisamos saber se
+    o usuário escala um time para a atividade toda ou um time por horário. Se for por horário e o
+    evento tem 3 saídas no dia, isso muda radicalmente a complexidade da Etapa 3.
+  </li>
+  <li>
+    Check-in por horário vs. por evento — mais simples; provavelmente é por horário (já que a §3.4
+    filtra por horário), mas também não está dito. Recomendação Tirar esse helper do mockup até ter
+    a confirmação do Cristiano. Ele afirma coisas que podem não ser verdade. Posso substituir por
+    algo mais neutro, tipo &quot;Cada horário será exibido como um slot próprio na agenda&quot; —
+    que é o que o doc garante (via §3.4 e §3.1) — ou deixar sem helper até a regra ficar clara.
+    Essas três decisões acima (capacidade, equipe, check-in) viraram perguntas diretas pro
+    Cristiano. Quer que eu consolide elas em um rascunho de mensagem pra ele validar antes de
+    avançarmos para a Etapa 3? Você disse: E esse select de Nº de ocorrências em recorrência, faz
+    parte da documentação? E esse select de Nº de ocorrências em recorrência, faz parte da
+    documentação? 22 de abr. Claude respondeu: Boa, vou verificar literalmente. Boa, vou verificar
+    literalmente. Searched project for “recorrência número ocorrências termina data final
+    personalizado” Searched project for “recorrência número ocorrências termina data final
+    personalizado” Resposta direta Não está na documentação. O &quot;Nº de ocorrências&quot; como
+    opção de terminar recorrência foi inferência minha. O RPP002 §3.3 tem apenas uma linha sobre
+    recorrência: &quot;Recorrência: Opção de configurar o evento como recorrente: diário, semanal,
+    mensal ou personalizado. Permite selecionar múltiplas datas de uma só vez (ex: todos os sábados
+    do mês).&quot; E o RNPN 002 apenas marca a funcionalidade como pendente: &quot;❌ Recorrência de
+    eventos - configuração de eventos recorrentes (diário, semanal, mensal, personalizado)&quot; O
+    que a documentação não especifica sobre recorrência Como termina (data final, nº de ocorrências,
+    nunca) Frequência personalizada (intervalo de repetição) Seleção de dias da semana dentro de
+    &quot;semanal&quot; Preview das datas geradas Ou seja, praticamente tudo que desenhei no bloco
+    de recorrência é padrão de mercado (Google Calendar, Outlook, iCal) aplicado por inferência. A
+    única coisa que a spec garante são os quatro modos: diário, semanal, mensal e personalizado. O
+    que posso afirmar sobre a prática do mercado Praticamente todo sistema de calendário sério
+    oferece duas opções de término (data específica OU nº de ocorrências), e geralmente uma terceira
+    (nunca termina). Mas isso é convenção, não requisito — e pode ser demais pra um MVP onde o doc
+    só pediu &quot;configure recorrência&quot;. Onde entra o meu salto O exemplo do próprio doc —
+    &quot;todos os sábados do mês&quot; — sugere que o cliente pensa em recorrência com escopo
+    temporal definido (um mês específico). Isso apoia a opção &quot;Data específica&quot; como mais
+    próxima do que o Cristiano imagina. Já &quot;Nº de ocorrências&quot; é mais abstrato e menos
+    alinhado com o exemplo. Provavelmente o gestor pensa em &quot;sábados de maio&quot; ou &quot;do
+    dia X ao dia Y&quot; — não &quot;10 sábados&quot;. Recomendação Simplificar. Sugiro tirar
+    &quot;Nº de ocorrências&quot; do mockup e manter só data de término como opção de encerramento
+    da recorrência. Fica: Mais alinhado ao exemplo do doc (&quot;todos os sábados do mês&quot; → tem
+    data inicial e final implícita) Menos opções = menos decisões para o usuário Mais fácil de
+    implementar (é um único campo de data, não uma escolha) Se depois o Cristiano pedir &quot;nº de
+    ocorrências&quot;, é trivial adicionar. Ir pelo caminho oposto (lançar com as duas e depois
+    simplificar) gera custo de mudança sem retorno claro. Lista do que é inferência minha no bloco
+    de recorrência Pra ser completa e honesta — todos esses elementos não estão no doc: Seleção de
+    dias da semana em &quot;semanal&quot; (botões D/S/T/Q/Q/S/S) Opção &quot;Termina em → Data
+    específica / Nº de ocorrências&quot; Helper contextual &quot;Serão criadas 24 ocorrências entre
+    22/04 e 15/10&quot; Configuração de intervalo em &quot;Personalizada&quot; Todos são padrões de
+    mercado, mas nenhum é spec. Vale levar isso ao Cristiano em bloco quando discutir recorrência —
+    ele pode querer muito menos ou muito mais do que estou propondo. Quer que eu ajuste o mockup da
+    recorrência para uma versão mais enxuta e documentada, ou prefere manter a versão rica como
+    &quot;proposta de discussão&quot; com o Cristiano? Você disse: Do que se trata essas ocorrências
+    que foram citadas? Do que se trata essas ocorrências que foram citadas? 22 de abr. Claude
+    respondeu: Boa pergunta — vou esclarecer, porque a palavra &quot;ocorrência&quot; tem
+    significados completamente diferentes dependendo do contexto, e eu mesma misturei os dois no m…
+    Boa pergunta — vou esclarecer, porque a palavra &quot;ocorrência&quot; tem significados
+    completamente diferentes dependendo do contexto, e eu mesma misturei os dois no mockup de
+    recorrência. Searched project for “ocorrência tipo severidade incidente atividade” Searched
+    project for “ocorrência tipo severidade incidente atividade” Muito boa pergunta — e é importante
+    desambiguar, porque &quot;ocorrência&quot; no projeto tem dois significados completamente
+    diferentes e eu misturei os dois. Significado A — Ocorrência operacional (está na documentação)
+    É o conceito definido no RPP002 §3.8 — Registro Operacional: &quot;Registro de Ocorrências e
+    Incidentes: Tipo de ocorrência (Incidente de segurança, Reclamação, Problema de equipamento,
+    Condição climática, Outro), nível de severidade (Baixo/Médio/Alto), descrição e evidências
+    (fotos/arquivos).&quot; &quot;Disparo de Alerta para Alto Risco: Ocorrências de severidade Alta
+    disparam notificação imediata por e-mail e WhatsApp para o Gestor Operacional.&quot; É algo que
+    o operador ou guia registra durante ou depois da atividade quando acontece algum imprevisto.
+    Essa &quot;ocorrência&quot; aparece no fluxo de conclusão da atividade que você e o Rafael já
+    desenharam — inclusive foi discutida no alinhamento de 15/04 com o Cristiano dizendo que a lista
+    de tipos ainda não existe em documentação e ele vai criar. Também aparece nas ações disponíveis
+    para o Líder de Operação (§3.5): &quot;Registrar Ocorrência: Registrar qualquer incidente
+    durante a execução com tipo, descrição e nível de severidade.&quot; Pode ser &quot;Incidente de
+    segurança&quot;, &quot;Reclamação do cliente&quot;, &quot;Problema de equipamento&quot;,
+    &quot;Condição climática&quot;, etc. Severidade Alta dispara alerta para o gestor. É parte do
+    SGS (Sistema de Gestão da Segurança). Significado B — Ocorrência de recorrência (não está na
+    documentação) É o que eu usei no mockup do Passo II: &quot;Serão criadas 24 ocorrências entre
+    22/04 e 15/10&quot; &quot;Termina em: Data específica / Nº de ocorrências&quot; Aqui
+    &quot;ocorrência&quot; significa &quot;instância&quot; ou &quot;repetição&quot; de um evento
+    recorrente — cada sábado do calendário onde a atividade acontecerá. É o vocabulário técnico de
+    sistemas de calendário (iCal, Google Calendar usa &quot;occurrence&quot; para isso). Isso não
+    está documentado em lugar nenhum — foi terminologia minha importada do mercado. O problema da
+    colisão São conceitos totalmente diferentes, mas compartilham a mesma palavra. Isso é ruim por
+    dois motivos:
+  </li>
+  <li>
+    Confunde o usuário. Se o gestor vê no Passo II &quot;24 ocorrências entre 22/04 e 15/10&quot; e
+    depois no fluxo de conclusão vê &quot;Registrar ocorrência (Baixo/Médio/Alto)&quot;, ele não vai
+    entender que são duas coisas separadas. Uma é &quot;este evento acontecerá 24 vezes&quot;, a
+    outra é &quot;aconteceu um incidente nessa atividade específica&quot;.
+  </li>
+  <li>
+    Polui o modelo mental do produto. O documento estabelece &quot;ocorrência&quot; como termo
+    específico do SGS — algo sério, que pode disparar alerta de emergência para o gestor. Usar a
+    mesma palavra para &quot;repetição de evento recorrente&quot; dilui esse peso. Recomendação
+    Trocar a terminologia no mockup da recorrência. Opções possíveis: &quot;Serão criadas 24 datas
+    entre 22/04 e 15/10&quot; &quot;Serão criadas 24 saídas entre 22/04 e 15/10&quot; &quot;Serão
+    criadas 24 repetições entre 22/04 e 15/10&quot; &quot;Repete 24 vezes entre 22/04 e 15/10&quot;
+    Das quatro, &quot;datas&quot; ou &quot;saídas&quot; são as mais alinhadas com o vocabulário que
+    o próprio Cristiano usa nas reuniões — ele fala em &quot;saída&quot; para se referir a uma
+    instância de atividade, e em &quot;data&quot; quando fala do exemplo do doc (&quot;todos os
+    sábados do mês&quot;). E no campo de terminação, se você decidir manter a opção dupla
+    (contrapondo a recomendação anterior de simplificar), seria: &quot;Termina em: Data específica /
+    Nº de saídas&quot; Assim &quot;ocorrência&quot; fica reservada exclusivamente para o conceito de
+    incidente operacional — que é o significado que o doc formalizou. Quer que eu atualize o mockup
+    da recorrência corrigindo essa terminologia? Você disse: Faz sentido termos um campo de data de
+    término em seleção de repetição semanal? Faz sentido termos um campo de data de término em
+    seleção de repetição semanal? 22 de abr. Claude respondeu: Deixa eu pensar nessa cuidadosamente
+    antes de responder. Deixa eu pensar nessa cuidadosamente antes de responder. O problema lógico
+    Vamos destrinchar o que está no Passo II hoje: Bloco &quot;Quando a atividade acontece&quot; —
+    tem campos de Data de início e Data de término (ou Data da atividade, se for único dia) Bloco de
+    Recorrência — quando ativa, mostra frequência (Diária/Semanal/Mensal/Personalizada) + dias da
+    semana + Termina em → Data específica Com recorrência semanal ativa, o usuário teria duas datas
+    de término no mesmo formulário: Data de término (do bloco superior) — provavelmente significando
+    &quot;a atividade em si termina nessa data&quot; (ex: trilha de 1 dia, termina 26/04) Data de
+    término da recorrência (do bloco inferior) — significando &quot;a série de repetições termina
+    nessa data&quot; (ex: repete todo sábado até 15/10) Isso é confuso. Mesmo campo, significados
+    diferentes. O usuário pode preencher um achando que é o outro. Além disso, há redundância com Nº
+    de saídas Já concluímos que &quot;Nº de saídas&quot; provavelmente não entra no MVP. Mas se
+    entrasse, seriam três formas de dizer a mesma coisa em recorrência semanal: &quot;Repete aos
+    sábados até 15/10&quot; &quot;Repete aos sábados por 24 saídas&quot; Ambos — &quot;Repete aos
+    sábados até 15/10, ou seja, 24 saídas&quot; Possíveis arquiteturas (3 caminhos) Opção 1 — Data
+    de término só no bloco superior, recorrência herda ela O bloco &quot;Quando a atividade
+    acontece&quot; tem Data de início + Data de término. Quando recorrência é ativada, a Data de
+    término do topo passa a significar &quot;data final da série recorrente&quot;. Prós: um campo
+    só, sem duplicação Contras: o significado do campo muda dependendo do contexto (atividade única
+    = fim da atividade / atividade recorrente = fim da série). Mudança de semântica é confusa. Opção
+    2 — Data de término do bloco superior some quando recorrência está ativa Mostrar Data de término
+    apenas quando recorrência está desligada. Quando recorrência é ativada, esse campo vira
+    &quot;Data de término da série&quot; dentro do próprio bloco de recorrência. Prós: cada campo
+    tem um significado único Contras: o bloco &quot;Quando a atividade acontece&quot; passa a não
+    ter campo de fim — só Data de início. Pode parecer incompleto. Opção 3 — Repensar o que é
+    &quot;Data de término&quot; no bloco superior A origem do problema é: o RPP002 §3.3 diz
+    &quot;Data e Hora de Início&quot; + &quot;Data e Hora de Término&quot; como obrigatórios. Isso
+    faz todo sentido para uma atividade de vários dias (trilha 3 dias = 26/04 início, 28/04 fim).
+    Mas para atividade de 1 dia com múltiplas datas recorrentes, &quot;Data de término&quot; perde
+    utilidade no topo — o que faz sentido é &quot;Data&quot; (um dia só) + data final da
+    recorrência. Nesse caso, o bloco superior poderia se adaptar: Atividade de um dia único: Data +
+    Hora de início + Hora de término Atividade de múltiplos dias: Data de início + Data de término +
+    Hora de início + Hora de término E a recorrência sempre adiciona sua própria data final da
+    série. Minha recomendação Opção 2 é a mais limpa, mas com um refinamento: renomear
+    explicitamente para evitar confusão. Bloco superior: Data de início + Data de término (os campos
+    obrigatórios do doc) Bloco de recorrência, quando ativo: &quot;Data final da repetição&quot; ou
+    &quot;Repete até&quot; — deixando claro que é um terceiro conceito, não duplicação E o bloco
+    superior não some — continua representando a duração de uma ocorrência da atividade. Faz sentido
+    para atividades multi-dia que também são recorrentes (ex: retiro de 3 dias que se repete toda
+    primeira semana do mês). Um caso que prova a necessidade dos dois campos Atividade: retiro de
+    fim de semana (sábado 8h até domingo 18h), que acontece todo primeiro fim de semana do mês
+    durante 2026. Data de início: 03/01/2026 às 8h Data de término: 04/01/2026 às 18h Recorrência:
+    mensal, primeiro fim de semana Repete até: 31/12/2026 Aqui os três conceitos são necessários e
+    diferentes: Quando começa uma ocorrência (sábado 8h) Quando termina essa ocorrência (domingo
+    18h) Quando termina a série (31/12) Esse exemplo mostra que a dor não é ter dois campos de data
+    de término — é nomear mal o campo da recorrência. Resposta direta pra sua pergunta Sim, faz
+    sentido ter um campo de data de término na recorrência se ele for nomeado de forma distinta do
+    Data de término da atividade. &quot;Termina em&quot; é ambíguo — sugiro trocar por &quot;Repete
+    até&quot; ou &quot;Data final da repetição&quot;, posicionado claramente dentro do bloco de
+    recorrência. Vou atualizar o mockup com essa correção e também aplicar a decisão anterior de
+    tirar &quot;Nº de saídas&quot; — aí fica mais enxuto. Quer que eu refaça? Você disse: Agora me
+    dê o cenário de frequência diária, o de frequência mensal e o de frequência personalizada Agora
+    me dê o cenário de frequência diária, o de frequência mensal e o de frequência personalizada 22
+    de abr. Claude respondeu: Vou montar os três cenários em sequência. Vou montar os três cenários
+    em sequência. Antes, quero deixar explícito o que é inferência minha em cada um, porque o doc só
+    diz &quot;diário, semanal, mensal ou personalizado&quot; sem detalhar como cada um funciona. O
+    que estou inferindo em cada modo: Diária — repete todos os dias até a data final, ou permite
+    intervalo (&quot;a cada X dias&quot;). Optei pela versão simples (todos os dias) porque é o
+    comportamento esperado pelo nome; o &quot;a cada X dias&quot; fica para o modo Personalizada.
+    Mensal — padrão de mercado tem duas variantes que precisam ser oferecidas: repetir no mesmo dia
+    do mês (todo dia 15) ou no mesmo dia da semana ordinal (toda primeira quarta). Sem uma das duas,
+    o modo fica incompleto. Personalizada — combina intervalo customizado (&quot;a cada N
+    dias/semanas/meses&quot;) com seleção de dias. É o que sistemas como Google Calendar oferecem.
+    Nenhuma dessas especificações está no doc. Tudo é padrão de mercado aplicado por inferência.
+    Três observações importantes sobre o que você está vendo: Frequência Diária — deixei sem
+    controle de intervalo (&quot;a cada X dias&quot;). A lógica é: se o usuário quer atividade todo
+    dia, escolhe Diária; se quer &quot;a cada 3 dias&quot;, escolhe Personalizada. Simplifica o modo
+    Diária e dá um uso claro para Personalizada. Se preferir adicionar intervalo aqui também,
+    duplica funcionalidade com Personalizada — vale discutir. Frequência Mensal — coloquei duas
+    variantes (dia do mês vs. dia da semana ordinal) porque sem uma das duas o modo Mensal fica
+    quebrado em casos reais. Exemplo: &quot;toda primeira quarta-feira do mês&quot; é impossível de
+    configurar só com &quot;dia 22&quot; — a data do dia da semana muda todo mês. O Cristiano
+    mencionou no doc o exemplo &quot;todos os sábados do mês&quot; que na prática é isso. Essa
+    estrutura de dois radios é padrão do Google Calendar e cobre praticamente todos os casos de
+    recorrência mensal. Frequência Personalizada — combina três coisas: intervalo customizado
+    (&quot;a cada N dias/semanas/meses&quot;) + dias da semana selecionáveis + data final. É o modo
+    &quot;tudo mais&quot; que cobre casos fora dos três padrões anteriores. No exemplo: trilha
+    quinzenal aos sábados e domingos. Três pontos críticos pra validar com o Cristiano antes de
+    finalizar: Mensal com duas variantes existe no MVP ou simplifica? Ter duas opções (dia do mês /
+    dia da semana ordinal) é correto tecnicamente, mas pode ser overkill se a maioria das empresas
+    só usa &quot;dia do mês&quot;. Talvez o MVP comece com dia do mês apenas, e a variante ordinal
+    venha depois. Personalizada é realmente necessária? Se Diária/Semanal/Mensal cobrem 95% dos
+    casos, Personalizada pode virar escopo futuro. A não ser que o Cristiano tenha um caso concreto
+    (tipo &quot;trilha a cada 10 dias&quot;), dá para esconder até lá. Limite máximo de saídas
+    geradas? Uma atividade diária por um ano = 365 saídas. Aos sábados por dois anos = 104 saídas.
+    Vale ter um limite técnico (ex: 200 ocorrências) e avisar o usuário antes de passar? Isso é
+    inferência minha, não está no doc — mas é fonte de bug real se esquecer. Quer que eu atualize
+    também o mockup original do Passo II com a versão Semanal corrigida (sem Nº de ocorrências, com
+    helper &quot;saídas&quot; em vez de &quot;ocorrências&quot;), para ter os quatro cenários
+    consistentes? Você disse: Na área de atividade personalizada faz sentido termos os campos de
+    seleção de dias e data de repetição (repete até)? Na área de atividade personalizada faz sentido
+    termos os campos de seleção de dias e data de repetição (repete até)? Explique o porque 22 de
+    abr. Claude respondeu: Boa provocação — vou pensar cada um desses campos separadamente, porque
+    são decisões diferentes com respostas diferentes. Boa provocação — vou pensar cada um desses
+    campos separadamente, porque são decisões diferentes com respostas diferentes. &quot;Repete
+    até&quot; — sim, faz sentido manter Esse campo responde à pergunta: quando a série termina? Sem
+    ele, a recorrência não tem fim, e o sistema precisaria criar infinitas saídas (ou um limite
+    arbitrário, tipo 2 anos). O raciocínio é o mesmo que vale para Diária/Semanal/Mensal: toda
+    recorrência precisa de um ponto de parada, independente da frequência. Uma recorrência semanal
+    &quot;toda terça&quot; também precisa saber até quando repetir — não é específica do modo
+    Personalizada. Conclusão: &quot;Repete até&quot; é um campo universal da recorrência, não
+    específico da Personalizada. Faz sentido em todos os quatro modos. &quot;Nos dias&quot; — aqui
+    há um problema real de consistência Aqui a resposta é depende do intervalo. E é exatamente isso
+    que faz o mockup atual inconsistente. Deixa eu destrinchar: Quando a seleção de dias faz sentido
+    Só quando o intervalo é em semanas. Faz sentido dizer &quot;a cada 2 semanas, nas terças e
+    quintas&quot;. A seleção de dias da semana funciona como um complemento natural do intervalo
+    semanal. Quando a seleção de dias não faz sentido Quando o intervalo é em dias. &quot;A cada 3
+    dias, nas terças e quintas&quot; é logicamente ambíguo — o que tem prioridade? O &quot;a cada 3
+    dias&quot; diz que conta de 3 em 3 (22/04, 25/04, 28/04...); o &quot;terças e quintas&quot;
+    contradiz isso porque esses dias caem em intervalos irregulares. Os dois conceitos competem.
+    Quando o intervalo é em meses. &quot;A cada 2 meses, nas terças e quintas&quot; também não faz
+    sentido sozinho — precisaria de outra camada (qual terça do mês? Primeira? Toda?). Vira
+    recorrência mensal, não personalizada. O mockup atual tem um bug lógico No mockup que fiz, os
+    campos &quot;Repete a cada [2] [Semanas]&quot; e &quot;Nos dias [T] [Q]&quot; aparecem fixos,
+    independentemente da unidade escolhida. Se o usuário trocar &quot;Semanas&quot; por
+    &quot;Dias&quot; no select, o bloco &quot;Nos dias&quot; continua aparecendo e passa a não fazer
+    sentido. A seleção de dias deveria ser condicional: aparece só quando o intervalo for em
+    semanas. Correção proposta A estrutura correta da Personalizada muda conforme o intervalo: Se
+    intervalo = Dias: Repete a cada [N] [Dias] Repete até [data] (não tem seleção de dias) Se
+    intervalo = Semanas: Repete a cada [N] [Semanas] Nos dias [D S T Q Q S S] Repete até [data] Se
+    intervalo = Meses: Repete a cada [N] [Meses] Padrão: dia do mês OU dia da semana ordinal (como
+    no modo Mensal) Repete até [data] Ou seja, a Personalizada vira uma versão
+    &quot;multiplicadora&quot; dos três modos anteriores — Diária/Semanal/Mensal com um N no meio
+    que permite intervalo customizado. Implicação maior: repensar os quatro modos Olhando isso,
+    surge uma questão mais profunda: se Personalizada já pode fazer tudo que Diária/Semanal/Mensal
+    fazem (só que com intervalo = 1 em vez de N), os outros três são redundantes? Não exatamente —
+    eles são atalhos para o caso mais comum (N=1). Mas vale considerar duas arquiteturas:
+    Arquitetura A (atual): Quatro modos separados, sendo que Personalizada expõe o controle de
+    intervalo Prós: atalhos rápidos para casos comuns Contras: duplicação — um usuário que escolhe
+    &quot;Semanal&quot; + depois precisa mudar para &quot;a cada 2 semanas&quot; tem que trocar o
+    modo e reconfigurar Arquitetura B (simplificada): Um único modo com &quot;Repete a cada [1]
+    [Semana/Dia/Mês] nos dias X&quot; Prós: um lugar só, sem redundância, menos decisões Contras:
+    exige mais configuração mesmo nos casos simples (usuário sempre precisa clicar dropdown da
+    unidade) Google Calendar, iCal e Outlook adotam variações de B, mas expõem atalhos rápidos
+    (botões &quot;Diária/Semanal/Mensal/Anual&quot; que pré-preenchem os campos). Isso é
+    provavelmente o mais limpo. Resposta direta &quot;Repete até&quot; — sim, mantenha. É universal,
+    aplica em todos os modos. &quot;Nos dias&quot; — mantenha, mas faça condicional. Só aparece
+    quando a unidade do intervalo é &quot;Semanas&quot;. Quando é &quot;Dias&quot; ou
+    &quot;Meses&quot;, esse campo não deveria existir porque não tem significado lógico. E vale
+    discutir com o Cristiano se a Personalizada como conceito separado ainda faz sentido, ou se os
+    quatro modos podem ser unificados num único formulário mais flexível. Quer que eu refaça o
+    mockup da Personalizada aplicando o comportamento condicional — com a seleção de dias aparecendo
+    só quando a unidade for Semanas? Você disse: Faça o mockup do cenário de frequência
+    personalizada em meses Faça o mockup do cenário de frequência personalizada em meses 22 de abr.
+    Claude respondeu: Aqui o exemplo é: &quot;Evento trimestral — a cada 3 meses, sempre no dia 22,
+    até abril de 2028&quot;. Aqui o exemplo é: &quot;Evento trimestral — a cada 3 meses, sempre no
+    dia 22, até abril de 2028&quot;. Gera 9 saídas ao longo de 2 anos. Algumas observações sobre
+    como montei: Padrão mensal reaparece aqui. Quando a unidade do intervalo é &quot;Meses&quot;, o
+    bloco volta a precisar das duas variantes (dia do mês vs. dia da semana ordinal) pelo mesmo
+    motivo da Mensal normal — &quot;a cada 3 meses&quot; por si só é ambíguo. Precisa saber se é dia
+    fixo (sempre dia 22) ou posição relativa (sempre quarta semana, quarta-feira). Ausência do
+    &quot;Nos dias&quot;. Seguindo o raciocínio da sua pergunta anterior, o seletor de dias da
+    semana não aparece quando a unidade é Meses. Aqui a estrutura é idêntica à Mensal do modo
+    padrão, apenas com o multiplicador de intervalo adicionado. Se fosse Semanas, aí sim o &quot;Nos
+    dias&quot; entraria; se fosse Dias, nem um nem outro apareceria. Um insight que aparece com esse
+    mockup. Quando você olha Personalizada/Meses lado a lado com Mensal/padrão, a diferença é
+    literalmente um único campo: &quot;Repete a cada [N] meses&quot; em vez de implícito [N=1]. Pode
+    indicar que vale fundir os modos num só, como mencionei antes — o Google Calendar faz exatamente
+    isso. &quot;Mensal&quot; vira só um preset que pré-preenche N=1. Isso simplifica a UI e elimina
+    a redundância entre os quatro modos. Caso de uso real no contexto Retrilhar. Pensei se esse modo
+    &quot;a cada N meses&quot; tem demanda prática na operação outdoor/turismo. Exemplos possíveis:
+    retiros trimestrais de imersão, expedições sazonais (a cada 6 meses), eventos corporativos
+    recorrentes (team building a cada 4 meses). Não sei se o Cristiano tem clientes reais pedindo
+    isso — vale mesmo verificar se esse modo sai do MVP ou entra como funcionalidade futura. Três
+    decisões ainda em aberto pelo acúmulo da conversa: Mensal precisa das duas variantes (dia do mês
+    / ordinal) ou só dia do mês basta para o MVP? Personalizada entra no MVP ou é escopo futuro?
+    Vale considerar unificar os quatro modos em um só (com presets)? Todas são perguntas para o
+    Cristiano, não para resolver no Figma. Quer consolidar essas perguntas em uma lista estruturada
+    para levar ao próximo alinhamento, ou prefere seguir para outro ponto do fluxo? Você disse: Me
+    dê agora apenas os dados relacionados a repetição personalizada que foi oferecida pelo cliente
+    Me dê agora apenas os dados relacionados a repetição personalizada que foi oferecida pelo
+    cliente 22 de abr. Claude respondeu: Vou buscar literalmente nos documentos — sem inferir nada.
+    Vou buscar literalmente nos documentos — sem inferir nada. Searched project for “recorrência
+    personalizada diário semanal mensal personalizado” Searched project for “recorrência
+    personalizada diário semanal mensal personalizado” Resposta direta O cliente não especificou
+    nada sobre como funciona a &quot;Personalizada&quot;. Tudo que o documento diz sobre
+    recorrência, em qualquer lugar, é isso: No RPP002 §3.3 — tabela de Criação de Eventos:
+    &quot;Recorrência: Opção de configurar o evento como recorrente: diário, semanal, mensal ou
+    personalizado. Permite selecionar múltiplas datas de uma só vez (ex: todos os sábados do
+    mês).&quot; No RNPN 002 — inventário de pendentes: &quot;❌ Recorrência de eventos -
+    configuração de eventos recorrentes (diário, semanal, mensal, personalizado)&quot; E nada mais.
+    Não há menção à Personalizada em lugar nenhum além desses dois trechos — nem em transcrições de
+    reunião, nem em ata, nem em especificação técnica. O que isso significa concretamente O cliente
+    escreveu apenas a palavra &quot;personalizado&quot; como quarto tipo disponível, sem definir o
+    que ela faz. Não há: Sem definição de intervalo customizado (&quot;a cada N
+    dias/semanas/meses&quot;) Sem seleção de dias da semana Sem variantes de padrão mensal (dia do
+    mês vs. ordinal) Sem limites de repetição Sem comportamento específico Todo o mockup que fiz da
+    Personalizada foi inferência minha, baseado em padrões de Google Calendar, Outlook e iCal.
+    Nenhum campo, nenhum comportamento, nenhuma combinação saiu do documento. O único exemplo
+    concreto que o cliente deu O único caso de uso real descrito pelo cliente é: &quot;(ex: todos os
+    sábados do mês)&quot; Que é recorrência semanal com filtro de dia da semana — não é
+    Personalizada. Isso é semanal padrão. O que isso indica sobre as decisões de design Três
+    implicações práticas:
+  </li>
+  <li>
+    A Personalizada pode significar qualquer coisa. Pode ser &quot;a cada N dias&quot;, pode ser
+    &quot;seleção múltipla de datas específicas no calendário&quot; (tipo &quot;quero repetir nos
+    dias 5, 12, 20 e 28 de maio&quot;), pode ser &quot;datas selecionadas manualmente pelo usuário
+    uma a uma&quot;. Cada interpretação leva a uma UI completamente diferente.
+  </li>
+  <li>
+    É possível que o cliente não tenha um caso concreto. O termo &quot;personalizado&quot; em
+    briefings de software frequentemente significa &quot;coloquem tudo o que for flexível&quot;, sem
+    especificação real. Pode ser que o Cristiano não saiba ainda o que ele quer nesse modo — só sabe
+    que precisa de uma opção catch-all para casos fora dos três padrões.
+  </li>
+  <li>
+    Vale perguntar antes de desenhar. Qualquer mockup de Personalizada que eu fizer sem conversa com
+    o Cristiano é uma aposta que pode não ter relação com a necessidade real. Recomendação Essa é
+    uma pergunta direta e pequena para o Cristiano: &quot;Você tem um caso concreto em mente para a
+    recorrência &#39;personalizada&#39;? Tipo, um cliente que precisa dela hoje? Quero entender se é
+    &#39;intervalo customizado&#39; (a cada 3 dias, por exemplo), &#39;seleção manual de datas&#39;
+    (escolher datas soltas no calendário), ou outra coisa.&quot; A resposta dele define
+    completamente como esse modo deve funcionar. Sem isso, o mockup vai refletir meu palpite, não a
+    operação real. Posição honesta: Considerando que o MVP tem escopo apertado e a recorrência já é
+    complexa mesmo nos três modos padrão, vale considerar deixar Personalizada para fase 2 e
+    entregar só Diária/Semanal/Mensal no primeiro release. Na prática, esses três cobrem 95% dos
+    casos de operação turística — e o risco de implementar Personalizada errado é maior que o
+    benefício. Você disse: Agora faça um mockup do terceiro passo Agora faça um mockup do terceiro
+    passo 22 de abr. Claude respondeu: Antes de montar, algumas decisões precisam ser tomadas — e já
+    pontuamos algumas delas em conversas anteriores. Antes de montar, algumas decisões precisam ser
+    tomadas — e já pontuamos algumas delas em conversas anteriores. Vou primeiro mostrar o que o
+    documento diz, depois o que estou inferindo, e em seguida o mockup. O que o documento diz
+    literalmente sobre Equipe RPP002 §3.3 — Criação de Eventos: &quot;Equipe Responsável: Seleção de
+    um ou mais colaboradores responsáveis pelo evento.&quot; RPP002 §3.7 — Gestão de Equipe em
+    Campo: &quot;Alocação por Evento: Vincular colaboradores a eventos específicos no cadastro da
+    agenda (3.3) ou diretamente pelo Mapa de Vagas (3.1).&quot; &quot;Conflito de Horário da Equipe:
+    O sistema bloqueia ou alerta quando o mesmo colaborador é escalado em dois eventos com horários
+    sobrepostos.&quot; &quot;Aceite de Escala pelo Colaborador: Após ser escalado, o colaborador
+    recebe notificação e deve aceitar ou recusar a escala pelo próprio painel.&quot; Escopo/Proposta
+    — Mapa de Vagas: &quot;Vínculo com Recursos: Os nomes que aparecem no campo &#39;Equipe
+    Escalada&#39; são puxados diretamente do cadastro de Recursos.&quot; &quot;Regra de Exibição: Se
+    um produto não tiver equipe escalada, o sistema deve exibir um alerta: ⚠️ Nenhuma equipe
+    alocada.&quot; O que estou inferindo no mockup Busca por nome do colaborador (o doc diz
+    &quot;seleção&quot; mas não especifica formato) Exibição de disponibilidade/conflito no momento
+    da seleção (o doc diz que existe alerta de conflito, mas não diz onde — posso estar colocando
+    cedo demais) Múltipla seleção com chips Mostrar quantidade de guias já atribuída ao evento
+    Integração com recursos não-humanos (van, equipamento) — não incluí nessa etapa porque é
+    pendência de alinhamento se entra no MVP Algumas decisões de design que vale chamar atenção:
+    Bloco de contexto no topo. Adicionei um resumo da atividade (nome, data/horário, capacidade)
+    antes dos guias. Sem isso, o gestor escalaria guias &quot;no vazio&quot; — precisaria decorar o
+    que configurou nos passos anteriores. Esse bloco é inferência minha, não está no doc, mas tem
+    função clara: evitar erros de escalação. Conflito de horário sinalizado inline, não como alerta
+    depois. O RPP002 §3.7 fala que o sistema &quot;bloqueia ou alerta&quot; sobre conflito. No
+    mockup, optei por mostrar antes — o guia com conflito aparece desabilitado na lista com
+    explicação do motivo (&quot;Já escalado para Rapel Cachoeira Alta&quot;). Isso é mais preventivo
+    que corretivo. A alternativa seria permitir a seleção e mostrar alerta no save — menos efetivo.
+    Chips para os já selecionados, lista para os disponíveis. Dois padrões combinados: os
+    selecionados viram chips compactos no topo (fáceis de remover), enquanto a lista completa de
+    guias fica abaixo para seleção. Isso reduz carga visual quando há muitos guias na empresa. Tags
+    de papel e especialidades. Coloquei badges como &quot;Guia-chefe&quot;, &quot;Trilha,
+    Rapel&quot; na descrição de cada guia. Isso não está no doc — inferi como informação útil para o
+    gestor escolher, mas pode ser excessivo. Se o cadastro de colaboradores não tem esses atributos,
+    essa informação não existe. O helper do final sobre aceite de escala. Esse é diretamente do doc
+    (§3.7: &quot;o colaborador recebe notificação e deve aceitar ou recusar a escala pelo próprio
+    painel&quot;). É uma regra de negócio importante que o gestor precisa saber ao escalar — por
+    isso coloquei como informação persistente na etapa, não só no estado pós-criação. Recursos
+    não-humanos ausentes. O Escopo fala de &quot;van, barco, equipamento&quot; como recursos
+    compartilhados. Não incluí essa seção porque: O doc trata isso como integração do Mapa de Vagas,
+    não do cadastro de atividade Entra no plano &quot;Voando Alto&quot; apenas (não é MVP em todos
+    os planos) Adicionaria complexidade a uma etapa que já tem densidade suficiente Se o Cristiano
+    quiser recursos na criação, vale adicionar como quarto passo ou como bloco opcional aqui. Três
+    pontos pendentes de validação: Papéis e especialidades dos guias existem no cadastro? Se não, o
+    mockup mostra info fantasma. Equipe escalada é por evento ou por horário múltiplo? Se a
+    atividade tem 3 horários no mesmo dia, o gestor escala 1 time para os 3, ou 1 por horário? A
+    spec não resolve. Conflito é bloqueante ou só avisativo? O doc diz &quot;bloqueia ou
+    alerta&quot; — texto ambíguo. Desenhei como bloqueante (checkbox desabilitado), mas pode
+    permitir seleção com aviso. Quer que eu consolide todas as perguntas pendentes desse fluxo (que
+    já são várias ao longo da conversa) numa lista estruturada para levar ao Cristiano? Você disse:
+    Me dê os textos para eu substituir os lorem ipsum dessa página Me dê os textos para eu
+    substituir os lorem ipsum dessa página 22 de abr. Claude respondeu: Vou te dar os textos
+    baseados nos mockups que já fizemos e na linguagem consistente do projeto. Vou te dar os textos
+    baseados nos mockups que já fizemos e na linguagem consistente do projeto. Para cada elemento,
+    coloco uma versão principal e, quando fizer sentido, uma alternativa mais curta caso o espaço
+    seja limitado. Header principal Título: Nova atividade Subtítulo: Configure uma nova atividade
+    da sua agenda em três etapas: identificação, datas e equipe. Alternativa mais curta: Preencha as
+    informações da atividade em três etapas. Stepper — Passo 1 Título: Dados da atividade e
+    visibilidade Descrição: Informe o título, local, produto vinculado, capacidade e quem pode
+    visualizar a atividade. Alternativa mais curta: Identificação, capacidade e visibilidade da
+    atividade. Stepper — Passo 2 Título: Datas e horários da atividade Descrição: Defina quando a
+    atividade acontece e se ela se repete em outros dias. Alternativa mais curta: Defina quando a
+    atividade acontece e se ela se repete. Stepper — Passo 3 Título: Atribuição dos guias para a
+    atividade Descrição: Escale os colaboradores responsáveis por conduzir a atividade. Alternativa
+    mais curta: Escale a equipe responsável por conduzir a atividade. Observações sobre o conjunto
+    Consistência de terminologia. Usei &quot;atividade&quot; (e não &quot;evento&quot;) porque a
+    memória do projeto indica que essa é a nomenclatura escolhida, alinhada com o vocabulário do
+    Cristiano nas reuniões. O doc alterna entre os dois termos, mas &quot;atividade&quot; é mais
+    próximo do dia a dia operacional. Verbos no infinitivo nas descrições. Preferi
+    &quot;Configure&quot;, &quot;Informe&quot;, &quot;Defina&quot;, &quot;Escale&quot; em vez de
+    formas como &quot;Aqui você configura&quot;. Infinitivo é mais direto e consistente com o tom de
+    escritório de bolso do projeto — menos palavras, mais ação. &quot;Guias&quot; vs
+    &quot;colaboradores&quot; no passo 3. O título usa &quot;guias&quot; porque é o termo que
+    aparece na UI (linguagem do usuário); a descrição usa &quot;colaboradores responsáveis&quot;
+    porque esse é o termo técnico do doc (§3.3: &quot;Equipe Responsável: Seleção de um ou mais
+    colaboradores responsáveis pelo evento&quot;). Misturar os dois é proposital — título
+    vocabulário operacional, descrição vocabulário do sistema. Subtítulo do header. A versão
+    principal explica a estrutura em três etapas logo de cara, o que ajuda a dar previsibilidade ao
+    usuário (Nielsen Norman tem pesquisa específica sobre isso — indicar quantos passos reduz a
+    ansiedade do preenchimento). Se o header já for denso visualmente, vá com a alternativa curta.
+    Um ponto de atenção. &quot;Atribuição dos guias&quot; no passo 3 assume que colaborador = guia.
+    Isso funciona para o contexto Retrilhar (turismo outdoor), mas se no futuro o sistema atender
+    outros tipos de empresa com termos diferentes (monitor, instrutor, condutor), o label pode ficar
+    limitante. Como MVP, está ok; vale flagar para revisão posterior. Quer variações mais
+    formais/informais, ou algum desses textos ficou longo demais para o espaço do Figma? Você disse:
+    E para o empty state? E para o empty state? 22 de abr. Claude respondeu: Vou propor textos para
+    o empty state da área à direita (o canvas vazio) — que é o que aparece enquanto o usuário ainda
+    não clicou em nenhum passo, ou se é o es… Vou propor textos para o empty state da área à direita
+    (o canvas vazio) — que é o que aparece enquanto o usuário ainda não clicou em nenhum passo, ou
+    se é o estado inicial do passo I antes de começar a preencher. Antes dos textos, preciso
+    confirmar qual empty state você quer: pela estrutura que montamos, existem dois cenários
+    possíveis. Cenário A — Empty state &quot;inicial&quot; (antes de qualquer interação) Quando o
+    usuário abre o formulário e ainda não começou o passo 1. É o estado que aparece no seu
+    screenshot. Título: Vamos começar pelo primeiro passo Descrição: Preencha os dados da atividade,
+    defina quando ela acontece e escale os guias responsáveis. Você pode revisar cada etapa antes de
+    criar a atividade. CTA sugerido: Começar pelo passo 1 Alternativa mais direta: Título: Configure
+    sua nova atividade Descrição: Comece pelos dados da atividade, avance para as datas e finalize
+    com a escala dos guias. Cenário B — Empty state &quot;entre passos&quot; (usuário clicou em um
+    passo sem conteúdo ainda) Se o stepper permite clicar livremente em qualquer passo mas o
+    conteúdo está vazio porque o usuário ainda não passou por ele. Título: Complete o passo anterior
+    para continuar Descrição: As etapas precisam ser preenchidas em ordem para garantir a
+    consistência dos dados da atividade. CTA sugerido: Voltar para o passo anterior Observações
+    sobre os textos Tom direto, sem adornos. Evitei frases tipo &quot;Bem-vindo!&quot; ou
+    &quot;Ótimo, vamos lá!&quot; — são enfeites que não adicionam valor. O usuário não precisa de
+    recepção calorosa em um formulário interno que ele vai usar dezenas de vezes; precisa saber o
+    que tem que fazer. Explicação do que são os três passos. No Cenário A, aproveitei a descrição
+    para dar uma ideia do caminho completo (&quot;dados da atividade&quot;, &quot;quando
+    acontece&quot;, &quot;escala dos guias&quot;). Isso economiza uma leitura do stepper lateral,
+    embora os dois textos sejam parecidos — é ok repetir aqui porque o empty state é o ponto onde o
+    usuário mais precisa de orientação. CTA opcional. Se você tiver um CTA como &quot;Começar pelo
+    passo 1&quot;, ele ajuda o usuário a saber por onde iniciar. Mas pode ser redundante se o passo
+    1 já estiver destacado visualmente no stepper e o simples clique nele já abra o formulário. Vale
+    testar. Decisão de design que vale considerar. Um empty state &quot;Vamos começar pelo primeiro
+    passo&quot; pode ser ruído se o passo 1 abre automaticamente ao entrar no formulário. Nesse
+    caso, o empty state nunca é visto de fato. Vale verificar com o Rafael se o fluxo carrega direto
+    no passo 1 (melhor UX) ou se abre nesse estado neutro primeiro (só necessário se a seleção do
+    passo for uma decisão do usuário). Qual cenário é o seu caso? Ou tem algum outro empty state
+    específico que está pensando — tipo um estado de erro/carregamento? Você disse: Não, quero para
+    esse empty state Captura de Tela 2026-04-22 às 18.10.35.png Não, quero para esse empty state 22
+    de abr. Claude respondeu: Perfeito, agora entendi — é o empty state da área de guias no Passo 3,
+    antes do gestor escalar alguém. Perfeito, agora entendi — é o empty state da área de guias no
+    Passo 3, antes do gestor escalar alguém. Algumas versões possíveis, em ordem do mais genérico
+    para o mais ativo: Versão 1 — Instrutiva neutra Título: Você ainda não escalou nenhum guia
+    Descrição: Busque por nome ou escolha um dos guias disponíveis abaixo para escalar a equipe que
+    vai conduzir esta atividade. Versão 2 — Orientada à ação Título: Você ainda não escalou nenhum
+    guia Descrição: Escale ao menos um guia para conduzir a atividade. Os selecionados receberão
+    notificação para aceitar a escala. Versão 3 — Com alerta de regra operacional Título: Você ainda
+    não escalou nenhum guia Descrição: Atividades sem equipe escalada ficam sinalizadas com alerta
+    no Mapa de Vagas. Adicione os guias responsáveis antes de criar. Minha recomendação: Versão 2
+    Das três, a Versão 2 tem o melhor equilíbrio entre orientação prática e informação de
+    consequência. Explica o que fazer (escalar ao menos um guia) e já antecipa um comportamento do
+    sistema que o usuário precisa saber (aceite de escala) — que está documentado no RPP002 §3.7.
+    Por que não recomendo as outras Versão 1 é correta mas meio passiva. Descreve o que está
+    disponível (&quot;busque ou escolha abaixo&quot;) sem reforçar a importância da ação. Funciona,
+    mas é um empty state &quot;decorativo&quot;. Versão 3 traz informação útil (o alerta de
+    &quot;Nenhuma equipe alocada&quot; do Mapa de Vagas está literalmente no Escopo e no RPP002),
+    mas pode ser pesada demais para um empty state. Se o gestor está na etapa de escalar, a
+    consequência de não escalar ainda é hipotética — falar de &quot;alerta no Mapa de Vagas&quot;
+    aqui pode parecer ameaça sem necessidade. Melhor reservar essa informação para um momento
+    posterior (ex: se ele tentar avançar sem escalar ninguém). Um detalhe importante Seu helper
+    contextual atual no final da tela já diz &quot;Os guias selecionados receberão notificação por
+    e-mail e WhatsApp e precisarão aceitar a escala antes de ver os detalhes da atividade.&quot; —
+    ou seja, a informação sobre aceite já aparece em outro lugar da mesma tela. Nesse caso, a Versão
+    2 pode simplificar ainda mais: Versão 2 simplificada: Título: Você ainda não escalou nenhum guia
+    Descrição: Escale ao menos um guia para conduzir a atividade. Você pode buscar por nome ou
+    escolher entre os disponíveis. Assim você não repete a mesma informação em dois lugares, e o
+    empty state vira puramente sobre o como fazer a ação. Qual versão faz mais sentido para o
+    contexto que você está desenhando? Você disse: Me dê um título e subtítulo para modal de
+    confirmação no cenário em que o usuário concluir o cadastro sem escalar ninguém Me dê um título
+    e subtítulo para modal de confirmação no cenário em que o usuário concluir o cadastro sem
+    escalar ninguém 22 de abr. Claude respondeu: Essa é uma decisão de copy com peso — o dialog
+    precisa alertar sem parecer bloqueador nem alarmista demais. Essa é uma decisão de copy com peso
+    — o dialog precisa alertar sem parecer bloqueador nem alarmista demais. Vou propor algumas
+    versões em tons diferentes. Versão 1 — Neutra informativa Título: Criar atividade sem guias
+    escalados? Subtítulo: Esta atividade ficará com alerta de &quot;Nenhuma equipe alocada&quot; no
+    Mapa de Vagas até você escalar ao menos um guia. Versão 2 — Ação explícita Título: Você ainda
+    não escalou nenhum guia Subtítulo: Você pode criar a atividade assim e escalar a equipe depois,
+    ou voltar ao passo 3 para escalar agora. Versão 3 — Foco na consequência operacional Título:
+    Criar sem equipe escalada? Subtítulo: Sem guias escalados, a atividade fica sinalizada como
+    incompleta e não pode ser iniciada no dia. Minha recomendação: Versão 2 Explica claramente as
+    duas opções disponíveis (criar agora e escalar depois, ou voltar e escalar agora), em vez de
+    parecer um bloqueio. Também é a versão mais consistente com o padrão do sistema — o RPP002 §3.3
+    é explícito em dizer que a Equipe Responsável é um campo de criação, mas não a marca como
+    obrigatória; e o Escopo deixa claro que o alerta de &quot;Nenhuma equipe alocada&quot; é uma
+    sinalização visual, não um bloqueio. Por que não as outras Versão 1 está correta factualmente —
+    o alerta existe e o Escopo confirma isso textualmente: &quot;Se um produto não tiver equipe
+    escalada, o sistema deve exibir um alerta: ⚠️ Nenhuma equipe alocada&quot;. Mas mencionar o
+    &quot;Mapa de Vagas&quot; no copy traz um conceito externo para dentro do dialog, forçando o
+    usuário a pensar em outra tela. Adiciona fricção cognitiva. Versão 3 assume que a atividade
+    &quot;não pode ser iniciada&quot; sem equipe — isso não está no doc. Seria uma afirmação que eu
+    estaria criando. O doc diz que gera alerta, mas não especifica bloqueio operacional. Evitar
+    afirmações sem respaldo. Sobre os botões do dialog Já que estamos no tema, vale pensar nos CTAs
+    junto: Botão primário (ação destrutiva/avançar mesmo assim): &quot;Criar sem escalar&quot; Botão
+    secundário (ação segura/voltar): &quot;Voltar e escalar agora&quot; Essa hierarquia tem uma
+    decisão importante: o botão primário aqui é a ação que o usuário já tentou fazer (criar), e o
+    secundário é o que você quer que ele considere fazer (voltar). Isso é deliberado — não é papel
+    do dialog impedir, é dar uma pausa para refletir. Se fosse bloqueante, nem teria a opção
+    &quot;Criar sem escalar&quot;. Um caso que vale mapear Atividade recorrente sem equipe escalada.
+    Se o usuário cria uma atividade que se repete por 24 saídas e não escala ninguém, o alerta se
+    aplica a todas as 24 ocorrências futuras. Vale o subtítulo mencionar isso? Algo como: Subtítulo
+    com nuance de recorrência: &quot;Você pode criar a atividade assim e escalar a equipe depois, ou
+    voltar ao passo 3 para escalar agora. Isso vale para todas as 24 saídas da série.&quot; Mas isso
+    vira texto grande demais para um dialog. Melhor deixar no helper da confirmação da recorrência,
+    no Passo 2 — quando ele vê &quot;Serão criadas 24 saídas entre 22/04 e 15/10&quot;. Qual versão
+    faz mais sentido para o tom que você quer dar ao sistema? Você disse: Agora me dê um texto para
+    o toast após conclusão do cadastro Agora me dê um texto para o toast após conclusão do cadastro
+    22 de abr. Claude respondeu: Toast de confirmação precisa ser objetivo e entregar três coisas em
+    poucas palavras: o que aconteceu, se precisa de atenção, e o que fazer em seguida (se houve…
+    Toast de confirmação precisa ser objetivo e entregar três coisas em poucas palavras: o que
+    aconteceu, se precisa de atenção, e o que fazer em seguida (se houver). Vou propor variações
+    considerando os diferentes estados possíveis de criação. Cenário A — Atividade única criada com
+    sucesso (com equipe escalada) Título: Atividade criada Descrição: Trilha Morro do Baú agendada
+    para sábado, 26/04 às 08:00. Ação opcional (link): Ver na agenda Cenário B — Atividade
+    recorrente criada com sucesso Título: Atividade criada Descrição: Trilha Morro do Baú agendada
+    em 24 saídas entre 22/04 e 15/10. Ação opcional (link): Ver na agenda Cenário C — Atividade
+    criada sem guias escalados Título: Atividade criada sem equipe escalada Descrição: Trilha Morro
+    do Baú agendada para sábado, 26/04. Escale os guias antes do dia. Ação opcional (link): Escalar
+    agora Cenário D — Atividade pública criada (vagas foram à loja) Título: Atividade criada e
+    publicada na loja Descrição: Trilha Morro do Baú já está disponível para reservas online. Ação
+    opcional (link): Ver na loja Variações genéricas (sem nome da atividade) Se a arquitetura
+    técnica não permitir injetar o nome da atividade no toast dinamicamente, versões genéricas:
+    Sucesso padrão: Título: &quot;Atividade criada com sucesso&quot; Descrição: &quot;Você pode ver
+    a atividade na agenda.&quot; Sem equipe: Título: &quot;Atividade criada sem equipe
+    escalada&quot; Descrição: &quot;Escale os guias antes do dia da atividade.&quot; Observações
+    sobre os textos Tom direto, sem emoji nem &quot;parabéns&quot;. Toast de confirmação em sistema
+    operacional sério não precisa celebrar — o usuário está trabalhando, não jogando.
+    &quot;Atividade criada&quot; é mais eficiente que &quot;Atividade criada com sucesso!&quot; — a
+    palavra &quot;sucesso&quot; já fica implícita pelo fato de existir o toast verde (ou
+    equivalente). Nome da atividade no corpo, quando possível. Personalizar com o nome real
+    (&quot;Trilha Morro do Baú&quot;) ajuda o gestor a confirmar visualmente que criou o que queria
+    — especialmente útil quando ele está criando várias atividades em sequência. Se o backend não
+    suporta, as versões genéricas funcionam mas são menos informativas. CTA de ação para situações
+    não-ideais. No cenário C (sem equipe), o CTA &quot;Escalar agora&quot; é prático — permite
+    resolver o pendente sem sair do fluxo. Nos cenários A, B, D, o CTA é mais navegacional
+    (&quot;Ver na agenda&quot;, &quot;Ver na loja&quot;) e menos urgente. Um alerta sobre o Cenário
+    C. Esse toast funciona como segundo lembrete de uma situação que o usuário já confirmou no
+    dialog anterior (&quot;Criar sem escalar&quot;). Pode parecer redundante, mas não é — o dialog
+    avisou da consequência abstrata, o toast avisa da situação concreta e permite resolver. É um
+    padrão conhecido (confirm-then-remind) e ajuda usuários distraídos. Ponto de atenção para
+    discussão com o time. O Cenário D assume que atividade pública com produto vinculado publica
+    automaticamente as vagas na loja (conforme RPP002 §3.3 &quot;Comportamento esperado&quot;). Se
+    houver algum delay entre criar e publicar (ex: processamento em background), o copy precisa
+    refletir — algo como &quot;Atividade criada. As vagas aparecerão na loja em instantes.&quot;
+    Vale confirmar com o Cristiano ou Rafael qual o comportamento técnico. Duração do toast. Não é
+    uma decisão de copy, mas vale lembrar: os cenários A e B podem sumir em 4-5s (confirmação
+    simples), já o C merece mais tempo (7-8s) ou exigir dismiss manual, porque tem informação
+    acionável que o usuário pode querer copiar ou agir em cima.
+  </li>
+</ol>

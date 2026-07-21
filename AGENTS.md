@@ -2,6 +2,11 @@
 
 ## Repository contract
 
+- Product memory lives in `Retrilhar Intel/`. For work that touches product
+  behavior, flow, copy, requirements, routes, or planning, read
+  `Retrilhar Intel/INDEX.md` and the relevant module note before editing.
+  Treat `Retrilhar Intel/Sources/` as raw source material and do not mutate it
+  during front-end work.
 - This is a Vite + React usability prototype. Keep the application Vite/React and keep
   navigation on the existing hash routes. Do not migrate the shell to Next.js, App Router,
   RSC, or another routing architecture.

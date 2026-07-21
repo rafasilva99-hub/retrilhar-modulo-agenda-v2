@@ -1,0 +1,110 @@
+<p>
+  Quero que você analise o material de escopo e me diga se foram definidos critérios relacionados a
+  funcionalidade de filtro (ex: ordenar por, etc...)
+</p>
+<p>31 de mar.</p>
+<p>Claude respondeu: Tenho o suficiente para montar uma análise completa.</p>
+<p>Executou 9 comandos, visualizou um arquivo</p>
+<p>Executou 9 comandos, visualizou um arquivo</p>
+<p>Tenho o suficiente para montar uma análise completa. Aqui vai:</p>
+<p>Análise: Critérios de Filtro e Ordenação no Escopo</p>
+<p>
+  O escopo define filtros com razoável granularidade por módulo, mas não especifica ordenação
+  (&quot;ordenar por&quot;) em nenhuma tela. A única exceção é o Painel de Reservas, que usa o
+  conceito de &quot;Agrupar por&quot; — não é exatamente ordenação, mas é o mais próximo que o
+  escopo chega disso.
+</p>
+<p>O que foi definido (filtros por módulo)</p>
+<p>
+  Central de Vendas / Listagem de Vendas Período, status (pago, pendente, cancelado, reembolsado),
+  canal de venda, produto, vendedor
+</p>
+<p>Carrinhos Abandonados Período, valor mínimo, produto</p>
+<p>Extrato de Contas Período, conta, forma de pagamento, canal de venda</p>
+<p>Relatórios de Vendas Período, produto, canal, vendedor</p>
+<p>
+  Mapa de Vagas Período (7/15/30 dias ou personalizado), status, produto, com vagas/esgotados,
+  guia/responsável
+</p>
+<p>
+  Agenda / Painel de Reservas Data (date picker) + Agrupar por: Venda (responsável), Ordem
+  alfabética, Tipo de tarifa, Item adicional
+</p>
+<p>Agenda / Lista Status (confirmado, pendente), equipe, tipo (saídas, bloqueios)</p>
+<p>CRM / Oportunidades Responsável, período, produto</p>
+<p>Clientes / Lista Busca por nome/email/documento, período de cadastro, com compras/sem compras</p>
+<p>Produtos Categoria, status (ativo/inativo), com estoque/esgotado</p>
+<p>Afiliados Período, status</p>
+<p>Financeiro / Movimentações Período, tipo (entrada/saída), categoria, conta, centro de custo</p>
+<p>Financeiro / Notas Fiscais Período, status (emitida, cancelada), cliente</p>
+<p>Assinaturas Produto, ciclo de cobrança, busca por nome/CPF/número, status</p>
+<p>O que NÃO foi definido</p>
+<p>
+  Nenhuma tela especifica critérios de &quot;Ordenar por&quot; (ex: mais recente, maior valor, nome
+  A–Z)
+</p>
+<p>Não há padrão definido para ordenação padrão das listagens (o que aparece primeiro?)</p>
+<p>O template de listagem padrão é mencionado várias vezes, mas não detalha se inclui ordenação</p>
+<p>Não há definição de persistência de filtros (o filtro é lembrado entre sessões?)</p>
+<p>Não há critério sobre filtros combinados (AND vs OR entre campos)</p>
+<p>Conclusão</p>
+<p>
+  O escopo está bem coberto em quais campos filtrar, mas tem uma lacuna clara em como ordenar. Isso
+  tende a aparecer como dívida de design quando você for para o UI — especialmente nas listagens com
+  muitos registros (Vendas, Clientes, Movimentações). Vale levantar com o Cristiano se a ordenação é
+  fixada no backend por alguma regra de negócio, ou se precisa ser exposta ao usuário como controle.
+</p>
+<p>
+  Quer que eu mapeie onde faz mais sentido priorizar a inclusão de &quot;Ordenar por&quot; com base
+  na frequência de uso esperada de cada tela?
+</p>
+<p>
+  Você disse: Agora quero que organize as próximas informações para eu listar como pauta da reunião
+  de alinhamento de amanhã com o cliente:
+</p>
+<p>
+  Agora quero que organize as próximas informações para eu listar como pauta da reunião de
+  alinhamento de amanhã com o cliente:
+</p>
+<p>Geral-</p>
+<p>Melhoria de usabilidade para o sheet no botão de vendas (menu inferior mobile);</p>
+<p>Refinamento visual dos toasts (desktop);</p>
+<p>Agenda-</p>
+<p>
+  Painel do dia com card e informações reformuladas; ↳ Página interna da atividade ↳ Aba de visão
+  geral reformulada; ↳ Aba de participantes:
+</p>
+<p>Cards com informações dos participantes e atribuições de check-in;</p>
+<p>Função de seleção geral;</p>
+<p>Filtros -</p>
+<p>Fluxo de Pedidos;</p>
+<p>Fluxo de Desistências;</p>
+<p>Fluxo de Clientes;</p>
+<p>Fluxo de Afiliados.</p>
+<p>Mostrar menos</p>
+<p>31 de mar.</p>
+<p>Claude respondeu: Claro!</p>
+<p>Claro! Só me confirma duas coisas antes:</p>
+<p>Você disse: P: Qual formato você quer para a pauta?</p>
+<p>P: Qual formato você quer para a pauta?</p>
+<p>R: WhatsApp (texto formatado para enviar)</p>
+<p>P: Como quer apresentar os itens de Filtros?</p>
+<p>R: Como sub-itens de um único tópico &#39;Filtros&#39;</p>
+<p>31 de mar.</p>
+<p>Claude respondeu: Aqui vai a pauta formatada para WhatsApp:</p>
+<p>Aqui vai a pauta formatada para WhatsApp:</p>
+<p>📋 Pauta — Reunião de Alinhamento Retrilhar</p>
+<p>🔧 Geral</p>
+<p>Melhoria de usabilidade do sheet no botão de vendas (menu inferior mobile)</p>
+<p>Refinamento visual dos toasts (desktop)</p>
+<p>📅 Agenda</p>
+<p>
+  Painel do Dia — card e informações reformulados ↳ Página interna da atividade ↳ Aba Visão Geral —
+  reformulada ↳ Aba Participantes • Cards com informações e atribuição de check-in • Função de
+  seleção geral
+</p>
+<p>🔍 Filtros</p>
+<p>Fluxo de Pedidos</p>
+<p>Fluxo de Desistências</p>
+<p>Fluxo de Clientes</p>
+<p>Fluxo de Afiliados</p>

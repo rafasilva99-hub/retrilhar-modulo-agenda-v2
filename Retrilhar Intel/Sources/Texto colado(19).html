@@ -1,0 +1,133 @@
+<p>
+  Sobre o encerramento de uma atividade multi-dia, baseado no que alinhamos com os clientes e o
+  material de apoio, esse cenário mudaria muito de uma atividade comum?5 de mai.Claude respondeu:
+  Vou buscar no project knowledge o que já foi alinhado sobre atividades multi-dia e fluxo de
+  encerramento.Vou buscar no project knowledge o que já foi alinhado sobre atividades multi-dia e
+  fluxo de encerramento.Searched project for “encerramento atividade multi-dia fechamento”Searched
+  project for “encerramento atividade multi-dia fechamento”Vou buscar mais especificamente sobre o
+  comportamento do encerramento em atividades multi-dia e o que foi alinhado sobre isso.Pesquisou a
+  memóriaPesquisou a memóriaAgora tenho contexto suficiente. Deixa eu te passar uma análise
+  consolidada. Olha Luana, com base no que tá nos materiais, o cenário muda em alguns pontos
+  importantes, mas a estrutura base do encerramento se mantém. Vou separar entre o que continua
+  igual e o que precisa de tratamento específico: 🟢 O que se mantém igual (atividade individual vs.
+  multi-dia) Encerramento operador-driven: o Cristiano foi enfático que não pode ser automático em
+  nenhum dos dois cenários — &quot;o usuário tem que ser responsável pela informação, não o
+  sistema&quot; Estrutura do modal de Conclusão: resumo de participantes (compareceram / cancelaram
+  / no-show), horários reais (início/término editáveis), duração total, observações, registro de
+  ocorrência opcional Máquina de estados financeira: continua independente da situacional, igual em
+  qualquer atividade Fluxo de ocorrência: tipo, grau de severidade, descrição, notificação
+  automática para severidade alta 🟡 O que muda no multi-dia
+</p>
+<ol>
+  <li>
+    Encerramento parcial vs. encerramento final (ponto trazido pelo Rafael na 08/04) A atividade
+    multi-dia tem dois momentos de fechamento: Fechamento de cada dia da atividade → check-out
+    diário (todo mundo voltou seguro, sem ocorrências) Conclusão final da atividade → no último dia,
+    encerramento definitivo com o resumo geral Isso ainda é uma questão em aberto — o Rafael
+    levantou (&quot;a gente teria que considerar o fechamento de todos os dias e no fim da
+    atividade&quot;) e o Cristiano confirmou que faz sentido, mas não foi detalhado o desenho da
+    interação. 2. Estado intermediário do card Hoje no card multi-dia tem o &quot;Dia X de Y&quot;
+    no chip. A pergunta natural é: como o card se comporta entre os dias? Por exemplo: Dia 1
+    encerrado → estado do card no dia 2? O contador de participantes (cinza/laranja/verde) reseta a
+    cada dia ou é cumulativo? O check-in é refeito a cada dia ou herdado?
+  </li>
+  <li>
+    Relação com o Encerramento do Dia (do Líder de Operação) Aqui tem um conflito conceitual que
+    vale levantar com o Cristiano: uma atividade multi-dia que atravessa o dia operacional — ela
+    &quot;fecha&quot; o dia mesmo quando ainda não terminou? O Cristiano falou que &quot;a do dia é
+    a coleção das atividades individuais&quot; — mas se uma trilha de 3 dias ainda tá rolando, ela
+    impede o fechamento do dia 1? Ou cada &quot;perna&quot; do multi-dia entra no aggregate como uma
+    atividade individual encerrada?
+  </li>
+  <li>
+    Ocorrências que se arrastam entre dias Uma ocorrência registrada no Dia 1 (ex: participante
+    machucou o pé) provavelmente impacta a operação do Dia 2. Vale pensar se a aba Atualizações da
+    atividade carrega registros de todos os dias ou se cada dia tem seu próprio feed. 📌 Sugestão de
+    encaminhamento Eu recomendaria tratar o multi-dia como uma variação do fluxo padrão, não como um
+    fluxo paralelo. Ou seja: O modal &quot;Concluir Atividade&quot; é o mesmo, mas com um estado
+    adicional entre dias: &quot;Encerrar Dia X&quot; (parcial) vs. &quot;Concluir Atividade&quot;
+    (final, só no último dia) O encerramento parcial diário é mais leve — provavelmente só a
+    confirmação de &quot;todos retornaram em segurança&quot; + observações + ocorrência opcional A
+    conclusão final no último dia é o modal completo, com o resumo agregado dos dias Pontos para
+    alinhar com o Cristiano antes de prototipar: Encerramento parcial diário tem o mesmo nível de
+    detalhe do modal final, ou é simplificado? Como o multi-dia entra no Encerramento do Dia (do
+    Líder)? Cada dia da atividade conta como uma unidade no aggregate, ou só conta quando a
+    atividade inteira terminar? Ocorrências do Dia 1 ficam visíveis no card do Dia 2? Quer que eu te
+    ajude a estruturar essas perguntas em formato de mensagem pro Cristiano, ou prefere que eu já
+    esboce uma proposta de fluxo pra apresentar pra ele?Você disse: Ilustre uma solução em formato
+    de drawer para seguirmos o padrão que já adotamos no cenário normalIlustre uma solução em
+    formato de drawer para seguirmos o padrão que já adotamos no cenário normal08:33Claude
+    respondeu: Vou analisar o modal atual e propor uma solução em drawer para o cenário multi-dia,
+    mantendo o padrão visual e adaptando a lógica para os encerramentos parciai…Vou analisar o modal
+    atual e propor uma solução em drawer para o cenário multi-dia, mantendo o padrão visual e
+    adaptando a lógica para os encerramentos parciais e a conclusão final. ::view-transition-group(
+    <em>),</em> <em>::view-transition-old(</em> ), ::view-transition-new(*) { animation-duration:
+    0.25s; animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1); } VvisualizeVvisualize
+    show_widget🎯 Lógica da solução O drawer mantém a mesma estrutura do modal de atividade comum,
+    mas adiciona três adaptações específicas pra multi-dia:
+  </li>
+  <li>
+    Header com contexto temporal Adicionei um chip &quot;Dia X de Y&quot; + tag indicando se é
+    encerramento parcial ou final. Isso resolve a ambiguidade que o operador pode ter ao abrir o
+    fluxo: ele entende imediatamente em qual etapa está.
+  </li>
+  <li>
+    Seção &quot;Progresso da atividade&quot; (nova) Lista cronológica dos dias com status visual
+    (concluído, com ocorrência, em andamento). Resolve dois problemas: Dá rastreabilidade — o
+    operador vê o que aconteceu nos dias anteriores sem sair do fluxo O botão &quot;Ver&quot;
+    permite consultar o registro do dia anterior se precisar referenciar algo
+  </li>
+  <li>
+    Resumo agregado vs. horários do dia atual Aqui tá o ponto delicado: o resumo de participantes é
+    agregado (soma dos 3 dias), mas os horários são do dia atual. Isso mantém a coerência com o que
+    o Cristiano falou — cada dia tem seu próprio registro de início/término real. ⚙️ Variações de
+    estado O mesmo drawer atende três cenários só trocando o conteúdo do header e o CTA:
+    CenárioHeaderCTA principalDia 1 ou intermediário&quot;Dia 1 de 3&quot; + &quot;Encerramento
+    parcial&quot;&quot;Encerrar dia&quot;Último dia&quot;Dia 3 de 3&quot; + &quot;Encerramento
+    final&quot;&quot;Concluir atividade&quot;Atividade comum(sem chip)&quot;Concluir atividade&quot;
+    🟡 Pontos pra alinhar com o Cristiano antes de finalizar No encerramento parcial (dias
+    intermediários), o resumo de participantes agrega o que aconteceu até ali ou mostra só o dia?
+    Sugestão: mostrar só do dia atual nos dias parciais e agregado no último. Botão &quot;Ver&quot;
+    do dia anterior abre um drawer secundário (read-only) ou navega? Sugestão: drawer empilhado pra
+    não perder o contexto. Se um dia intermediário teve ocorrência grave, o último dia exibe algum
+    alerta visual no header? Quer que eu monte também a variação do encerramento parcial (dia 1 ou
+    2) pra você comparar lado a lado, ou prefere fechar essa lógica primeiro e depois refinar?Você
+    disse: SimSim08:56Claude respondeu: 🔄 Diferenças do encerramento parcial vs.
+    ::view-transition-group( <em>),</em> <em>::view-transition-old(</em> ), ::view-transition-new(*)
+    { animation-duration: 0.25s; animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+    VvisualizeVvisualize show_widget🔄 Diferenças do encerramento parcial vs. final ElementoParcial
+    (Dia 1 e 2)Final (último dia)Chip do diaÂmbar (em progresso)Azul (encerramento
+    final)Título&quot;Encerrar dia&quot;&quot;Concluir atividade&quot;Banner contextualAviso de
+    continuidade(não aparece)Resumo de participantesSó do dia atual (3 cards)Agregado dos 3 dias (4
+    cards)Seção &quot;Progresso&quot;(não aparece — ainda não há histórico relevante)Lista todos os
+    dias com statusFooterMostra &quot;Próxima etapa: Dia 2 em...&quot;Sem indicação de
+    próximoCTA&quot;Encerrar dia&quot;&quot;Concluir atividade&quot; 🎯 Decisões de design que vale
+    destacar
+  </li>
+  <li>
+    Banner âmbar contextual no parcial Reforça a expectativa do operador: ele tá fechando um dia,
+    não a atividade inteira. Resolve um risco real de confusão — sem esse aviso, ele pode achar que
+    tá perdendo dados ou que algo deveria estar agregado já.
+  </li>
+  <li>
+    Resumo simplificado (3 cards em vez de 4) No parcial não tem &quot;cancelaram&quot; no sentido
+    de cancelamento da atividade — quem cancelou já saiu antes. Os cancelamentos só fazem sentido no
+    consolidado final. Aqui o foco é binário: quem retornou em segurança vs. quem não compareceu
+    hoje.
+  </li>
+  <li>
+    &quot;Verificação do dia&quot; em vez de &quot;Resumo dos participantes&quot; Mudei o label
+    porque o objetivo do parcial é diferente: não é fechar contas, é confirmar segurança. Isso ecoa
+    o que o Cristiano falou na reunião do 08/04 sobre o conceito de &quot;todo mundo voltou, tá tudo
+    ok&quot;.
+  </li>
+  <li>
+    Footer com &quot;próxima etapa&quot; Pequeno reforço de orientação que ajuda o operador a
+    entender que o fluxo continua. No último dia esse rodapé desaparece e o CTA cresce em destaque
+    visual. 🟡 Pontos que ainda precisam validação com o Cristiano Quem encerra o dia parcial? Se a
+    atividade dura 3 dias mas troca de guia, cada guia encerra o dia que liderou ou fica vinculado a
+    um responsável fixo da atividade? Aba Atualizações da atividade: as observações de cada dia
+    ficam separadas ou viram uma timeline única? &quot;Próxima etapa&quot; — vale realmente mostrar
+    a data ou simplifica pra &quot;Continua amanhã&quot;?
+  </li>
+</ol>

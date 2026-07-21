@@ -1,0 +1,485 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 5 de N — Módulos: Autenticação e Acesso (1) + Início / Dashboards (2)</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> Escopo (§1 Contexto e Navegação, §6 Dashboards por Perfil),
+  Módulo Central de Vendas (para referências cruzadas de Início do Vendedor e do Afiliado), backlog
+  atual do projeto. <strong>Contexto do bloco:</strong> Autenticação e Início são módulos de entrada
+  do sistema — a primeira coisa que cada perfil vê. Autenticação tem pouca discussão em reunião (é
+  área padrão que vem mais do escopo). Dashboards por perfil têm detalhamento específico no escopo
+  com cards estatísticos e widgets definidos para cada persona (Gestor Comercial, Vendedor,
+  Operador/Guia, Afiliado).
+</p>
+<hr />
+<h3>Parte A — Autenticação e Acesso</h3>
+<h4>Tarefa 1 — Login</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AUTENTICAÇÃO] Login <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Porta de entrada do sistema. Autenticação por e-mail e senha, com
+  redirecionamento por perfil e caminhos alternativos para recuperação de senha e cadastro de nova
+  empresa. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong> Nenhuma discussão específica em
+  reunião. <strong>OBSERVAÇÕES</strong>
+</p>
+<ul>
+  <li>
+    Cinco perfis diferentes redirecionam para dashboards distintos pós-login: Gestor Comercial,
+    Comercial (Vendedor), Operador/Guia, Afiliado, e em alguns casos Financeiro.
+  </li>
+  <li>
+    Guia/Operador pode trabalhar para várias empresas — não troca empresa manualmente, vê agenda
+    unificada (escopo §3 Proto-Personas).
+  </li>
+  <li>
+    Login via OAuth (Google, Facebook) é padrão de mercado mas não está explicitamente pedido no
+    escopo. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Login via OAuth (Google, Facebook) faz parte do escopo mínimo ou fica para depois? Validar com
+    cliente.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Fluxo de login por e-mail e senha [web]</li>
+  <li>[ ] Redirecionamento pós-login conforme perfil do usuário</li>
+  <li>[ ] Checkbox &quot;Lembrar-me&quot; (sessão estendida)</li>
+  <li>[ ] Link para &quot;Esqueci minha senha&quot;</li>
+  <li>[ ] Link para &quot;Criar conta&quot; (nova empresa)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] Credenciais inválidas — mensagem inline</li>
+  <li>[ ] [erro] Timeout de conexão</li>
+  <li>[ ] [exceção] Conta bloqueada (excesso de tentativas)</li>
+  <li>[ ] [exceção] Conta desativada pelo gestor — mensagem específica com contato de suporte</li>
+  <li>[ ] [exceção] E-mail não verificado — reenvio do e-mail de verificação</li>
+  <li>[ ] [exceção] Usuário de vendedor/afiliado antes do aceite de convite</li>
+  <li>[ ] [permissão] Usuário sem perfil atribuído — bloqueio com mensagem clara</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Cadastro de Nova Empresa</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AUTENTICAÇÃO] Cadastro de Nova Empresa
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Fluxo de onboarding de nova empresa — do CTA &quot;Criar conta&quot; no
+  Login até a tela de boas-vindas. Tem 5 passos: dados do responsável, dados da empresa, seleção de
+  plano, verificação de e-mail, boas-vindas.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong> Nenhuma discussão específica em reunião.
+  <strong>OBSERVAÇÕES</strong>
+</p>
+<ul>
+  <li>
+    Planos disponíveis (escopo §1.2): Começar, Quero Crescer, Voando Alto. Cada plano libera um
+    conjunto de sub-módulos (detalhado no RPP002 §Disponibilidade por Plano).
+  </li>
+  <li>Verificação de e-mail é padrão em SaaS — token com expiração configurável.</li>
+  <li>
+    Tela de boas-vindas pode encaminhar para o tour guiado (ver Bloco 9 — Sistema de Ajuda).
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Copy dos planos (Começar / Quero Crescer / Voando Alto) — aguardando cliente enviar.</li>
+  <li>Prazo de expiração do token de verificação: 24h é padrão; validar.</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela &quot;Criar conta&quot; (acessada pelo CTA no Login)</li>
+  <li>[ ] Passo 1 — Dados do responsável (nome, e-mail, telefone, senha)</li>
+  <li>[ ] Passo 2 — Dados da empresa (razão social, CNPJ, nome fantasia)</li>
+  <li>[ ] Passo 3 — Seleção de plano (Começar / Quero Crescer / Voando Alto)</li>
+  <li>[ ] Passo 4 — Verificação de e-mail</li>
+  <li>[ ] Passo 5 — Tela de boas-vindas com próximos passos</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] E-mail já cadastrado — CTA para recuperar senha</li>
+  <li>[ ] [erro] CNPJ inválido ou já cadastrado</li>
+  <li>[ ] [erro] Falha ao enviar e-mail de verificação — opção de reenvio</li>
+  <li>[ ] [exceção] Token de verificação expirado — gerar novo</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 3 — Redefinição de Senha</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AUTENTICAÇÃO] Redefinição de Senha
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Fluxo padrão de &quot;Esqueci minha senha&quot; — input de e-mail, envio
+  de link por e-mail, criação de nova senha, confirmação.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong> Nenhuma discussão específica em reunião.
+  <strong>OBSERVAÇÕES</strong>
+</p>
+<ul>
+  <li>
+    Fluxo padrão, sem particularidades documentadas. Preocupação principal é feedback claro nas
+    transições (e-mail enviado, link expirado, senha redefinida). <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela &quot;Esqueci minha senha&quot; — input de e-mail</li>
+  <li>[ ] Tela de confirmação &quot;E-mail enviado&quot; com instruções</li>
+  <li>[ ] Tela de nova senha (acessada pelo link do e-mail)</li>
+  <li>[ ] Tela de senha redefinida com sucesso + CTA para login</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] E-mail não encontrado na base</li>
+  <li>[ ] [erro] Link expirado — CTA para gerar novo</li>
+  <li>[ ] [erro] Link já utilizado — mensagem específica</li>
+  <li>[ ] [erro] Senha nova igual à anterior</li>
+  <li>[ ] [exceção] Muitas tentativas em curto período — bloqueio temporário com mensagem</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 4 — Aceite de Convite (Vendedor, Afiliado, Operador)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AUTENTICAÇÃO] Aceite de Convite
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Fluxo de aceite de convite para usuários convidados pelo gestor
+  (vendedores, afiliados, operadores/guias). Acessado via link do e-mail de convite, termina com
+  tutorial inicial específico por perfil. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong> Nenhuma
+  discussão específica em reunião. <strong>OBSERVAÇÕES</strong>
+</p>
+<ul>
+  <li>
+    Cada perfil tem tutorial inicial diferente (operador em campo, vendedor, afiliado) — ver Bloco 9
+    (Sistema de Ajuda — Tour Guiado).
+  </li>
+  <li>
+    Operador/Guia especificamente: aceite de convite aqui é diferente do aceite de escala por
+    atividade (ver Agenda — Visão Geral). Aceitar convite = entrar no sistema; aceitar escala =
+    aceitar uma atividade específica. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela de aceite do convite (acessada pelo link do e-mail)</li>
+  <li>[ ] Criação de senha + completar dados pessoais</li>
+  <li>[ ] Tela de boas-vindas específica por perfil</li>
+  <li>[ ] Tutorial inicial por perfil (operador em campo, vendedor, afiliado)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] Convite expirado — CTA para solicitar novo convite ao gestor</li>
+  <li>[ ] [erro] Convite já utilizado</li>
+  <li>[ ] [exceção] Convite revogado pelo gestor — mensagem de contato</li>
+  <li>[ ] [exceção] E-mail do convite já tem conta em outra empresa — vincular ou criar nova</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h3>Parte B — Início / Dashboards</h3>
+<h4>Tarefa 5 — Início do Gestor Comercial</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [INÍCIO] Gestor Comercial <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Home do gestor comercial — visão completa do negócio para tomada de
+  decisões rápidas. Cards estatísticos + widgets configuráveis com drill-down para módulos
+  específicos. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6 define 4 cards estatísticos principais: Faturamento (mês atual, clique → Financeiro),
+    Vendas realizadas (mês atual, clique → Vendas), Reservas confirmadas (próximos 15 dias, clique →
+    Agenda), Ticket médio (mês atual, clique → Relatórios).
+  </li>
+  <li>
+    Escopo define widgets: Próximas saídas (produto, data/hora, ocupação, valor acumulado), além dos
+    gráficos e listas.
+  </li>
+  <li>
+    Já desenhado: dashboard com widgets de faturamento/ticket médio/ocupação/cancelamento, barra de
+    busca global com autocomplete, aba de notificações (sininho). <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Drill-down (clique no widget leva ao módulo correspondente) é padrão definido no escopo.</li>
+  <li>
+    Barra de busca global tem discussão na reunião 08/04 sobre escopo — busca em todos os pedidos de
+    qualquer tela vs. busca contextual da tela atual. Decisão pende de estudo da interação.
+  </li>
+  <li>
+    Atualização em tempo real é mencionada no escopo para widgets do tipo &quot;Vendas
+    Recentes&quot;.
+  </li>
+  <li>
+    Seletor de empresa (multi-empresa) é necessário porque gestor pode administrar múltiplas
+    empresas. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Dashboard com widgets (faturamento, ticket médio, ocupação, cancelamento) [web]</li>
+  <li>[x] Barra de busca global com autocomplete por módulo [web]</li>
+  <li>[x] Aba de notificações (sininho) [web]</li>
+  <li>[ ] 4 cards estatísticos principais (Faturamento, Vendas, Reservas, Ticket médio)</li>
+  <li>[ ] Widget Próximas saídas (próximos 15 dias com produto, data/hora, ocupação, valor)</li>
+  <li>[ ] Widget Avisos e alertas (reservas pendentes, contratos vencendo)</li>
+  <li>[ ] Widget Gráfico de vendas (linha, período selecionável)</li>
+  <li>[ ] Widget Carrinhos abandonados (contador + valor)</li>
+  <li>[ ] Drill-down: clique no widget leva ao módulo correspondente</li>
+  <li>[ ] Seletor de empresa (multi-empresa) — drawer/modal de troca</li>
+  <li>[ ] Seletor de período em widgets configuráveis</li>
+  <li>[ ] Atualização em tempo real (badge &quot;Ao vivo&quot; em Vendas Recentes)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Primeira vez sem vendas — onboarding destacado</li>
+  <li>[ ] [vazio] Período selecionado sem dados</li>
+  <li>[ ] [loading] Skeleton dos widgets enquanto carregam</li>
+  <li>[ ] [erro] Erro ao carregar um widget isolado (não bloqueia o dashboard)</li>
+  <li>[ ] [erro] Falha de rede geral — banner &quot;Dados desatualizados&quot; + retry</li>
+  <li>[ ] [permissão] Widget indisponível no plano atual — CTA para upgrade</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 6 — Início do Comercial (Vendedor)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [INÍCIO] Comercial (Vendedor)
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Home simplificada do vendedor — foco em &quot;vender mais e acompanhar
+  quanto vou ganhar de comissão&quot; (job definido no escopo §6). Dashboard centrado em vendas
+  próprias, meta e comissão. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6 define 4 cards estatísticos: Minhas vendas (quantidade mês), Valor vendido (R $mês),
+    Comissão acumulada (R$ a receber mês), Meta do mês (barra de progresso).
+  </li>
+  <li>
+    Escopo define widgets: Meus pedidos recentes, Meu progresso na meta.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    CTA principal &quot;Novo Pedido&quot; é ação primária. Já sinalizado nos testes como ponto
+    crítico de descobribilidade — ver Bloco 2, Tarefa 2.
+  </li>
+  <li>
+    Dashboard mais enxuto que o do gestor — não mostra dados financeiros globais, só as métricas
+    pessoais do vendedor. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Escopo e nomenclatura da meta: meta é fixada mensalmente pelo gestor? Vendedor pode ver sem
+    editar? Confirmar com cliente.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Dashboard simplificado (vendas próprias, meta, comissão)</li>
+  <li>[ ] 4 cards estatísticos (Minhas vendas, Valor vendido, Comissão, Meta)</li>
+  <li>[ ] Widget &quot;Meus pedidos recentes&quot;</li>
+  <li>[ ] Widget &quot;Meu progresso na meta do mês&quot; (barra de progresso)</li>
+  <li>[ ] CTA principal &quot;Novo Pedido&quot; (com descoberta aprimorada)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Estado inicial (vendedor sem vendas no período)</li>
+  <li>[ ] [vazio] Vendedor com meta zerada — mensagem informativa</li>
+  <li>[ ] [loading] Skeleton dos widgets</li>
+  <li>[ ] [permissão] Vendedor sem acesso ao módulo de vendas — bloqueio</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 7 — Início do Operador / Guia</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [INÍCIO] Operador / Guia <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Home focada em &quot;o que fazer hoje&quot; para o guia em campo. É
+  mobile-first por natureza — o guia usa o sistema quase exclusivamente no celular durante a
+  operação. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6 define job da persona: &quot;Saber o que fazer hoje e quem são as pessoas que vou
+    atender&quot;.
+  </li>
+  <li>
+    Escopo §3 Proto-personas: &quot;Pode trabalhar para várias empresas. Precisa ver sua agenda
+    unificada, saber quem são os participantes, fazer check-in, verificar condições de saúde. Acessa
+    principalmente pelo celular&quot;. Fala textual da persona: &quot;Quantas pessoas eu tenho hoje?
+    Alguém tem algum problema de saúde?&quot;
+  </li>
+  <li>
+    Escopo §3 reforça: &quot;Comportamento especial: Não troca de empresa manualmente. Vê agenda
+    unificada e, ao clicar em uma atividade, entra no contexto daquela empresa&quot;.
+  </li>
+  <li>
+    Escopo §6 define 4 cards: Atividades hoje (qtd, clique expande lista), Participantes hoje
+    (total, clique → lista passageiros), Atenção especial (com condições de saúde, clique →
+    detalhes), Próxima atividade (horário + produto, clique → detalhes).
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Mobile-first não significa &quot;só mobile&quot; — versão web existe, mas é a exceção.</li>
+  <li>
+    Agenda unificada multi-empresa é diferencial do perfil: o guia não escolhe empresa, o sistema
+    mostra todas as atividades que ele foi escalado independente de qual empresa.
+  </li>
+  <li>
+    Acesso rápido a Check-in é crítico — é a ação mais frequente do perfil em campo.
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Dashboard focado em &quot;Minhas escalas de hoje&quot;</li>
+  <li>
+    [ ] 4 cards estatísticos (Atividades hoje, Participantes hoje, Atenção especial, Próxima
+    atividade)
+  </li>
+  <li>[ ] Lista de atividades escaladas do dia em destaque</li>
+  <li>[ ] Widget &quot;Próximas escalas&quot; (próximos 7 dias)</li>
+  <li>[ ] Acesso rápido a Check-in por atividade</li>
+  <li>[ ] Agenda unificada multi-empresa (sem seletor manual)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Sem escalas para hoje — CTA para ver próximas</li>
+  <li>[ ] [vazio] Sem escalas futuras</li>
+  <li>[ ] [exceção] Escala pendente de aceite — destaque + CTA de ação</li>
+  <li>[ ] [loading] Sincronização de escalas de múltiplas empresas</li>
+  <li>[ ] [erro] Falha ao carregar agenda — cache local ou retry</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 8 — Início do Afiliado</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [INÍCIO] Afiliado <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Home do afiliado externo — job &quot;Saber quanto vendi e quanto vou
+  receber&quot; (escopo §6). Concentra visão de performance de indicações, comissões e link/código
+  pessoal com destaque. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6 define 4 cards estatísticos: Vendas realizadas (quantidade mês), Valor gerado (R
+    $total mês), Comissão acumulada (R$ a receber mês), Comissão paga (R$ já recebido histórico).
+  </li>
+  <li>
+    Reunião 25/03 (Rafael, 56:59): decisão explícita sobre layout do dashboard — &quot;saudação no
+    topo como padrão, subtítulo com atualização dos dados. O intuito é fazer o afiliado perceber que
+    está no painel próprio e atualizado. As indicações com quatro métricas principais: listagem das
+    indicações feitas nos últimos 30 dias, vendas abandonadas da última semana, valor recebido no
+    mês, valor que vai receber nos próximos 7 dias&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano, 57:51): &quot;pode pensar aí é ter filtro se ele está olhando todos os
+    contratos ou se pode escolher contrato específico — a gente soma esses valores se for todos os
+    contratos&quot;.
+  </li>
+  <li>
+    Reunião 25/03 (Rafael, 58:04): decisão de desenvolver esse filtro &quot;melhor na área das
+    indicações, interna&quot; — ou seja, não no dashboard em si, mas nas páginas de drill-down.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Esta é a home da interface externa do afiliado — o painel tem menu próprio, não compartilha com
+    o admin (ver Bloco 3, Tarefa 6 para Painel do Afiliado completo).
+  </li>
+  <li>
+    Link/código pessoal precisa ter destaque visual — é ação primária do perfil (reunião 25/03).
+  </li>
+  <li>
+    Passo-a-passo numerado (3 passos) explicando comissões fica na Home como onboarding fixo para
+    afiliados novos e reforço para ativos (decisão Rafael 25/03). <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Dashboard do afiliado (indicações, comissão acumulada, pendente) [web]</li>
+  <li>[ ] Header com saudação e subtítulo com atualização dos dados</li>
+  <li>[ ] 4 cards estatísticos (Vendas, Valor gerado, Comissão acumulada, Comissão paga)</li>
+  <li>
+    [ ] Widget das 4 métricas principais (indicações 30 dias, abandonadas semana, valor recebido
+    mês, a receber 7 dias)
+  </li>
+  <li>[ ] Exibição do link/código pessoal com botão copiar (destaque visual)</li>
+  <li>[ ] Passo-a-passo numerado (3 passos) explicando comissões</li>
+  <li>[ ] CRUD de Indicações</li>
+  <li>[ ] Área de métricas / ganhos</li>
+  <li>[ ] Área de FAQ / Dúvidas gerais</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>
+    [ ] [vazio] Afiliado sem vendas ainda — tutorial de como divulgar (passo-a-passo em destaque)
+  </li>
+  <li>[ ] [vazio] Afiliado sem contratos ativos</li>
+  <li>[ ] [loading] Sincronização de vendas</li>
+  <li>[ ] [erro] Falha ao carregar métricas — fallback com dados do último sync</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 5</h4>
+<p>
+  <strong>Total de tarefas:</strong> 8 (4 Autenticação + 4 Início/Dashboards)
+  <strong>Por status sugerido:</strong>
+</p>
+<ul>
+  <li>
+    <strong>DESIGN (3):</strong> Login, Início Gestor Comercial, Início Afiliado (já iniciados)
+  </li>
+  <li>
+    <strong>BACKLOG (5):</strong> Cadastro de Nova Empresa, Redefinição de Senha, Aceite de Convite,
+    Início Comercial, Início Operador/Guia
+    <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>Login via OAuth (Google, Facebook): faz parte do escopo mínimo?</li>
+  <li>Copy dos planos (Começar / Quero Crescer / Voando Alto) para tela de Cadastro.</li>
+  <li>Prazo de expiração do token de verificação de e-mail.</li>
+  <li>
+    Meta do vendedor: como é fixada? Gestor edita diretamente no painel dele?
+    <strong>Observações transversais:</strong>
+  </li>
+</ol>
+<ul>
+  <li>
+    Autenticação tem pouca complexidade de design — são fluxos padrão. A decisão do Cristiano sobre
+    &quot;CRUD genérico não precisa de Figma&quot; (ver Bloco 4) pode se aplicar aqui também, exceto
+    pelo Login e Cadastro de Nova Empresa que têm branding e primeira impressão relevantes.
+  </li>
+  <li>
+    Dashboards por perfil compartilham a estrutura &quot;cards estatísticos + widgets&quot; — faz
+    sentido construir um componente base de dashboard reutilizável.
+  </li>
+  <li>
+    O widget &quot;4 métricas principais&quot; do Afiliado e os &quot;cards estatísticos&quot; em
+    geral são variações do mesmo pattern. Padronizar isso economiza trabalho de design.
+  </li>
+  <li>
+    Painel do Operador/Guia é mobile-first por natureza — a adaptação mobile nessa tarefa vira quase
+    o principal, e a versão web fica como fallback.
+  </li>
+</ul>
+<hr />
+<p><strong>Fim do Bloco 5.</strong> Próximo bloco: CRM + Recursos e Equipe (4 features).</p>

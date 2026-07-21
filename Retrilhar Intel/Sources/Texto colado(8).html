@@ -1,0 +1,297 @@
+<p>
+  Baseado na transcrição, gere um novo escopo de teste de usabilidade com missões que façam sentido
+  ao cronograma, estamos buscando um teste mais enxuto para avaliar as principais telas do módulo de
+  agendas
+</p>
+<p>23 de abr.</p>
+<p>
+  Claude respondeu: Vou analisar a transcrição e o escopo atual do teste para propor uma versão mais
+  enxuta alinhada às prioridades que a Katiely trouxe.
+</p>
+<p>
+  Vou analisar a transcrição e o escopo atual do teste para propor uma versão mais enxuta alinhada
+  às prioridades que a Katiely trouxe.
+</p>
+<p>Ler o escopo atual do teste de usabilidade para entender estrutura e missões originais</p>
+<p>Ler o escopo atual do teste de usabilidade para entender estrutura e missões originais</p>
+<p>Preciso extrair o texto do DOCX. Vou usar pandoc.</p>
+<p>Converter o escopo atual para markdown e exibir</p>
+<p>Converter o escopo atual para markdown e exibir</p>
+<p>
+  Agora tenho um entendimento claro do escopo atual e das orientações da Katiely na reunião. Deixa
+  eu sintetizar os pontos-chave antes de gerar o novo documento:
+</p>
+<p>O que mudou na reunião de 23/04:</p>
+<p>
+  Prazo: adiado da semana do 2-3-4 para final da semana que vem (tornando o teste mais enxuto
+  essencial)
+</p>
+<p>Redução de 5 para 3 missões: sugestão explícita da Katiely</p>
+<p>
+  Foco confirmado no check-in: &quot;o fluxo mais importante dessa jornada&quot; — Rafa propôs,
+  Katiely confirmou
+</p>
+<p>Prioridades segundo uso real dos clientes (Katiely citou o que os clientes mais usam):</p>
+<p>Buscar o cliente pelo nome</p>
+<p>Buscar os dados do cliente</p>
+<p>Fazer o check-in &quot;pra ela estar segura&quot;</p>
+<p>
+  Contexto arquitetural importante: o &quot;check-in&quot; no futuro será um painel
+  separado/simplificado (para recepcionista/guia na porta), mas ainda não existe. O teste atual
+  avalia o check-in dentro da tela operacional completa (que hoje acumula as três funções: painel do
+  dia, reservas, eventos).
+</p>
+<p>
+  Mapa de vagas: foi revisado na reunião mas ainda está em refinamento (dimensionamento dos cards) —
+  candidato a ficar fora do teste enxuto.
+</p>
+<p>Missões que se justificam cortar:</p>
+<p>Missão 2 (Visão Geral) — é mais contemplativa/informacional, menor risco de falha grave</p>
+<p>Missão 4 (Atualizações operacionais) — aba menos crítica; log e campo de mensagem</p>
+<p>
+  Missão 5 (Conclusão e encerramento do dia) — importante, mas o fluxo ainda tem pontos pendentes
+  (tipos de intercorrência a alinhar com o Cristiano, edge cases de check-in pendente)
+</p>
+<p>Missões que ficam (3 missões):</p>
+<p>Acessar agenda e localizar atividade → navegação (mantida enxuta)</p>
+<p>Buscar cliente e consultar dados da reserva → consulta (nova, baseada no uso real)</p>
+<p>Realizar check-in (individual + grupo) → fluxo crítico (expandida como foco principal)</p>
+<p>
+  Vou gerar o novo escopo seguindo a estrutura do documento existente e o padrão UXNAUT da Luana.
+</p>
+<p>Ler o SKILL.md do docx para entender como gerar o documento corretamente</p>
+<p>Ler o SKILL.md do docx para entender como gerar o documento corretamente</p>
+<p>
+  Tenho o suficiente para criar o documento. Vou construir o novo escopo com a estrutura UXNAUT
+  (Sora font, azul 1e40af nos headers de tabela, semantic fills). Vou usar Inter como fallback já
+  que Sora pode não estar disponível no Word — mantenho o Arial como fallback final.
+</p>
+<p>Executou 3 comandos, criou um arquivo</p>
+<p>Executou 3 comandos, criou um arquivo</p>
+<p>Documento validado sem erros. Vou copiá-lo para a pasta de outputs e presentá-lo.</p>
+<p>Executou um comando, leu um arquivo</p>
+<p>Executou um comando, leu um arquivo</p>
+<p>Escopo enxuto pronto. Resumo rápido das decisões que tomei a partir da reunião de hoje:</p>
+<p>
+  Missões — de 5 para 3, seguindo a sugestão da Katiely de focar no que os clientes mais usam no dia
+  a dia:
+</p>
+<p>Localizar as atividades do dia na agenda — navegação pelo calendário (mantida da v1, enxuta)</p>
+<p>
+  Buscar um participante e conferir os dados da reserva — missão nova, baseada no comentário da
+  Tânia sobre buscar pelo nome do cliente para saber os dados
+</p>
+<p>
+  Realizar o check-in de participantes individuais e em grupo — o fluxo crítico, expandido com o
+  cenário de seguro obrigatório e check-in em massa
+</p>
+<p>Missões que saíram nesta rodada (e por quê):</p>
+<p>Visão Geral — mais contemplativa, menor risco de falha grave; pode entrar em rodada posterior</p>
+<p>Atualizações operacionais — aba secundária, não crítica para o primeiro teste enxuto</p>
+<p>
+  Conclusão e encerramento do dia — ainda há pontos em aberto com o Cristiano (tipos de
+  intercorrência, edge case do participante sem check-in), então não faz sentido testar agora
+</p>
+<p>
+  Duração: caiu de ~63 min para ~40 min por sessão, o que ajuda na disponibilidade dos
+  participantes.
+</p>
+<p>
+  O que está fora do escopo: o mapa de vagas (ainda em refinamento após a conversa de hoje sobre
+  redimensionar os cards) e a tela simplificada de &quot;check-in de porta&quot; que a Katiely
+  descreveu — essa última é uma entrega futura e não foi projetada ainda.
+</p>
+<p>
+  O documento segue o padrão visual UXNAUT (azul 1e40af nos headers de tabela, fills semânticos em
+  verde/azul/amber, Sora como fonte). Quando abrir no Word, se a Sora não estiver instalada
+  localmente ele vai cair para o fallback do sistema — é só instalar a fonte se quiser o render 100%
+  fiel.
+</p>
+<p>
+  Quer que eu ajuste algo antes de mandar para a Katiely no grupo? Estou pensando se vale reforçar
+  no box de abertura algum ponto específico da conversa com ela, tipo citar nominalmente que a
+  redução saiu da sugestão dela.
+</p>
+<p>Escopo teste usabilidade agenda v2 enxuta</p>
+<p>Documento · DOCX</p>
+<p>
+  Você disse: Baseado nessa proposta de usabilidade, nos fluxos que já temos pronto no figma e o que
+  ainda está pendente para as missões do protótipo do teste, estime uma da…
+</p>
+<p>
+  Baseado nessa proposta de usabilidade, nos fluxos que já temos pronto no figma e o que ainda está
+  pendente para as missões do protótipo do teste, estime uma data realista para iniciarmos os testes
+  com os participantes
+</p>
+<p>24 de abr.</p>
+<p>
+  Claude respondeu: Para estimar uma data realista, preciso entender o que já está pronto no Figma
+  versus o que ainda falta.
+</p>
+<p>
+  Para estimar uma data realista, preciso entender o que já está pronto no Figma versus o que ainda
+  falta. Deixa eu verificar o que consta nos materiais do projeto sobre o estado atual do módulo.
+</p>
+<p>Searched project for “telas prontas pendentes módulo agenda checklist Figma”</p>
+<p>Searched project for “telas prontas pendentes módulo agenda checklist Figma”</p>
+<p>
+  Vou buscar mais especificamente o estado atual das telas que cobrem as 3 missões do novo escopo.
+</p>
+<p>Searched project for “aba participantes check-in individual grupo reserva status tela pronta”</p>
+<p>Searched project for “aba participantes check-in individual grupo reserva status tela pronta”</p>
+<p>
+  Perfeito, agora tenho uma visão clara do checklist de prontidão. Vou fazer mais uma consulta
+  focada na agenda/calendário em si e no mapa de vagas.
+</p>
+<p>
+  Searched project for “calendário agenda visualização mês semana dia atividades do dia painel
+  pronto”
+</p>
+<p>
+  Searched project for “calendário agenda visualização mês semana dia atividades do dia painel
+  pronto”
+</p>
+<p>
+  Agora tenho todo o panorama necessário. Deixa eu consolidar o que está pronto, o que falta e
+  quanto tempo leva cada etapa. Vou pensar no cenário realista.
+</p>
+<p>Searched project for “Figma Make protótipo interativo alta fidelidade montagem”</p>
+<p>Searched project for “Figma Make protótipo interativo alta fidelidade montagem”</p>
+<p>Tenho um quadro completo agora. Vou consolidar o cenário para estimar a data.</p>
+<p>Estado atual (checklist do módulo Agenda):</p>
+<p>Telas que cobrem as 3 missões do novo escopo enxuto:</p>
+<p>Missão Estado no Figma</p>
+<p>
+  M1 — Calendário + Atividades do Dia ✅ Visões Mensal/Semanal/Diária prontas; ✅ Página
+  &quot;Atividades do Dia&quot; com cards; 🆕 seção de resumo do topo pendente (mas não é caminho
+  crítico da missão)
+</p>
+<p>
+  M2 — Buscar participante + conferir dados ✅ Abas de filtro por status; ✅ Busca por nome/ID; ✅
+  Card expandido com alertas; 🆕 ordenadores novos; ❌ numeração sequencial; ❌ nome do comprador no
+  header
+</p>
+<p>
+  M3 — Check-in individual + em massa + seguro ✅ Check-in individual; ✅ Desfazer check-in; ✅
+  Seleção em massa com barra contextual; ✅ Ações em massa (check-in, seguro, cancelar, remarcar);
+  ❌ QR Code check-in (não entra no teste)
+</p>
+<p>O que ainda trava ou exige atenção antes do teste:</p>
+<p>
+  Refinamentos finais do módulo ainda em curso (a Katiely mencionou hoje que &quot;ainda estamos
+  trabalhando nos módulos&quot;) — estimo 2 a 3 dias úteis de polimento
+</p>
+<p>
+  Prototipagem no Figma Make — Rafael precisa montar o protótipo interativo de alta fidelidade. Para
+  3 missões com fluxo linear, estimo 3 a 4 dias úteis
+</p>
+<p>Revisão interna e sanity check dos fluxos antes de enviar aos participantes — 1 dia</p>
+<p>
+  Recrutamento dos 5 participantes — a Katiely cuida disso, mas precisa de pelo menos 5 dias de
+  antecedência para agendar (experiência do teste anterior que caiu no feriado mostra que o setor de
+  turismo tem agenda complicada)
+</p>
+<p>Aprovação do escopo pela Katiely — mínimo 1 a 2 dias</p>
+<p>Construindo a linha do tempo:</p>
+<p>
+  Hoje é sexta-feira, 24 de abril. A Katiely disse explicitamente: &quot;semana que vem, vocês acham
+  que dá?&quot; — e vocês (Rafa + você) responderam que precisariam de mais tempo. Na última fala
+  dela, ela aceitou &quot;metade ou final da semana que vem&quot; como janela possível.
+</p>
+<p>Mas olhando o que realmente precisa acontecer com honestidade:</p>
+<p>
+  Semana de 27/04 a 01/05: finalizar refinamentos da Agenda + você alinha com o Rafa as novas
+  missões + envio do escopo para aprovação da Katiely + ela recruta os participantes
+</p>
+<p>Semana de 04/05 a 08/05: Rafa monta o protótipo no Figma Make + sanity check interno</p>
+<p>
+  Semana de 12/05 a 15/05 (terça a sexta): janela realista para os testes — considerando que segunda
+  (11/05) pode ser dia de buffer para últimos ajustes
+</p>
+<p>Recomendação: testes entre 13 e 15 de maio (quarta a sexta).</p>
+<p>Por quê não a semana de 05/05:</p>
+<p>
+  Aperta demais o prototipagem (só 5 dias úteis desde hoje até lá, sendo que refinamentos ainda não
+  terminaram)
+</p>
+<p>
+  O turismo trabalha muito em feriados — 1º de maio (Dia do Trabalho) cai numa sexta-feira, e muitos
+  operadores emendam
+</p>
+<p>
+  Você mesma disse na reunião de 08/04 que, depois de aprovar o fluxo, precisariam de &quot;uns dias
+  para montar o protótipo&quot; — e agora o escopo mudou, então o Rafa precisa refazer o protótipo
+  focado em 3 missões
+</p>
+<p>Por quê 13-15/05 e não 11-12/05:</p>
+<p>11/05 (segunda) é dia ruim para teste (participante ainda está organizando a semana)</p>
+<p>
+  Seguindo o padrão da última rodada que a Katiely tentou marcar (&quot;dias 22-23-24 das 14h às
+  17h&quot;, 3 dias consecutivos meio da semana à tarde), quarta-quinta-sexta das 14h às 17h é o
+  slot que funcionou antes
+</p>
+<p>
+  Prazo para comunicar à Katiely no grupo: até terça-feira (28/04), para dar a ela ~2 semanas de
+  antecedência para recrutamento — que é o que ela precisou da última vez.
+</p>
+<p>
+  Quer que eu escreva a mensagem de WhatsApp para a Katiely formalizando essa proposta de datas (13,
+  14 e 15/05, das 14h às 17h)? Posso deixar pronta no formato que você costuma usar para ela, já
+  citando que o escopo foi reduzido para 3 missões com foco em check-in conforme conversado.
+</p>
+<p>Você disse: Considere apenas o tempo de prototipação do teste</p>
+<p>Considere apenas o tempo de prototipação do teste</p>
+<p>24 de abr.</p>
+<p>
+  Claude respondeu: Considerando apenas o tempo de prototipação do teste no Figma Make, para as 3
+  missões do escopo enxuto:
+</p>
+<p>
+  Considerando apenas o tempo de prototipação do teste no Figma Make, para as 3 missões do escopo
+  enxuto:
+</p>
+<p>Estimativa: 3 a 4 dias úteis</p>
+<p>Decomposição por missão:</p>
+<p>Missão 1 — Calendário + Atividades do Dia (~0,5 dia)</p>
+<p>
+  Fluxo linear curto: calendário → clique em data → lista de atividades do dia → clique em atividade
+</p>
+<p>
+  Todas as telas-base já existem no Figma, é trabalho de interligação de frames e estados de
+  hover/clique
+</p>
+<p>Poucos ramos alternativos para prototipar</p>
+<p>Missão 2 — Buscar participante + conferir dados (~1 dia)</p>
+<p>
+  Interna da atividade → aba Participantes → campo de busca com estado de input → resultado filtrado
+  → expandir card de reserva individual e em grupo
+</p>
+<p>Exige prototipar os estados do card expandido com os alertas (saúde, pagamento, seguro)</p>
+<p>Estados de busca ativa precisam de overlay/variants — é o que consome mais tempo aqui</p>
+<p>Missão 3 — Check-in individual + em massa + seguro (~1,5 a 2 dias)</p>
+<p>É a missão mais complexa do protótipo: múltiplos ramos de interação</p>
+<p>
+  Fluxo obrigatório do seguro: card → confirmar reserva → contratar seguro → retornar → realizar
+  check-in
+</p>
+<p>
+  Fluxo de seleção em massa: checkbox individual → barra de ações contextual → check-in em massa →
+  atualização do contador
+</p>
+<p>Estados pós-ação (sucesso, botão &quot;Desfazer&quot;) precisam de variants</p>
+<p>
+  Múltiplos caminhos alternativos que o participante pode tentar — cada um precisa de feedback no
+  protótipo
+</p>
+<p>Buffer de polimento e sanity check interno (~0,5 dia)</p>
+<p>Teste completo das 3 missões ponta a ponta</p>
+<p>Correção de links quebrados e estados inconsistentes</p>
+<p>Ajustes de timing de transições</p>
+<p>Cenário realista: 4 dias úteis de prototipação dedicada.</p>
+<p>
+  Se o Rafa conseguir dedicar a semana inteira exclusivamente ao protótipo (sem interferência dos
+  refinamentos que ainda correm em paralelo), 3 dias são viáveis. Mas considerando que os
+  refinamentos do módulo ainda estão acontecendo em paralelo e o histórico de teste #3 mostrou que
+  &quot;erros no protótipo causavam intermitência na exibição do conteúdo&quot; (o que compromete o
+  teste), o 4º dia de buffer para sanity check é o que evita repetir esse problema.
+</p>

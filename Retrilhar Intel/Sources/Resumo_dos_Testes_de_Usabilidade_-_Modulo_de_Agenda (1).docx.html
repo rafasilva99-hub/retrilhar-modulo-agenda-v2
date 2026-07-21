@@ -1,0 +1,1040 @@
+<p>
+  <em><strong>UXNAUT · Retrilhar</strong></em>
+  <em><strong>Relatório de Pesquisa</strong></em>
+  <strong>Testes de Usabilidade</strong>
+  <strong>Módulo de Agenda</strong>
+  <em><strong>Síntese consolidada das</strong></em> cinco <em><strong>rodadas de</strong></em> teste
+  <em><strong>e mapeamento de melhorias de arquitetura</strong></em>
+  <strong>1. Contexto da rodada</strong>
+  Nessas <em><strong>rodadas de testes investig</strong></em> amos
+  <em
+    ><strong
+      >o módulo de Agenda do novo painel administrativo da Retrilhar, com foco na jornada do gestor
+      de operações: localizar atividades do dia, verificar reservas e realizar check-in de
+      participantes. Foram conduzidos cinco testes individuais entre 13 e 20 de maio de 2026</strong
+    ></em
+  >
+  .
+  <strong>Objetivos avaliados</strong>
+  <em><strong>Objetivo 1</strong></em> <strong>-</strong>
+  <em
+    ><strong
+      >Identificar atividades programadas para o dia como gestor de operação (entrada no Painel do
+      Dia a partir da agenda).</strong
+    ></em
+  >
+  <em><strong>Objetivo 2</strong></em> <strong>-</strong>
+  <em
+    ><strong
+      >Localizar uma reserva específica na atividade, verificar dados e condições antes de liberar a
+      entrada.</strong
+    ></em
+  >
+  <em><strong>Objetivo 3</strong></em> <strong>-</strong>
+  <em
+    ><strong
+      >Registrar a chegada (check-in) de participante individual e em grupo, lidando com a regra de
+      seguro obrigatório.</strong
+    ></em
+  >
+  <strong>Participantes</strong>
+  | <strong>Teste</strong> | <strong>Participante</strong> | <strong>Perfil</strong> |
+  <strong>Data</strong> | | ------ | ------ | ------ | ------ | | <em><strong>Nº 1</strong></em> |
+  <em><strong>Cristiano Silveira</strong></em> |
+  <em><strong>Gestor com uso “superficial e adaptado”; operação simples sem multi-dia</strong></em>
+  | <em><strong>13/05/2026</strong></em> | | <em><strong>Nº 2</strong></em> |
+  <em><strong>Paula Rocha + Andreia (Cajuzinho do Cerrado)</strong></em> |
+  <em
+    ><strong
+      >Gestoras que operam múltiplas empresas; usuárias ativas; foco em parte comercial</strong
+    ></em
+  >
+  | <em><strong>15/05/2026</strong></em> | | <em><strong>Nº 3</strong></em> |
+  <em><strong>Thiago +</strong></em> Jaqueline <em><strong>(Cerrado Experience)</strong></em> |
+  <em
+    ><strong>Operação ativa com Cerrado Experience; usuário recorrente do sistema atual</strong></em
+  >
+  | <em><strong>14/05/2026</strong></em> | | <em><strong>Nº 4</strong></em> |
+  <em><strong>Marcus Vinícius Heusi (Retrilhar Tubarão)</strong></em> |
+  <em
+    ><strong
+      >Gestor experiente; operação com seguro embutido no preço (sem contratação manual)</strong
+    ></em
+  >
+  | <em><strong>14/05/2026</strong></em> | | <em><strong>Nº 5</strong></em> |
+  <em><strong>Lucas Lopes</strong></em> |
+  <em
+    ><strong
+      >Perfil técnico; já participou de rodada anterior; olhar atento a priorização visual e
+      affordance</strong
+    ></em
+  >
+  | <em><strong>20/05/2026</strong></em> |
+</p>
+<p>
+  <strong>2. Resumo executivo</strong>
+  <em
+    ><strong
+      >A rodada confirma que o acesso à agenda diária é intuitivo em todos os perfis</strong
+    ></em
+  >
+  -
+  <em
+    ><strong
+      >todos os participantes conseguiram localizar as atividades do dia com facilidade. No entanto,
+      três pontos de atrito estruturais se manifestaram de forma recorrente, atravessando perfis
+      distintos e revelando questões de arquitetura que precisam ser endereçadas antes d</strong
+    ></em
+  >
+  o <em><strong>próxim</strong></em> oteste <em><strong>:</strong></em> |
+  <strong>Atrito estrutural</strong> | <strong>Manifestação</strong> | <strong>Severidade</strong> |
+  | ------ | ------ | ------ | |
+  <em><strong>Confusão entre “Equipe escalada” e “Participantes”</strong></em> |
+  <em
+    ><strong
+      >Dois participantes (T3, T4) buscaram clientes na lista de guias antes de chegar à aba correta
+      de participantes.</strong
+    ></em
+  >
+  | <strong>Alta</strong> | | <em><strong>Status de pagamento sem</strong></em> relevância
+  <em><strong>visual suficiente</strong></em> |
+  <em
+    ><strong
+      >Três participantes (T1, T3, T4) buscaram referência visual de “cifrão verde/vermelho” que
+      existia no sistema antigo.</strong
+    ></em
+  >
+  | <strong>Alta</strong> | |
+  <em><strong>Fluxo de seguro obrigatório gera atrito severo</strong></em> |
+  <em
+    ><strong
+      >Todos os cinco testes encontraram problemas no fluxo. T4 questionou a premissa estrutural; T2
+      sugeriu nova arquitetura de ações em lote; T5 apontou baixo contraste da ação
+      desabilitada.</strong
+    ></em
+  >
+  | <strong>Crítica</strong> |
+</p>
+<p>
+  <em
+    ><strong
+      >Além desses, três descobertas relevantes surgiram como sugestões espontâneas convergentes
+      entre múltiplos participantes: (1) a necessidade de visualizar categoria de tarifa (criança,
+      idoso, meia) por participante na listagem; (2) idade visível no resumo de reserva em grupo;
+      (3) histórico de comportamento do cliente (cancelamentos recorrentes, incidentes).</strong
+    ></em
+  >
+  <em><strong>Por fim,</strong></em> o
+  <em
+    ><strong
+      >T4 trouxe um questionamento de regra de negócio que precisa ser validado com Cristiano: na
+      operação real, o seguro é embutido na reserva e não objeto de escolha do cliente. A premissa
+      de &quot;operador contrata seguro no dia&quot; pode estar invertendo o modelo de uso
+      real.</strong
+    ></em
+  >
+  <strong>3. Resumos por participante</strong>
+  <strong>3.1 Teste nº 1</strong> - <strong>Cristiano Silveira (13/05)</strong>
+  <em
+    ><strong
+      >Perfil: gestor com uso &quot;superficial e adaptado&quot; da plataforma; opera atividades
+      simples (tirolesa solo/dupla), sem multi-dia.</strong
+    ></em
+  >
+  <strong>Objetivo 1</strong> - <strong>Visão Geral do Dia</strong>
+  <em><strong>Resultado: Concluído · Avaliação: 3/5 · Atrito: Baixo</strong></em>
+  <em
+    ><strong
+      >Acessou a agenda quadriculada com familiaridade, mas relatou estranheza com a densidade de
+      cores e informações. Declarou que repetiria o mesmo caminho.</strong
+    ></em
+  >
+  <em>“Três. Eu digo por conta da agenda, do formato</em>
+  <em
+    >quadriculado da agenda, porque de fato muita informação, muitas cores, mas eu vi que eu tava na
+    agenda, que é uma coisa que eu tô familiarizado.”</em
+  >
+  <strong>Objetivo 2</strong> - <strong>Verificação de Reserva</strong>
+  <em><strong>Resultado: Concluído com desvio · Atrito: Médio</strong></em>
+  <em
+    ><strong
+      >Tentou entrar na &quot;página de informações da reserva&quot; (referencial mental do sistema
+      antigo) e não a encontrou de primeira. Acabou priorizando o acesso pelo código #</strong
+    ></em
+  >
+  RE-
+  <em
+    ><strong
+      >9920 em vez de clicar no card por inteiro. Reconheceu que, &quot;numa segunda
+      navegação&quot;, ainda não saberia o caminho.</strong
+    ></em
+  >
+  <em
+    ><strong>Individual vs. grupo: ficou confuso ao ver uma reserva com 4 participantes</strong></em
+  >
+  e <em><strong>não percebeu a ação &quot;Ver grupo&quot; no card até ser apontada</strong></em> no
+  fim do objetivo <em><strong>. Reagiu positivamente ao descobrir.</strong></em>
+  <em
+    >“Por ser a primeira vez... precisava ficar aqui fuçando, mexendo, vendo o que cada coisa leva.
+    Mas foi por desconhecer.”</em
+  >
+  <strong>Objetivo 3</strong> - <strong>Registro de Chegada</strong>
+  <em
+    ><strong
+      >Resultado: Concluído com auxílio · Atrito: Alto pontual (limitação técnica do
+      protótipo)</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Inicialmente se perdeu no dia da atividade (achou que precisava ir em
+      &quot;participantes&quot; para buscar pela base geral). Localizou pela ferramenta de busca por
+      nome e seguiu o ícone de seguro como sinalização de ação. Não tinha certeza se conseguiria
+      fazer check-in sem primeiro contratar o seguro</strong
+    ></em
+  >
+  , então se guiou <em><strong>apenas pelo &quot;</strong></em> simbolozinho
+  <em><strong>&quot;.</strong></em>
+  <em
+    ><strong
+      >Problema técnico observado: Ao usar o menu de três pontos, clicou em &quot;fazer
+      check-in&quot; mas o menu fechou primeiro (clique fora). Achou que tinha clicado errado e
+      clicou novamente</strong
+    ></em
+  >
+  - <em><strong>acabou desfazendo o check-in sem perceber.</strong></em>
+  <em><strong>Indicadores do topo: não conseguiu interpretar com clareza.</strong></em>
+  <em
+    >“58 participantes, mas eu não sei se é check-in, se todos fizeram check-in, se todos pagaram,
+    se foram só reservas.”</em
+  >
+  Resumo
+  <em
+    ><strong
+      >Perfil de baixa familiaridade tecnológica, dependeu fortemente de affordances visuais
+      explícitas (ícones de status, badge laranja de pendência). Reconheceu valor no sistema
+      &quot;para organizações com mais detalhes que a sua&quot;. A jornada exigiu várias inferências
+      por tentativa e erro, mas o participante conseguiu concluir todas as tarefas.</strong
+    ></em
+  >
+  <strong>3.2 Teste nº 2</strong> - <strong>Paula Rocha + Andreia (15/05)</strong>
+  <em
+    ><strong
+      >Perfil: duas gestoras operando em conjunto múltiplas empresas (Ecobocaina, Rocha Cultura,
+      agências de Brasília); usuárias ativas e engajadas; com foco</strong
+    ></em
+  >
+  na <em><strong>parte comercial e gestão de múltiplas marcas.</strong></em>
+  <strong>Objetivo 1</strong> <strong>-</strong> <strong>Visão Geral do Dia</strong>
+  <em><strong>Resultado: Concluído · Avaliação: 5/5 · Atrito: Baixo</strong></em>
+  <em
+    ><strong
+      >Acessaram a agenda com facilidade. Andreia comparou diretamente com o Google Agenda. Reagiram
+      positivamente aos indicadores de lotação (9 de 12, 7 de 10) e à possibilidade de ver
+      atividades &quot;lotadas&quot;</strong
+    ></em
+  >
+  - <em><strong>algo que</strong></em> citaram já terem
+  <em><strong>cobrando ante</strong></em> riormente como adição ao sistema
+  <em><strong>.</strong></em>
+  <em
+    ><strong
+      >Sugestão espontânea forte: incluir datas regionais e temáticas do setor (Dia da Água, Dia do
+      Guia de Turismo, Dia do Condutor Local) no calendário, não apenas feriados nacionais.
+      Justificativa: usam o sistema também para programação de posts em redes sociais.</strong
+    ></em
+  >
+  <em
+    >“Inclusive vai ser interessante até para a gente que faz programação de posts nas redes
+    sociais, sabendo os produtos que tá linkado dentro do mapa. Vai ser bem interessante, usando uma
+    única agenda voltada para cada empresa.”</em
+  >
+  <strong>Objetivo 2</strong> - <strong>Verificação de Reserva</strong>
+  <em><strong>Resultado: Concluído parcialmente</strong></em>
+  <em><strong>· Atrito: Médio</strong></em>
+  <em
+    ><strong
+      >Tentou usar a barra de busca geral no topo do sistema para encontrar Camila</strong
+    ></em
+  >
+  -
+  <em
+    ><strong
+      >não funcionou para esse caso. Andreia ficou travada e disse explicitamente que a navegação
+      não foi intuitiva.</strong
+    ></em
+  >
+  <em
+    >“Mas aqui quando eu clico no buscar para mim tá travado. A única solução que eu vi foi clicar
+    uma por uma. [...] Para mim não ficou muito intuitivo não.”</em
+  >
+  <em
+    ><strong
+      >Após chegar à página correta, elogiou bastante o resumo das informações: badge de check-in
+      pendente, contratação de seguro, termo de imagem, ID de referência. Pediu validação do código
+      de cores do termo de uso de imagem (verde/laranja/vermelho), confirmando que faz
+      sentido.</strong
+    ></em
+  >
+  <em><strong>Sugestões espontâneas relevantes:</strong></em>
+  <em
+    ><strong
+      >Idade dos participantes visível no resumo da reserva em grupo (decisão de segurança: caverna
+      não recebe criança abaixo de X anos; atividade física não recebe idoso acima de Y).</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Histórico de comportamento do cliente: cancelamentos recorrentes, motivos, incidentes
+      anteriores. Justificativa: &quot;a gente desenha muito o roteiro, então a gente se envolve
+      muito com os nossos clientes&quot;.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Histórico de pagamentos: ao descobrir a função na página de pagamento, reagiu com
+      entusiasmo</strong
+    ></em
+  >
+  , citando que
+  <em
+    ><strong
+      >&quot;antigamente para a gente chegar nessa informação, a gente fazia um
+      rolezinho&quot;.</strong
+    ></em
+  >
+  <strong>Objetivo 3</strong> - <strong>Registro de Chegada</strong>
+  <em><strong>Resultado: Não concluído · Atrito: Alto</strong></em>
+  <em><strong>Selecionou os participantes</strong></em> por
+  <em
+    ><strong
+      >checkbox, mas não encontrou o botão de ação correspondente para concluir a operação. Ficou
+      explicitamente confusa.</strong
+    ></em
+  >
+  <em
+    >“Ficou faltando um clique final aqui que eu não sei qual que é... eu não vi como concluir a
+    atividade, talvez um botão de conclusão.”</em
+  >
+  <em><strong>Após</strong></em> <strong>o fim do objetivo foi</strong>
+  <em><strong>explica</strong></em> <strong>do</strong>
+  <em
+    ><strong
+      >que as ações em lote estão em &quot;Mais ações&quot; no topo, Andreia trouxe uma sugestão de
+      arquitetura diretamente acionável:</strong
+    ></em
+  >
+  <em
+    >“Se tivesse uma coluna aqui do lado, não seria interessante? [...] Eu tô com 58 participantes,
+    certo? Eu quero selecionar só assim. Vou lá embaixo. Vou ter que subir. Se tivesse um botão aqui
+    para eu clicar, um linkzinho [contratar] seguro, por exemplo, seria interessante de ser mais
+    fácil. A grande maioria faço no celular e são vários aparelhos de vários tamanhos. Não rolar
+    tudo isso. Alguma coisa nessa praticidade.”</em
+  >
+  <em
+    ><strong
+      >Sobre regra do seguro no fluxo atual delas: manualmente, seleciona o nome, clica em check-in
+      e depois contrata o seguro (dois cliques). O check-in vem antes do seguro. Ao ouvir que o novo
+      sistema inverteu a ordem (seguro habilita o check-in), reagiu positivamente: &quot;ah, então
+      vai ser o contrário agora... mais assertivo&quot;.</strong
+    ></em
+  >
+  Resumo
+  <em
+    ><strong
+      >Usuárias ativas e altamente engajadas, com modelo mental do sistema antigo bem estabelecido.
+      Trouxeram a maior quantidade de sugestões espontâneas convergentes com necessidades
+      operacionais reais (histórico, idade visível, atalhos de ação, datas comemorativas regionais).
+      O atrito principal foi no fluxo de ações em lote</strong
+    ></em
+  >
+  ( <em><strong>particularmente em telas longas</strong></em> )
+  <em
+    ><strong
+      >e na descoberta do botão de conclusão. Validaram positivamente a inversão da regra de seguro
+      (seguro antes do check-in).</strong
+    ></em
+  >
+  <strong>3.3 Teste nº 3</strong> -
+  <strong>Cerrado Experience (Thiago + acompanhante, 14/05)</strong>
+  <em
+    ><strong
+      >Perfil: operação ativa com Cerrado Experience; usuário recorrente do sistema atual da
+      Retrilhar; modelo mental fortemente ancorado em &quot;ficha de inscrição&quot; e &quot;cifrão
+      verde/vermelho&quot;.</strong
+    ></em
+  >
+  <strong>Objetivo 1</strong> <strong>-</strong> <strong>Visão Geral do Dia</strong>
+  <em
+    ><strong
+      >Resultado: Concluído parcialmente · Avaliação auto-relatada: 5/5 · Atrito real: Médio</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Encontrou a agenda do dia rapidamente, mas confundiu a lista de equipe escalada com a lista
+      de participantes. Foi necessário</strong
+    ></em
+  >
+  no fim do objetivo
+  <em><strong>explicar que a equipe escalada são os guias, não os participantes.</strong></em>
+  <em><strong>Discrepância importante: avaliou 5/5, mas</strong></em> avaliei uma
+  <em
+    ><strong
+      >confusão objetiva. Indica viés de complacência ou reinterpretação otimista
+      pós-conclusão.</strong
+    ></em
+  >
+  <strong>Objetivo 2</strong> <strong>-</strong> <strong>Verificação de Reserva</strong>
+  <em><strong>Resultado: Concluído · Atrito: Médio (interpretação de status)</strong></em>
+  Tentou l <em><strong>ocaliz</strong></em> ar
+  <em
+    ><strong
+      >a participante usando Ctrl+F do navegador (não a busca interna do sistema). Identificou
+      check-in pendente, mas não compreendeu o motivo</strong
+    ></em
+  >
+  , <em><strong>interpret</strong></em> ando
+  <em
+    ><strong
+      >que poderia significar que &quot;não pagou&quot;. Só entendeu após explicação</strong
+    ></em
+  >
+  <em><strong>sobre seguro obrigatório.</strong></em>
+  <em
+    >“No sistema antigo, era mais fácil ver se a pessoa pagou ou não, porque já tava o cifrão lá
+    verdinho ou vermelho.”</em
+  >
+  <em
+    ><strong
+      >Individual vs. grupo: &quot;Não, nem reparei. Se é individual, se é em grupo, não consegui
+      perceber.&quot;</strong
+    ></em
+  >
+  <strong>Objetivo 3</strong> - <strong>Registro de Chegada</strong>
+  <em><strong>Resultado: Concluído com auxílio significativo · Atrito: Alto</strong></em>
+  <em
+    ><strong
+      >Tentou Ctrl+F novamente para encontrar a família Guimarães na lista. Confundiu reserva em
+      grupo com individual. Não percebeu a ação &quot;Ver grupo&quot; até</strong
+    ></em
+  >
+  ser <em><strong>indica</strong></em> do no fim do objetivo, <em><strong>sugeri</strong></em> ndo
+  <em><strong>que ela deveria estar em azul/sublinhada.</strong></em>
+  <em
+    >“Colocaria em azul, hein? Só para conseguir saber que era clicável. Se ficasse de uma outra cor
+    o grupo seria mais fácil [...] se fosse um grupo muito grande, vai aparecer tipo a Cláudia,
+    Roberta, um monte de nome na sequência, e a gente vai ter que ficar contando, né?”</em
+  >
+  <em><strong>Sugestões espontâneas:</strong></em>
+  <em
+    ><strong
+      >Visualização de categorias de tarifa (criança, idoso, meia) sem precisar abrir ficha
+      individual</strong
+    ></em
+  >
+  , com <em><strong>feedback final mais enfático.</strong></em>
+  <em
+    ><strong
+      >Tonalidade/cor diferenciada para agrupar visualmente membros de uma mesma reserva em
+      grupo.</strong
+    ></em
+  >
+  <em><strong>Affordance mais explícita para o link &quot;Ver grupo&quot;.</strong></em>
+  Resumo
+  <em
+    ><strong
+      >Operador experiente do sistema antigo. O atrito vem majoritariamente da transição de
+      paradigma entre sistemas, não da arquitetura do novo. As sugestões sobre categorias de tarifa
+      por participante e cor para grupos são insights operacionais relevantes que convergem com o
+      que Andreia (T2) também solicitou de forma independente.</strong
+    ></em
+  >
+  <strong>3.4 Teste nº 4</strong> -
+  <strong>Marcus Vinícius Heusi (Retrilhar Tubarão, 14/05)</strong>
+  <em
+    ><strong
+      >Perfil: gestor experiente; operação com seguro embutido no preço (sem contratação manual no
+      dia da atividade).</strong
+    ></em
+  >
+  <strong>Objetivo 1</strong> <strong>-</strong> <strong>Visão Geral do Dia</strong>
+  <em
+    ><strong
+      >Resultado: Concluído · Avaliação: &quot;bem intuitivo&quot; (sem nota numérica) · Atrito:
+      Baixo</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Acessou a agenda do dia direto, considerou bem organizado. Reconheceu visualmente horários,
+      atividades e equipes sem fricção.</strong
+    ></em
+  >
+  <em>“Mais normal é você abrir o calendário do dia. Prático.”</em>
+  <strong>Objetivo 2</strong> - <strong>Verificação de Reserva</strong>
+  <em><strong>Resultado: Concluído</strong></em> parcialmente
+  <em><strong>· Atrito: Médio (mesma confusão do T3)</strong></em>
+  <em
+    ><strong
+      >Reproduziu exatamente a mesma confusão entre equipe escalada e participantes do Teste nº 3.
+      Procurou Camila na lista de guias da atividade, não a encontrou, ficou perdido. Só localizou
+      após explica</strong
+    ></em
+  >
+  ção no fim do objetivo.
+  <em><strong>Liberação de reserva no sistema atual: decide com base no cifrão verde</strong></em> -
+  <em
+    ><strong
+      >&quot;às vezes nem precisa abrir porque se o cifrão tá verde é porque foi pago. Eu não vou
+      muito na prova dos nove não.&quot;</strong
+    ></em
+  >
+  <strong>Objetivo 3</strong> - <strong>Registro de Chegada</strong>
+  <em><strong>Resultado: Não concluído · Atrito: Crítico</strong></em>
+  <strong>Reserva individual</strong>
+  <em
+    ><strong
+      >: encontrou, identificou check-in pendente, identificou que faltava seguro, mas não conseguiu
+      completar a contratação dentro do fluxo do menu de três pontos. Travou explicitamente.</strong
+    ></em
+  >
+  <em>“Velho, travei aqui. Não sei o que fazer.”</em>
+  <strong>Reserva em grupo</strong>
+  <em
+    ><strong
+      >: buscou pelo sobrenome na barra de pesquisa, encontrou apenas &quot;Thiago Rocha
+      Martins&quot; (</strong
+    ></em
+  >
+  comprador
+  <em
+    ><strong
+      >). Não identificou a reserva em grupo, pois ela aparecia sem nome de família, apenas como
+      &quot;4 participantes&quot;.</strong
+    ></em
+  >
+  <strong>Insight crítico de regra de negócio</strong>
+  <em
+    ><strong
+      >O participante questionou diretamente a lógica do seguro obrigatório como ação manual,
+      descrevendo o fluxo real da operação dele:</strong
+    ></em
+  >
+  <em
+    >“Atualmente, no meu caso, no meu Retrilhar, o cliente não é consultado se quer ou não quer
+    contratar o seguro... porque não é ele que paga. Quem paga o seguro sou eu, sendo o valor que
+    ele paga está embutido no meu preço. Então ele não tem opção de não contratar. E eu acho até que
+    essa pergunta não é feita para ele. Para nenhuma atividade que a legislação defina que é
+    obrigatória a contratação do seguro, isso não deve ser uma pergunta, deve ser só um &quot;aqui,
+    ó, já tá contratado, senão você não vai&quot;.”</em
+  >
+  <em><strong>Sobre o sistema atual:</strong></em>
+  <em
+    >“Ele é feito no momento da reserva. A pessoa quando compra a atividade, ela já tá com um seguro
+    incluído. Eu tenho só que confirmar na hora que a atividade for acontecer, a pessoa que tá
+    operando muda o status de confirmado para realizado. É nesse momento que o seguro passa a ser
+    validado.”</em
+  >
+  <strong>Sugestões espontâneas</strong>
+  <em
+    ><strong
+      >Campo de observações detalhado no cadastro de participante para registrar restrições
+      alimentares, condições médicas, situações especiais (ex.: cadeirante). Rafael demonstrou que o
+      campo &quot;observações adicionais&quot; já está no protótipo</strong
+    ></em
+  >
+  , com um <em><strong>feedback bem recebido.</strong></em>
+  <em
+    ><strong
+      >Rastro de histórico ao remarcar reserva (mostrar que o participante estava antes em outra
+      data).</strong
+    ></em
+  >
+  Resumo
+  <strong>3.5 Teste nº 5</strong> - <strong>Lucas Lopes (20/05)</strong>
+  <em
+    ><strong
+      >Perfil: participante que já havia atuado em rodada anterior de teste; perfil técnico, com
+      olhar atento a priorização visual e affordance de elementos. Realizado no mesmo dia em que
+      parte das atualizações do protótipo foi publicada.</strong
+    ></em
+  >
+  <strong>Objetivo 1</strong> <strong>-</strong> <strong>Visão Geral do Dia</strong>
+  <em><strong>Resultado: Concluído · Avaliação: 5/5 · Atrito: Baixo</strong></em>
+  <em
+    ><strong
+      >Localizou os dois eventos do dia sem dificuldade. O achado central foi de hierarquia visual:
+      identificou que o aviso de &quot;Lotado&quot; tem mais destaque do que o de &quot;Seguro
+      pendente&quot;, e apontou que essa priorização está invertida em relação à importância
+      operacional real.</strong
+    ></em
+  >
+  <em
+    >“O lotado tá com mais detalhe do que o seguro pendente, sendo que se a atividade é hoje, a
+    informação de estar lotado para mim não é tão importante. O seguro pendente é algo mais
+    importante do que estar lotado ou não.”</em
+  >
+  <em
+    ><strong
+      >Confusão pontual de navegação: ao clicar em um item do topo, achou inicialmente que estava
+      detalhando apenas aquele item, e não o conjunto. Percebeu sozinho ao longo da tarefa que havia
+      mais atividades aninhadas.</strong
+    ></em
+  >
+  <strong>Objetivo 2</strong> <strong>-</strong> <strong>Verificação de Reserva</strong>
+  <em><strong>Resultado: Concluído · Atrito: Baixo</strong></em>
+  <em
+    ><strong
+      >Entrou na atividade, usou o filtro interno por nome e localizou Camila Ribeiro sem fricção.
+      Primeiro participante a usar o filtro interno corretamente de imediato, sem recorrer ao Ctrl+F
+      do navegador nem à busca geral do sistema.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Lacuna de informação crítica: sentiu falta de indicação visual de problemas de saúde,
+      necessidades especiais e restrições físicas (ex.: saber nadar) já na listagem. Argumentou que
+      essas informações são tão importantes quanto o status do seguro e deveriam aparecer como
+      alerta, no mesmo nível dos ícones de reserva confirmada e termo de uso.</strong
+    ></em
+  >
+  <em
+    >“A partir do momento que tem algo de saúde que eu preciso ter uma atenção, teria que ter algum
+    indicativo. Necessidades especiais, mobilidade reduzida: isso aqui é extremamente importante que
+    tivesse um indicativo.”</em
+  >
+  <em
+    ><strong
+      >Resposta do moderador no teste: Rafael explicou que esses avisos são condicionais (aparecem
+      apenas quando há restrição atribuída) para evitar poluição visual em viewports menores, e que
+      a reserva testada não tinha participante com restrição. A demanda permanece válida: o
+      participante validou a lógica condicional, mas reforçou que o indicador precisa
+      existir.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Individual vs. grupo: reconheceu a reserva em grupo primeiro pela quantidade de check-ins
+      pendentes, não pelo rótulo. Apontou falta de distinção visual entre os blocos.</strong
+    ></em
+  >
+  <em
+    >“Não tem um destaque de cores, então eu não consigo visualmente, pelo menos não de forma tão
+    clara, entender que isso aqui é um grupo. Uma bordazinha em volta do grupo já daria um destaque
+    melhor.”</em
+  >
+  <strong>Objetivo 3</strong> <strong>-</strong> <strong>Registro de Chegada</strong>
+  <em><strong>Resultado: Concluído parcialmente · Atrito: Médio</strong></em>
+  <em
+    ><strong
+      >Identificou que o check-in estava desabilitado por pendência de seguro. O atrito principal
+      foi de visibilidade: a ação de check-in fica escondida quando desabilitada, e o participante
+      demorou a localizar o que precisava ser feito, mesmo explorando &quot;Mais
+      ações&quot;.</strong
+    ></em
+  >
+  <em
+    >“Quando tá desabilitado, ele tá escondido até demais. Eu demorei a visualizar. A gente precisa
+    melhorar a questão de contraste.”</em
+  >
+  <em
+    ><strong
+      >Ponto positivo espontâneo: a seleção por checkbox foi mantida ao trocar o filtro (selecionou
+      Felipe, removeu o filtro, buscou a família Martins e a seleção anterior permaneceu).
+      Considerou o check-in em grupo intuitivo justamente pela presença dos checkboxes, e elogiou a
+      contratação de seguro em lote.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Indicadores do topo: mesma crítica de T1 e T3 - o resumo de totais &quot;todo cinza&quot; não
+      comunica pendência. Sugeriu padrão de cor (amarelo para itens pendentes) para indicar quantos
+      check-ins ainda faltam.</strong
+    ></em
+  >
+  <em
+    >“Como tá tudo cinza, acaba que não me dá uma informação. Se utilizasse algum tipo de padrão de
+    cores, ficaria interessante: fazer check-in com fundo amarelo porque é algo que tá
+    pendente.”</em
+  >
+  <em
+    ><strong
+      >Affordance dos filtros: no fechamento, observou que os filtros do topo da página não parecem
+      clicáveis - não aparentam ser links nem botões.</strong
+    ></em
+  >
+  Resumo
+  <em
+    ><strong
+      >Participante de perfil técnico e olhar crítico apurado, que entregou os achados mais precisos
+      sobre hierarquia visual da rodada. Sem atritos de localização (foi o único a usar o filtro
+      interno de imediato), concentrou o feedback em priorização de cor, contraste de ações
+      desabilitadas e affordance. Reforçou três achados já recorrentes: alerta de saúde na listagem
+      (convergindo com T2 e T3), distinção visual de grupos (T2, T3) e ambiguidade dos indicadores
+      do topo (T1, T3). Trouxe um achado novo de alto valor: a inversão de prioridade entre os
+      avisos de &quot;Lotado&quot; e &quot;Seguro pendente&quot;.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Gestor experiente que questiona uma premissa estrutural do fluxo de seguro: na operação real
+      dele, o seguro não é objeto de escolha. A obrigação não deveria virar tarefa manual do
+      operador no dia da atividade. Também demonstrou frustração com a ergonomia do menu de três
+      pontos no card de reserva</strong
+    ></em
+  >
+  , <em><strong>não</strong></em> conseguindo
+  <em><strong>completar uma ação que</strong></em> parecia
+  <em
+    ><strong
+      >clara no objetivo. Convergência com Andreia (T2) sobre a inversão correta de &quot;seguro
+      antes do check-in&quot;, mas divergência sobre quem faz: T2 aceita contratar manualmente; T4
+      questiona a contratação manual em si.</strong
+    ></em
+  >
+  <strong>4. Achados consolidados</strong>
+  <strong>4.1 Recorrentes (alta confiança</strong> ,
+  <strong>observados em 2 ou mais testes)</strong> | <strong>Achado</strong> |
+  <strong>Severidade</strong> | <strong>Testes</strong> | <strong>Heurística violada</strong> | |
+  ------ | ------ | ------ | ------ | |
+  <em><strong>Fluxo de seguro obrigatório gera atrito severo</strong></em> |
+  <strong>Crítica</strong> | <em><strong>T1, T2, T3, T4</strong></em> |
+  <em><strong>#2 Correspondência mundo real · #5 Prevenção de erros · #7 Flexibilidade</strong></em>
+  | | <em><strong>Status de pagamento sem indicador visual de alta</strong></em> relevância |
+  <strong>Alta</strong> | <em><strong>T1, T3, T4</strong></em> |
+  <em><strong>#1 Visibilidade do status do sistema</strong></em> | |
+  <em
+    ><strong
+      >Confusão entre &quot;Equipe escalada&quot; e &quot;Participantes&quot; na Visão Geral</strong
+    ></em
+  >
+  | <strong>Alta</strong> | <em><strong>T3, T4</strong></em> |
+  <em><strong>#2 Correspondência mundo real · #6 Reconhecer ≠ lembrar</strong></em> | |
+  <em><strong>Affordance fraca da ação &quot;Ver grupo&quot; no card</strong></em> |
+  <strong>Média</strong> | <em><strong>T1, T3</strong></em> |
+  <em><strong>#6 Reconhecer ≠ lembrar · #4 Consistência</strong></em> | |
+  <em><strong>Distinção individual vs. grupo não percebida na listagem</strong></em> |
+  <strong>Média</strong> | <em><strong>T1, T3, T5</strong></em> |
+  <em><strong>#1 Visibilidade do status · #6 Reconhecer ≠ lembrar</strong></em> | |
+  <em><strong>Indicadores numéricos do topo da lista de participantes ambíguos</strong></em> |
+  <strong>Média</strong> | <em><strong>T1, T3, T5</strong></em> |
+  <em><strong>#1 Visibilidade do status do sistema</strong></em> | |
+  <em><strong>Busca interna confundida com busca geral do sistema</strong></em> |
+  <strong>Média</strong> | <em><strong>T2, T3</strong></em> |
+  <em><strong>#4 Consistência · #6 Reconhecer ≠ lembrar</strong></em> |
+</p>
+<p>
+  <strong>4.2 Sugestões convergentes (alta confiança</strong> ,
+  <strong>observados em 2 ou mais testes)</strong> | <strong>Sugestão espontânea</strong> |
+  <strong>Testes</strong> | <strong>Tipo</strong> | | ------ | ------ | ------ | |
+  <em
+    ><strong
+      >Mostrar categoria de tarifa (criança, idoso, meia) na listagem de participantes</strong
+    ></em
+  >
+  | <em><strong>T2, T3</strong></em> | <em><strong>Arquitetura da informação</strong></em> | |
+  <em><strong>Idade visível no resumo da reserva em grupo (decisão de segurança)</strong></em> |
+  <em><strong>T2</strong></em> | <em><strong>Arquitetura da informação</strong></em> | | Falta de
+  affordance do menu lateral de contexto | T1, T2, T3, T4, T5 | Design visual | |
+  <em><strong>Diferenciação visual de membros do mesmo grupo na listagem</strong></em> |
+  <em><strong>T2, T3, T5</strong></em> | <em><strong>Design visual</strong></em> | |
+  <em><strong>Recuperar</strong></em> destaque
+  <em><strong>do &quot;cifrão verde/vermelho&quot; para pagamento</strong></em> |
+  <em><strong>T3, T4</strong></em> | <em><strong>Design visual</strong></em> | |
+  <em><strong>Histórico de comportamento do cliente (cancelamentos, incidentes)</strong></em> |
+  <em><strong>T2</strong></em> | <em><strong>Funcionalidade nova</strong></em> | |
+  <em><strong>Datas regionais/temáticas do ecoturismo no calendário</strong></em> |
+  <em><strong>T2</strong></em> | <em><strong>Funcionalidade nova</strong></em> | |
+  <em><strong>Atalho de ação na linha do participante (sem precisar rolar até o topo)</strong></em>
+  | <em><strong>T2</strong></em> | <em><strong>Arquitetura de interação</strong></em> |
+</p>
+<p>
+  <strong>4.3 Únicos relevantes (baixa confiança, mas alto impacto)</strong> |
+  <strong>Achado</strong> | <strong>Severidade</strong> | <strong>Origem</strong> | | ------ |
+  ------ | ------ | |
+  <em><strong>Reserva em grupo aparece sem nome de família identificável</strong></em> |
+  <strong>Alta</strong> | <em><strong>T4</strong></em> | |
+  <em><strong>Botão de conclusão de ação em lote não encontrado após seleção</strong></em> |
+  <strong>Alta</strong> | <em><strong>T2</strong></em> | |
+  <em><strong>Falta rastro/histórico ao remarcar reservas</strong></em> | <strong>Baixa</strong> |
+  <em><strong>T4</strong></em> | |
+  <em><strong>Múltiplas empresas vinculadas: clareza sobre não-mistura de dados</strong></em> |
+  <strong>Baixa</strong> | <em><strong>T2 (validado positivamente após explicação)</strong></em> | |
+  <em
+    ><strong
+      >Prioridade visual invertida entre avisos de &quot;Lotado&quot; e &quot;Seguro
+      pendente&quot;</strong
+    ></em
+  >
+  | <strong>Alta</strong> | <em><strong>T5</strong></em> |
+</p>
+<p>
+  <strong>5. Mapeamento de melhorias de arquitetura</strong>
+  <strong>5.1 Regras de negócio</strong>
+  <strong>R2</strong> - <strong>Inversão da ordem seguro/check-in</strong>
+  <em><strong>Prioridade: Alta · Origem: T2 (validação positiva)</strong></em>
+  <em
+    ><strong
+      >O sistema atual exige check-in antes da contratação de seguro. O protótipo inverteu: seguro
+      habilita o botão de check-in. T2 validou explicitamente essa inversão como &quot;mais
+      assertiva&quot;. Manter inversão, mas garantir que a sinalização do bloqueio seja clara antes
+      do clique frustrado.</strong
+    ></em
+  >
+  <strong>R3</strong> - <strong>Histórico de comportamento do cliente</strong>
+  <em><strong>Prioridade: Média · Origem: T2 (sugestão espontânea forte)</strong></em>
+  <em
+    ><strong
+      >Andreia trouxe a necessidade de rastrear cancelamentos recorrentes, motivos e incidentes
+      anteriores do cliente</strong
+    ></em
+  >
+  , uma
+  <em
+    ><strong
+      >informação operacional crítica para empresas que fazem roteiros personalizados</strong
+    ></em
+  >
+  , mas que fica f
+  <em><strong>ora do escopo do módulo de Agenda, mas que deve entrar no</strong></em>
+  <em><strong>módulo de Clientes.</strong></em>
+  <strong>5.2 Arquitetura da informação</strong>
+  <strong>AI1</strong> -
+  <strong
+    >Separação visual entre &quot;Equipe escalada&quot; e &quot;Participantes&quot; na Visão
+    Geral</strong
+  >
+  <em><strong>Prioridade: Alta · Origem: T3, T4</strong></em>
+  <em
+    ><strong
+      >Dois testes consecutivos buscaram clientes na lista de guias. Caminhos possíveis (não
+      mutuamente exclusivos):</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Renomear &quot;Equipe escalada&quot; para algo mais explícito (ex.: &quot;Guias e
+      operação&quot;, &quot;Equipe responsável&quot;)</strong
+    ></em
+  >
+  - <em><strong>copywriting.</strong></em>
+  <em
+    ><strong
+      >Adicionar contagem visível à aba (&quot;Participantes (8)&quot;) para sinalizar que ali estão
+      as pessoas atendidas.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Aumentar diferenciação visual entre os blocos (cor de fundo, espaçamento, ícones).</strong
+    ></em
+  >
+  <strong>AI2</strong> - <strong>Categoria de tarifa visível na listagem de participantes</strong>
+  <em><strong>Prioridade: Alta · Origem: T2, T3 (sugestão convergente espontânea)</strong></em>
+  <em
+    ><strong
+      >Adicionar tag/chip discreto ao lado do nome do participante indicando tipo de tarifa: Adulto,
+      Criança, Meia, Idoso. Necessidade explícita para decisão operacional em campo (atividades com
+      restrição etária) e cobrança correta.</strong
+    ></em
+  >
+  <strong>AI3</strong> - <strong>Idade visível no resumo de reserva em grupo</strong>
+  <em><strong>Prioridade: Média · Origem: T2</strong></em>
+  <em
+    ><strong
+      >No resumo expandido de reserva em grupo (após &quot;Ver grupo&quot;), exibir idade discreta
+      ao lado de cada membro. Justificativa de T2: avaliar adequação à atividade (caverna restrita a
+      maiores de X; rota técnica restrita a menores de Y).</strong
+    ></em
+  >
+  <strong>AI4</strong> - <strong>Nome de família/responsável no card de reserva em grupo</strong>
+  <em><strong>Prioridade: Alta · Origem: T4</strong></em>
+  <em
+    ><strong
+      >Em vez de &quot;4 participantes&quot;, exibir &quot;Família Martins · 4 participantes&quot;
+      ou &quot;Reserva de Rodrigo Oliveira · 4 ingressos&quot; para permitir busca pelo nome do
+      responsável/comprador.</strong
+    ></em
+  >
+  <strong>AI5</strong> - <strong>Clarificar indicadores numéricos do topo da lista</strong>
+  <em><strong>Prioridade: Alta · Origem: T1, T3, T5</strong></em>
+  <em
+    ><strong
+      >Adicionar rótulos explícitos ou tooltips: &quot;X de Y com check-in realizado&quot;, &quot;Z
+      pendentes de seguro&quot; etc. T1 não conseguiu interpretar; T3 só entendeu após explicação.
+      T2 elogiou o gráfico-resumo geral, então o problema é específico aos indicadores da lista de
+      participantes, não ao painel geral.</strong
+    ></em
+  >
+  <strong>AI6</strong> - <strong>Datas temáticas do ecoturismo no calendário</strong>
+  <em><strong>Prioridade: Baixa · Origem: T2</strong></em>
+  <em
+    ><strong
+      >Incluir Dia da Água, Dia do Guia de Turismo, Dia do Condutor Local etc. como marcadores no
+      calendário (além dos feriados nacionais). Útil para programação de marketing/conteúdo.</strong
+    ></em
+  >
+  <strong>5.3 Padrões de interação</strong>
+  <strong>IX1</strong> - <strong>Atalho de ação por linha de participante</strong>
+  <em><strong>Prioridade: Alta · Origem: T2 (sugestão de arquitetura direta)</strong></em>
+  <em
+    ><strong
+      >Hoje, a contratação de seguro em lote vive em &quot;Mais ações&quot; no topo da lista. Em
+      listas longas (58+ participantes em telas pequenas), forçar o usuário a rolar até o topo após
+      selecionar quebra o fluxo. Adicionar atalho de ação (contratar seguro, fazer check-in) ao lado
+      do nome do participante na própria linha</strong
+    ></em
+  >
+  , <em><strong>ou como coluna dedicada de ações rápidas.</strong></em> <strong>IX2</strong> -
+  <strong>Affordance da ação &quot;Ver grupo&quot;</strong>
+  <em><strong>Prioridade: Alta · Origem: T1, T3</strong></em>
+  <em
+    ><strong
+      >Citação literal de T3: &quot;colocaria em azul, hein, só para conseguir saber que era
+      clicável&quot;. Aplicar tratamento de link (cor primária + sublinhado opcional) ou converter
+      em botão visual claro. Diferenciar do texto descritivo do card.</strong
+    ></em
+  >
+  <strong>IX3</strong> - <strong>Botão de conclusão de ação em lote</strong>
+  <em><strong>Prioridade: Alta · Origem: T2</strong></em>
+  <em
+    ><strong
+      >Após selecionar via checkbox, T2 esperou ver um botão de conclusão próximo da seleção.
+      Considerar barra de ação flutuante (sticky) que aparece quando há seleção ativa, com botões
+      contextuais (Contratar seguro · Realizar check-in · Cancelar seleção). Padrão consistente com
+      a memória do projeto sobre &quot;modo de bulk action&quot; (esconder navegação inferior,
+      restaurar pós-ação).</strong
+    ></em
+  >
+  <strong>IX4</strong> - <strong>Diferenciar busca interna de busca geral do sistema</strong>
+  <em><strong>Prioridade: Média · Origem: T2, T3</strong></em>
+  <em
+    ><strong
+      >A barra de busca geral no topo do sistema foi confundida com a busca de participantes da
+      atividade. Considerar placeholder explícito na busca interna (&quot;Buscar participante nesta
+      atividade&quot;) e/ou contraste visual mais forte entre as duas.</strong
+    ></em
+  >
+  <strong>IX5</strong> - <strong>Investigar limitação técnica do menu de três pontos</strong>
+  <em><strong>Prioridade: Média · Origem: T1, T4 (afetou o resultado)</strong></em>
+  <em><strong>Limitação do</strong></em> protótipo <em><strong>que</strong></em> já foi
+  <em
+    ><strong
+      >resolvida no protótipo para não contaminar o feedback. Não é problema de design, mas afeta
+      diretamente a coleta de dados.</strong
+    ></em
+  >
+  <strong>5.4 Hierarquia visual</strong>
+  <strong>HV1</strong> - <strong>Status de pagamento com saliência alta</strong>
+  <em><strong>Prioridade: Alta · Origem: T1, T3, T4</strong></em>
+  <em
+    ><strong
+      >O paradigma &quot;cifrão verde/vermelho&quot; do sistema antigo era o ponto de decisão visual
+      primário de &quot;está liberado?&quot;. O ícone atual de pagamento confirmado não tem peso
+      visual suficiente. Recomendação: tratar pagamento como dimensão de igual peso ao check-in no
+      header do card (ícone colorido + cor de fundo discreta).</strong
+    ></em
+  >
+  <strong>HV2</strong> - <strong>Diferenciação visual de membros do mesmo grupo</strong>
+  <em><strong>Prioridade: Média · Origem: T2, T3, T5</strong></em>
+  <em
+    ><strong
+      >Tonalidade de fundo levemente diferente, marcação lateral conectando linhas, ou agrupamento
+      visual claro entre membros de uma mesma reserva em grupo. Reduz contagem manual em grupos
+      grandes.</strong
+    ></em
+  >
+  <strong>HV3</strong> - <strong>Densidade visual da agenda quadriculada</strong>
+  <em><strong>Prioridade: Baixa · Origem: T1</strong></em>
+  <strong>HV4</strong> -
+  <strong
+    >Prioridade visual entre avisos de &quot;Lotado&quot; e &quot;Seguro pendente&quot;</strong
+  >
+  <em><strong>Prioridade: Alta · Origem: T5</strong></em>
+  <em
+    ><strong
+      >T5 identificou que o aviso de &quot;Lotado&quot; tem mais peso visual do que o de
+      &quot;Seguro pendente&quot; no card de atividade, e apontou que essa hierarquia está invertida
+      em relação à importância operacional real: lotação é informação de planejamento, enquanto
+      seguro pendente é um bloqueio que impede a atividade de acontecer. Recomendação: rebalancear a
+      saturação e o contraste dos dois badges para que pendências bloqueantes (seguro, equipe não
+      atribuída) tenham prioridade visual sobre status informativos (lotado, vagas). Conecta-se com
+      CW1 (mensagem de bloqueio do check-in) e com AI5 (clareza dos indicadores do topo da
+      lista).</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Citado apenas por T1, e o próprio T1 reconheceu que a sensação se aplicava por seu uso
+      simples</strong
+    ></em
+  >
+  ,
+  <em
+    ><strong
+      >para outras organizações, parece adequado. Monitorar em próximas rodadas; não atuar
+      agora.</strong
+    ></em
+  >
+  <strong>5.5 Copywriting e terminologia</strong>
+  <strong>CW1</strong> - <strong>Mensagem de bloqueio do check-in por seguro</strong>
+  <em><strong>Prioridade: Alta · Origem: T3, T4</strong></em>
+  <em
+    ><strong
+      >T3 e T4 só entenderam que o check-in estava bloqueado por seguro após explicação. A mensagem
+      &quot;necessário contratar o seguro para realizar esta ação&quot; deve estar visível antes do
+      clique no botão de check-in, não como tooltip ao passar o mouse. Considerar estado disabled do
+      botão com texto explicativo adjacente.</strong
+    ></em
+  >
+  <strong>CW2</strong> - <strong>Rótulo &quot;Equipe escalada&quot;</strong>
+  <em><strong>Prioridade: Alta · Origem: T3, T4 (relacionado a AI1)</strong></em>
+  <em
+    ><strong
+      >Avaliar reescrita: &quot;Equipe responsável&quot;, &quot;Guias e operação&quot;,
+      &quot;Operação escalada&quot;. Validar com Cristiano se há aderência terminológica interna a
+      manter.</strong
+    ></em
+  >
+  6 <strong>. Observações</strong> finais
+  <em><strong>Reflexões sobre a condução desta rodada que devem informar a próxima:</strong></em>
+  <em
+    ><strong
+      >Viés de complacência: T3 deu nota 5/5 a um objetivo onde houve confusão objetiva documentada.
+      Sugestão: não pedir nota numérica imediatamente após a tarefa, ou pedir antes de o moderador
+      dar qualquer feedback corretivo.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Diversidade de perfis funcionou: T1 (uso superficial) validou intuitividade base; T2 e T3
+      (usuários experientes do sistema antigo) trouxeram insights operacionais de alto valor; T4
+      (gestor experiente) questionou regras de negócio.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Sessões com dupla (T2 e T3): produziram mais sugestões espontâneas e validação cruzada, mas
+      dificultaram identificar quem estava efetivamente conduzindo a tarefa. Considerar reservar
+      sessões em dupla apenas para discovery aberto, não para teste cronometrado.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Convergência entre testes independentes: O fato de T2, T3, T4 e T5 terem trazido demandas
+      semelhantes (categoria de tarifa, alerta de saúde na listagem, distinção visual de grupos,
+      ambiguidade dos indicadores do topo) sem comunicação prévia entre si dá alta confiança nesses
+      achados.</strong
+    ></em
+  >
+  <em
+    ><strong
+      >Participante recorrente (T5): Lucas (T5) já havia participado de rodada anterior. Foi o único
+      a usar o filtro interno de participantes corretamente de imediato, o que sugere ganho de
+      familiaridade entre rodadas. Para a próxima rodada, vale equilibrar participantes novos e
+      recorrentes: os novos expõem atritos de primeiro contato, enquanto os recorrentes avaliam a
+      curva de aprendizado e detalhes finos de hierarquia visual.</strong
+    ></em
+  >
+</p>

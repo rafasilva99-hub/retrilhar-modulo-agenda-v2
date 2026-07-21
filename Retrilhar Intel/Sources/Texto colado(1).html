@@ -1,0 +1,367 @@
+<p>
+  Liste para mim tudo que foi discutido da última reunião relacionado ao fluxo de fechamento da
+  atividade e de fechamento do dia
+</p>
+<p>15 de abr.</p>
+<p>
+  Claude respondeu: Aqui está tudo que foi discutido na reunião de 08/04 relacionado ao fluxo de
+  fechamento da atividade e fechamento do dia:
+</p>
+<p>Visualizou 2 arquivos</p>
+<p>Visualizou 2 arquivos</p>
+<p>
+  Aqui está tudo que foi discutido na reunião de 08/04 relacionado ao fluxo de fechamento da
+  atividade e fechamento do dia:
+</p>
+<p>Fechamento da atividade</p>
+<p>
+  O Cristiano apresentou o conceito de duas máquinas de estado por reserva: uma financeira (pagou ou
+  não) e uma de situação atual (rascunho → agendado → check-in → realizado → confirmado). A segunda
+  seria a mais relevante visivelmente no painel.
+</p>
+<p>
+  A ideia de encerramento automático da atividade (baseado na duração cadastrada no produto) foi
+  levantada pela Luana, mas o Cristiano rejeitou: o operador precisa ser responsável pela
+  informação, não o sistema.
+</p>
+<p>
+  O fluxo de fechamento da atividade foi descrito como: o operador realiza o check-in dos
+  participantes → ao final, confirma que tudo ocorreu bem ou informa um problema (ausente, acidente,
+  problema de saúde etc.).
+</p>
+<p>
+  O Rafael sinalizou que o botão de &quot;realizar check-in geral&quot; (todos de uma vez) já serve
+  de base para esse encerramento, mas que vão avaliar o cenário de fechamento individual por
+  atividade com mais calma.
+</p>
+<p>
+  Para atividades de múltiplos dias: o Rafa pontuou que seria necessário considerar o fechamento de
+  cada dia e também uma conclusão final ao término da atividade inteira.
+</p>
+<p>Fechamento do dia</p>
+<p>
+  O Cristiano introduziu o conceito de fechamento do dia como algo distinto do fechamento de
+  atividade: uma tela separada onde o gestor/operador confirma que tudo está ok — sem nomes de
+  participantes, apenas um resumo geral de status.
+</p>
+<p>
+  Essa tela seria a coleção dos fechamentos individuais das atividades: se todos os responsáveis por
+  cada atividade já finalizaram, o gestor na central consegue ver isso e fazer o fechamento geral.
+</p>
+<p>
+  O Cristiano confirmou: &quot;faz sentido ser pela atividade e faz sentido ser pelo dia&quot; — são
+  dois níveis distintos.
+</p>
+<p>
+  A Luana sugeriu inspiração no fluxo do Airbnb: ao final do período, o sistema pergunta se tudo
+  correu bem ou se houve algum problema, com dois caminhos — encerrar sem ocorrências ou informar
+  incidente.
+</p>
+<p>
+  O Cristiano mencionou que esse conceito de &quot;diário de bordo&quot; já havia sido apresentado
+  antes pelo time de design em algum momento.
+</p>
+<p>Pendências e próximos passos definidos na reunião</p>
+<p>
+  A equipe vai construir os fluxos de exceção de finalizar a atividade e fechar o dia em seguida à
+  validação do fluxo de agenda.
+</p>
+<p>
+  O Cristiano se comprometeu a enviar para o time a ordem/mapa de estados das reservas para embasar
+  o design dessas máquinas de estado.
+</p>
+<p>
+  A Luana sinalizou que o campo de observação do operador (anotação livre vinculada à atividade)
+  também vai entrar nesse fluxo — o Rafael confirmou que o espaço já está previsto no card.
+</p>
+<p>
+  Você disse: Elabore a arquitetura da funcionalidade de fechamento da atividade, considerando boas
+  práticas de UX/UI e boa usabilidade
+</p>
+<p>
+  Elabore a arquitetura da funcionalidade de fechamento da atividade, considerando boas práticas de
+  UX/UI e boa usabilidade
+</p>
+<p>15 de abr.</p>
+<p>
+  Claude respondeu: Deixa eu primeiro verificar o escopo e documentação de suporte antes de propor a
+  arquitetura.
+</p>
+<p>Deixa eu primeiro verificar o escopo e documentação de suporte antes de propor a arquitetura.</p>
+<p>Pesquisou a memória</p>
+<p>Pesquisou a memória</p>
+<p>Tenho tudo que preciso. Agora vou elaborar a arquitetura completa.</p>
+<p>Agora vou construir a arquitetura completa do fluxo.</p>
+<p>Aqui está a arquitetura completa. Vou detalhar cada camada abaixo.</p>
+<p>Gatilho do fluxo</p>
+<p>
+  O guia/operador aciona &quot;Encerrar atividade&quot; manualmente — nunca de forma automática.
+  Isso foi uma decisão explícita do Cristiano: a responsabilidade pelo dado é do operador, não do
+  sistema. O botão deve estar visível na tela da atividade, mas não em posição que permita
+  acionamento acidental (sugestão: botão secundário no rodapé ou dentro do menu de ações, não CTA
+  primário).
+</p>
+<p>Painel de encerramento</p>
+<p>
+  Ao acionar, abre um bottom sheet (mobile) ou modal (desktop) com três blocos de informação gerados
+  automaticamente pelo sistema:
+</p>
+<p>
+  Participantes: total esperado, quantos fizeram check-in, quantos ausentes (no-show). Isso obriga o
+  guia a confrontar os dados antes de confirmar.
+</p>
+<p>
+  Horários reais: início e término registrados no dia, com duração calculada. Alimenta o log
+  operacional (SGS).
+</p>
+<p>
+  Observações da operação: campo de texto livre, opcional, para o guia registrar qualquer nota sobre
+  o passeio — condições do terreno, comportamento do grupo, etc. Esse foi um ponto levantado
+  diretamente pelo Cristiano na reunião.
+</p>
+<p>Ponto de decisão: ocorreu intercorrência?</p>
+<p>
+  Antes de confirmar o encerramento, o guia responde a essa pergunta. É o único elemento interativo
+  obrigatório do fluxo, e deve ser apresentado de forma clara e binária — não como uma checkbox
+  escondida.
+</p>
+<p>Caminho feliz — tudo correu bem</p>
+<p>O guia confirma sem ocorrência. O sistema executa em sequência:</p>
+<p>Todas as reservas com status Check-in Realizado transitam para Realizada</p>
+<p>A atividade é marcada como Encerrada</p>
+<p>Log imutável é gerado (data, hora, usuário responsável)</p>
+<p>O feed do gestor é atualizado — atividade some da lista de pendentes do dia</p>
+<p>Fluxo de exceção — ocorrência registrada</p>
+<p>
+  O guia seleciona o tipo (lista fechada + campo livre como escape), define severidade (Baixa /
+  Média / Alta) e descreve. Só após preencher os campos obrigatórios consegue confirmar o
+  encerramento. Ocorrências de severidade Alta disparam alerta imediato para o gestor via
+  notificação/WhatsApp, conforme já previsto no RPP002.
+</p>
+<p>
+  A atividade é marcada como Encerrada com ocorrência, o que permite ao gestor filtrar e consultar
+  esses registros separadamente.
+</p>
+<p>Convergência: Fechamento do Dia</p>
+<p>
+  Independentemente do caminho, o encerramento de cada atividade alimenta a visão de Fechamento do
+  Dia do gestor — que é a agregação de todos os encerramentos individuais do dia. O gestor só
+  consegue fazer o fechamento do dia quando todas as atividades escaladas estiverem encerradas.
+</p>
+<p>Pontos que ainda precisam de alinhamento com o Cristiano</p>
+<p>
+  Quais tipos de ocorrência entram na lista fechada? A reunião mencionou ausência, problema de saúde
+  e incidente, mas a lista definitiva não foi fechada.
+</p>
+<p>
+  O que acontece com reservas que nunca saíram do status Confirmada (participante que não apareceu e
+  não foi marcado como no-show durante o check-in)? Precisam ser tratadas no fechamento?
+</p>
+<p>
+  O guia pode encerrar uma atividade se ainda houver participantes sem check-in? O sistema deve
+  bloquear ou apenas alertar?
+</p>
+<p>
+  Você disse: Agora ilustre visualmente a solução, considerando que ela entrará após essa página
+</p>
+<p>1776224216645_image.png</p>
+<p>Agora ilustre visualmente a solução, considerando que ela entrará após essa página</p>
+<p>15 de abr.</p>
+<p>Claude respondeu: Deixa eu analisar bem a tela antes de criar.</p>
+<p>Deixa eu analisar bem a tela antes de criar.</p>
+<p>
+  Agora o fluxo de exceção, que aparece quando o guia seleciona &quot;Sim, registrar
+  ocorrência&quot;:
+</p>
+<p>Aqui estão as duas telas do fluxo. Algumas decisões de design que vale destacar:</p>
+<p>
+  Bottom sheet, não modal centralizado. O fluxo ocorre no celular (guia em campo), então o sheet
+  vindo de baixo é o padrão nativo mais natural. Ele revela a tela de participantes por trás,
+  reforçando o contexto sem abandoná-lo.
+</p>
+<p>
+  O botão &quot;Concluir atividade&quot; fica desabilitado enquanto o sheet está aberto, evitando
+  dupla ação por engano. Ele só reativa quando o sheet é fechado — o encerramento acontece dentro do
+  sheet.
+</p>
+<p>
+  O resumo de participantes usa semântica de cores diretamente: verde para realizados, âmbar para
+  pendentes, neutro para o total. O guia lê o status da atividade num relance sem precisar somar
+  nada.
+</p>
+<p>
+  A pergunta de intercorrência está sempre visível no primeiro sheet — não é uma etapa posterior ou
+  uma opção escondida. Isso força a decisão consciente antes de confirmar.
+</p>
+<p>
+  O formulário de ocorrência é uma segunda camada com navegação &quot;Voltar ao encerramento&quot;,
+  deixando claro que é um passo dentro do mesmo fluxo — não uma tela separada. O link de voltar
+  permite corrigir sem perder os dados do resumo.
+</p>
+<p>
+  O alerta de severidade Alta aparece inline, logo acima do botão de confirmação — no momento exato
+  em que o guia está prestes a agir. Ele informa a consequência sem bloquear a ação.
+</p>
+<p>
+  Você disse: Agora ilustre visualmente a solução de fechamento do dia, que é a agregação de todos
+  os encerramentos individuais do dia e só pode ser acessada quando todas as…
+</p>
+<p>1776251843866_image.png</p>
+<p>
+  Agora ilustre visualmente a solução de fechamento do dia, que é a agregação de todos os
+  encerramentos individuais do dia e só pode ser acessada quando todas as atividades escaladas
+  estiverem encerradas. Considere também que ela entrará após essa página, no momento em que o
+  usuário clica no CTA &quot;Concluir Atividades do Dia&quot;
+</p>
+<p>15 de abr.</p>
+<p>
+  Claude respondeu: Agora o estado bloqueado — quando o gestor tenta acionar o CTA antes de todas as
+  atividades estarem encerradas: Duas telas, dois estados distintos.
+</p>
+<p>
+  Agora o estado bloqueado — quando o gestor tenta acionar o CTA antes de todas as atividades
+  estarem encerradas:
+</p>
+<p>Duas telas, dois estados distintos. As decisões que vale registrar:</p>
+<p>Estado bloqueado (tela 2)</p>
+<p>
+  O CTA fica desabilitado com ícone de cadeado — o gestor percebe visualmente que a ação não está
+  disponível antes mesmo de tentar clicar. Ao tentar clicar, um popover lista exatamente quais
+  atividades estão pendentes com progresso de check-in e um atalho direto para a primeira delas — o
+  gestor não precisa fechar o modal, caçar a atividade na lista e acessar manualmente. A barra de
+  progresso no topo da página reforça o estado de forma passiva, sem interromper.
+</p>
+<p>Estado liberado — o sheet de fechamento (tela 1)</p>
+<p>
+  A tela segue o mesmo padrão visual do fechamento de atividade individual: bottom sheet, mesma
+  linguagem de cards de resumo. O gestor vê os quatro agregadores do dia — atividades,
+  participantes, ausências e ocorrências — num relance. A tabela de atividades abaixo mostra o
+  status individual de cada uma, com o chip de ocorrência destacado em vermelho nas que tiveram
+  registro, sem precisar abrir nada. O campo de observação geral é opcional e explicitamente marcado
+  como visível só para gestão.
+</p>
+<p>
+  Decisão de nomenclatura do botão de confirmação: &quot;Confirmar fechamento do dia&quot; em verde
+  — não &quot;Concluir&quot;, que já é o termo do CTA da página. Manter termos distintos entre o
+  trigger e a confirmação evita confusão semântica de &quot;o que eu já cliquei vs o que eu vou
+  fazer agora&quot;.
+</p>
+<p>
+  Você disse: Me dê um texto para o toast no cenário de sucesso após confirmar o encerramento de uma
+  atividade
+</p>
+<p>
+  Me dê um texto para o toast no cenário de sucesso após confirmar o encerramento de uma atividade
+</p>
+<p>15 de abr.</p>
+<p>Claude respondeu: Três variações, do mais direto ao mais informativo:</p>
+<p>Três variações, do mais direto ao mais informativo:</p>
+<p>
+  Variação 1 — mínima Título: Atividade encerrada Corpo: Trilha Pico do Itacolomi foi encerrada com
+  sucesso.
+</p>
+<p>
+  Variação 2 — com dado operacional (recomendada) Título: Atividade encerrada Corpo: Trilha Pico do
+  Itacolomi encerrada. 127 de 150 participantes confirmados.
+</p>
+<p>
+  Variação 3 — com próximo passo Título: Atividade encerrada Corpo: Trilha Pico do Itacolomi
+  encerrada. 4 atividades concluídas — 1 pendente para fechar o dia.
+</p>
+<p>
+  Recomendo a variação 2. Ela confirma a ação, nomeia o objeto (eliminando ambiguidade quando há
+  várias atividades abertas) e entrega um dado que o guia vai querer saber imediatamente depois de
+  encerrar — quantos participantes foram confirmados. Sem próximo passo forçado, sem sobrecarga.
+</p>
+<p>
+  A variação 3 faz sentido se o público principal do toast for o gestor no desktop, que está
+  gerenciando múltiplas atividades e tem interesse em saber o quanto falta para fechar o dia. Para o
+  guia em campo, é informação irrelevante naquele momento.
+</p>
+<p>Você disse: Detalhe o fluxo de fechamento do dia</p>
+<p>Detalhe o fluxo de fechamento do dia</p>
+<p>15 de abr.</p>
+<p>Claude respondeu: Vou buscar referências antes de detalhar.</p>
+<p>Vou buscar referências antes de detalhar.</p>
+<p>Pesquisou a memória</p>
+<p>Pesquisou a memória</p>
+<p>Tenho tudo que preciso. Aqui está o detalhamento completo:</p>
+<p>Gatilho e pré-condição</p>
+<p>
+  O CTA &quot;Concluir Atividades do Dia&quot; fica bloqueado enquanto qualquer atividade escalada
+  no dia ainda não tiver sido encerrada individualmente. É o gestor operacional que faz o fechamento
+  do dia — não o guia. Se o guia tiver acesso à página de Atividades do Dia, ele não enxerga esse
+  CTA (está fora do escopo de permissão do perfil Líder de Operação).
+</p>
+<p>
+  Quando todas as atividades estão encerradas, o botão é desbloqueado e o gestor pode acionar o
+  fluxo.
+</p>
+<p>Conteúdo do sheet de fechamento</p>
+<p>Ao abrir, o sheet apresenta três blocos fixos e um campo opcional:</p>
+<p>
+  Resumo do dia — quatro métricas agregadas: total de atividades encerradas, total de participantes
+  atendidos (soma dos check-ins realizados em todas as atividades), total de ausências (no-show), e
+  total de ocorrências registradas pelos guias. Esse bloco é somente leitura — o gestor confere, não
+  edita.
+</p>
+<p>
+  Lista de atividades — tabela leve com uma linha por atividade: nome, quantidade de participantes
+  confirmados vs. esperados, status de encerramento, e indicação de ocorrência quando houver.
+  Atividades com ocorrência ficam marcadas com chip vermelho. Clicar numa linha poderia abrir o
+  detalhe da atividade — mas isso é comportamento a validar com o Cristiano, pois implica sair do
+  fluxo de fechamento.
+</p>
+<p>
+  Observação geral — campo de texto livre, opcional, visível apenas para a equipe de gestão. Serve
+  para registrar contexto do dia que não ficou em nenhuma atividade específica: condição climática
+  geral, intercorrências logísticas, comunicados internos.
+</p>
+<p>
+  Pergunta de encerramento — análogo ao que o guia responde no fechamento de atividade, mas no nível
+  do dia. O gestor confirma que revisou o resumo e que está ciente das ocorrências registradas. Não
+  é uma pergunta binária sobre intercorrências — essa granularidade já foi capturada nos
+  encerramentos individuais. Aqui é só a confirmação deliberada de que o gestor está fechando o dia
+  com plena ciência.
+</p>
+<p>O que acontece ao confirmar</p>
+<p>Em sequência, o sistema executa:</p>
+<p>
+  O dia recebe status &quot;Fechado&quot; no registro operacional, com timestamp e usuário
+  responsável
+</p>
+<p>Log imutável é gerado (data, hora, gestor que fechou, resumo dos totais)</p>
+<p>
+  Reservas que ainda estavam em Check-in Realizado e não foram marcadas individualmente como
+  Realizadas transitam automaticamente para Realizada — o fechamento do dia funciona como
+  confirmação em massa do estado final
+</p>
+<p>
+  Se houver ocorrências de severidade Alta que ainda não geraram alerta (por falha ou por terem sido
+  registradas sem conexão), o sistema dispara o alerta retroativamente
+</p>
+<p>
+  O Início do dia passa a exibir o resumo do fechamento como widget &quot;Dia encerrado&quot; —
+  substituindo os widgets operacionais do dia
+</p>
+<p>Fluxo de exceção: dia com atividades canceladas</p>
+<p>
+  Se uma atividade do dia foi cancelada antes de acontecer, ela não bloqueia o fechamento. O sistema
+  trata cancelamento como estado final válido — diferente de &quot;em andamento&quot;. No sheet, ela
+  aparece na lista com o chip &quot;Cancelada&quot; e sem dados de participante.
+</p>
+<p>Pendências a alinhar com o Cristiano</p>
+<p>Dois pontos que a arquitetura não consegue resolver sozinha:</p>
+<p>
+  O primeiro é o que acontece com atividades multi-dias no fechamento do dia. Uma atividade que
+  começou no dia 23 e termina no dia 28 aparece em múltiplos fechamentos de dia. A dúvida é se o
+  fechamento de cada dia registra a situação parcial (participantes do Dia 3 de 5, por exemplo) ou
+  se a atividade multi-dias só entra no fechamento do último dia, quando de fato encerra. Isso
+  impacta diretamente como o gestor interpreta os totais.
+</p>
+<p>
+  O segundo é o prazo: existe um horário-limite para fechar o dia, ou o gestor pode fazer isso no
+  dia seguinte? Se não houver limite, atividades do dia anterior podem aparecer como pendentes na
+  visão do dia seguinte — o que polui a Agenda. Uma sugestão seria o sistema gerar um lembrete
+  automático ao final do dia operacional (ex: 23h) caso o fechamento ainda não tenha sido feito.
+</p>

@@ -1,0 +1,59 @@
+<p>Vai ser possível adicionar mais de uma atividade ao pedido?</p>
+<p>2 de mar.</p>
+<p>Claude respondeu: Sim!</p>
+<p>Verificou documentação e confirmou múltiplas atividades permitidas</p>
+<p>Verificou documentação e confirmou múltiplas atividades permitidas</p>
+<p>
+  Sim! O escopo prevê que uma venda pode conter múltiplos produtos e adicionais. Isso está definido
+  nas Regras de Negócio da Central de Vendas:
+</p>
+<p>
+  Uma venda pode conter: múltiplos produtos e adicionais, múltiplos participantes, múltiplos
+  pagamentos e múltiplas comissões.
+</p>
+<p>
+  No fluxo de criação de pedido manual, isso se reflete no carrinho lateral, onde o vendedor vai
+  adicionando os itens um a um (produto, data/horário, quantidade, tipo de tarifa), podendo acumular
+  várias atividades diferentes antes de seguir para o pagamento.
+</p>
+<p>
+  Além disso, já está prevista a funcionalidade de Venda Complementar, que permite adicionar
+  produtos ou opcionais a uma venda que já foi paga, gerando um link apenas pelo valor da diferença.
+</p>
+<p>Você disse: E durante a criação do pedido, quais dados de clientes serão inseridos?</p>
+<p>
+  E durante a criação do pedido, quais dados de clientes serão inseridos? Apenas os do comprador ou
+  dos outros participantes também, considerando o cenário de um conjunto de pesssoas / familiares?
+</p>
+<p>2 de mar.</p>
+<p>
+  Claude respondeu: O escopo faz uma separação bem clara entre o momento da compra e o momento de
+  coleta dos dados dos participantes:
+</p>
+<p>Distinguiu captura de dados do comprador versus participantes pós-pagamento</p>
+<p>Distinguiu captura de dados do comprador versus participantes pós-pagamento</p>
+<p>
+  O escopo faz uma separação bem clara entre o momento da compra e o momento de coleta dos dados dos
+  participantes:
+</p>
+<p>
+  Na criação do pedido, são capturados apenas os dados do comprador: nome do cliente, forma de
+  pagamento, vendedor e observações. O sistema identifica a quantidade e tipo de ingressos (ex: 2
+  adultos, 1 criança), mas sem vincular nomes aos participantes nesse momento.
+</p>
+<p>
+  Após o pagamento, entra em ação a funcionalidade de Gestão de Participantes, que permite incluir e
+  editar os dados de quem vai realizar a atividade — nome, CPF, etc. Ou seja, é um momento separado
+  do fluxo de venda.
+</p>
+<p>
+  Existe ainda uma ideia registrada no escopo de um check-in estilo companhia aérea, que seria o
+  momento ideal para capturar dados mais sensíveis como informações de saúde e ficha de anamnese dos
+  participantes — tudo antes do passeio acontecer.
+</p>
+<p>
+  Dito isso, o detalhamento de quais campos exatamente serão solicitados para cada participante
+  (além de nome e CPF) ainda não está especificado nos documentos — isso provavelmente será definido
+  durante o projeto. Vale alinhar esse ponto, especialmente considerando as necessidades
+  operacionais de cada produto (trilhas, rafting, etc. podem exigir dados de saúde diferentes).
+</p>

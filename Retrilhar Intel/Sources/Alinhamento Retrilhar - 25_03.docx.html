@@ -1,0 +1,970 @@
+<p>Retrilhar: 00:00</p>
+<p>Bom dia pessoal, tudo bem?</p>
+<p>Luana C Lopes: 00:05</p>
+<p>Bom dia, bom dia. Tudo bem com você?</p>
+<p>Retrilhar: 00:10</p>
+<p>Tudo já.</p>
+<p>Luana C Lopes: 00:12</p>
+<p>O Cristiano vai entrar nessa e a gente vai falar mais sobre o Aix mesmo.</p>
+<p>Retrilhar: 00:22</p>
+<p>Aixinha já tá entrando.</p>
+<p>Luana C Lopes: 00:29</p>
+<p>Tá bom.</p>
+<p>Cristiano Teles: 00:50</p>
+<p>Bom dia, pessoal!</p>
+<p>Rafael Ribeiro: 00:51</p>
+<p>Bom dia!</p>
+<p>Retrilhar: 00:53</p>
+<p>Bom dia!</p>
+<p>Rafael Ribeiro: 00:54</p>
+<p>Como começou, então?</p>
+<p>Retrilhar: 01:01</p>
+<p>Bom,</p>
+<p>Rafael Ribeiro: 01:10</p>
+<p>Podemos começar?</p>
+<p>Cristiano Teles: 01:13</p>
+<p>Sim?</p>
+<p>Rafael Ribeiro: 01:15</p>
+<p>
+  Vamos lá, então. Vou começar aqui então primeiro pra gente comentar sobre o Menu Mobile. Essa
+  semana a gente avançou bastante nisso aqui. Fizemos algumas melhorias aqui também baseadas nos
+  testes de usabilidade e eu vou repassar por elas aqui e apresentar as lógicas em que a gente
+  tomou. Aqui eu vou fazer comparativo já da primeira versão que a gente tinha aqui, do menu
+  inferior. Antes ele ficava flutuante na tela. E a gente tinha os quatro botões aqui, como a gente
+  já tem agora. A gente manteve isso por padrão. Mas das melhorias feitas aqui, a gente decidiu
+  primeiro manter o menu de navegação fixo aqui na parte inferior. O intuito justamente da gente é
+  evitar qualquer problema de contraste entre o menu inferior e o conteúdo de fundo. Com isso a
+  gente já aumenta a taxa de sucesso aqui da navegação do usuário. Além disso também a gente,
+  baseado justamente nos resultados do teste de usabilidade, com relação àquela etapa dos Drawers
+  com os botões nas laterais, eles não tinham Labels, assim como nessa versão aqui. E aí eu vi que
+  era problema que poderia se repetir, e justamente essa foi uma segunda melhoria. Fazendo uma
+  pesquisa aqui também, eu busquei alguns artigos da Norman Newsom Group, que é uma empresa
+  referência de pesquisa de UI e UX Design lá dos Estados Unidos. E aí num desses artigos que eu vi,
+  justamente, foi afirmado por eles que a taxa de uso correta de produto aumenta em mais de 60%
+  quando os botões têm uma label justamente para esclarecer a ação do usuário. Então eu indiquei
+  isso aqui. Uma outra melhoria que a gente fez aqui também foi relacionada ao menu aqui. Antes a
+  gente só tinha o botão aqui, mas sem nenhum contexto. Eu optei também por mudar aqui também a
+  nomenclatura para mais. Foi dos resultados que eu vi também fazendo benchmark aqui de outros
+  produtos, como por exemplo o MercadoLivre, Itaú, InternetBank no geral. Eu vi que alguns que usam
+  esse menu lateral, geralmente eles optam por esse termo, mais aqui. Por qual motivo isso?
+  Justamente porque ele vira antepadrão. Então, se o item se chama menu, significa que a navegação
+  não cabe inteira no Tabibá, né? Tipo, já fica situado isso pro usuário. Que é o que a gente chama
+  aqui de hambúrguer escondido em Tabibá. O ícone de três linhas, ele não comunica destino. Ele
+  comunica mais que tem mais coisas escondidas nesse botão. Então, a lógica da interação segue sendo
+  a mesma aqui. O usuário clica e visualiza as informações. Só que, justamente, eu vi que fazia
+  sentido substituir o menu por esse mais aqui, pra comunicar que existem mais fluxos pra navegar,
+  ao invés de ser só menu genérico. Basicamente é isso. Outra preocupação que eu também tomei aqui
+  nesse menu foi em relação a essa interação das vendas aqui, sobre como ela ia funcionar. Eu
+  elaborei algumas propostas durante essa semana, mas eu acho que a mais assertiva também foi uma
+  que me baseia em benchmark de uma referência do Pinterest, em que eles têm menu de ação principal,
+  botão de ação principal ali, e quando o usuário clica abre bottom sheet aqui com as ações
+  principais. Eu pensei em uma lógica semelhante aqui para esse botão das vendas. Uma primeira
+  proposta que eu tinha desenhado, acho que eu vou dar aqui e ver aqui. A ideia é a gente dar o
+  destaque visual aqui quando o usuário for se clicar. Só que como esse usuário vai estar justamente
+  navegando dentro do navegador, o meu receio maior aqui é de a gente ter missclick nos botões.
+  Então, ele clica aqui, abre essa área toda aqui. Eu ainda tive o cuidado de manter aqui o tamanho
+  de 48 pixels, que é dos tamanhos padrões aqui para clique em botões no Google Responsibilidade
+  Mobile. Só que ainda não parecia satisfatória em relação a UX, em interação no geral. Então,
+  fazendo essa pesquisa, eu encontrei o melhor caminho aqui no bottom sheet. Temos todo espaço aqui
+  para o usuário, então a gente evita qualquer erro aqui de clique e deixa as informações bem claras
+  aqui, com as labels também. Então, aproveitei também para usar o padrão de botão que a gente tem
+  aqui no menu principal. Clicando no botão de mais aqui, ele prossegue para as ações principais.
+  Essa daqui foi para as ações do menu lateral aqui. Esse foi outro cuidado que eu também tomei,
+  justamente em relação ao menu original aqui. Antes a gente tinha as mesmas informações aqui do
+  menu inferior, dentro do menu. Eu vi que isso poderia também gerar algum conflito navegação do
+  usuário. Então justamente como a gente destacou melhor, deu mais ênfase aqui no menu lateral em
+  relação às interações dos botões, eu optei por deixar aqui só as informações relacionadas ao que
+  estava faltando do menu, que ia ficar apresentado aqui.
+</p>
+<p>Cristiano Teles: 07:18</p>
+<p>
+  Rafael, sobre esse grupo aí, lembrando que a gente monta uma estrutura mais genérica, né? Porque
+  pode evoluir. Pode não, vai evoluir. Então, naquela linha de ter submenu, como ele se comportaria
+  aí? Igual o menu do sidebar, ele abriria para baixo?
+</p>
+<p>Rafael Ribeiro: 07:41</p>
+<p>Submenu, você se refere a esse... Vou</p>
+<p>Cristiano Teles: 07:44</p>
+<p>
+  Chamar de produtos ali. É, vamos lá. Isso, vamos lá. Esse submenu de vendas, ele abre assim porque
+  o vendas já está no menu.
+</p>
+<p>Rafael Ribeiro: 07:56</p>
+<p>Isso, exatamente.</p>
+<p>Cristiano Teles: 07:57</p>
+<p>
+  Isso, já está aí. Agora, essa e mais opções aí, duas à direita, duas páginas à direita. Isso, essa
+  aí. Então vamos supor que produtos ali tenha submenu, com mais dois, três itens. Aí a pergunta é,
+  ele teria o mesmo comportamento do sidebar? Como que ele trataria isso? Ou você ainda não pensou
+  nisso?
+</p>
+<p>Rafael Ribeiro: 08:23</p>
+<p>
+  Na verdade, essa era uma das questões aqui que eu queria alinhar com vocês. E aproveito também
+  para trazer sobre aquela questão da interatividade aqui dos botões de fixar. Então acho que já
+  ficou com isso. Analisando com calma aqui, eu notei que as ações mais importantes aqui que a gente
+  precisava ter no menu inferior eram justamente essas. E aí, por padrão, a gente vai definindo...
+</p>
+<p>Cristiano Teles: 08:50</p>
+<p>
+  Rápido, é importante. Só para alinhar. A depender do perfil, essas são as mais importantes. A
+  depender do perfil, serão outras mais importantes. Do perfil usuário logado, o perfil que ele tem
+  naquela empresa.
+</p>
+<p>Rafael Ribeiro: 09:07</p>
+<p>
+  Exatamente, sim. A gente vai considerar isso também quando a gente for desenhar os outros fluxos,
+  mas por padrão aqui a gente definiu essas aqui como sendo as principais.
+</p>
+<p>Cristiano Teles: 09:17</p>
+<p>
+  Pra você está ótimo, não preocupa muito, que isso vai ser na hora da perfilagem lá, do controle de
+  acesso. A questão aqui que eu acho que vocês não precisam se preocupar com isso, mas só pra te
+  trazer que tudo isso aí são containers, são caixas que vão mudar dependendo do padrão da
+  configuração do usuário.
+</p>
+<p>Rafael Ribeiro: 09:44</p>
+<p>
+  Correto, correto. Bom, para o menu lateral aqui então, eu pensei no seguinte, a gente ainda
+  poderia justamente usar a lógica de submenu aqui internamente. E o botão de fixar ficaria limitado
+  a essas opções aqui dentro, internamente. Então, como no menu, na responsabilidade mobile, faz
+  mais sentido justamente esse contexto, porque a gente já vai ter as ações principais fixadas aqui.
+  Então, em todos os fluxos posteriores aqui, agenda, as vendas, os pedidos, as desistências, enfim,
+  o usuário sempre vai ter acesso a esses campos aqui. E aí no menu a gente pode enfatizar quais, o
+  usuário justamente pode enfatizar quais são as outras ações que ele quer dar destaque. Então a
+  gente vai ter a ação aqui pra ele poder fixar. E aí elas ficam favoritadas aqui em cima.
+  Basicamente é isso.
+</p>
+<p>Cristiano Teles: 10:50</p>
+<p>Ficou bom, pra mim ficou melhor mesmo do que tava antes. Valeu.</p>
+<p>Rafael Ribeiro: 10:55</p>
+<p>
+  Show. Uma outra preocupação que eu tive também em relação ao menu inferior, quando ele era
+  flutuante, era que a gente precisava ter gap de pelo menos 6 pixels entre a tab bar do navegador,
+  que é definido por padrão do sistema, E aí, isso estava ocupando espaço relativamente grande na
+  tela. Então, com a solução aqui do menu fixo aqui na barra inferior, a gente evita também, além de
+  erros de misclick, a gente consegue ter mais espaço também para visualizar os outros dados da
+  tela.
+</p>
+<p>Cristiano Teles: 11:36</p>
+<p>
+  Outro ponto que é bom a gente alinhar é que a gente vai induzir o usuário do mobile a instalar a
+  aplicação. Mas vai ser uma outra conversa depois que é é falar, olha, o melhor uso é instalando, e
+  aí eu acredito que os usuários em geral vão instalar, e aí a gente não teria essa preocupação da
+  barra. Mas é bom sim pensar nisso, mas não precisa pensar demais, porque aí é uma opção que o
+  usuário fez, mas a gente oferta a instalação.
+</p>
+<p>Rafael Ribeiro: 12:11</p>
+<p>Entendo.</p>
+<p>Luana C Lopes: 12:12</p>
+<p>
+  Eu até acho que a gente pode passar, Rafael, mas a gente vai ter que fazer... Agora é a fase de
+  aprovação do menu mobile, mas a gente vai ter que fazer uma barrinha lá, até tem que fazer
+  tutorialzinho rápido só para mostrar como é que ele instala, adicionar na tela e iniciar o site,
+  como é PWA, a gente tem que pensar nisso.
+</p>
+<p>Rafael Ribeiro: 12:34</p>
+<p>Onboard básico da instalação.</p>
+<p>Cristiano Teles: 12:37</p>
+<p>
+  É, mas isso fica daqui a uns 20 dias, mas a gente vai realmente botar o trânsito cara, tipo assim,
+  ó, estale pra ficar melhor, mas por enquanto não é o ponto agora focal da gente.
+</p>
+<p>Rafael Ribeiro: 12:51</p>
+<p>
+  Eu sei que não é uma preocupação agora, mas é uma dúvida que surgiu aqui, não sei se você pode me
+  responder. Essa instalação, ela vai ser relacionada aqui ao o sistema mobile ou seria referente ao
+  desktop, para indicar para o usuário que a navegação é melhor justamente no sistema desktop?
+</p>
+<p>Cristiano Teles: 13:10</p>
+<p>
+  As duas coisas, as duas coisas. Só para alinhar aqui rapidão, não vou ocupar muito tempo de vocês
+  não. A questão da instalação nem é só a navegação, mas toda a parte de trabalhar offline, de abrir
+  mais portas para comunicação com hardware, seja a câmera fotográfica para ler o QR Code, a gente
+  vai chegar lá depois, o QR Code de ingresso, de ticket, seja qualquer outra coisa, trabalhar com
+  outra coisa, uma notificação, conjunto de coisas. Então a ideia da instalação é abrir mais
+  recursos no dispositivo do usuário e melhorar a navegação, mas não é só melhorar a navegação, tem
+  todo o processo. Então assim, ainda no PWA, que a gente vai falar daqui a uns 20 dias por aí,
+  quando a gente for fazer, a gente vai fazer aquelas telas de splash, que é quando tá abrindo o
+  aplicativo, botar alguma Alguns põem animação, põem alguma coisa, a gente vai discutir lá na
+  época, certo? Então vai ser todo esse processo do onboard da aplicação mesmo, né? Mas o foco é
+  esse, é prover mais serviços pra ele autorizar que a gente use mais recursos da máquina dele.
+</p>
+<p>Rafael Ribeiro: 14:28</p>
+<p>
+  Combinado, perfeito. Bom, acho que com isso a gente conclui aqui então. Podemos prosseguir aqui
+  pra segunda parte. Essa semana também a gente aproveitou para definir aqui como funcionaria a
+  questão do painel do dia. Então a interação vai ser a seguinte, o usuário pode clicar em dos cards
+  aqui e ele já vai ser direcionado aqui para a etapa do painel. Eu sei que a diferença de estrutura
+  é bem grande aqui, mas basicamente essa tela já vai resolver a questão de situar o usuário sobre
+  as atividades do dia. E é de conferir se está tudo em ordem, basicamente. O design vai servir esse
+  propósito, que basicamente é oferecer uma leitura rápida e permitir a ação imediata desse usuário
+  aqui nas ações detalhes.
+</p>
+<p>Cristiano Teles: 15:22</p>
+<p>
+  Tá, deixa eu falar pra vocês, eu sei quebra muito o layout e vocês acabam sempre tendo essa
+  tendência de colocar imagens, só que... Eu acho que não vale a pena colocar as imagens e as fotos
+  da atividade por N coisas. Uma é velocidade de baixar essas imagens para quem está ali na
+  atividade com a internet ruim. Eu falo isso, pessoal, porque tem lugar que às vezes nem tem
+  internet mesmo, então a pessoa vai acessar ali na casa dela, vai baixar o conteúdo para funcionar
+  offline e vai colocar lá. Então algumas coisas ficam visualmente legais, mas tecnicamente acaba
+  complicando a vida.
+</p>
+<p>Rafael Ribeiro: 16:11</p>
+<p>
+  Perfeito. Essa daqui é uma primeira proposta dessa tela, então ela ainda não é o resultado final,
+  claramente. Então, acho importante a gente considerar tudo isso, a gente vai considerar essa
+  questão também.
+</p>
+<p>Cristiano Teles: 16:24</p>
+<p>
+  Só para, assim, reforçando. Quando a gente está ali no painel de vendas, nessas coisas, é cenário,
+  que é provavelmente a pessoa está num lugar com mais infraestrutura. A operação em si, já pode ser
+  em lugares que a internet é ruim. Vamos considerar que tem acesso à internet, mas que ela é ruim.
+</p>
+<p>Retrilhar: 16:50</p>
+<p>Perfeito.</p>
+<p>Rafael Ribeiro: 16:56</p>
+<p>
+  Eu vou passar por cada etapa aqui das sessões aqui, das informações, a começar aqui pelo
+  breadcrumb, que a gente já padronizou nas outras páginas também. Ele vai auxiliar a gente aqui em
+  duas questões, que é justamente orientar o usuário dentro da navegação, o que já acaba também
+  eliminando essa ambiguidade sobre qual dia ele vai visualizar, por exemplo, aqui embaixo também,
+  frente a todo esse header aqui. Então a gente tem destaque aqui esse elemento visual do
+  calendário. O título da página, atividades do dia, e o indicador aqui da quantidade de atividades
+  que ele tem referente a isso. A data completa aqui e o indicador também aqui para o caso de a
+  gente ter feriado ou não. Eu tomei esse cuidado aqui também para informar operacionalmente esse
+  usuário, porque eu imagino que os feriados influenciem diretamente nas questões de ocupação e
+  logística de vocês. Não tenho certeza, então eu vi que fazia sentido justamente a gente indicar
+  assim.
+</p>
+<p>Luana C Lopes: 18:20</p>
+<p>Será que eu caí?</p>
+<p>Cristiano Teles: 18:21</p>
+<p>
+  Não, não. Rafael, só para trazer ali na ficha, se você puder mover a tela pouquinho para a
+  direita. Aí na ficha de operação, até lá no painel do dia atual, ele tem alguns documentos. E aí
+  eu não sei se vale a pena, vou até conversar com a Cátia aqui, se vale a pena botar a ficha ou se
+  põe botão com documentos e abre opções embaixo?
+</p>
+<p>Rafael Ribeiro: 18:55</p>
+<p>
+  Era algo que eu queria avaliar com vocês aqui, justamente porque eu estava fazendo comparativo
+  sobre quais informações a gente tinha aqui na versão original do sistema de vocês. Então, a gente
+  tem muitas ações aqui, e esses cards aqui, eles ocupavam muito espaço na tela, o que poderia
+  causar problema de respiro, até desentendimento da hierarquia das informações. Os tabs também, a
+  gente tem acesso bem grande de informações aqui, Eu não encontrei uma variação aqui em que a gente
+  tivesse mais de uma atividade listada nesse caso, então eu não sei como ficaria, mas eu imagino
+  que vai ficar bem blocado assim, então os elementos desses cards, ao lado do outro assim, embaixo
+  do outro, de dois em dois. E isso justamente, se a gente fosse replicar uma solução semelhante a
+  essa, a gente ainda teria esse problema. Qual foi o meu intuito aqui justamente? Eu imaginei que a
+  gente ia perder algumas ações aqui, por exemplo, essa questão de contratar seguro, visualizações
+  de itens e tarefas. Todas essas informações eu optei por deixar internamente aqui navegação do
+  usuário, mas a lista de participantes aqui, eu acredito que seja importante a gente atribuir
+  alguma ação aqui.
+</p>
+<p>Cristiano Teles: 20:16</p>
+<p>
+  Eu entendi, Rafael, entendi. Você está trabalhando nessa tela como uma tela mais genérica do dia e
+  aí depois você vai ter o detalhe da atividade. Pode ignorar o que eu falei, beleza, ficou bom.
+</p>
+<p>Rafael Ribeiro: 20:29</p>
+<p>
+  Só para explicar pouco da lógica aqui. Não, faz muito sentido as pontuações que você trouxe aqui.
+  Mas vou repassar aqui de uma forma geral sobre como eu pensei aqui nas lógicas deles. Então, a
+  questão aqui do agrupamento por horário com os indicadores aqui das cores. Esse primeiro ponto.
+  Atividade é precedida aqui por horário e ponto colorido na esquerda. Para comunicar os usuários,
+  os status de saída dos usuários, sem ele precisar abrir a página detalhes. Então, no cinza aqui,
+  ele vai indicar que não tem confirmação nem participantes. No verde aqui, a ideia é confirmar que
+  a gente tem os participantes e a equipe atribuída. E no laranja aqui, que é para indicar alerta,
+  caso a gente tenha alguma vaga incompleta ou uma equipe sem atribuição. Isso também foi uma
+  métrica que a gente trouxe diretamente dos testes de usabilidade que, se não me engano, dois
+  participantes indicaram que o esquema de cores ajuda
+</p>
+<p>Cristiano Teles: 21:40</p>
+<p>
+  Eu concordo mas eu vou fazer contraponto tá nós já tivemos cliente que tinha funcionário que era
+  daltônico então eu acho que talvez além das cores poderia ter ícone diferente. Uma imagem
+  diferente. Porque aí quem consegue enxergar cores, enxerga cores. Quem não consegue vê o emblema
+  diferente.
+</p>
+<p>Rafael Ribeiro: 22:15</p>
+<p>
+  A gente vai considerar isso também, porque tem mais uma pontuação que a gente ainda está
+  trabalhando em cima.
+</p>
+<p>Cristiano Teles: 22:21</p>
+<p>
+  Rapidão ainda, só para fazer uma coisa global também do dia. Eu acho que poderia também colocar
+  alguma marcação aí de como que está a previsão do tempo. E aí também uma marcação de que não tem
+  previsão disponível, porque a dependência é a pessoa estar olhando muito tempo antes, né? Eu não
+  sei se a gente consegue uma API de seis meses antes, alguma coisa assim.
+</p>
+<p>Rafael Ribeiro: 22:49</p>
+<p>Seria uma previsão geral do clima, no momento, desse usuário.</p>
+<p>Cristiano Teles: 23:00</p>
+<p>
+  e a Cátia acabou de falar que atividade pode acontecer em lugares diferentes, então não seria aí.
+  Seria no detalhe da atividade. Tá, perfeito.
+</p>
+<p>Rafael Ribeiro: 23:08</p>
+<p>
+  A gente já tem isso aqui atribuído aqui na interna da atividade. Perfeito. Concluindo a pontuação
+  que você trouxe, eu acho relevante, eu acho que faz sentido. Nos cards a gente já tem a atribuição
+  de texto aqui para esse usuário, então ele vai estar sempre situado aqui, além do apoio de cores
+  aqui, a gente vai ter esse conteúdo de texto. Só que uma das preocupações que a KTL situou na
+  última reunião foi justamente da gente apontar os alertas de saúde desses usuários. Elaborando uma
+  solução para ver como a gente vai aplicar isso aqui, tanto na interna, mas também eu pretendo
+  atribuir isso daqui, talvez como badge, e aí a gente vai ter também essas atribuições dos outros
+  alertas juntos.
+</p>
+<p>Cristiano Teles: 24:06</p>
+<p>
+  Tá, só termologia aqui, ao invés de chamar lista de participantes, coloca só participantes, porque
+  a gente não vai listar, a gente não vai dar os nomes a eles.
+</p>
+<p>Rafael Ribeiro: 24:18</p>
+<p>
+  Ok. Na questão do card geral aqui. Então a gente vai ter o nome, a ocupação, a duração da
+  atividade, a listagem dos participantes aqui, a equipe responsável, para justamente refletir a
+  hierarquia da informação que o operador vai precisar. Antes de começar o dia. Então ele não
+  precisa entrar em cada desses detalhes aqui pra prosseguir com as ações aqui. Ele já consegue
+  saber aqui de cara que uma saída está pra acontecer ou não. E por a leitura ser horizontal aqui,
+  justamente, o usuário consegue percorrer aqui a gestagem de atividades de forma rápida e
+  identificar aqui onde pode ter qualquer problema, qualquer atividade. Por exemplo, O gestor
+  operacional, nessas questões críticas assim, por exemplo, se uma atividade não tem uma equipe
+  atribuída ainda, ela não é viável de acontecer, imagino eu. Então, ele consegue visualizar
+  rapidamente essas informações aqui.
+</p>
+<p>Cristiano Teles: 25:41</p>
+<p>
+  Só para a gente pensar aqui junto, a gente tem essa questão do time zone, da zona de tempo. A
+  gente tem a questão de o usuário ver as horas de acordo com aonde ele está, que aí seria uma zona
+  de tempo que poderia ser uma marcação no dia, Seria do dia e aí os cálculos embaixo iriam seguir
+  isso. Ou para cada região, cada atividade ter a sua zona de tempo a partir de onde ela está
+  acontecendo, da cidade-estado que ela está acontecendo. O que vocês acham que faz mais sentido?
+</p>
+<p>Rafael Ribeiro: 26:34</p>
+<p>
+  Bom, eu imaginei que a gente estava trabalhando com esse segundo cenário, na verdade. Então,
+  dependendo da localização, todas essas atividades vão estar atribuídas justamente a esse operador,
+  por exemplo.
+</p>
+<p>Cristiano Teles: 26:48</p>
+<p>
+  Porque eu penso o seguinte, eu tenho aqui uma pessoa que está na matriz e está acontecendo uma
+  coisa lá no Acre. O horário dele, até para ele conversar com fulano ou ciclano, é horário
+  diferente, mas ele já vai ter o costume de fazer essa tradução, né? Tá, vamos deixar assim e os
+  clientes vão guiar a gente, vão guiar a gente no que vai ser melhor.
+</p>
+<p>Rafael Ribeiro: 27:14</p>
+<p>
+  Só para concluir essa área, eu atribuí no topo a ficha de operações, que eu imagino que seja
+  justamente a listagem geral de todas as atividades. Esse operador já consegue visualizar
+  rapidamente para baixar no celular ou ver rápido, abre uma segunda página no navegador para ele
+  visualizar esse documento. Eu ia atribuir ele aqui como ação principal aqui no topo. É opcional,
+  mas é uma ação importante, então atribuí ela aqui por padrão. Bom, com isso a gente encerra essa
+  etapa aqui das atividades. Vocês têm alguma pontuação a fazer aqui pessoal, antes da gente
+  prosseguir?
+</p>
+<p>Cristiano Teles: 28:01</p>
+<p>Não, princípio não. Se tiver, depois a Cátia anota lá.</p>
+<p>Rafael Ribeiro: 28:06</p>
+<p>
+  Claro. Prosseguindo aqui, então, eu fiz uma pequena melhoria aqui também dentro dos detalhes da
+  atividade. Uma pontuação também que a Katiely havia pontuado na última reunião era a questão do
+  check-in por QR Code. E aí eu queria validar algumas coisas. Eu não sei se vocês conseguem me
+  indicar isso, mas qual que é o... Qual que é o... Essa é uma função muito utilizada pelos
+  operadores de vocês?
+</p>
+<p>Cristiano Teles: 28:48</p>
+<p>
+  Hoje não é porque não existe essa funcionalidade no sistema, mas existe sim essa demanda. Então,
+  por exemplo, voltando àquele menu mobile, dos menus principais ali, provavelmente no dia da
+  atividade, é o ícone do QR Code, para ele abrir a câmera e já bipar o ticket.
+</p>
+<p>Rafael Ribeiro: 29:15</p>
+<p>
+  Eu acredito que na responsabilidade mobile a gente vai conseguir fazer uma atribuição rápida aqui
+  dessa ação, mas aqui no desktop, eu não sei se vai ser possível de atribuir essa funcionalidade no
+  desktop, mas eu atribuí ele aqui no menu lateral, nesse menu de três pontos.
+</p>
+<p>Cristiano Teles: 29:42</p>
+<p>
+  Só para você entender, é o contrário. O processo, em teoria, seria o contrário. Eu habilito a
+  função de QR Code, aí eu vou lá e bipo a imagem que a pessoa me apresenta. É processo contrário,
+  não sei se você entendeu. Em vez de eu falar que eu estou bipando o João Silva, eu abro a minha
+  câmera e o João Silva me apresenta o QR Code.
+</p>
+<p>Rafael Ribeiro: 30:12</p>
+<p>entendi. Perfeito.</p>
+<p>Retrilhar: 30:14</p>
+<p>
+  Também é isso que acontece em show, por exemplo. Por exemplo, quando você vai num show lá, você
+  compra ingresso no Simpla, e aí ele bipa o seu ingresso e já dá... E aí já vai fazer o check-in
+  automático, entendeu? Eu não vou precisar fazer isso manualmente. Porque hoje, na tal sistema,
+  cada... Eles fazem o check-in manualmente. Uma coisa que eu tô sentindo falta aqui, Rafael, é o
+  checkbox. Muitos clientes usam isso por quê? Porque tem cliente que é atrativo que ele não
+  contrata os seguros de todo mundo de uma vez Então ele vai contratando por demanda Então vai
+  chegando a Maria, ele contrata Ele chegou ao José e a Joana, ele contrata do José da Joana Então
+  alguns fazem manualmente ali pelo checkbox A gente tem que entender que nem todo mundo às vezes
+  vai usar o QR Code Porque o QR Code não precisaria de checkbox ali para poder fazer essa seleção
+  Já .. Se for fazer manualmente, ele precisaria. Porque, às vezes, ele quer... Está chegando grupo
+  de cinco pessoas. Em vez de ele clicar em cinco, ele vai fazer o checkbox de cada para ver se eu
+  vou fazer assim demais.
+</p>
+<p>Rafael Ribeiro: 31:24</p>
+<p>
+  A questão do checkbox também aqui era uma questão que a gente estava pontuando, eu e a Luana,
+  enquanto a gente estava estruturando esses elementos dos cards aqui. Foi uma primeira sugestão que
+  eu havia oferecido pra ela, mas ela trouxe uma boa pontuação aqui que era justamente essa questão
+  da usabilidade. Então, esses botões aqui, eles funcionam, eles têm a mesma funcionalidade do
+  checkbox aqui. Então, o usuário consegue habilitar ou desabilitar...
+</p>
+<p>Retrilhar: 31:55</p>
+<p>
+  É porque acaba que vocês estão focando muito no check-in, mas não é a única funcionalidade a ser
+  realizada, a única ação a ser realizada nas reservas desse painel. Então, se for comparar com o
+  que está hoje, ele pode confirmar as reservas, ele pode cancelar, ele pode remarcar. Então, tem
+  uma série de ações, o check-in é uma delas, entendeu?
+</p>
+<p>Cristiano Teles: 32:24</p>
+<p>
+  Não é fluxo tão linear, no final é isso, porque se a gente conseguisse prever para onde vai, se
+  fosse linear, colocando, realizar check-in, desfazer check-in, aí a gente teria uma
+  previsibilidade, mas no caso não tem.
+</p>
+<p>Rafael Ribeiro: 32:43</p>
+<p>Entendi, perfeito.</p>
+<p>Luana C Lopes: 32:49</p>
+<p>
+  Nesse fluxo pessoal, só fiquei com uma dúvida nessa parte aí. No caso, vamos supor que eu comprei
+  essa trilha pico do Itacolomi, aí já cai lá no sistema para uma agência de turismo, e se eu já
+  paguei, aí eu já consto, vamos supor que eu sou essa Luciana Miranda. O estado que esse usuário
+  que comprou essa trilha, o estado inicial, No caso, vai ser cheque impendente, né? Porque eu
+  fiquei em dúvida quando vocês falaram sobre essa linearidade Vamos lá, o
+</p>
+<p>Cristiano Teles: 33:29</p>
+<p>
+  Que é todo o ciclo da reserva em si? A depender da configuração, ela nasce como rascunho, a
+  depender ela nasce como agendada ou confirmada. O que é agendada? Você não atinge a quantidade
+  mínima para aquela atividade, ela está agendada. Quando atinge a quantidade mínima, ela fica
+  confirmada. Então, em teoria, no caminho feliz, todo mundo nasce com situação confirmada. Então,
+  quando entra aqui, todas estão com situação confirmada. Aí, de confirmada, ela pode ir para
+  cancelada, ela pode ir para check-in e realizada. Então ela pode ir inclusive para check-in e
+  depois cancelado. Por exemplo, uma atividade que a gente fez de mergulho, eu fui com minha mãe, a
+  gente pagou, minha mãe chegou a botar roupa e tudo mais, na hora de mergulhar ela não sentiu
+  segura. Então ela fez check-in e depois cancelou. Por isso que eu falo que a gente não é linear.
+  Então pode acontecer várias coisas. Inclusive, fazer essa mostragem da situação também é uma boa,
+  porque está aí o João Silva, e se ele estiver cancelado? Ele está agendado, ele está confirmado? É
+  bom também fazer essa marcação. vou te falar.
+</p>
+<p>Retrilhar: 34:56</p>
+<p>
+  Na verdade, onde está check-in realizado, vai ser o status da reserva. Então, esses status que o
+  Cristiano está falando estão na documentação também, que é agendado, confirmado e tudo mais, Nessa
+  tag, cheque realizado, vai ser o status da reserva.
+</p>
+<p>Luana C Lopes: 35:13</p>
+<p>
+  Beleza, a gente tem que mapear, então, certinho, esses status e já passar pra essa tela, né, Rafa?
+</p>
+<p>Rafael Ribeiro: 35:19</p>
+<p>Entenda</p>
+<p>Cristiano Teles: 35:23</p>
+<p>
+  Como status, como uma estrutura visual, uma máquina de estado, e esses botões de ação é mover o
+  estado de lugar pro outro.
+</p>
+<p>Rafael Ribeiro: 35:34</p>
+<p>
+  Entendido. Perfeito, iremos considerar. Ainda em relação a uma outra melhoria de usabilidade que a
+  gente fez aqui, foi esse campo inferior aqui. Ele vai ficar fixo no scroll do usuário aqui, mas
+  como a gente está justamente nessa lógica do painel do dia, essa foi uma melhoria para a gente
+  poder passar entre as atividades listadas nesse dia.
+</p>
+<p>Retrilhar: 36:17</p>
+<p>
+  Rafael, só mais ponto lá sobre essa tela. Aqueles três conceitos que a gente sempre coloca ali
+  para vocês, do objetivo do uso do sistema, que é o sistema de reservas ou matriquecer ou o
+  e-commerce, aqui a gente precisa pontuar isso, porque vai ter situações, por exemplo, de sistema
+  de reservas que resolve, que é a pessoa controlar todos os participantes. Já no sistema de
+  tiqueteira, ou seja, que o importante é o ticket e não o nome dos participantes, eu comprei para
+  mim e para cinco pessoas, eu não preciso nomear todas as minhas reservas. Nesse caso aqui, eu não
+  consigo identificar que João Silva comprou para... Tem cinco pessoas junto com João Silva.
+  Lembrando que isso não é uma informação do pedido, isso não é uma informação de venda, é uma
+  informação operacional. Porque no dia, por saber que João Silva comprou para mais cinco pessoas
+  quando eu uso esse objetivo de etiqueteira. Quando eu uso para o objetivo de sistema de reservas,
+  ok, ele atende. Agora, para etiqueteira, não. Só para a gente trazer sempre esses três conceitos
+  para poder trabalhar eles aqui essa informação. Outra coisa é que lá no documento eu tinha
+  colocado também em relação a gente fazer os agrupamentos de informação conforme o objetivo. Então,
+  vai ter vezes que eu preciso saber que João Silva e Luciana compraram ingresso que tem lanche. Eu
+  preciso direcionar eles para o lanche. Já Maria e Pedro não compraram ingresso com lanche, que é
+  tipo de ingresso diferente. É a mesma coisa quando você vai comprar ingresso, por exemplo, para
+  show, que é cadeira A, cadeira B, cadeira C. Cadeira A, você sabe, vai direcionar a pessoa para
+  lugar privilegiado. Cadeira B, para outro. Então, precisa também a gente achar uma forma visual de
+  fazer essa segregação, ou de participantes ou de ingressos, para na hora o operador conseguir
+  saber quem comprou o quê e ele poder dar o benefício para cada. Lembrando que isso não é uma
+  informação do pedido nem de venda, isso é uma informação da operação, que no dia ele só precisa
+  saber o mérito que essa pessoa tem, não quanto que ele pagou e tudo mais, porque você não entende,
+  mas sim o mérito que ele teve em relação à compra desse ingresso, que tem lanche ou não, enfim,
+  exemplo.
+</p>
+<p>Rafael Ribeiro: 38:35</p>
+<p>
+  Excelente pontuação, mas foi o que eu havia dito também agora pouco aqui no perfil, no painel do
+  dia. Eu vou atribuir essas informações aqui ainda, como eu falei, eu ainda estou buscando uma
+  solução para isso, mas quero replicá-las aqui também. Mas eu tenho isso em mente, eu vou
+  considerar. Aproveitando também essa outra pontuação que você citou aqui, acho que a gente já pode
+  prosseguir aqui para a etapa dos detalhes do pedido. Era algo que não tinha ficado claro para mim
+  e já me surgiu uma dúvida que eu acredito que você possa responder. Quando fica atribuído aqui,
+  então, o João Silva, por exemplo, que ele comprou para mais pessoas, em teoria essas pessoas
+  deveriam estar listadas abaixo também, porque elas também são participantes do evento. Então faz
+  sentido a gente... Rapidão, Rafael,
+</p>
+<p>Cristiano Teles: 39:31</p>
+<p>
+  Só pra... É porque é complexo mesmo. Uma coisa, o João que comprou pra 10 pessoas e lá no sistema,
+  lá no produto ele configurou que precisa qualificar essas 10 pessoas, então ele vai ter que botar
+  o nome das 10 pessoas. Mas se tiver o produto que ele falou que ele não quer qualificar, ele só
+  quer saber quantas pessoas são, quantos tickets são, ele vai ter e João Silva tem 10, não importa
+  quem são. Por que qualifica as pessoas? Quando contrata seguro, mas tem atividade que não precisa
+  de seguro, que não é contratado seguro. Então, normalmente, para fazer a compra mais rápida, menos
+  morosidade, eles não identificam os participantes, eles identificam só o pagador, só o comprador
+  que fez a compra.
+</p>
+<p>Rafael Ribeiro: 40:30</p>
+<p>Entendi, perfeito. O que</p>
+<p>Cristiano Teles: 40:44</p>
+<p>
+  A gente pode fazer? Se foi configurado o produto para mostrar os participantes, a gente usa essa
+  tela aí. Senão a gente cria uma tela só com foco das vendas em si, sabe?
+</p>
+<p>Retrilhar: 41:10</p>
+<p>Entendeu?</p>
+<p>Cristiano Teles: 41:13</p>
+<p>
+  Porque aí a gente não fica batendo cabeça tentando botar uma complexidade muito grande nessa tela.
+  A gente especializa telas de acordo com a configuração do produto.
+</p>
+<p>Rafael Ribeiro: 41:25</p>
+<p>
+  Nesse caso, então, entrariam informações relacionadas exclusivamente, por exemplo, aos detalhes
+  dos participantes.
+</p>
+<p>Cristiano Teles: 41:35</p>
+<p>
+  Ao contrário, essa tela aí seria detalhar os participantes. Aí criaria uma variação dessa tela, na
+  qual estaria ali, ó, João Silva, cinco tickets. Não sei o quê, alguma coisa na qual não vai listar
+  todos os participantes, vai listar apenas o comprador. Mas aí ele ainda tem ciclo de check-in, ele
+  ainda tem esse ciclo aí, essa movimentação. Mas a tela seria apresentada diferente. Eu acho que
+  faz mais sentido do que a gente ficar tentando encaixar tudo nisso aí.
+</p>
+<p>Rafael Ribeiro: 42:11</p>
+<p>Perfeito, a gente vai considerar então. Eu acredito que a gente...</p>
+<p>Retrilhar: 42:16</p>
+<p>
+  A gente pode comparar isso, Rafael, segundo aqueles três objetivos, né? De sistema de reserva, de
+  etiqueteira, de economia.
+</p>
+<p>Rafael Ribeiro: 42:28</p>
+<p>
+  Eu percebi que aqui no card a gente tinha também, eu até deixei comentário aqui, a gente tem a
+  possibilidade de atribuir dois CTAs aqui, sobreposto ao outro aqui. Então pode ser, eu vou
+  considerar que a gente ainda manter os detalhamentos da atividade aqui, caso do operador tiver
+  alguma dúvida relacionada a qualquer informação aqui, ele consegue visualizar com mais detalhes
+  aqui. E aí eu posso considerar também essa área justamente aqui para o outro CTA. Então, vou levar
+  em consideração também.
+</p>
+<p>Retrilhar: 43:07</p>
+<p>
+  Rafael, eu acho que faz sentido pegar esse card da previsão climática, da especificação de data e
+  hora e deixar ele como título junto com o nome do produto. Dependendo, acho que vale a pena. E aí
+  só uma dema, assim, essa... Só para vocês entenderem, esse painel operacional, essa agenda, ele é
+  o coração do sistema. Então, eu acredito que a gente vai trabalhar muitos detalhes nessa
+  funcionalidade, porque ele, junto com a central de vendas, é o coração mesmo, é o principal do
+  sistema. E é o nosso diferencial.
+</p>
+<p>Rafael Ribeiro: 43:47</p>
+<p>
+  Nós temos espaço aqui para poder trabalhar as outras informações e com isso a gente tem mais
+  espaço justamente para rever melhor aqui os campos das reservas de atividade, estágio dos
+  participantes, todas as informações gerais. Vamos levar isso em consideração. Mais alguma
+  pontuação aqui pessoal?
+</p>
+<p>Retrilhar: 44:14</p>
+<p>
+  Não, por enquanto não. Aí depois a gente vai vendo os outros pontos, que são as listas,
+  manifestos, outras coisas. Mas eu acho que dessa parte é isso.
+</p>
+<p>Rafael Ribeiro: 44:24</p>
+<p>
+  Perfeito. Vamos prosseguindo aqui então para a área de pedidos. Era uma melhoria que também a
+  gente havia discutido de estruturar na última semana. Nossa primeira solução aqui comportava só
+  produto. Pensei em algumas outras soluções ainda para a gente manter aquela estrutura original,
+  mas aqui eu vi que fazia sentido justamente a gente seguir uma lógica de tabela aqui das
+  informações. Então a gente tem essa área em branco aqui, justamente pensando em cenários em que a
+  gente vai ter mais de seis ou oito atividades, por exemplo, mais de oito produtos. E aí eles
+  seriam scrolláveis aqui. Na área abaixo aqui a gente teria todo o subtotal aqui com todas as
+  variações aqui. Então, cupom aplicado seria aplicado aqui também. Subtotal com a listagem de todos
+  os produtos. Valor total aqui, além do nome do produto, a gente tem a ID aqui, o tipo de tarifa
+  desse produto, Valor unitário de cada e a quantidade selecionada pelo comprador. Aqui eu optei por
+  justamente deixar pouco mais enxuto aqui a área das informações do comprador, justamente pra gente
+  poder dar mais ênfase aqui nos dados do pagamento. Então, pra poder identificar rapidamente aqui o
+  comprador, eu deixei o nome, telefone de contato e e-mail. Caso o usuário queira visualizar mais
+  algum detalhamento relacionado às informações desse comprador, Ele pode clicar diretamente aqui no
+  text button, em ver detalhes, e aí a gente vai abrir justamente aquele drawer lateral para ele
+  visualizar todas as informações, caso ele prefira. Aqui a gente atribuiu também os detalhes de
+  pagamento, algumas melhorias. Não tivemos a ideia do pedido, mas aqui agora a gente aplicou a data
+  e hora da compra. Era uma informação importante aqui relacionada ao detalhe do pagamento. E o
+  histórico de pagamento se manteve aqui embaixo. Atribuímos elas aqui nessa mesma área. Bom, dessa
+  tela é isso. Acho que a próxima agora é relacionada à área de afiliados. A gente tinha essa
+  questão aqui também para como definir uma comissão geral. Então, cuidamos disso.
+</p>
+<p>Retrilhar: 47:11</p>
+<p>
+  Só detalhe lá, que eu acho que é interessante. Lá na altura, tem botão de emitir nota fiscal. Eu
+  acho que é importante fazer uma versão de tela em que a nota esteja emitida. Só, tipo, botão. Não
+  precisa ter a informação da nota aí, porque ele vai ver isso em outro lugar. Deve ter só lugar pra
+  ele ir para a nota, sabe? Tipo... Esse é o detalhe do pagamento. É, pode ser detalhes do
+  pagamento, tipo assim, nota fiscal X, número 20 e 50. Ele clica e vai para a nota. Não precisa ter
+  a nota aí, tá? Só a informação de que tem uma nota emitida.
+</p>
+<p>Rafael Ribeiro: 47:52</p>
+<p>
+  Ainda não ficou muito claro pra mim nesse caso. Seria pra gente informar o status dessa nota, caso
+  ela já tenha sido emitida ou não? E caso ela já tenha sido emitida, a gente vai ter text button,
+  CTA, semelhante a esse, pra ele ver a nota.
+</p>
+<p>Cristiano Teles: 48:08</p>
+<p>
+  Ó, mentaliza o seguinte, ele clicou ali ó, emitir nota fiscal, aí ele vai emitir a nota. E aí é
+  onde é que vai mostrar se a nota foi emitida ou não, e esse botão vai sumir, né, porque ele só
+  emite uma nota. Então a questão é, uma vez que já emitiu a nota, aonde é que ela tá mostrando os
+  dados dela?
+</p>
+<p>Rafael Ribeiro: 48:28</p>
+<p>
+  perfeito. É cenário de exceção isso, então a gente vai considerar. Já deixou o comentário aqui.
+  Perfeito. Bom, prosseguindo aqui para a funcionalidade da definição de comissão. Eu pensei no
+  seguinte, acredito que seja uma forma mais fácil de resumir, a gente definiu padrão de
+  visualização dos dialogues para, por exemplo, a criação de novo vendedor. Que antes a gente abria
+  como drawer aqui, mas por conta justamente dos poucos campos eu vi a necessidade da gente atribuir
+  aqui essa informação em modal. Segui a mesma lógica aqui também pra definição de comissão. Então,
+  a gente vai ter o text button aqui no topo, pro usuário definir essa comissão pra todos. Então, de
+  apoio a gente tem o subtítulo aqui pra explicar sobre como funciona. E aqui a gente vai ter
+  basicamente as mesmas aplicações das comissões individuais. Então ele seleciona se ele vai querer
+  aplicar essa comissão em porcentagem ou valor. Insere aqui o valor de comissão. E caso ele já
+  tenha preenchido anteriormente alguma outra comissão e ele não queira que seja sobreposta, ele
+  pode só clicar no checkbox aqui para confirmar. E a tree de aplicator também, por exemplo, não vai
+  ser sobrescrita com a nova comissão. Ela vai estar com a comissão anterior. Aplicando aqui, então,
+  a gente vai ter o modal, que ainda vai ser refinado, o elemento visual. E aí todas as aplicações
+  aqui da comissão que ele inseriu aqui vão ser aplicadas normalmente na listagem.
+</p>
+<p>Retrilhar: 50:23</p>
+<p>Ótimo.</p>
+<p>Rafael Ribeiro: 50:30</p>
+<p>
+  Por último aqui, ainda na área dos detalhes, uma pontuação que a Catieli também trouxe na última
+  semana foi a apresentação aqui do resumo dessas comissões aqui, se elas seriam por valor geral ou
+  por semana, enfim. E aí a minha preocupação era justamente essa. Como a gente está considerando
+  aqui a visualização do gestor comercial, por exemplo, eu vi que fazia sentido justamente a gente
+  avaliar essas informações aqui por períodos. Então eu atribuí dessa forma as tabs aqui na lateral
+  e aí o usuário consegue fazer justamente a filtragem rápida dessas informações aqui por semana,
+  mês ou ano. Então clicando aqui em uma das tabs essas informações se atualizam assim como também o
+  status de comissões aqui embaixo.
+</p>
+<p>Retrilhar: 51:32</p>
+<p>Ótimo. Perfeito.</p>
+<p>Rafael Ribeiro: 51:36</p>
+<p>
+  Por último, uma outra preocupação levantada na última reunião também foi a questão da visualização
+  do fluxo de afiliados. A gente já tem uma proposta para esse perfil. Então, temos aqui Vou passar
+  rapidamente aqui por cada uma das sessões, começar aqui pelo menu. Ele é claramente mais enxuto
+  aqui. Então a gente tem no início aqui as visualizações gerais. Aqui eu tomei o cuidado de
+  justamente a gente atribuir todas as informações aqui sem ele precisar prosseguir para outros
+  fluxos. Então no cenário em que Esse usuário quer visualizar as informações rapidamente, ele já
+  consegue ver tudo aqui no overview, justamente na página inicial. Caso ele queira ver mais
+  detalhadamente, ele pode prosseguir para a lista das indicações, as informações dos ganhos.
+</p>
+<p>Cristiano Teles: 52:36</p>
+<p>
+  Só para vocês entenderem esse universo de afiliados, tá? O afiliado, ele gera contrato junto com
+  os nossos clientes. E aí o que ele faz? Ele indica, leva compradores para as lojas dos clientes.
+  Então, por exemplo, esse compartilhar link aí, ele não deveria estar aí, a não ser que mude para
+  que ele tenha vários. Então, mentaliza aqui a Catiely, ela é afiliada de três clientes nossos, sei
+  lá, Cerrado Experience, Ibertaco e Trilheiras de Brasília. Beleza, então ele vai ter link para
+  cada desses contratos que ela tem, para ela trabalhar. Então sempre vai ter esse recorte que é de
+  qual é o contrato dela ali, né? Então a ideia é a gente conseguir pensar nisso, né? Por exemplo,
+  quanto eu estou gerando para cada contrato? Algo nessa linha. Quanto cada contrato está me pagando
+  de comissão?
+</p>
+<p>Rafael Ribeiro: 53:49</p>
+<p>
+  Essa era uma das dúvidas que eu tinha também, que era justamente em relação a isso. Então,
+  dependendo de cada empresa, esse usuário vai ter código diferente?
+</p>
+<p>Cristiano Teles: 54:03</p>
+<p>
+  Em geral, o que eu fiz, a estrutura que eu montei, é que ele tem código único, só que ele vai
+  mandar para lojas diferentes. Eu quero fazer uma propaganda ali do Cerrado Experience. Vai ser o
+  meu código, porém, na loja do Cerrado Experience.
+</p>
+<p>Rafael Ribeiro: 54:21</p>
+<p>
+  Como o código dele vai ser o mesmo aqui? Isso não gera nenhum problema interno? Tipo, na questão
+  do banco de dados, nem nada?
+</p>
+<p>Cristiano Teles: 54:31</p>
+<p>
+  Não, porque o afiliado é uma pessoa física, né? Então, ele faz o contrato da pessoa física com as
+  empresas. Então, é sempre o mesmo código.
+</p>
+<p>Rafael Ribeiro: 54:41</p>
+<p>Entendi.</p>
+<p>Cristiano Teles: 54:42</p>
+<p>
+  Porque é o identificador dele, ele está prestando serviço para as empresas, então ele tem o código
+  dele.
+</p>
+<p>Rafael Ribeiro: 54:49</p>
+<p>
+  Perfeito, vamos considerar isso aqui então. Todo esse fluxo de contratação vai ser feito
+  fisicamente ou vai ser feito virtualmente também? Só para entender caso a gente ainda vá
+  prosseguir com esse fluxo, se a gente ainda vai estruturar isso.
+</p>
+<p>Cristiano Teles: 55:12</p>
+<p>Eu não entendi, você pode perguntar de novo?</p>
+<p>Rafael Ribeiro: 55:16</p>
+<p>
+  Eu queria entender melhor sobre como vai funcionar essa questão da contratação pelas empresas. Ela
+  vai ser feita fisicamente pelas empresas ou esse afiliado vai entrar em contato, sei lá, via
+  WhatsApp ou suporte mesmo?
+</p>
+<p>Cristiano Teles: 55:30</p>
+<p>
+  Em geral a gente não fica se importando muito não, na prática a empresa cadastra o afiliado e fala
+  quais produtos e quais eventos ele pode representar e quanto ele vai ganhar de comissão Como é
+  feito ali no mundo físico, a gente acaba não entrando muito nisso, não. Lá no futuro, a gente tem
+  projeto que é a sala de negócios, que é que ele entre nessa sala de negócios, que talvez seja
+  outro sistema, e ele veja todas as empresas que têm interesse em ter afiliados, e aí ele vai lá e
+  submete, e aí a empresa pode aprovar, mas isso não é de agora.
+</p>
+<p>Rafael Ribeiro: 56:17</p>
+<p>
+  Perfeito. Beleza, vamos considerar isso aqui, então, quando a gente for trabalhar nessas
+  informações da área de afiliados. Só para a gente fazer repasse rápido aqui, então.
+</p>
+<p>Cristiano Teles: 56:30</p>
+<p>
+  Rápido ainda. Ainda nesse tema. Kati lembrou aqui que uma das evoluções que a gente vai fazer no
+  e-commerce, na versão nova lá que vocês fizeram, é permitir que ele possa fazer afiliação lá pelo
+  site, lá pelo e-commerce. Então, o afiliado ir lá, clicar no botão, preencher os dados dele e
+  submeter para o gestor aprovar a filiação dele. Aí, uma vez que aprovou, ele segue esse fluxo aí
+  que a gente está tratando.
+</p>
+<p>Rafael Ribeiro: 56:59</p>
+<p>
+  Entendi, perfeito. Bom, retomando aqui então em relação ao header, a gente vai ter a saudação no
+  topo aqui como padrão, que a gente já definiu para as outras visualizações. O subtítulo aqui com a
+  atualização dos dados, o intuito aqui é justamente fazer o afiliado perceber que ele está no
+  painel próprio e atualizado. As indicações com as quatro métricas principais, que vai ser
+  justamente a listagem das indicações feitas por ele nos últimos 30 dias, as vendas abandonadas da
+  última semana, o valor recebido por ele no mês e o valor que ele vai receber nos próximos 7 dias
+  da semana.
+</p>
+<p>Cristiano Teles: 57:51</p>
+<p>
+  Uma coisa que pode pensar aí é ter filtro se ele está olhando todos os contratos ou ele poderia
+  escolher contrato específico, que aí a gente soma esses valores se for todos os contratos.
+</p>
+<p>Rafael Ribeiro: 58:04</p>
+<p>
+  Eu acredito que a gente possa desenvolver melhor isso aqui na área das indicações, aqui na área
+  interna.
+</p>
+<p>Cristiano Teles: 58:12</p>
+<p>Beleza. Show.</p>
+<p>Rafael Ribeiro: 58:17</p>
+<p>
+  Bom, aqui então na área das indicações, a gente tem a listagem com as indicações mais recentes
+  desse cliente, com o nome do cliente, o passeio, os status aqui, caso já tenha sido pago, pendente
+  ou processado. As vendas abandonadas, elas vão aparecer no card de alerta. Então, elas ficam todas
+  situadas aqui. Mas não aqui. A lista vai exibir o que já gerou registro e aí no fim da sessão aqui
+  a gente tem o CTA para ele prosseguir rapidamente aqui para o próximo fluxo. Uma dúvida que surgiu
+  aqui, pessoal, eu queria confirmar com vocês, é se essas indicações aqui, por exemplo, elas são
+  consideradas para produto ou mais itens, dependendo do que o usuário for comprar, por exemplo, no
+  e-commerce.
+</p>
+<p>Cristiano Teles: 59:16</p>
+<p>
+  No caso, seria o carrinho. Por exemplo, eu fiquei até na dúvida se o LGPD permite que mostre o
+  nome de pessoas. Não sei. O que você acha? Parece fazer a conciliação. O objeto mesmo da indicação
+  seria o carrinho.
+</p>
+<p>Rafael Ribeiro: 59:40</p>
+<p>
+  Então a gente pode identificar essa área aqui com A e D, por exemplo, do carrinho ao invés do
+  nome, e embaixo atribuir a quantidade de itens.
+</p>
+<p>Cristiano Teles: 59:50</p>
+<p>
+  Poderia. A Cátia falou que talvez pudesse mostrar o nome da pessoa para eles fazerem conciliação.
+  O que você acha?
+</p>
+<p>Luana C Lopes: 59:57</p>
+<p>Sim.</p>
+<p>Retrilhar: 59:58</p>
+<p>Mas sempre nesse universo do comprador.</p>
+<p>Cristiano Teles: 01:00:00</p>
+<p>
+  Seria o comprador. Não precisa detalhar os participantes. O identificador do carrinho ali, o ID
+  dele e os dados do comprador.
+</p>
+<p>Rafael Ribeiro: 01:00:13</p>
+<p>Você sabe me informar quais dados seriam esses?</p>
+<p>Cristiano Teles: 01:00:16</p>
+<p>
+  O nome, só o nome mesmo. Aí seria o nome do comprador e aí teria que ter também o produto. Poderia
+  ser o seguinte, poderia ser o carrinho e o comprador E aí se ele detalhar mostra os produtos, né?
+  Porque aqui, igual você botou aqui ó, mergulho, mas pode ter mais de produto. Acho que na capa aí
+  seria isso, seria o carrinho e o dado do comprador e os valores, né? Que é o que você já colocou.
+</p>
+<p>Rafael Ribeiro: 01:00:52</p>
+<p>
+  Perfeito, vou considerar isso. Era uma dúvida que surgiu também enquanto eu estava estruturando os
+  detalhes do pedido. Como a gente tinha múltiplos itens nos carrinhos, eu imaginei que aqui seria a
+  mesma coisa. Então, vamos considerar. Bom, a minha lógica aqui para o link de afiliados nesse
+  primeiro momento era justamente deixar com destaque visual para exibir o link e o botão e a cor
+  aqui para diferenciar que esse é o elemento de ação primária do perfil nesse caso. Aí aqui embaixo
+  eu atribuí o passo a passo, é algo que eu quero manter no do que a gente for considerar aqui,
+  dessa refatoração, que foi justamente a gente numerar esses três passos aqui para explicar de
+  forma resumida o funcionamento das comissões. Ele vai servir como onboard para os afiliados novos
+  e reforço de confiança para os afiliados que já são ativos há mais tempo. Eu escolhi esse formato
+  aqui ao invés de, por exemplo, modal aqui no topo, sei lá, question mark aqui, botão de question
+  mark aqui para abrir modal, justamente para que a informação fique sempre visível aqui nessa tela.
+  Então, o meu objetivo foi esse. Mas vou considerar as pontuações aqui em relação às empresas
+  diferentes desse afiliado. Eu acho que eu vou estruturar isso com uma lista semelhante a essa
+  aqui, mas eu ainda vou buscar algumas soluções de arquitetura para isso. Mas por essa semana foi
+  isso, pessoal. A gente vai seguir aqui com as devidas progressões aqui. Só para situar aqui agora,
+  vocês têm mais alguma pontuação a fazer aqui?
+</p>
+<p>Cristiano Teles: 01:03:01</p>
+<p>
+  Não, é mais a questão agora de cronograma da gente... Começar a finalizar alguns pontos, o que eu
+  acho que seria prioridade, fechar de fato a questão do mobile, do menu, dessas interações para a
+  gente já implementar e já colocar isso para funcionar. Só para vocês saberem, eu tinha até
+  conversado com a Luana que ia colocar a prévia do que está já em produção. O que a gente construiu
+  até agora já está em produção. Inclusive, Rafael, se você quiser, eu te mando o link lá do nosso
+  ambiente de Stage para você instalar o aplicativo, se você quiser. Você vai achar que vale a pena.
+</p>
+<p>Rafael Ribeiro: 01:03:53</p>
+<p>Claro, claro.</p>
+<p>Cristiano Teles: 01:03:54</p>
+<p>
+  Até para olhar depois que vai ter que criar as telas, o menu, o ícone, essas coisas todas. Então,
+  o que a gente tá fazendo é pegando coisas que já estão prontas e já dando segmentação, indo pra
+  frente. Então, o foco pra gente é empregáveis, é finalizar. Então, em cima disso, eu penso que
+  prioridade seria essa, de fechar esse ponto do menu. Não sei se pra vocês já tá confortável, já
+  fechou e já pode ir pra codificação. Se tiver, já vamos pra codificação. Se não, vou pedir pra
+  vocês priorizarem isso. E aí a segunda prioridade seria finalizar todo o fluxo ali de vendas, até
+  falar, não, morreu esse tema, vamos para o próximo, que seria todo o painel operacional, tudo
+  isso, e aí só depois ir para o afiliado, porque aí é o que eu estou falando, a gente começa a
+  fazer entregas, tipo, estou entregando tal coisa e a gente vai implementando
+</p>
+<p>Rafael Ribeiro: 01:04:59</p>
+<p>
+  De acordo. Só para situar você aqui com relação ao menu aqui do mobile, foi algo que eu lembro que
+  você tinha pontuado como ponto de atenção na nossa última reunião. Eu já tinha informado a Luana
+  sobre isso e foi justamente essa uma das nossas maiores preocupações nessa semana. Então eu já dei
+  foco nisso justamente para estruturar esses pontos, então eu já trouxe toda a estrutura aqui, todo
+  o comportamento aqui no Figma, só vou estruturar aqui a questão do botão de favoritar, estruturar
+  esse comportamento, mas é algo que não vai demandar muito tempo, mas a Luana já começou a
+  desenvolver essa etapa aqui, desses comportamentos do menu, então isso não é problema, acho que a
+  gente pode até tirar como uma preocupação nesse caso, a Luana já deu início nessa etapa.
+</p>
+<p>Cristiano Teles: 01:05:56</p>
+<p>
+  Não, só vai sair da preocupação na hora que eu publicar em produção. É porque a sua mente está a
+  passos antes da minha. Para você, o figma é o ponto final. Para mim, o figma é o ponto inicial. E
+  aí o ciclo todo é esse, né? Mas eu entendo essa visão. Mas assim, eu acho que o ponto é só isso,
+  tá? É a gente... Igual isso, tem alguns ajustezinhos aqui no mobile, beleza. Não tem problema
+  finalizar e botar na esteira pro próximo. O ponto é mais esse, é só a gente estar alinhado nessa
+  linha de que a gente já está na esteira de botar em produção, então estou terminando, mas não está
+  perfeito, tem problema não, a gente vai botar, os clientes vão falar o que tem que falar, a gente
+  vai refatorar e vai seguir a vida, então é a ideia da melhoria contínua.
+</p>
+<p>Rafael Ribeiro: 01:06:49</p>
+<p>
+  Eu não sei se a Luana chegou a comunicar você, mas ela teve que sair da reunião agora, mas eu vou
+  pedir para ela comunicar você e para atualizar você sobre como está o andamento justamente dessa
+  etapa aqui no mobile, do menu inferior e tal, e das navegações aqui do menu lateral, mas ela já
+  deu início nisso.
+</p>
+<p>Cristiano Teles: 01:07:09</p>
+<p>
+  Não, tranquilo, só pra gente estar na mesma prioridade. Então ao invés de atacar várias frentes,
+  vamos matar uma frente que está mais perto de terminar, que é isso aí. Beleza, acabou isso aí, e
+  aí vai na sequência para os outros.
+</p>
+<p>Rafael Ribeiro: 01:07:25</p>
+<p>
+  Essa semana eu estava querendo dar mais foco na área da agenda, como vocês citaram mais cedo na
+  reunião, essa daqui vai ser uma das páginas do diferencial do negócio. Quero dar mais prioridade
+  para isso, entender melhor os detalhes.
+</p>
+<p>Cristiano Teles: 01:07:48</p>
+<p>
+  Mas Rafael, só para eu entender, o que você acha que hoje precisa de menos esforço para terminar?
+  A vendas ou o painel? Porque lembra que o foco é terminar, ao invés de ter várias coisas em
+  paralelo, é terminar uma coisa.
+</p>
+<p>Rafael Ribeiro: 01:08:03</p>
+<p>
+  Eu acho que o cenário menos complexo agora para a gente estruturar são os próximos cenários aqui
+  dos CRUDs. Por exemplo, a gente não tem ainda o fluxo de produtos, por exemplo, o fluxo de
+  clientes, os analytics aqui, que vai ser os detalhamentos gerais.
+</p>
+<p>Cristiano Teles: 01:08:22</p>
+<p>
+  Não, mas não preocupa com isso não, que isso aí vai ser bem genérico, Zão. Na verdade, a gente até
+  combinou que esses CRUDs aí a gente nem vai construir tela, vai já construir direto no sistema. A
+  gente não vai precisar fazer no Figma porque é padrão, vou ter formulário e vou ter tabela de
+  resultado, mas o ponto agora que eu estou falando em cima do que já iniciou, que a gente está com
+  quatro frentes agora, a primeira frente, o menu do mobile, que já está encaminhado, mas precisa
+  finalizar. Segundo, o vendas, que eu acho que está mais avançado, mas que também precisa
+  finalizar. E o operacional, que também já está avançado, mas que também precisa finalizar. E aí
+  depois a gente vê a questão do painel do afiliado. Então o ponto, a grande questão é isso, o que
+  está mais perto de a gente finalizar para poder enfiar a bandeira e falar esse tema acabou, agora
+  é melhoria, já não é mais construção, é evolução.
+</p>
+<p>Rafael Ribeiro: 01:09:24</p>
+<p>Nesse caso acredito que seja justamente essa área aqui do fluxo da agenda.</p>
+<p>Cristiano Teles: 01:09:29</p>
+<p>Tá, então vendas morreu já, aquele ciclo todo lá.</p>
+<p>Rafael Ribeiro: 01:09:35</p>
+<p>
+  A gente já passou por eles, então a gente tem aqui todo o fluxo de pedidos, a gente já fez as
+  melhorias aqui, como solicitado, os carrinhos abandonados também, a mesma coisa, o fluxo dos
+  vendedores também, então a gente já está bem situado aqui na área de vendas. Acho que a questão
+  aqui vai ser a gente dar uma ênfase aqui na área da agenda.
+</p>
+<p>Cristiano Teles: 01:10:01</p>
+<p>
+  Beleza, então vamos ver se a gente consegue finalizar essa coisa do mobile aí. Você falou que é
+  rápido, vamos botar que a gente consiga aí até sexta finalizar e aí eu vejo com a Luana depois
+  quando ela acha que consegue portar isso para o código. E aí em paralelo você vai matando essa
+  questão do operacional.
+</p>
+<p>Rafael Ribeiro: 01:10:24</p>
+<p>Perfeito então, estamos alinhados.</p>
+<p>Cristiano Teles: 01:10:29</p>
+<p>Então beleza, Rafael. Acho que da parte da nossa parte é isso. A gente está ótimo.</p>
+<p>Rafael Ribeiro: 01:10:34</p>
+<p>
+  Perfeito, pessoal. Vamos seguir atualizando vocês no grupo, então. Agradeço o tempo de vocês aí.
+  Até mais.
+</p>
+<p>Cristiano Teles: 01:10:42</p>
+<p>Até mais.</p>

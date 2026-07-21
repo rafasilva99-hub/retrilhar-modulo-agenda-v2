@@ -1,0 +1,1231 @@
+<p>
+  <strong>Retrilhar</strong>
+  Especificação de Funcionalidades
+  <strong>Módulo 3 — Operações</strong>
+  Versão: 3.0 Data: Abril 2026 Módulo: 3 — Operações Responsável: Katiely Paiva Origem:
+  Especificação do Módulo de Operações
+  <strong>Glossário</strong>
+  Para evitar ambiguidades entre equipe de desenvolvimento, produto e clientes: |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Participante</strong> | <strong>Pessoa que irá usufruir do passeio/experiência.</strong> |
+  | <strong>Pagador</strong> |
+  <strong
+    >Quem realizou o pagamento pelos ingressos do passeio. Pode ser o mesmo participante ou um
+    responsável pelo grupo.</strong
+  >
+  | | <strong>Participante Responsável</strong> |
+  <strong>Pessoa adulta responsável por um menor de idade no contexto da reserva.</strong> | |
+  <strong>Participante Menor de Idade</strong> |
+  <strong
+    >Pessoa com idade inferior à estipulada no produto (abaixo de 12 anos deve ser destacado
+    visivelmente).</strong
+  >
+  | | <strong>Atividade</strong> |
+  <strong>O passeio que o participante irá usufruir e pelo qual o pagador pagou.</strong> | |
+  <strong>Produto</strong> |
+  <strong>Anúncio da atividade configurado para ser comercializado no e-commerce.</strong> | |
+  <strong>Evento</strong> |
+  <strong
+    >Atividade com data específica, podendo ter horários específicos, vinculada a um
+    produto.</strong
+  >
+  | | <strong>Gestor Operacional</strong> |
+  <strong
+    >Responsável por planejar, organizar e validar toda a operação. Define equipe, controla vagas,
+    edita informações, gerencia recursos e aprova seguro.</strong
+  >
+  | | <strong>Líder de Operação (Guia)</strong> |
+  <strong
+    >Responsável por executar a experiência no dia da atividade. Acompanha participantes, realiza
+    check-in e segue protocolos de segurança.</strong
+  >
+  | | <strong>Perfis de Acesso</strong> |
+  <strong
+    >Cargos definidos para os usuários do painel administrativo com acessos personalizados.</strong
+  >
+  | | <strong>Usuário Operador</strong> |
+  <strong>Colaborador da empresa que irá operar as atividades.</strong> |
+</p>
+<p>
+  <strong>Visão Geral do Módulo</strong> O módulo de Operações concentra as ferramentas que a equipe
+  utiliza no dia a dia para executar as atividades de campo e gerenciar a capacidade operacional do
+  negócio. É composto por cinco sub-módulos complementares, organizados pela jornada natural do
+  operador: do planejamento de capacidade (Mapa de Vagas), passando pela execução (Painel de
+  Reservas), organização temporal (Agenda) e geração de documentos de apoio (Listas e Manifestos),
+  até o painel exclusivo do Líder de Operação em campo. | <em>Sub-módulos do Módulo 3</em> |
+  <em>3.1 — Mapa de Vagas (QUANTO)</em> | <em>3.2 — Painel de Reservas (QUEM e O QUÊ)</em> |
+  <em>3.3 — Agenda (QUANDO)</em> | <em>3.4 — Listas e Manifestos (COMO EXECUTAR)</em> |
+  <em>3.5 — Painel do Líder de Operação (EXECUTAR)</em> |
+  <em>3.6 — Máquina de Estados das Reservas e do Seguro</em> | | ------ | ------ | ------ | ------ |
+  ------ | ------ | ------ |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Perfis que utilizam este módulo</em></th>
+      <th><em>• Gestor Operacional — acesso completo a todos os sub-módulos</em></th>
+      <th>
+        <em
+          >• Líder de Operação / Guia — acesso restrito ao Painel do Líder (3.5) e aos seus eventos
+          escalados</em
+        >
+      </th>
+      <th>
+        <em>• Motorista / Recepcionista — acesso às Listas e Manifestos (3.4) do seu evento</em>
+      </th>
+      <th><em>• Administrador — acesso completo</em></th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.1 — Mapa de Vagas</strong>
+  Responde à pergunta: QUANTO foi preenchido e quanto ainda está disponível? O objetivo é que o
+  operador tenha uma visão atual e futura da taxa de ocupação da empresa e um resumo operacional em
+  tempo real. Cada produto/data/horário é exibido como um bloco independente de informação.
+  <strong>Tela Principal — Cards de Evento</strong>
+  A tela exibe todos os produtos com operação dentro do período selecionado.
+  <strong>Informações de Cada Card</strong>
+  | <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Nome do Produto</strong> | <strong>Nome completo da experiência/atividade.</strong> | |
+  <strong>Data e Horário</strong> |
+  <strong>Data da atividade e horário(s) disponível(is).</strong> | |
+  <strong>Capacidade Mínima</strong> |
+  <strong
+    >Número mínimo para confirmação do evento. Tag visual quando atingida: ✔ Saída
+    Confirmada.</strong
+  >
+  | | <strong>Capacidade Máxima</strong> |
+  <strong>Número máximo de participantes configurado no produto.</strong> | |
+  <strong>Total de Vagas Vendidas</strong> |
+  <strong>Quantidade de reservas confirmadas no evento.</strong> | |
+  <strong>Total de Vagas Disponíveis</strong> |
+  <strong>Saldo de vagas ainda livres para venda.</strong> | | <strong>Status da Saída</strong> |
+  <strong>Pendente / Confirmada / Cancelada — com cor distinta por status.</strong> | |
+  <strong>Equipe Escalada</strong> |
+  <strong
+    >Ícone/nome indicando se há equipe alocada. Se não houver: alerta ⚠️ Nenhuma equipe
+    alocada.</strong
+  >
+  | | <strong>Quantidade de Itens Adicionais</strong> |
+  <strong>Total de itens opcionais vendidos no evento (para gestão de estoque).</strong> | |
+  <strong>Ícones de Alerta</strong> |
+  <strong
+    >Ícone 🏥 se algum participante possui problema de saúde declarado.Ícone 🛍️ se há itens
+    adicionais escolhidos.Ícone 🔴 se vagas esgotadas.Ícone 🔗 se há recurso compartilhado com outra
+    atividade.</strong
+  >
+  | | <strong>Botão de Ação</strong> |
+  <strong>Botão direto para abrir o Painel de Reservas (3.2) daquele evento.</strong> |
+</p>
+<p>
+  <strong>Totalizadores Gerais (Cabeçalho da Tela)</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Taxa de Ocupação Geral</strong> |
+  <strong>Percentual médio de ocupação de todos os eventos no período selecionado.</strong> | |
+  <strong>Total de Dias com Atividades Confirmadas</strong> |
+  <strong>Contagem de dias com pelo menos uma saída com status Confirmada.</strong> | |
+  <strong>Total de Vagas Vendidas (geral)</strong> |
+  <strong>Soma de todas as reservas confirmadas no período.</strong> | |
+  <strong>Total de Vagas Disponíveis (geral)</strong> |
+  <strong>Soma de todas as vagas ainda abertas para venda no período.</strong> |
+</p>
+<p>
+  <strong>Filtros</strong> | <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | |
+  ------ | ------ | | <strong>Período</strong> |
+  <strong>Data inicial e data final. Padrão: próximos 30 dias.</strong> | |
+  <strong>Produto</strong> |
+  <strong>Dropdown de busca para filtrar por produto específico.</strong> | |
+  <strong>Status</strong> | <strong>Pendente / Confirmada / Cancelada — múltipla seleção.</strong> |
+  | <strong>Com Vagas Disponíveis</strong> |
+  <strong>Exibe apenas eventos com vagas &gt; 0.</strong> | | <strong>Esgotados</strong> |
+  <strong>Exibe apenas eventos com vagas = 0.</strong> | | <strong>Guia / Responsável</strong> |
+  <strong>Filtro por colaborador escalado. Permite que o guia veja apenas seus eventos.</strong> | |
+  <strong>Botão Atualizar</strong> |
+  <strong>Força a atualização manual dos dados sem recarregar a página.</strong> |
+</p>
+<p>
+  <strong>Funcionalidades do Mapa de Vagas</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Bloquear Vagas</strong> |
+  <strong
+    >O gestor pode reservar vagas temporariamente para um grupo em negociação, sem criar uma venda
+    final. Vagas bloqueadas são subtraídas das &#39;Disponíveis&#39; imediatamente, evitando
+    overbooking. Identificadas com ícone 🔒.</strong
+  >
+  | | <strong>Bloquear Vendas</strong> |
+  <strong
+    >Bloquear novas vendas para um produto/dia/horário específico sem cancelar as reservas
+    existentes.</strong
+  >
+  | | <strong>Produtos Day Use / Hospedagem</strong> |
+  <strong
+    >Para produtos com período (hospedagem, camping), o mapa exibe entradas e saídas no mesmo dia de
+    forma distinta, pois um quarto pode ter duas reservas no mesmo dia (um check-out de manhã e um
+    check-in à tarde).</strong
+  >
+  | | <strong>Conflito de Recurso Compartilhado</strong> |
+  <strong
+    >Se um Recurso (ex: barco, van) estiver sendo usado por duas atividades simultâneas, o mapa
+    exibe a ocupação somada do recurso em ambos os eventos, alertando sobre conflito de
+    capacidade.</strong
+  >
+  | | <strong>Conflito de Horário da Equipe</strong> |
+  <strong
+    >Se um colaborador for escalado em dois eventos com horários sobrepostos, o sistema emite aviso
+    visual no card.</strong
+  >
+  |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Comportamento esperado</em></th>
+      <th>
+        <em
+          >• O mapa deve refletir em tempo real as reservas feitas via loja online, vendas manuais e
+          importações de planilha.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Ao clicar em um card, abrir o Painel de Reservas (3.2) daquele evento específico com
+          filtros já aplicados.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Slots com 100% de ocupação devem ser destacados visualmente (barra vermelha ou badge
+          &#39;Esgotado&#39;).</em
+        >
+      </th>
+      <th>
+        <em
+          >• Horários inativos NÃO devem exibir quantidade de vagas disponíveis ao cliente na
+          loja.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O mapa deve ser acessível a partir do Dashboard Operacional (1.3) com filtro de data já
+          aplicado.</em
+        >
+      </th>
+      <th><em>• O sistema deve ser totalmente responsivo para uso em celular.</em></th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.2 — Painel de Reservas</strong>
+  Responde às perguntas: QUEM são os participantes e O QUÊ cada um comprou? Esta é a tela mais
+  detalhista, onde o operador consegue responder a maioria das dúvidas em relação à operação e
+  executar diversas ações: realizar check-in, contratar seguro, conferir participantes, bloquear
+  vagas, linkar pagamentos com a central de vendas, entre outros.
+  <strong>Seção de Resumo do Dia</strong>
+  Exibida no topo do painel, oferece visão rápida sem precisar rolar a tela: |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Quantidade por Horário</strong> |
+  <strong>Total de participantes por cada faixa horária do dia.</strong> | |
+  <strong>Quantidade por Tipo de Produto</strong> |
+  <strong>Total de participantes por tipo de experiência (ex: Trilha = 12, Rapel = 8).</strong> | |
+  <strong>Total de Check-ins Realizados</strong> |
+  <strong>Contador em tempo real de participantes com check-in confirmado.</strong> | |
+  <strong>Total com Seguro Contratado</strong> |
+  <strong>Quantos participantes já possuem apólice ativa no dia.</strong> | |
+  <strong>Total com Pagamento Pendente</strong> |
+  <strong
+    >Quantidade de participantes com reserva confirmada mas pagamento parcial ou pendente.</strong
+  >
+  | | <strong>Total com Problema de Saúde</strong> |
+  <strong
+    >Quantidade de participantes que declararam algum problema de saúde nos dados da
+    reserva.</strong
+  >
+  | | <strong>Total de Menores de Idade</strong> |
+  <strong>Quantidade de participantes abaixo de 12 anos ou da idade configurada no produto.</strong>
+  |
+</p>
+<p>
+  Agrupadores de reserva, para serem sinalizados Por ponto de embarque ponto de embarque 1 ponto de
+  embarque 2 ponto de embarque 3 Se marcou que tem algum problema de saúde sim não Se escolheu algum
+  item opcional sim, item x sim, item y não Que tipo de tarifa comprou tarifa A tarifa B tarifa C
+  Que horário foi escolhido horário 1 horário 2 horário 3 Autorizou uso de imagem sim não Aceita
+  receber promoção sim não é menor de idade (menor de idade segundo parâmetros definidos no produto)
+  sim não é estrangeiro sim não já efetuou o pagamento sim pagou não, está pendente parcialmente
+  pago (quando pagou só uma entrada e tem saldo devedor) o seguro já foi contratado sim não com
+  problemas reservas por pedido Ordenador de reservas Por ordem alfabética Por ordem de número de
+  pedido Por ordem de data da reserva Ações da reserva Confirmar Cancelar Check in contratar seguro
+  manualmente remarcar chamar cliente no whatsapp Ações do produto/evento do dia (menu separado)
+  tirar manifesto por (pdf, excel ou link) pontos de embarque ficha de transporte ficha operacional
+  ficha para check in manual ficha de dados de saúde ficha completa com todos os dados dos clientes
+  <strong>Mapa de Reservas — Lista de Participantes</strong>
+  Lista completa dos participantes do evento, com estrutura em accordion por grupo de compra: |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Nome do Responsável pela Reserva (Accordion)</strong> |
+  <strong
+    >Nome da pessoa que realizou a compra. Ao expandir, exibe todos os participantes vinculados ao
+    mesmo carrinho.</strong
+  >
+  | | <strong>Número de Vagas Compradas</strong> |
+  <strong>Quantidade de ingressos no carrinho do responsável.</strong> | |
+  <strong>Lista de Participantes do Grupo</strong> |
+  <strong
+    >Nomes de cada participante vinculado à reserva do responsável (quando há mais de 1).</strong
+  >
+  | | <strong>ID da Reserva</strong> |
+  <strong>Número único de identificação de cada reserva individual.</strong> | |
+  <strong>Tipo de Tarifa Comprada</strong> |
+  <strong>Adulto, Criança, Idoso, etc. — conforme configurado no produto.</strong> | |
+  <strong>Itens Adicionais Escolhidos</strong> |
+  <strong>Opcionais selecionados pelo participante (ex: kit foto, transporte).</strong> | |
+  <strong>Local de Embarque Escolhido</strong> |
+  <strong>Ponto de embarque selecionado durante a reserva (quando configurado no produto).</strong>
+  |
+</p>
+<p>
+  <strong>Ícones de Status por Participante</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>🏥 Problema de Saúde</strong> |
+  <strong
+    >Participante respondeu &#39;Sim&#39; para alguma condição de saúde. Destacado em vermelho na
+    lista.</strong
+  >
+  | | <strong>🛍️ Item Adicional</strong> |
+  <strong>Participante escolheu ao menos um item opcional.</strong> | |
+  <strong>📄 Contrato Pendente</strong> |
+  <strong>Contrato/termo ainda não foi assinado digitalmente pelo participante.</strong> | |
+  <strong>💳 Pagamento Pendente</strong> |
+  <strong>Reserva confirmada mas com saldo devedor ou aguardando confirmação.</strong> | |
+  <strong>📸 Uso de Imagem Não Aceito</strong> |
+  <strong>Participante não autorizou o uso de imagem durante a reserva.</strong> | |
+  <strong>👶 Menor de Idade</strong> | <strong>Participante</strong> menor de idade. | |
+  <strong>🛡️ Seguro Contratado</strong> |
+  <strong>Apólice de seguro ativa para este participante.</strong> |
+</p>
+<p>
+  <strong>Filtros e Ordenação da Lista</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Agrupar por Venda/Carrinho</strong> |
+  <strong>Exibe os participantes agrupados por quem comprou junto (mesmo carrinho).</strong> | |
+  <strong>Listar por Ordem Alfabética</strong> |
+  <strong>Ordena todos os participantes por nome, independentemente do grupo.</strong> | |
+  <strong>Listar por Tipo de Tarifa</strong> |
+  <strong>Agrupa por categoria de ingresso (adulto, criança, etc.).</strong> | |
+  <strong>Listar por Item Adicional Escolhido</strong> |
+  <strong>Agrupa por opcional selecionado (útil para separar grupos de transporte).</strong> | |
+  <strong>Listar por Local de Embarque</strong> |
+  <strong>Agrupa por ponto de embarque (útil para o motorista).</strong> | |
+  <strong>Busca por Nome, CPF, E-mail, Nº Reserva, Nº Carrinho</strong> |
+  <strong>Campo de busca rápida para localizar um participante específico.</strong> | |
+  <strong>Filtrar por Status de Pagamento</strong> |
+  <strong>Exibir apenas participantes com pagamento pendente.</strong> | |
+  <strong>Filtrar por Problema de Saúde</strong> |
+  <strong>Exibir apenas participantes com alguma condição de saúde declarada.</strong> | |
+  <strong>Filtrar por Menor de Idade</strong> |
+  <strong>Exibir apenas participantes abaixo da idade de referência.</strong> |
+</p>
+<p>
+  <strong>Check-in de Clientes</strong> Permite registrar a presença dos participantes em cada
+  evento. O fluxo de check-in funciona da seguinte forma: | <strong>1</strong> |
+  <strong>Selecionar Evento</strong> | O operador seleciona o evento do dia em que deseja realizar o
+  check-in. | | ------ | ------ | ------ | | <strong>2</strong> |
+  <strong>Localizar Participante</strong> | Busca por nome, número do pedido ou QR Code do ingresso
+  (quando aplicável). | | <strong>3</strong> | <strong>Confirmar Presença</strong> | O sistema
+  registra o check-in com data, hora e operador responsável. O status do participante muda para
+  &#39;Checkin realizado&#39;. | | <strong>4</strong> | <strong>Validações Especiais</strong> | Para
+  produtos com validação de peso/altura configurada (Módulo 5.1), o sistema solicita a confirmação
+  desses dados antes de concluir o check-in. |
+</p>
+<p>
+  <strong>Ações Individuais por Reserva</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Check-in</strong> |
+  <strong
+    >Registrar presença do participante. Pode ser feito: (1) manualmente clicando no botão; (2) por
+    leitura de QR Code do voucher; (3) em massa via checkbox para múltiplos participantes
+    simultaneamente.</strong
+  >
+  | | <strong>Desfazer Check-in</strong> |
+  <strong
+    >Reverter check-in feito por engano. Disponível apenas para o operador com permissão.</strong
+  >
+  | | <strong>Confirmar Reserva</strong> |
+  <strong
+    >Mover reserva de &#39;Aguardando Pagamento&#39; para &#39;Confirmada&#39; após confirmação
+    manual de pagamento.</strong
+  >
+  | | <strong>Marcar como Realizada</strong> |
+  <strong
+    >Encerrar a participação do cliente após a atividade. Disponível em massa via checkbox.</strong
+  >
+  | | <strong>Cancelar Reserva</strong> |
+  <strong
+    >Cancelar uma única reserva de um grupo ou o grupo inteiro. Motivo obrigatório. Exibe política
+    de reembolso aplicável antes de confirmar.</strong
+  >
+  | | <strong>Remarcar Reserva</strong> |
+  <strong
+    >Mover a reserva para uma data/horário futuro. O sistema deve exibir automaticamente o saldo
+    devedor ou o crédito caso o valor seja diferente, conectando com a Central de Vendas (Módulo
+    2).</strong
+  >
+  | | <strong>Ver Detalhes Completos</strong> |
+  <strong
+    >Abre a ficha completa da reserva com todos os dados do participante, dados de saúde, histórico
+    de ações e informações do contrato.</strong
+  >
+  | | <strong>Editar Dados da Reserva</strong> |
+  <strong
+    >Permite corrigir dados do participante (nome, CPF, data de nascimento, telefone, e-mail)
+    diretamente no painel.</strong
+  >
+  | | <strong>Adicionar Observação</strong> |
+  <strong
+    >Campo de texto livre para inserir notas internas sobre a reserva (visível apenas para a
+    equipe).</strong
+  >
+  | | <strong>Chamar no WhatsApp</strong> |
+  <strong>Atalho direto que abre o WhatsApp com o número do participante pré-carregado.</strong> | |
+  <strong>Ligar para o Participante</strong> |
+  <strong
+    >Atalho para discar o telefone do participante diretamente do painel (funcional em dispositivos
+    móveis).</strong
+  >
+  | | <strong>Reenviar Voucher</strong> |
+  <strong>Envia novamente o e-mail de confirmação/voucher da reserva para o cliente.</strong> | |
+  <strong>Download do Comprovante em PDF</strong> | <strong>Gera um PDF com o</strong> voucher da
+  reseerva <strong>individual para download ou envio manual.</strong> | |
+  <strong>Contratar Seguro</strong> |
+  <strong
+    >Iniciar a contratação do seguro aventura para o participante via API da seguradora.</strong
+  >
+  | | <strong>Ver Status do Seguro</strong> |
+  <strong>Exibir o status atual da apólice (Não Contratado / Pendente / Contratado / Erro).</strong>
+  | | <strong>Linkar com Pagamento</strong> |
+  <strong
+    >Atalho para abrir o pagamento correspondente na Central de Vendas (Módulo 2), para associar um
+    pagamento manual a uma reserva.</strong
+  >
+  | | <strong>Ver Histórico da Reserva</strong> |
+  <strong
+    >Exibe todos os eventos registrados na reserva: quem fez o quê, quando, com IP do
+    dispositivo.</strong
+  >
+  | | <strong>Ver Aceite do Contrato</strong> |
+  <strong
+    >Exibe as informações do aceite digital do cliente (IP, hash do documento, timestamp, versão do
+    contrato aceita) com opção de download em PDF para uso jurídico.</strong
+  >
+  |
+</p>
+<p>
+  <strong>Ações em Massa (via Checkbox)</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Check-in em Massa</strong> |
+  <strong
+    >Selecionar múltiplos participantes via checkbox e realizar check-in de todos
+    simultaneamente.</strong
+  >
+  | | <strong>Marcar como Realizada em Massa</strong> |
+  <strong>Encerrar a atividade de múltiplos participantes ao mesmo tempo.</strong> | |
+  <strong>Remarcar em Massa</strong> |
+  <strong>Alterar data/horário de um grupo inteiro de uma vez.</strong> | |
+  <strong>Criar Grupo</strong> |
+  <strong
+    >Agrupar participantes selecionados para ações coordenadas (ex: mesmo ponto de
+    embarque).</strong
+  >
+  | | Contratar Seguro | Contrata o Seguro de vários participantes |
+</p>
+<p>
+  <strong>Detalhes Completos da Reserva (Ficha do Participante)</strong> Ao clicar em &#39;Ver
+  Detalhes&#39;, abre uma visão expandida ou modal com todas as informações da reserva: |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Dados Pessoais</strong> |
+  <strong>Nome completo, CPF/RG, data de nascimento, telefone, e-mail, endereço.</strong> | |
+  <strong>Dados da Reserva</strong> |
+  <strong
+    >Produto, evento, data, horário, tipo de tarifa, itens adicionais, local de embarque
+    escolhido.</strong
+  >
+  | | <strong>Dados de Saúde</strong> |
+  <strong
+    >Respostas a todas as perguntas de saúde configuradas no produto (peso, altura, condições
+    médicas, alergias, medicamentos, etc.). Destacadas em vermelho quando indicam restrição.</strong
+  >
+  | | <strong>Status de Pagamento</strong> |
+  <strong
+    >Valor total, valor pago, saldo devedor, forma de pagamento, gateway utilizado. Atalho para
+    detalhes na Central de Vendas.</strong
+  >
+  | | <strong>Contrato e Aceites</strong> |
+  <strong
+    >Status do contrato, versão aceita, data/hora do aceite, IP do dispositivo, hash do documento.
+    Botão de download em PDF com validade jurídica.</strong
+  >
+  | | <strong>Seguro</strong> |
+  <strong
+    >Status da apólice, número da apólice (quando contratado), botão de acesso ao
+    comprovante.</strong
+  >
+  | | <strong>Histórico de Ações</strong> |
+  <strong
+    >Log completo de todas as ações realizadas na reserva: usuário, data/hora, ação executada e IP
+    do dispositivo.</strong
+  >
+  | | <strong>Observações Internas</strong> |
+  <strong>Notas inseridas pela equipe, com autor e data de cada anotação.</strong> | |
+  <strong>Dados do Pagador</strong> |
+  <strong>Quando diferente do participante: nome, CPF e contato de quem realizou a compra</strong> ,
+  e um atalho para os detalhes do pedido. | | <strong>Participante Responsável</strong> |
+  <strong>Para menores de idade: nome, CPF e contato do adulto responsável vinculado.</strong> |
+</p>
+<p>
+  <strong>Resumo de Tarifas e Adicionais do Evento</strong> Seção de totalizadores do evento
+  completo (não por participante individual): | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Quantidade por Tipo de Tarifa</strong> |
+  <strong>Total de ingressos por categoria: X adultos, Y crianças, Z idosos, etc.</strong> | |
+  <strong>Quantidade de Cada Item Adicional</strong> |
+  <strong>Total de cada opcional vendido: X kits de foto, Y transportes, etc.</strong> | |
+  <strong>Checklist de Inventário</strong> |
+  <strong
+    >Lista de materiais que a equipe deve separar, calculada automaticamente com base nas tarifas e
+    adicionais. Ex: 18 adultos = 18 capacetes tamanho P/M/G conforme dados de saúde.</strong
+  >
+  |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Comportamento esperado</em></th>
+      <th>
+        <em
+          >• O painel deve ser atualizado em tempo real, sem necessidade de recarregar a página.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O acesso deve ser possível em dispositivos móveis (celular e tablet) para uso em campo
+          — responsivo completo.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Participantes com problema de saúde, menores de idade e pagamento pendente devem estar
+          sempre destacados visualmente.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O leitor de QR Code do voucher deve estar disponível no app mobile do painel
+          administrativo.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Ao ler o QR Code, o sistema deve permitir pré-configurar qual ação será executada:
+          Check-in, Realizada, Confirmada ou Iniciada.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Após a atividade: disparar automaticamente o questionário de satisfação para os
+          participantes com status Realizada.</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.3 — Agenda</strong>
+  Responde à pergunta: QUANDO acontecem as atividades? Interface interativa de calendário que
+  centraliza todos os eventos, agendamentos e compromissos do negócio. Diferente do Painel de
+  Reservas (focado na execução), a Agenda é voltada para planejamento e organização.
+  <strong>Visualizações da Agenda</strong>
+  | <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Visão Diária</strong> |
+  <strong>Linha do tempo do dia com todos os eventos distribuídos por horário.</strong> | |
+  <strong>Visão Semanal</strong> |
+  <strong>Grade semanal com eventos distribuídos por dia e horário.</strong> | |
+  <strong>Visão Mensal</strong> |
+  <strong
+    >Calendário mensal com indicação dos dias que possuem eventos. Clique no dia para ver o
+    detalhe.</strong
+  >
+  | | <strong>Visão de Lista (</strong> inventário) |
+  <strong
+    >Lista cronológica de todos os eventos futuros, com informações resumidas por linha (alternativa
+    ao calendário visual). Para eventos todos listados, para o sob demanda</strong
+  >
+  , somente os dias que tiverem reservas) | | <strong>Visão por Produto</strong> |
+  <strong
+    >Filtrar a agenda para exibir apenas os eventos de um produto ou experiência específica.</strong
+  >
+  |
+</p>
+<p>
+  <strong>Criação de Eventos</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Título do Evento</strong> |
+  <strong>Obrigatório. Nome descritivo do evento ou atividade.</strong> | |
+  <strong>Produto / Experiência Vinculado</strong> |
+  <strong
+    >Opcional. Associa o evento a um produto do catálogo, herdando suas configurações de
+    capacidade.</strong
+  >
+  | | <strong>Data e Hora de Início</strong> | <strong>Obrigatório.</strong> | |
+  <strong>Data e Hora de Término</strong> | <strong>Obrigatório.</strong> | |
+  <strong>Local</strong> | <strong>Campo livre ou seleção de local cadastrado.</strong> | |
+  <strong>Capacidade Máxima</strong> |
+  <strong
+    >Número máximo de participantes. Preenchido automaticamente se vinculado a um produto.</strong
+  >
+  | | <strong>Capacidade Mínima</strong> |
+  <strong>Número mínimo para realizar o evento. Tag de confirmação exibida quando atingida.</strong>
+  | | <strong>Equipe Responsável</strong> |
+  <strong>Seleção de um ou mais colaboradores responsáveis pelo evento.</strong> | |
+  <strong>Link do Grupo WhatsApp</strong> |
+  <strong
+    >Campo para o link de convite do grupo WhatsApp do evento. Incluído automaticamente no e-mail de
+    confirmação de reserva ao cliente.</strong
+  >
+  | | <strong>Recorrência</strong> |
+  <strong
+    >Opção de configurar o evento como recorrente: diário, semanal, mensal ou personalizado. Permite
+    selecionar múltiplas datas de uma só vez (ex: todos os sábados do mês).</strong
+  >
+  | | <strong>Múltiplos Horários no Mesmo Dia</strong> |
+  <strong
+    >Adicionar vários horários para o mesmo evento no mesmo dia sem precisar criar eventos
+    separados.</strong
+  >
+  | | <strong>Descrição / Observações</strong> |
+  <strong>Campo livre para informações adicionais sobre o evento.</strong> | |
+  <strong>Visibilidade</strong> |
+  <strong
+    >Definir se o evento é interno (visível apenas para a equipe) ou público (exibido na loja
+    online).</strong
+  >
+  | | <strong>Segmentação de Grupo</strong> |
+  <strong
+    >Definir quais grupos/perfis de cliente podem ver e reservar este evento (assinantes, grupos
+    corporativos, parceiros).</strong
+  >
+  | | <strong>Checklist de Início / Fim da Atividade</strong> |
+  <strong
+    >Campo para registrar horário de início, duração real, horário de término e notas sobre o que
+    aconteceu durante a atividade. Alimenta o Sistema de Gestão da Segurança (SGS).</strong
+  >
+  |
+</p>
+<p>
+  <strong>Visão Geral dos Eventos do Dia</strong> | <strong>Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Lista de Eventos do Dia</strong> |
+  Todos os eventos/experiências programados para o dia atual, ordenados por horário de início. | |
+  <strong>Status do Evento</strong> | Indicação visual: Aguardando Início, Em Andamento, Concluído
+  ou Cancelado. | | <strong>Participantes Confirmados</strong> | Quantidade de clientes com pedido
+  confirmado para aquele evento. | | <strong>Check-ins Realizados</strong> | Contador em tempo real
+  de quantos participantes já fizeram check-in. | | <strong>Equipe Alocada</strong> | Membros da
+  equipe designados para conduzir aquele evento. | | <strong>Alerta de Atraso</strong> | Indicação
+  visual quando um evento está programado mas não foi iniciado dentro do horário previsto. |
+</p>
+<p>
+  <strong>Edição e Exclusão de Eventos</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Editar Evento</strong> |
+  <strong
+    >Permite alterar qualquer campo do evento. Para eventos recorrentes, a edição pode ser aplicada
+    apenas à ocorrência selecionada ou a todas as futuras.</strong
+  >
+  | | <strong>Cancelar Evento</strong> |
+  <strong
+    >Marca o evento como cancelado sem excluí-lo do histórico. Pedidos vinculados são notificados
+    conforme configuração de comunicação.</strong
+  >
+  | | <strong>Excluir Evento</strong> |
+  <strong
+    >Remove o evento permanentemente. Disponível apenas para eventos sem pedidos vinculados.</strong
+  >
+  | | <strong>Arrastar e Soltar</strong> |
+  <strong
+    >Permite mover eventos na agenda arrastando para outra data/horário (nas visões diária e
+    semanal).</strong
+  >
+  |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Comportamento esperado</em></th>
+      <th>
+        <em
+          >• Eventos criados na agenda e vinculados a produtos devem refletir automaticamente no
+          Mapa de Vagas (3.1).</em
+        >
+      </th>
+      <th>
+        <em
+          >• Ao criar um evento público vinculado a um produto, as vagas ficam disponíveis na loja
+          online.</em
+        >
+      </th>
+      <th>
+        <em>• O sistema deve alertar sobre conflitos de horário ao criar ou mover eventos.</em>
+      </th>
+      <th>
+        <em>• A agenda deve exibir feriados nacionais e datas especiais como referência visual.</em>
+      </th>
+      <th>
+        <em>• Eventos com pedidos confirmados não podem ser excluídos — apenas cancelados.</em>
+      </th>
+      <th>
+        <em
+          >• A agenda deve poder ser sincronizada com o Google Agenda via integração do Módulo
+          9.3.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Ao registrar início e fim de uma atividade, os dados devem alimentar o histórico
+          operacional e o relatório de equipe.</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.4 — Listas e Manifestos</strong>
+  Responde à pergunta: COMO executar? Nesta tela o operador consegue acessar fichas e manifestos
+  para apresentação em tela ou download, servindo de apoio operacional no dia da atividade. Todos os
+  relatórios podem ser gerados em PDF e Excel.
+  <strong>Filtros Globais de Listas</strong>
+  | <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Produto</strong> | <strong>Selecionar a atividade/experiência.</strong> | |
+  <strong>Data da Atividade</strong> | <strong>Selecionar a data do evento.</strong> | |
+  <strong>Horário</strong> |
+  <strong>Selecionar o horário específico (quando o evento tem múltiplos horários).</strong> | |
+  <strong>Status da Reserva</strong> |
+  <strong>Confirmada, Check-in Realizado, Realizada — múltipla seleção.</strong> |
+</p>
+<p>
+  <strong>Ficha 1 — Lista de Presença (com Campo de Assinatura)</strong> |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Campos Incluídos</strong> |
+  <strong
+    >Nome completo, CPF, tipo de tarifa, status de pagamento (✓ Pago / ✗ Pendente), campo em branco
+    para assinatura física do participante.</strong
+  >
+  | | <strong>Destaque Visual</strong> |
+  <strong
+    >Participantes com pagamento pendente devem estar destacados (ex: linha em amarelo).</strong
+  >
+  | | <strong>Uso</strong> |
+  <strong>Apresentar no embarque para conferência e assinatura dos participantes presentes.</strong>
+  | | <strong>Formato de Saída</strong> | <strong>PDF e Excel.</strong> |
+</p>
+<p>
+  <strong>Ficha 2 — Ficha de Transporte (Manifesto para ANTT)</strong> |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Campos Incluídos</strong> |
+  <strong
+    >Nome completo, CPF, RG, data de nascimento, telefone, e-mail de cada participante e de cada
+    membro da equipe. Local de origem, local de destino, data de início e fim, quantidade de
+    passageiros, horário escolhido.</strong
+  >
+  | | <strong>Uso</strong> |
+  <strong>Enviar para a ANTT e para o hotel/parceiro que não tem acesso ao sistema.</strong> | |
+  <strong>Formato de Saída</strong> | <strong>PDF e Excel.</strong> |
+</p>
+<p>
+  <strong>Ficha 3 — Manifesto de Pontos de Embarque</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Campos Incluídos</strong> |
+  <strong>Nome, CPF, ponto de embarque escolhido, horário escolhido, opcionais comprados.</strong> |
+  | <strong>Organização</strong> | <strong>Agrupado por ponto de embarque, para que o</strong> guia
+  ou motorista <strong>saiba exatamente quais clientes irão embarcar em cada ponto.</strong> | |
+  <strong>Uso</strong> |
+  <strong
+    >Apoio ao guia de turismo ou ao motorista e coordenação de logística de transporte.</strong
+  >
+  | | <strong>Formato de Saída</strong> | <strong>PDF (para o motorista ou guia) e Excel.</strong> |
+</p>
+<p>
+  <strong>Ficha 4 — Dados de Saúde e Segurança</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Campos Incluídos</strong> |
+  <strong
+    >Nome, todos os campos de saúde preenchidos na reserva (peso, altura, condições médicas,
+    alergias, medicamentos, restrições físicas) conforme configurado no produto.</strong
+  >
+  | | <strong>Destaque</strong> |
+  <strong
+    >Participantes com qualquer condição de saúde declarada devem estar destacados no topo ou com
+    marcação visual clara.</strong
+  >
+  | | <strong>Acesso Restrito</strong> |
+  <strong
+    >Somente colaboradores com permissão de saúde habilitada no perfil podem visualizar esta
+    ficha.</strong
+  >
+  | | <strong>Uso</strong> |
+  <strong>Apoio ao guia para gestão de segurança durante a atividade e instrução da equipe.</strong>
+  | | <strong>Formato de Saída</strong> | <strong>PDF e Excel.</strong> |
+</p>
+<p>
+  <strong>Ficha 5 — Dados Completos dos Participantes</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Campos Incluídos</strong> |
+  <strong>Todos os dados preenchidos na reserva: dados pessoais, e</strong> ndereço,
+  <strong
+    >dados de saúde, opcionais escolhidos, local de embarque, tipo de tarifa, status de pagamento,
+    status do seguro.</strong
+  >
+  | | <strong>Uso</strong> |
+  <strong
+    >Consulta completa para operações que precisam de todas as informações em um único
+    documento.</strong
+  >
+  | | <strong>Formato de Saída</strong> | <strong>PDF e Excel.</strong> |
+</p>
+<p>
+  <strong>Ficha 6 — Ficha de Operação (com Dados da Equipe)</strong> |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Campos Incluídos</strong> |
+  <strong
+    >Nome e CPF de participantes e colaboradores, campo para assinatura, horário de início e fim da
+    atividade.</strong
+  >
+  | | <strong>Extras</strong> |
+  <strong
+    >Resumo de passageiros para o colaborador (nomes e alertas de saúde, sem dados sensíveis).
+    Inventário que ele deve retirar (ex: 12 kits de lanche, 18 capacetes).</strong
+  >
+  | | <strong>Uso</strong> |
+  <strong>Documento oficial da operação para controle interno e SGS.</strong> | |
+  <strong>Formato de Saída</strong> | <strong>PDF.</strong> |
+</p>
+<p>
+  <strong>Ficha 7 — Checklist de Inventário por Tarifa e Adicional</strong> |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Por Tipo de Tarifa</strong> |
+  <strong>Ex: 12 adultos → 12 capacetes G, 6 crianças → 6 capacetes P.</strong> | |
+  <strong>Por Item Adicional Escolhido</strong> |
+  <strong>Ex: 8 kits de foto, 5 transportes contratados.</strong> | | <strong>Uso</strong> |
+  <strong>Separação de materiais antes da atividade.</strong> | |
+  <strong>Formato de Saída</strong> | <strong>PDF e tela (visualização direta no painel).</strong> |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Comportamento esperado</em></th>
+      <th><em>• Todos os relatórios devem ser geráveis em PDF e Excel com um clique.</em></th>
+      <th>
+        <em
+          >• O PDF deve estar formatado para impressão A4, com cabeçalho da empresa, logo e data de
+          geração.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Os dados devem refletir o estado atual das reservas no momento da geração — não são
+          snapshots fixos.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Participantes com problema de saúde e menores de idade devem estar sempre destacados em
+          todos os documentos.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O acesso aos dados de saúde deve ser controlado por perfil de acesso (Módulo 14.1).</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.5 — Painel do Líder de Operação</strong>
+  Interface simplificada destinada ao Líder de Operação (Guia de Turismo) que foi escalado para
+  conduzir uma atividade. O objetivo é dar ao guia apenas as informações e ações necessárias para
+  executar o evento com segurança, sem expor dados administrativos ou financeiros da empresa.
+  <strong>Acesso e Controle</strong>
+  | <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Acesso Restrito por Escala</strong> |
+  <strong
+    >O Líder de Operação visualiza apenas os eventos para os quais foi escalado e confirmou
+    participação. Não vê eventos de outros guias.</strong
+  >
+  | | <strong>Aceite de Escala</strong> |
+  <strong
+    >O sistema envia notificação (e-mail/WhatsApp) quando o guia é escalado. O guia precisa aceitar
+    a escala pelo painel antes de ter acesso às informações do evento.</strong
+  >
+  | | <strong>Perfil de Acesso</strong> |
+  <strong
+    >Sem acesso a dados financeiros, configurações ou informações de outros eventos. Somente dados
+    operacionais do seu evento.</strong
+  >
+  |
+</p>
+<p>
+  <strong>Informações Disponíveis para o Líder</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Lista dos Participantes do Seu Evento</strong> |
+  <strong
+    >Nome, tipo de tarifa, item adicional, ponto de embarque e alertas de saúde. Sem dados
+    financeiros.</strong
+  >
+  | | <strong>Alertas de Saúde e Menores</strong> |
+  <strong
+    >Destaque visual para participantes com condições de saúde declaradas ou abaixo de 12
+    anos.</strong
+  >
+  | | <strong>Relatório de Pontos de Embarque</strong> |
+  <strong>Quais clientes escolheram quais locais de embarque.</strong> | |
+  <strong>Resumo de Inventário</strong> |
+  <strong>O que ele deve retirar para o evento (capacetes, coletes, kits).</strong> | |
+  <strong>Informações da Atividade</strong> |
+  <strong>Hora de início, local, duração prevista, observações da operação.</strong> |
+</p>
+<p>
+  <strong>Ações Disponíveis para o Líder</strong> | <strong>Campo / Elemento</strong> |
+  <strong>Descrição</strong> | | ------ | ------ | | <strong>Aceitar / Recusar Escala</strong> |
+  <strong>Confirmar ou rejeitar a alocação enviada pelo Gestor Operacional.</strong> | |
+  <strong>Realizar Check-in dos Participantes</strong> |
+  <strong>Via checkbox manual ou leitura de QR Code do voucher.</strong> | |
+  <strong>Mudar Status das Reservas</strong> |
+  <strong>Confirmar, marcar como Realizada ou Cancelar (com motivo obrigatório).</strong> | |
+  <strong>Cancelar uma Reserva</strong> |
+  <strong>Com seleção de motivo. Gera alerta para o Gestor Operacional.</strong> | |
+  <strong>Registrar Início e Fim da Atividade</strong> |
+  <strong>Log de horário real de início, término e nota sobre o andamento. Alimenta o SGS.</strong>
+  | | <strong>Registrar Ocorrência</strong> |
+  <strong
+    >Registrar qualquer incidente durante a execução com tipo, descrição e nível de
+    severidade.</strong
+  >
+  |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Comportamento esperado</em></th>
+      <th>
+        <em>• A interface deve ser otimizada para celular — o guia usa exclusivamente no campo.</em>
+      </th>
+      <th>
+        <em
+          >• Carregamento rápido mesmo com conexão instável (cache offline para dados
+          essenciais).</em
+        >
+      </th>
+      <th><em>• Notificação automática quando uma nova escala é atribuída ao guia.</em></th>
+      <th>
+        <em
+          >• O guia NÃO deve ver dados de pagamento, valores ou informações financeiras dos
+          participantes.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O cancelamento de reserva pelo guia deve gerar alerta imediato para o Gestor
+          Operacional.</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.6 — Máquina de Estados</strong>
+  Define formalmente todos os estados possíveis das Reservas e do Seguro, as transições permitidas
+  entre eles e as ações disponíveis em cada estado. Toda transição deve ser registrada em log com:
+  estado anterior, estado novo, usuário responsável, data/hora e motivo (quando aplicável).
+  <strong>Máquina de Estados — Reservas</strong>
+  | <strong>Status</strong> | <strong>Descrição</strong> | <strong>Ações Permitidas</strong> |
+  <strong>Transições Possíveis</strong> | | | | | | | | | | | | ------ | ------ | ------ | ------ |
+  ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | | 🔵
+  Rascunho | Carrinho iniciado na loja ou pedido em criação manual. Vaga reservada temporariamente.
+  | — Nenhuma ação operacional disponível | — Sistema expira automaticamente após prazo configurado
+  | → Aguardando Pagamento (checkout iniciado) | → Confirmada (pagamento imediato / venda manual) |
+  → Expirada (prazo vencido) | | | | | | | | | 🟡 Agendada | Pedido criado, pagamento ainda não
+  confirmado ou quantidade mínima de participantes não atingida (a depender de parâmetro definido no
+  produto) Vaga mantida por prazo configurado. | — Enviar link de pagamento | — Registrar pagamento
+  manual | — Cancelar | → Confirmada (pagamento confirmado) | → Cancelada (gestor cancela ou prazo
+  expira) | | | | | | | | | 🟢 Confirmada | Pagamento confirmado e/ou quantidade mínima de
+  participantes atingida. Vaga definitivamente reservada. Estado principal pré-evento. | — Check-in
+  | — Remarcar | — Cancelar (com motivo) | — Enviar voucher | — Contratar seguro | — Editar dados |
+  — Adicionar observação | — Chamar no WhatsApp / Ligar | — Ver detalhes completos | → Check-in
+  realizado (operador faz check-in) | → Cancelada (gestor/cliente cancela) | → Aguardando Pagamento
+  (se estorno parcial reabrir) | | 🔴 Check-in Realizado | Participante presente e confirmado no
+  local. Atividade em andamento. | — Desfazer check-in (erro de registro) | — Marcar como Realizada
+  | — Registrar ocorrência | — Contratar seguro | → Realizada (evento concluído) | → Confirmada
+  (desfazer check-in por erro) | | | | | | | | ✅ Realizada | Atividade concluída com sucesso.
+  Reserva encerrada. | — Visualizar histórico | — Download de comprovante | — Enviar pesquisa de
+  satisfação (automático) | — Gerar relatório | — Confirmar | → Confirmada (desfazer realizada por
+  erro) | | | | | | | | ❌ Cancelada | Reserva cancelada por qualquer parte. Motivo obrigatório.
+  Vaga devolvida ao estoque. | — Visualizar motivo | — Consultar política de reembolso | — Verificar
+  estorno | → Confirmada (desfazer cancelamento por erro) | | | | | | | | | | ⏱️ Expirada | Carrinho
+  não finalizado dentro do prazo. Vagas liberadas automaticamente. | — Visualizar histórico | —
+  (Nenhuma ação operacional) | Estado final — sem retorno | | | | | | | | | | | No Show | Reserva
+  não utilizada pois o participante não compareceu para o dia e horário adquiridos. | — Remarcar
+  reserva | — Confirmar reserva | — Cancelar reserva | — Confirmada | — Cancelada | — Agendada
+  (quando gerou algum débito por diferença de tarifa durante a remarcação) | | | | | | |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Regras gerais da máquina de estados das reservas:</em></th>
+      <th>
+        <em>• Nenhuma transição não listada na tabela acima deve ser permitida pelo sistema.</em>
+      </th>
+      <th>
+        <em
+          >• O sistema deve bloquear tentativas de transição inválidas com mensagem clara de
+          erro.</em
+        >
+      </th>
+      <th>
+        <em>• Toda transição gera entrada imutável no histórico da reserva (log de auditoria).</em>
+      </th>
+      <th>
+        <em
+          >• Transições automatizadas (expiração de carrinho, confirmação via webhook) são
+          registradas como autor &#39;Sistema&#39;.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O motivo de cancelamento é OBRIGATÓRIO em toda transição para o estado
+          &#39;Cancelada&#39;, sem exceção.</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>Diagrama de Transições das Reservas</strong> | <strong>De</strong> |
+  <strong>Para</strong> | <strong>Gatilho / Condição</strong> | | ------ | ------ | ------ | |
+  <strong>Rascunho</strong> | <strong>Aguardando Pagamento</strong> |
+  <strong>Cliente iniciou checkout mas não finalizou o pagamento.</strong> | |
+  <strong>Rascunho</strong> | <strong>Confirmada</strong> |
+  <strong
+    >Pagamento imediato confirmado (PIX instantâneo, venda manual com pagamento registrado)</strong
+  >
+  . | | <strong>Rascunho</strong> | <strong>Expirada</strong> |
+  <strong>Prazo de expiração do carrinho atingido sem ação do cliente.</strong> | |
+  <strong>Ag</strong> endada | <strong>Confirmada</strong> |
+  <strong
+    >Pagamento confirmado pelo gateway via webhook ou registrado manualmente. Ou quanti</strong
+  >
+  dade mínima foi atingida | | <strong>Ag</strong> endada | <strong>Cancelada</strong> |
+  <strong>Gestor cancela manualmente ou prazo máximo de pagamento expira.</strong> | |
+  <strong>Confirmada</strong> | <strong>Check-in Realizado</strong> |
+  <strong>Operador ou Líder realiza check-in via painel ou QR Code.</strong> | |
+  <strong>Confirmada</strong> | <strong>Cancelada</strong> |
+  <strong>Gestor ou cliente cancela (motivo obrigatório).</strong> | |
+  <strong>Check-in Realizado</strong> | <strong>Realizada</strong> |
+  <strong>Operador marca evento como concluído (em massa ou individual).</strong> | |
+  <strong>Check-in Realizado</strong> | <strong>Confirmada</strong> |
+  <strong>Desfazer check-in por erro de registro (somente operador com permissão).</strong> | |
+  <strong>Check-in Realizado</strong> | <strong>Cancelada</strong> |
+  <strong>Cancelamento durante a execução da atividade (motivo obrigatório).</strong> | | Realizada
+  | Confirmada | Quando foi marcada como realizada por engano. | | Cancelada | Confirmada | Quando
+  foi marcada como cancelada por engano |
+</p>
+<p>
+  <strong>Máquina de Estados — Seguro Aventura</strong> | <strong>Status</strong> |
+  <strong>Descrição</strong> | <strong>Ações Permitidas</strong> |
+  <strong>Transições Possíveis</strong> | | | | | ------ | ------ | ------ | ------ | ------ |
+  ------ | ------ | | 🔵 Não Contratado | Seguro ainda não foi solicitado para esta reserva. | —
+  Contratar seguro | — (disponível para reservas Confirmadas e Check-in) | → Pendente de Aprovação
+  (solicitação enviada à seguradora) | | | | 🟡 Pendente de Aprovação | Solicitação enviada à API da
+  seguradora. Aguardando retorno. | — Acompanhar status | — Cancelar solicitação | → Contratado
+  (seguradora aprova) | → Erro na Contratação (API falha ou recusa) | | | 🟢 Contratado | Apólice
+  gerada com sucesso. Número de apólice disponível. | — Visualizar apólice | — Download PDF da
+  apólice | — Cancelar seguro (se pedido cancelado) | → Cancelado (cancelamento do pedido principal)
+  | | | 🔴 Erro na Contratação | API da seguradora retornou erro ou recusou a contratação. | —
+  Tentar novamente | — Contratar manualmente fora do sistema | — Registrar observação | → Pendente
+  de Aprovação (nova tentativa) | → Não Contratado (desistir) | | ❌ Cancelado | Seguro cancelado
+  automaticamente ao cancelar o pedido, ou manualmente. | — Visualizar histórico da apólice
+  cancelada | Estado final | | | |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Regras da máquina de estados do seguro:</em></th>
+      <th>
+        <em
+          >• A contratação do seguro só é possível para reservas com status &#39;Confirmada&#39; ou
+          &#39;Check-in Realizado&#39;.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Erros de API da seguradora devem ser exibidos com mensagem clara e opção de nova
+          tentativa.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O cancelamento do seguro deve ser solicitado automaticamente ao cancelar a reserva
+          vinculada.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O número da apólice e o PDF do seguro ficam disponíveis no detalhe da reserva após a
+          contratação.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O sistema deve exibir ícone de status do seguro em todas as listagens de
+          participantes.</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.7 — Gestão de Equipe em Campo</strong> Funcionalidades adicionais de gestão da equipe
+  operacional, acessíveis pelo Gestor Operacional a partir do Mapa de Vagas e do Painel de Reservas.
+  | <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Alocação por Evento</strong> |
+  <strong
+    >Vincular colaboradores a eventos específicos no cadastro da agenda (3.3) ou diretamente pelo
+    Mapa de Vagas (3.1).</strong
+  >
+  | | <strong>Conflito de Horário da Equipe</strong> |
+  <strong
+    >O sistema bloqueia ou alerta quando o mesmo colaborador é escalado em dois eventos com horários
+    sobrepostos.</strong
+  >
+  | | <strong>Aceite de Escala pelo Colaborador</strong> |
+  <strong
+    >Após ser escalado, o colaborador recebe notificação e deve aceitar ou recusar a escala pelo
+    próprio painel.</strong
+  >
+  | | <strong>Status do Colaborador</strong> |
+  <strong>Disponível, Em Atividade ou Ausente — atualizado conforme os eventos do dia.</strong> | |
+  <strong>Histórico de Alocações por Colaborador</strong> |
+  <strong
+    >Registro de todos os eventos em que cada colaborador participou, com data, produto e
+    horário.</strong
+  >
+  | | <strong>Relatório de Atuação da Equipe</strong> |
+  <strong
+    >Por período selecionado: em quais atividades cada membro trabalhou, quantas horas, quantos
+    participantes atendeu. Útil para cálculo de pagamento de freelancers.</strong
+  >
+  | | <strong>Ranking de Colaboradores</strong> |
+  <strong
+    >Listagem dos colaboradores que mais trabalharam (mais eventos, mais participantes atendidos) em
+    um período.</strong
+  >
+  | | <strong>Ficha da Equipe para o Colaborador</strong> |
+  <strong
+    >Resumo pessoal gerado para cada colaborador: sua escala do dia, resumo de passageiros (sem
+    dados sensíveis), inventário que deve retirar.</strong
+  >
+  |
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><em>Comportamento esperado</em></th>
+      <th>
+        <em
+          >• A ficha da equipe deve ser acessível para download pelo próprio colaborador após
+          aceitar a escala.</em
+        >
+      </th>
+      <th>
+        <em
+          >• O histórico de alocações deve alimentar o Módulo 12 (Afiliados) quando o colaborador
+          for freelancer e receber por produção.</em
+        >
+      </th>
+      <th>
+        <em
+          >• Colaboradores sem equipe escalada geram alerta visual no Mapa de Vagas: ⚠️ Nenhuma
+          equipe alocada.</em
+        >
+      </th>
+    </tr>
+  </thead>
+</table>
+<p>
+  <strong>3.8 — Registro Operacional (Controle do Dia)</strong> Funcionalidade para registro das
+  informações operacionais ao longo do dia de atividade, criando um histórico rastreável que
+  alimenta o Sistema de Gestão da Segurança (SGS) e os relatórios de desempenho. |
+  <strong>Campo / Elemento</strong> | <strong>Descrição</strong> | | ------ | ------ | |
+  <strong>Registro de Início da Atividade</strong> |
+  <strong
+    >Operador ou Líder registra o horário de início real da atividade (pode diferir do horário
+    planejado).</strong
+  >
+  | | <strong>Registro de Término da Atividade</strong> |
+  <strong>Horário de encerramento real.</strong> | | <strong>Duração Real vs. Planejada</strong> |
+  <strong>Comparativo automático entre o horário planejado e o executado.</strong> | |
+  <strong>Nota / Checklist do Dia</strong> |
+  <strong
+    >Campo de texto livre e checklist configurável para registrar o que aconteceu durante a
+    atividade: condições climáticas, intercorrências, observações de segurança.</strong
+  >
+  | | <strong>Registro de Ocorrências e Incidentes</strong> |
+  <strong
+    >Tipo de ocorrência (Incidente de segurança, Reclamação, Problema de equipamento, Condição
+    climática, Outro), nível de severidade (Baixo/Médio/Alto), descrição e evidências
+    (fotos/arquivos).</strong
+  >
+  | | <strong>Disparo de Alerta para Alto Risco</strong> |
+  <strong
+    >Ocorrências de severidade Alta disparam notificação imediata por e-mail e WhatsApp para o
+    Gestor Operacional.</strong
+  >
+  |
+</p>
+<p>
+  <strong>Disponibilidade por Plano</strong> | <strong>Sub-módulo</strong> |
+  <strong>Começar</strong> | <strong>Quero Crescer</strong> | <strong>Voando Alto</strong> | |
+  ------ | ------ | ------ | ------ | | <strong>3.1 Mapa de Vagas</strong> | <strong>✘</strong> |
+  <strong>✔</strong> | <strong>✔</strong> | | <strong>3.1 Bloqueio de Vagas</strong> |
+  <strong>✘</strong> | <strong>✔</strong> | <strong>✔</strong> | |
+  <strong>3.1 Controle de Recurso Compartilhado</strong> | <strong>✘</strong> | <strong>✘</strong> |
+  <strong>✔</strong> | | <strong>3.2 Painel de Reservas</strong> | <strong>✘</strong> |
+  <strong>✔</strong> | <strong>✔</strong> | | <strong>3.2 QR Code Check-in</strong> |
+  <strong>✘</strong> | <strong>✔</strong> | <strong>✔</strong> | |
+  <strong>3.2 Aceite Digital de Contrato (visualização)</strong> | <strong>✘</strong> |
+  <strong>✔</strong> | <strong>✔</strong> | | <strong>3.2 Histórico Completo com IP</strong> |
+  <strong>✘</strong> | <strong>✔</strong> | <strong>✔</strong> | | <strong>3.3 Agenda</strong> |
+  <strong>✔</strong> | <strong>✔</strong> | <strong>✔</strong> | |
+  <strong>3.3 Integração Google Agenda</strong> | <strong>✘</strong> | <strong>✔</strong> |
+  <strong>✔</strong> | | <strong>3.3 Segmentação de Eventos por Grupo</strong> |
+  <strong>✘</strong> | <strong>✔</strong> | <strong>✔</strong> | |
+  <strong>3.4 Listas e Manifestos</strong> | <strong>✘</strong> | <strong>✔</strong> |
+  <strong>✔</strong> | | <strong>3.4 Ficha de Transporte (ANTT)</strong> | <strong>✘</strong> |
+  <strong>✔</strong> | <strong>✔</strong> | |
+  <strong>3.4 Ficha de Saúde (acesso restrito por perfil)</strong> | <strong>✘</strong> |
+  <strong>✔</strong> | <strong>✔</strong> | | <strong>3.5 Painel do Líder de Operação</strong> |
+  <strong>✘</strong> | <strong>✔</strong> | <strong>✔</strong> | |
+  <strong>3.6 Máquina de Estados Completa</strong> | <strong>✔</strong> | <strong>✔</strong> |
+  <strong>✔</strong> | | <strong>3.7 Relatório de Atuação da Equipe</strong> | <strong>✘</strong> |
+  <strong>✔</strong> | <strong>✔</strong> | | <strong>3.7 Ranking de Colaboradores</strong> |
+  <strong>✘</strong> | <strong>✘</strong> | <strong>✔</strong> | |
+  <strong>3.8 Registro Operacional / SGS</strong> | <strong>✘</strong> | <strong>✘</strong> |
+  <strong>✔</strong> |
+</p>
+<p>
+  <strong>Notas Gerais</strong> O módulo de Operações integra-se diretamente com Vendas/Central de
+  Vendas (2), CRM (4), Catálogo de Produtos (5), Comunicação (13), Seguro Aventura (9.5) e
+  Configurações Gerais (14.1). Toda alteração de capacidade no Mapa de Vagas que afete pedidos já
+  confirmados deve gerar alerta antes de ser confirmada. O Painel de Reservas e o Painel do Líder
+  devem ser otimizados para celular — a experiência mobile é prioritária para a equipe em campo. O
+  controle de acesso por perfil (Módulo 14.1) é fundamental: o Líder de Operação nunca deve ver
+  dados financeiros; o acesso a dados de saúde deve ser controlado por permissão específica.
+  Registros de ocorrências devem estar acessíveis no histórico do cliente no CRM (Módulo 4) quando
+  vinculados a um pedido. A Agenda é o ponto central de planejamento — todas as ferramentas que
+  dependem de datas e horários devem se alimentar dela. A integração com o Sistema de Gestão da
+  Segurança (SGS) é uma evolução futura estratégica — o Registro Operacional (3.8) já prepara a base
+  de dados necessária. Retrilhar © 2026 — Documento de Especificação Interno — Versão 3.0
+</p>

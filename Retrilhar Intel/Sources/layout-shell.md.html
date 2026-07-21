@@ -1,0 +1,109 @@
+<hr />
+<p>paths:</p>
+<ul>
+  <li>&quot;app/(dashboard)/layout.tsx&quot;</li>
+  <li>&quot;components/custom/sidebar-menu.tsx&quot;</li>
+  <li>&quot;components/custom/top-bar.tsx&quot;</li>
+  <li>&quot;components/custom/mobile-tab-bar.tsx&quot;</li>
+  <li>&quot;components/custom/mobile-menu-page.tsx&quot;</li>
+  <li>&quot;components/layout/**&quot;</li>
+  <li>&quot;app/globals.css&quot;</li>
+</ul>
+<hr />
+<h3>Layout Shell — Regras do Grid System</h3>
+<p>
+  O layout é 100% controlado por app/(dashboard)/layout.tsx usando CSS Grid. NÃO existe outro
+  arquivo que renderize sidebar, topbar ou tabbar.
+</p>
+<h4>Arquitetura</h4>
+<pre><code>app/(dashboard)/layout.tsx
+├── &lt;aside&gt; SidebarMenu       → grid-area: sidebar  (desktop only)
+├── &lt;header&gt; TopBar            → grid-area: topbar   (desktop only)
+├── &lt;main&gt; {children}          → grid-area: main     (sempre)
+└── &lt;nav&gt; MobileTabBar         → grid-area: tabbar   (mobile only)
+
+</code></pre>
+<h4>Grid CSS (definido em globals.css)</h4>
+<p>Desktop (≥768px):</p>
+<pre><code>grid-template-columns: auto 1fr
+grid-template-rows: auto 1fr
+grid-template-areas: &quot;sidebar topbar&quot; &quot;sidebar main&quot;
+
+</code></pre>
+<p>Mobile (&lt;768px):</p>
+<pre><code>grid-template-columns: 1fr
+grid-template-rows: 1fr auto
+grid-template-areas: &quot;main&quot; &quot;tabbar&quot;
+height: 100dvh (CRÍTICO para tabbar fixa)
+
+</code></pre>
+<h4>Classes CSS do Grid</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Classe</th>
+      <th>Função</th>
+      <th>Propriedades críticas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>.dashboard-grid</td>
+      <td>Container</td>
+      <td>display: grid; min-height: 100dvh</td>
+    </tr>
+    <tr>
+      <td>.grid-area-sidebar</td>
+      <td>Sidebar</td>
+      <td>grid-area: sidebar</td>
+    </tr>
+    <tr>
+      <td>.grid-area-topbar</td>
+      <td>TopBar</td>
+      <td>grid-area: topbar</td>
+    </tr>
+    <tr>
+      <td>.grid-area-main</td>
+      <td>Conteúdo</td>
+      <td>grid-area: main; overflow-y: auto; min-height: 0</td>
+    </tr>
+    <tr>
+      <td>.grid-area-tabbar</td>
+      <td>TabBar</td>
+      <td>grid-area: tabbar; flex-shrink: 0</td>
+    </tr>
+  </tbody>
+</table>
+<h4>NUNCA modifique</h4>
+<ul>
+  <li>O height: 100dvh e overflow: hidden do grid mobile — mantém tabbar fixa</li>
+  <li>O min-height: 0 do .grid-area-main — permite scroll correto</li>
+  <li>O flex-shrink: 0 do .grid-area-tabbar — mantém altura fixa</li>
+  <li>A visibilidade condicional (hidden md:block) do sidebar e topbar</li>
+</ul>
+<h4>CSS Variables do Layout</h4>
+<pre><code class="language-css">--sidebar-width-expanded: 200px;
+--sidebar-width-collapsed: 80px;
+--sidebar-margin: 24px;
+--topbar-height: 100px;
+--mobile-tabbar-height: 80px;
+--content-padding: 24px;
+
+</code></pre>
+<h4>Navegação</h4>
+<p>
+  Rotas são mapeadas no layout via objetos menuToRoute, afiliadoMenuToRoute, vendedorMenuToRoute.
+  Para adicionar nova rota:
+</p>
+<ol>
+  <li>Criar app/(dashboard)/[nome]/page.tsx</li>
+  <li>Adicionar entrada no menuToRoute correspondente no layout</li>
+  <li>Adicionar item no menu do perfil em environments/[perfil]/menu-config.ts</li>
+</ol>
+<h4>Perfis e menus</h4>
+<p>
+  Cada perfil tem seu menu definido em environments/[perfil]/menu-config.ts. O sidebar carrega o
+  menu dinamicamente via useProfile(). Perfis: gestor, comercial, operador, guia, financeiro,
+  afiliado, vendedor.
+</p>

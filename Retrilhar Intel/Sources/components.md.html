@@ -1,0 +1,95 @@
+<hr />
+<p>paths:</p>
+<ul>
+  <li>&quot;components/**/*.tsx&quot;</li>
+  <li>&quot;components/**/*.ts&quot;</li>
+</ul>
+<hr />
+<h3>Componentes — Padrões e Regras</h3>
+<h4>Hierarquia de componentes</h4>
+<pre><code>components/ui/          ← shadcn/ui (Radix). NÃO editar, NÃO criar novos aqui
+components/custom/      ← Componentes do projeto. Criar novos aqui
+components/layout/      ← PageContainer, MobilePageContainer, MobileTopBar
+components/pages/       ← Conteúdo extraído de páginas complexas
+components/dashboard/   ← Widgets do dashboard
+
+</code></pre>
+<h4>Antes de criar qualquer componente</h4>
+<ol>
+  <li>Verificar components/custom/index.ts — já existe?</li>
+  <li>Verificar components/ui/index.ts — o shadcn já tem isso?</li>
+  <li>Se existir, USAR o existente. Não recriar.</li>
+</ol>
+<h4>Componentes que JÁ EXISTEM (não recriar)</h4>
+<h5>Em components/custom/:</h5>
+<ul>
+  <li>DataTable — Tabela com TanStack Table, paginação, ordenação</li>
+  <li>FilterBar — Barra de filtros configurável</li>
+  <li>StatCard — Card de métrica com trend e progresso</li>
+  <li>PageHeader — Header de página com título, descrição, ações</li>
+  <li>EmptyState — Estado vazio com ícone Lucide e CTA</li>
+  <li>StatusBadge — Badge de status (sucesso, erro, alerta, info)</li>
+  <li>StatusBadgeGroup — Grupo de badges de alertas (saúde, contrato, pagamento)</li>
+  <li>WidgetPanel — Container de widget com header e CTA</li>
+  <li>PlaceholderSlot — Placeholder para funcionalidades futuras</li>
+  <li>Logo — Logo da Retrilhar (variantes: full, icon)</li>
+  <li>ProfileSwitcher — Alternador de perfil de usuário</li>
+</ul>
+<h5>Em components/custom/sidebar/:</h5>
+<ul>
+  <li>SidebarMenuItem — Item individual do menu</li>
+  <li>PinButton — Botão de fixar favorito</li>
+  <li>ActiveIndicator — Indicador visual de item ativo</li>
+</ul>
+<h5>Em components/custom/topbar/:</h5>
+<ul>
+  <li>GlobalSearch — Busca global da topbar</li>
+  <li>NotificationDropdown — Dropdown de notificações</li>
+</ul>
+<h4>Criando novo componente custom</h4>
+<pre><code class="language-tsx">// components/custom/meu-componente.tsx
+import { cn } from &quot;@/lib/utils&quot;;
+import { Icon } from &quot;@/components/ui/icon&quot;;
+
+// Exportar interface de props
+export interface MeuComponenteProps {
+  title: string;
+  className?: string;
+}
+
+/**
+ * Descrição breve do componente.
+ */
+export function MeuComponente({ title, className }: MeuComponenteProps) {
+  return (
+    &lt;div className={cn(&quot;bg-white rounded-[var(--radius-card-md)] p-4&quot;, className)}&gt;
+      &lt;Icon name=&quot;star&quot; size={20} className=&quot;text-brand-500&quot; /&gt;
+      &lt;span&gt;{title}&lt;/span&gt;
+    &lt;/div&gt;
+  );
+}
+
+</code></pre>
+<p>Depois de criar, adicionar no barrel export:</p>
+<pre><code class="language-tsx">// components/custom/index.ts
+export { MeuComponente } from &quot;./meu-componente&quot;;
+export type { MeuComponenteProps } from &quot;./meu-componente&quot;;
+
+</code></pre>
+<h4>Regras</h4>
+<ul>
+  <li>Sempre exportar componente como named export (não default)</li>
+  <li>Sempre exportar interface de props</li>
+  <li>Sempre aceitar className?: string para composição</li>
+  <li>Usar cn() de @/lib/utils para merge de classes</li>
+  <li>Ícones:</li>
+  <li>Cores: classes Tailwind do design system (nunca hex hardcoded)</li>
+  <li>Border radius: usar CSS variables (var(--radius-card-md), var(--radius-pill))</li>
+  <li>Shadows: usar CSS variables (var(--shadow-card), var(--shadow-elevated))</li>
+  <li>Adicionar JSDoc com descrição breve</li>
+</ul>
+<h4>NÃO editar components/ui/</h4>
+<p>
+  Os arquivos em components/ui/ são gerados pelo shadcn/ui CLI. Se precisar customizar visual, usar
+  CSS variables em globals.css ou sobrescrever via className.
+</p>

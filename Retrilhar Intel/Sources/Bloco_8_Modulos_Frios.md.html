@@ -1,0 +1,664 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 8 de N — Módulos &quot;frios&quot; agrupados (13 features)</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> Escopo (Módulos 5, 6, 9, 10, 11, 12, 13). Backlog atual do
+  projeto. <strong>Contexto do bloco:</strong> esses são os módulos <strong>pós-MVP</strong> ou
+  <strong>de prioridade mais baixa</strong> segundo o próprio escopo. Nenhum teve discussões
+  específicas em reuniões de alinhamento — o que reflete que são módulos secundários na estratégia
+  atual de finalização (Cristiano foi explícito em 25/03 sobre priorizar Vendas + Operacional +
+  Afiliado antes de seguir). <strong>Tratamento enxuto:</strong> tarefas com HISTÓRICO/OBSERVAÇÕES
+  mais curtos. Quando não há contexto real em reuniões, o bloco fica honesto sobre isso em vez de
+  inflar com suposições. Bloqueios relevantes estão preservados.
+  <strong>Ressalva macro:</strong> vários desses módulos têm sub-telas que podem cair na categoria
+  &quot;CRUD genérico sem Figma&quot; mencionada pelo Cristiano em 25/03. Vale reconfirmar caso a
+  caso quais precisam de design dedicado.
+</p>
+<hr />
+<h3>Parte A — Gestão de Contratos (4 features)</h3>
+<h4>Tarefa 1 — Lista de Contratos</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONTRATOS] Lista de Contratos
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Listagem de contratos recorrentes (assinaturas) com dashboard de
+  totalizadores, filtros e indicadores de atraso. Gestão de clientes que pagam mensal/anualmente em
+  vez de por venda avulsa. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §5 (Módulo 5 — Gestão de Contratos): dashboard resumido no topo com contratos ativos,
+    inativos, aniversariantes do mês, valor faturado no período.
+  </li>
+  <li>
+    Escopo: colunas — número, cliente, produto, valor, ciclo, próximo vencimento, status. Ícone
+    vermelho de atraso quando há faturas em aberto.
+  </li>
+  <li>
+    Escopo: filtros — produto, ciclo de cobrança (mensal, anual), busca por nome/CPF/número, status.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Módulo é distinto de Vendas: Vendas trata reservas pontuais; Contratos trata
+    assinaturas/recorrências.
+  </li>
+  <li>Exportar planilha é requisito padrão. <strong>BLOQUEIOS</strong> Nenhum documentado.</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Dashboard resumido no topo (ativos, inativos, aniversariantes, faturado)</li>
+  <li>[ ] Lista com número, cliente, produto, valor, ciclo, próximo vencimento, status</li>
+  <li>[ ] Ícone de atraso (vermelho) quando há faturas em aberto</li>
+  <li>[ ] Filtros (produto, ciclo, busca, status)</li>
+  <li>[ ] Exportar planilha</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum contrato cadastrado</li>
+  <li>[ ] [vazio] Filtros sem resultado</li>
+  <li>[ ] [loading] Skeleton da lista</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Detalhe do Contrato</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONTRATOS] Detalhe do Contrato
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Ficha completa do contrato com dados, faturas vinculadas, histórico de
+  cobranças e ações de gestão. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §5: dados do contrato (número, cliente, produto, valor, ciclo, data início, data fim),
+    lista de faturas (data vencimento, valor, status, link para boleto), histórico de cobranças.
+  </li>
+  <li>
+    Escopo: ações — gerar fatura avulsa, cancelar contrato, pausar, enviar lembrete.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Cancelamento de contrato tem implicações (contratos pagos antecipadamente precisam de política
+    de reembolso pro rata — não documentada no escopo). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Cancelamento com antecipação paga: política de reembolso pro rata? Aguardando cliente.</li>
+  <li>Pausa de contrato: limite de tempo máximo? Cobrança é estornada ou só suspensa?</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela de detalhe (dados do contrato, cliente, produto, valor, ciclo)</li>
+  <li>[ ] Lista de faturas vinculadas (data vencimento, valor, status, link para boleto)</li>
+  <li>[ ] Histórico de cobranças</li>
+  <li>[ ] Ação gerar fatura avulsa</li>
+  <li>[ ] Ação cancelar contrato</li>
+  <li>[ ] Ação pausar contrato</li>
+  <li>[ ] Ação enviar lembrete</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [destrutivo] Modal ao cancelar contrato (motivo + política de reembolso)</li>
+  <li>[ ] [destrutivo] Modal ao pausar contrato</li>
+  <li>[ ] [exceção] Cancelamento com faturas pagas antecipadamente</li>
+  <li>[ ] [exceção] Fatura com link de boleto expirado — regerar</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 3 — Central de Faturas</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONTRATOS] Central de Faturas
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Visão consolidada de faturas de todos os contratos, com foco em gestão
+  de inadimplência. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §5: dashboard com faturas em aberto (valor), faturas pagas no período, inadimplência.
+  </li>
+  <li>
+    Escopo: lista com filtros (status, período de vencimento, cliente). Ações em lote: enviar
+    lembrete, gerar segunda via. <strong>OBSERVAÇÕES</strong> Nenhuma particular.
+    <strong>BLOQUEIOS</strong> Nenhum documentado.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Dashboard de faturas (em aberto, pagas, inadimplência)</li>
+  <li>[ ] Lista de faturas com filtros (status, período, cliente)</li>
+  <li>[ ] Ações em lote (enviar lembrete, gerar segunda via)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Período sem faturas</li>
+  <li>[ ] [erro] Falha ao gerar segunda via</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 4 — Templates de Contrato</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [CONTRATOS] Templates de Contrato
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Biblioteca de templates de contrato com editor de texto rico e tags
+  dinâmicas. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §5: editor com nome do template, texto rico, painel lateral com tags disponíveis
+    ({nomecliente}, {cpf}, {produto}, {valor}, {data}), clique na tag insere no texto (não precisa
+    copiar/colar), preview do template preenchido. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Editor é o mesmo de Templates de Mensagem (Bloco 7, Tarefa 3) e Termos e Políticas (Bloco 7,
+    Tarefa 4). <strong>Reforçar componentização do editor de texto rico + tags</strong> — aparece em
+    3 módulos diferentes. <strong>BLOQUEIOS</strong> Nenhum documentado.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de templates salvos</li>
+  <li>[ ] Editor com texto rico + tags (componente compartilhado)</li>
+  <li>[ ] Painel lateral com tags disponíveis</li>
+  <li>[ ] Preview preenchido com dados de exemplo</li>
+  <li>[ ] Duplicar template</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum template cadastrado</li>
+  <li>[ ] [erro] Tag inválida — validação inline</li>
+  <li>[ ] [destrutivo] Exclusão bloqueada quando vinculado a contrato ativo</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h3>Parte B — Financeiro (5 features)</h3>
+<h4>Tarefa 5 — Dashboard Financeiro</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [FINANCEIRO] Dashboard <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Visão geral financeira da empresa com cards de resumo, gráficos e
+  alertas. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6 (Financeiro): cards — receita do período, despesas, saldo, contas a receber, contas a
+    pagar. Gráficos — fluxo de caixa (entradas × saídas), receita por categoria/produto. Alertas —
+    contas vencendo, inadimplência. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Módulo Financeiro aqui é distinto do Extrato de Contas (Vendas, Bloco 2) — Extrato é espelho
+    comercial para conferência; Dashboard Financeiro é visão contábil.
+    <strong>BLOQUEIOS</strong> Nenhum documentado.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Cards de resumo (receita, despesas, saldo, a receber, a pagar)</li>
+  <li>[ ] Gráfico de fluxo de caixa (entradas × saídas)</li>
+  <li>[ ] Gráfico de receita por categoria/produto</li>
+  <li>[ ] Alertas (contas vencendo, inadimplência)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Sem dados financeiros no período</li>
+  <li>[ ] [loading] Agregação para gráficos</li>
+  <li>[ ] [permissão] Perfil sem acesso financeiro — bloqueio</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 6 — Movimentações</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [FINANCEIRO] Movimentações <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Registro de lançamentos financeiros (entradas e saídas) com cadastro
+  manual e importação de extrato. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6: lista de lançamentos, filtros (período, tipo, categoria, conta, centro de custo).
+    Cadastro manual com data, descrição, valor, tipo, categoria, conta, centro de custo, anexo.
+    Importar extrato CSV/OFX. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Importação de OFX é padrão contábil brasileiro — parser precisa tratar variações por banco.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Mapeamento de categorias na importação de OFX: automático por IA/regras ou manual para cada
+    lançamento?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de lançamentos (entradas e saídas)</li>
+  <li>[ ] Filtros (período, tipo, categoria, conta, centro de custo)</li>
+  <li>
+    [ ] Cadastro de lançamento manual (data, descrição, valor, tipo, categoria, conta, CC, anexo)
+  </li>
+  <li>[ ] Importar extrato (CSV/OFX)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] Falha no parser do OFX (formato inválido ou variação de banco)</li>
+  <li>[ ] [exceção] Lançamento duplicado na importação — deduplicação</li>
+  <li>[ ] [erro] Anexo com formato não suportado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 7 — Fluxo de Caixa</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [FINANCEIRO] Fluxo de Caixa <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Visão temporal do saldo da empresa com projeção futura baseada em contas
+  a receber e a pagar. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6: visão por período (dia, semana, mês), projeção futura baseada em contas a
+    pagar/receber, gráfico de linha com saldo projetado. <strong>OBSERVAÇÕES</strong> Nenhuma
+    particular. <strong>BLOQUEIOS</strong> Nenhum documentado.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Visão por período (dia, semana, mês)</li>
+  <li>[ ] Projeção futura baseada em contas a pagar/receber</li>
+  <li>[ ] Gráfico de linha com saldo projetado</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Sem dados para projeção</li>
+  <li>[ ] [loading] Cálculo de projeção</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 8 — Notas Fiscais</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [FINANCEIRO] Notas Fiscais <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Gestão de emissão e controle de notas fiscais vinculadas a vendas.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §6: lista de notas emitidas, filtros (período, status, cliente). Emitir nota — selecionar
+    venda, dados fiscais, template. Templates de nota com configuração dos dados padrão.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Integração com API de emissão de NF-e (ver Bloco 7, Tarefa 5) — fluxo pode exigir tratamento
+    dedicado por complexidade fiscal (CFOP, NCM, SEFAZ). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Provider de NF-e definitivo — afeta estrutura do cadastro fiscal e dos templates.</li>
+  <li>
+    NF-e cancelada vs. NF-e emitida erroneamente: fluxo de correção (carta de correção vs.
+    cancelamento formal).
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de notas emitidas</li>
+  <li>[ ] Filtros (período, status, cliente)</li>
+  <li>[ ] Emitir nota (selecionar venda, dados fiscais, template)</li>
+  <li>[ ] Templates de nota com dados padrão</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] Falha na emissão (rejeição SEFAZ)</li>
+  <li>[ ] [exceção] Cancelamento de NF-e (prazo legal, carta de correção)</li>
+  <li>[ ] [exceção] Venda cancelada com NF-e emitida — fluxo de cancelamento fiscal</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 9 — Categorias e Centro de Custo</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [FINANCEIRO] Categorias e Centro de Custo
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> CRUDs simples de categorias de receita/despesa e centros de custo.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>Escopo §6 marca prioridade Baixa.</li>
+  <li>
+    Escopo: &quot;CRUD simples de categorias de receita/despesa&quot; e &quot;CRUD simples de
+    centros de custo&quot;. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    <strong>Candidato direto à abordagem &quot;CRUD genérico sem Figma&quot;</strong> do Cristiano
+    (25/03). O próprio escopo usa a expressão &quot;CRUD simples&quot; duas vezes.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Reconfirmar com o cliente: CRUD genérico sem Figma ou design padrão?</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] CRUD de categorias de receita/despesa</li>
+  <li>[ ] CRUD de centros de custo</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [destrutivo] Exclusão bloqueada quando há lançamentos vinculados</li>
+  <li>[ ] [vazio] Nenhuma categoria/centro cadastrado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h3>Parte C — Módulos Complementares (5 features)</h3>
+<h4>Tarefa 10 — Dashboard Dinâmico (Inteligência de Negócios)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [BI] Dashboard Dinâmico <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Painel de BI com widgets configuráveis pelo usuário — drill-down,
+  comparação de períodos, exportação. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §Módulo 3 (Dashboard) descreve visão geral que cruza Vendas, Operações, Financeiro.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Este módulo pode colidir conceitualmente com Início do Gestor (Bloco 5, Tarefa 5) — Início é
+    dashboard de operação diária; BI é análise profunda. Vale diferenciar claramente em design.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Qual é a fronteira entre Início (Bloco 5) e BI dinâmico (este)? Início já tem cards estatísticos
+    e widgets — qual é o diferencial do BI?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Painel com widgets configuráveis</li>
+  <li>[ ] Drill-down por widget</li>
+  <li>[ ] Comparação de períodos</li>
+  <li>[ ] Exportação em PDF/Excel</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Dashboard sem widgets configurados</li>
+  <li>[ ] [loading] Widgets carregando independentemente</li>
+  <li>[ ] [erro] Falha em widget isolado (não bloqueia dashboard)</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 11 — Marketing (Relatórios e Campanhas)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [MARKETING] Relatórios e Campanhas
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Visão de performance de marketing — relatórios por canal, campanhas com
+  histórico, ROI. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>Escopo §10 cobre relatórios de afiliados, cupons e análises de marketing.</li>
+  <li>
+    Boa parte de Marketing já está coberto em Afiliados (Bloco 3) e Cupons (Bloco 2, Tarefa 6). O
+    que sobra aqui é a camada analítica: performance por canal, ROI de campanhas, histórico
+    comparativo. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Prioridade baixa porque depende de volume de dados para fazer sentido.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Escopo exato desta tarefa vs. o que já está em Afiliados/Cupons — definir sem duplicar.</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Relatórios por canal de marketing</li>
+  <li>[ ] Histórico de campanhas</li>
+  <li>[ ] ROI por campanha</li>
+  <li>[ ] Exportação</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Sem dados no período</li>
+  <li>[ ] [loading] Agregação para relatórios</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 12 — Configurações da Loja (E-commerce)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [LOJA] Configurações da Loja <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Configuração da loja pública (e-commerce do cliente) — identidade
+  visual, informações, SEO, ativação. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §9: 4 abas — Identidade Visual (logo, favicon, cores primária/secundária, preview),
+    Informações (nome, descrição, WhatsApp, redes sociais), SEO (título, meta description,
+    palavras-chave), Avançado (ativar/desativar loja, limpar cache, Google Analytics, Pixel do
+    Facebook).
+  </li>
+  <li>
+    Escopo explícito: &quot;Configuração de campos, não builder visual (equilibrar intuitividade com
+    facilidade de desenvolvimento)&quot;. <strong>Decisão importante</strong> — não é para fazer um
+    Webflow/Wix, são campos de configuração. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Preview em tempo real da Identidade Visual requer integração com o e-commerce — pode ser
+    renderização em iframe ou geração de PNG.
+  </li>
+  <li>
+    Código do Google Analytics e Pixel do Facebook já aparecem como integrações (Bloco 7, Tarefa 5)
+    — revisar se o gestor insere aqui ou lá. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Preview em tempo real da Identidade Visual: iframe do e-commerce, mockup estático, ou
+    renderização dedicada?
+  </li>
+  <li>Duplicação Analytics/Pixel: insere aqui ou em Integrações (Bloco 7)?</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Aba Identidade Visual (logo, favicon, cores, preview)</li>
+  <li>[ ] Aba Informações (nome, descrição, WhatsApp, redes sociais)</li>
+  <li>[ ] Aba SEO (título, meta description, palavras-chave)</li>
+  <li>[ ] Aba Avançado (ativar/desativar loja, limpar cache, GA, Pixel FB)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [erro] Upload de logo/favicon inválido (formato, tamanho)</li>
+  <li>[ ] [destrutivo] Desativar loja — aviso de impacto em vendas ativas</li>
+  <li>[ ] [exceção] Limpar cache — confirmação</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 13 — Fornecedores (Marketplace)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [MARKETPLACE] Fornecedores <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Gestão de empresas parceiras cujos produtos podem ser revendidos pela
+  loja atual. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §11: lista de empresas parceiras, status (ativo, pendente de aprovação, inativo),
+    produtos do fornecedor disponíveis para venda, comissão por produto/fornecedor.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Marketplace é distinto de Sala de Negócios (B2B) — Marketplace trata produtos revendidos; Sala
+    de Negócios é relação institucional entre empresas.
+  </li>
+  <li>
+    Pós-MVP. Módulo pode virar &quot;fronteira&quot; com outro sistema futuro (Cristiano mencionou
+    em 25/03 &quot;sala de negócios talvez seja outro sistema&quot;). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Fluxo de aprovação de fornecedor: automático por critérios ou manual pelo gestor?</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Lista de empresas parceiras</li>
+  <li>[ ] Status (ativo, pendente, inativo)</li>
+  <li>[ ] Produtos do fornecedor disponíveis</li>
+  <li>[ ] Comissão por produto/fornecedor</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Nenhum fornecedor cadastrado</li>
+  <li>[ ] [exceção] Fornecedor inativo com produtos já vendidos — mantém histórico</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 14 — Sala de Negócios (B2B)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [SALA-DE-NEGÓCIOS] Sala de Negócios B2B
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> baixa · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Módulo de relacionamento B2B — duas visões (empresas que me vendem /
+  empresas que eu vendo), perfil de empresa, fluxo de convite/solicitação de parceria, gestão de
+  comissões entre empresas. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Escopo §12: &quot;Fluxo ainda não definido pelo cliente, será detalhado durante o projeto&quot;
+    — <strong>o próprio escopo reconhece que o módulo está indefinido</strong> .
+  </li>
+  <li>
+    Escopo define estrutura geral: &quot;Empresas que me vendem&quot; (lista de parceiros que
+    revendem meus produtos, com vendas e comissões) e &quot;Empresas que eu vendo&quot; (lista de
+    parceiros cujos produtos eu revendo). Perfil da empresa, fluxo de convite, gestão de comissões.
+  </li>
+  <li>
+    Reunião 25/03 (Cristiano, 55:30):
+    <em
+      >&quot;Lá no futuro, a gente tem projeto que é a sala de negócios, que é que ele entre nessa
+      sala de negócios, que talvez seja outro sistema, e ele veja todas as empresas que têm
+      interesse em ter afiliados, e aí ele vai lá e submete, e aí a empresa pode aprovar, mas isso
+      não é de agora&quot;</em
+    >
+    . O Cristiano falou explicitamente que <strong>isso não é de agora</strong> .
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Módulo marcado como Alta no escopo, mas
+    <strong>Cristiano explicitamente despriorizou em 25/03</strong> . Reflete tensão entre escopo
+    formal e priorização real.
+  </li>
+  <li>Pode virar sistema separado no futuro (fala do Cristiano). <strong>BLOQUEIOS</strong></li>
+  <li>
+    <strong>Módulo inteiro</strong> — escopo reconhece indefinição, Cristiano adiou explicitamente.
+    Antes de priorizar, confirmar: entra no escopo atual ou fica para depois?
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Visão &quot;Empresas que me vendem&quot; (parceiros que revendem meus produtos)</li>
+  <li>[ ] Visão &quot;Empresas que eu vendo&quot; (parceiros cujos produtos eu revendo)</li>
+  <li>[ ] Perfil da empresa (dados, produtos, condições comerciais)</li>
+  <li>[ ] Fluxo de convite/solicitação de parceria</li>
+  <li>[ ] Gestão de comissões entre empresas</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Sem parcerias ativas</li>
+  <li>[ ] [exceção] Convite recusado — histórico preservado</li>
+  <li>[ ] [exceção] Parceria encerrada com comissões pendentes</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 8</h4>
+<p>
+  <strong>Total de tarefas:</strong> 14 (4 Contratos + 5 Financeiro + 5 Complementares)
+  <strong>Por status sugerido:</strong>
+</p>
+<ul>
+  <li>
+    <strong>BACKLOG (14):</strong> todas. Nenhuma em design ativo. Vários candidatos a &quot;CRUD
+    genérico sem Figma&quot;.
+    <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>Política de reembolso pro rata em cancelamento de contrato com antecipação paga.</li>
+  <li>Limite máximo de pausa de contrato.</li>
+  <li>Mapeamento automático vs. manual de categorias na importação de OFX.</li>
+  <li>Provider de NF-e definitivo e fluxo de correção (carta vs. cancelamento).</li>
+  <li>Categorias e Centros de Custo: CRUD genérico sem Figma ou design padrão?</li>
+  <li>Fronteira entre Início (Bloco 5) e BI Dinâmico — qual o diferencial?</li>
+  <li>Escopo de Marketing (Tarefa 11) vs. o que já está em Afiliados e Cupons.</li>
+  <li>
+    Preview em tempo real da Identidade Visual (Loja): iframe, mockup, ou renderização dedicada?
+  </li>
+  <li>Google Analytics e Pixel Facebook: em Loja (§9) ou em Integrações (Bloco 7)?</li>
+  <li>Fluxo de aprovação de fornecedor: automático ou manual?</li>
+  <li>
+    <strong>Sala de Negócios: entra no escopo atual ou fica para depois?</strong> (Cristiano
+    despriorizou em 25/03, escopo reconhece indefinição.) <strong>Observações transversais:</strong>
+  </li>
+</ol>
+<ul>
+  <li>
+    <strong>Várias tarefas têm HISTÓRICO curto</strong> — isso é honesto: esses módulos não foram
+    discutidos em reuniões. Inflar com suposições pioraria o resultado.
+  </li>
+  <li>
+    <strong>Candidatos fortes ao &quot;CRUD genérico sem Figma&quot;</strong> : Categorias e Centros
+    de Custo (§6 usa essa expressão), Cadastro de Afiliado/Cupom (se não entraram em outros blocos),
+    CRUDs de fornecedor.
+  </li>
+  <li>
+    <strong>Editor de texto rico + tags</strong> aparece em mais um lugar aqui: Templates de
+    Contrato (Tarefa 4). Total de ocorrências: Templates de Mensagem (Bloco 7), Termos (Bloco 7),
+    Templates de Contrato (aqui).
+    <strong>Justifica fortemente construir componente único reutilizável.</strong>
+  </li>
+  <li>
+    <strong>Sala de Negócios é o caso mais claro de desalinhamento</strong> entre escopo formal
+    (Alta) e priorização real (Cristiano adiou explicitamente). Documentar isso evita surpresa
+    depois.
+  </li>
+</ul>
+<hr />
+<p>
+  <strong>Fim do Bloco 8.</strong> Próximo e último bloco: Spin-offs (Painel Operador/Guia) +
+  Sistema de Ajuda (Ajuda Contextual + Tour Guiado) — 3 features.
+</p>

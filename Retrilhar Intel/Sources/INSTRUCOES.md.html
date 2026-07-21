@@ -1,0 +1,77 @@
+<h3>Como aplicar no projeto</h3>
+<h4>Passo 1: Substituir o CLAUDE.md</h4>
+<p>Copie o CLAUDE.md daqui para a <strong>raiz</strong> do projeto, substituindo o atual.</p>
+<h4>Passo 2: Criar a pasta de regras</h4>
+<p>Crie a pasta .claude/rules/ na raiz do projeto e copie os 5 arquivos:</p>
+<pre><code>retrilhar-next/
+├── CLAUDE.md                          ← SUBSTITUIR
+└── .claude/
+    ├── settings.local.json            ← JÁ EXISTE, não mexer
+    └── rules/                         ← CRIAR PASTA
+        ├── icons.md                   ← COPIAR
+        ├── layout-shell.md            ← COPIAR
+        ├── pages.md                   ← COPIAR
+        ├── components.md              ← COPIAR
+        └── styling.md                 ← COPIAR
+
+</code></pre>
+<h4>Passo 3: Prompt para o Claude Code</h4>
+<p>Depois de copiar os arquivos, rode este prompt no Claude Code:</p>
+<pre><code>Leia o CLAUDE.md e todos os arquivos em .claude/rules/ para confirmar que entendeu a arquitetura. 
+Liste resumidamente as 10 regras &quot;NUNCA&quot; e confirme que vai seguir.
+
+</code></pre>
+<p>Isso garante que ele processou tudo antes de começar a gerar código.</p>
+<h4>O que mudou vs o CLAUDE.md anterior</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Aspecto</th>
+      <th>Antes</th>
+      <th>Agora</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tamanho do CLAUDE.md</td>
+      <td>~180 linhas (tudo junto)</td>
+      <td>67 linhas (enxuto)</td>
+    </tr>
+    <tr>
+      <td>Path-scoped rules</td>
+      <td>Não existiam</td>
+      <td>5 arquivos específicos</td>
+    </tr>
+    <tr>
+      <td>Stack declarada</td>
+      <td>Next.js 14, React 18 (ERRADO)</td>
+      <td>Next.js 16, React 19 (correto)</td>
+    </tr>
+    <tr>
+      <td>Anti-patterns</td>
+      <td>8 regras genéricas</td>
+      <td>10 regras concretas com exemplos</td>
+    </tr>
+    <tr>
+      <td>Regras de ícones</td>
+      <td>Não mencionava HugeIcons</td>
+      <td>Explica os 2 sistemas (HugeIcons + Lucide)</td>
+    </tr>
+    <tr>
+      <td>Exemplos de código</td>
+      <td>Template genérico</td>
+      <td>Templates com componentes reais do projeto</td>
+    </tr>
+    <tr>
+      <td>Cores</td>
+      <td>&quot;Use CSS variables&quot; (vago)</td>
+      <td>Tabela completa de escalas + exemplos ✅/❌</td>
+    </tr>
+    <tr>
+      <td>font-weight</td>
+      <td>Não mencionava</td>
+      <td>Documenta o override global (400 para tudo)</td>
+    </tr>
+  </tbody>
+</table>

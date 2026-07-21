@@ -1,0 +1,126 @@
+<hr />
+<p>paths:</p>
+<ul>
+  <li>&quot;**/*.tsx&quot;</li>
+  <li>&quot;**/*.css&quot;</li>
+</ul>
+<hr />
+<h3>Styling — Cores, Espaçamentos e Padrões CSS</h3>
+<h4>Cores — Sempre usar classes Tailwind ou CSS variables</h4>
+<p>O design system define escalas completas em globals.css. Usar assim:</p>
+<pre><code class="language-tsx">// ✅ CORRETO — Classes Tailwind do design system
+className=&quot;bg-brand-500 text-brand-50&quot;
+className=&quot;bg-error-50 text-error-700&quot;
+className=&quot;bg-success-50 text-success-700&quot;
+className=&quot;bg-warning-50 text-warning-700&quot;
+className=&quot;text-slate-500 bg-slate-50&quot;
+
+// ✅ CORRETO — CSS variables quando Tailwind não tem a classe
+className=&quot;bg-[var(--brand-500)]&quot;
+className=&quot;border-[var(--border-color-card)]&quot;
+
+// ❌ PROIBIDO — Hex hardcoded
+className=&quot;bg-[#0B5ED7]&quot;    // Use bg-brand-500
+className=&quot;text-[#F04438]&quot;  // Use text-error-500
+className=&quot;bg-[#f5f5f5]&quot;    // Use bg-slate-100 ou var(--border-color-card)
+
+</code></pre>
+<h4>Escalas de cores disponíveis</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Escala</th>
+      <th>Classe Tailwind</th>
+      <th>Uso</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Brand (azul)</td>
+      <td>brand-25 a brand-950</td>
+      <td>Cor primária, links, ações</td>
+    </tr>
+    <tr>
+      <td>Error (vermelho)</td>
+      <td>error-25 a error-950</td>
+      <td>Erros, destrutivo</td>
+    </tr>
+    <tr>
+      <td>Warning (laranja)</td>
+      <td>warning-25 a warning-950</td>
+      <td>Alertas, atenção</td>
+    </tr>
+    <tr>
+      <td>Success (verde)</td>
+      <td>success-25 a success-950</td>
+      <td>Sucesso, confirmação</td>
+    </tr>
+    <tr>
+      <td>Slate</td>
+      <td>slate-50 a slate-900</td>
+      <td>Textos, backgrounds neutros</td>
+    </tr>
+  </tbody>
+</table>
+<h4>Border Radius — CSS variables</h4>
+<pre><code class="language-tsx">className=&quot;rounded-[var(--radius-card-lg)]&quot;    // 24px — Cards grandes
+className=&quot;rounded-[var(--radius-card-md)]&quot;    // 16px — Cards médios, dropdowns
+className=&quot;rounded-[var(--radius-card-sm)]&quot;    // 12px — Cards pequenos
+className=&quot;rounded-[var(--radius-menu-item)]&quot;  // 12px — Menu items
+className=&quot;rounded-[var(--radius-pill)]&quot;       // 100px — Pills, badges redondos
+className=&quot;rounded-[var(--radius-button)]&quot;     // 12px — Botões
+className=&quot;rounded-[var(--radius-input)]&quot;      // 12px — Inputs
+className=&quot;rounded-[var(--radius-badge)]&quot;      // 8px — Badges
+
+</code></pre>
+<h4>Shadows — CSS variables</h4>
+<pre><code class="language-tsx">className=&quot;shadow-[var(--shadow-card)]&quot;        // Sombra padrão de card
+className=&quot;shadow-[var(--shadow-card-hover)]&quot;  // Hover de card
+className=&quot;shadow-[var(--shadow-elevated)]&quot;    // Elementos elevados
+className=&quot;shadow-[var(--shadow-dropdown)]&quot;    // Dropdowns, popovers
+
+</code></pre>
+<h4>Borders — CSS variables</h4>
+<pre><code class="language-tsx">className=&quot;border-[1.5px] border-[var(--border-color-card)]&quot;    // Borda de card
+className=&quot;border-[1.5px] border-[var(--border-color-subtle)]&quot;  // Borda sutil
+
+</code></pre>
+<h4>Classes utilitárias do projeto (globals.css)</h4>
+<pre><code class="language-tsx">className=&quot;card-metric&quot;           // Card de métrica completo
+className=&quot;badge-success&quot;         // Badge verde
+className=&quot;badge-error&quot;           // Badge vermelho
+className=&quot;badge-warning&quot;         // Badge laranja
+className=&quot;icon-container-metric&quot; // Container de ícone em métrica
+className=&quot;dropdown-elevated&quot;     // Dropdown/popover
+className=&quot;stats-grid&quot;            // Grid de 4 stats (2x2 mobile, 4 col desktop)
+className=&quot;text-metric-value&quot;     // Valor grande de métrica
+className=&quot;text-metric-label&quot;     // Label pequeno
+className=&quot;scrollbar-thin&quot;        // Scrollbar customizado fino
+
+</code></pre>
+<h4>Font Weight</h4>
+<p>O projeto usa font-weight: 400 para TUDO. Existe um override global:</p>
+<pre><code class="language-css">body .font-semibold, body .font-bold {
+  font-weight: 400 !important;
+}
+
+</code></pre>
+<p>NUNCA use font-semibold ou font-bold esperando que fiquem em negrito. Use font-normal sempre.</p>
+<h4>Espaçamentos</h4>
+<p>
+  Usar escala Tailwind padrão (base 4px): gap-1 (4px), gap-2 (8px), gap-3 (12px), gap-4 (16px),
+  gap-6 (24px), etc.
+</p>
+<h4>Inline styles (style={{}})</h4>
+<p>PERMITIDO apenas para:</p>
+<ul>
+  <li>Configuração de Chart.js (cores, dimensões de gráficos)</li>
+  <li>Valores dinâmicos calculados em runtime (ex: width: ${percent}%)</li>
+  <li>CSS transforms dinâmicos PROIBIDO para:</li>
+  <li>Cores estáticas</li>
+  <li>Padding, margin, border</li>
+  <li>Font sizes</li>
+  <li>Background colors</li>
+  <li>Qualquer coisa que Tailwind ou CSS variables cubram</li>
+</ul>

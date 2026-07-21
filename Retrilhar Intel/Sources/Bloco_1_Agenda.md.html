@@ -1,0 +1,971 @@
+<h3>Retrilhar — Backlog ClickUp</h3>
+<h4>Bloco 1 de N — Módulo 3: Agenda / Operação</h4>
+<p>
+  <strong>Fontes cruzadas:</strong> RPP002 Painel Operacional v3.0 (spec canônica, Katiely),
+  reuniões 25/03, 01/04, 08/04 e 15/04, testes de usabilidade #3, #4 e #5, backlog atual do projeto.
+  <strong>Padrão de cada tarefa:</strong>
+</p>
+<ul>
+  <li><strong>Título:</strong> [RETRILHAR] [MÓDULO] Fluxo</li>
+  <li>
+    <strong>Status:</strong> coluna do kanban (BACKLOG, BK PRIORIDADE, DESIGN, DESENVOLVIMENTO,
+    REVISÃO, CONCLUÍDO, IMPEDIMENTO)
+  </li>
+  <li>
+    <strong>Tags:</strong> prioridade (critica / alta / media / baixa) + tipo (fluxo / ajuste /
+    componente / bug-design)
+  </li>
+  <li>
+    <strong>Descrição:</strong> OBJETIVO, HISTÓRICO DE DECISÕES E MUDANÇAS, OBSERVAÇÕES, BLOQUEIOS —
+    preenchidos só quando há conteúdo documentado
+  </li>
+  <li>
+    <strong>Caminho principal:</strong> fluxo happy path, sempre com item final &quot;Adaptar fluxo
+    para mobile&quot;
+  </li>
+  <li>
+    <strong>Edge cases:</strong> cenários alternativos, sempre com item final &quot;Adaptar edge
+    cases para mobile&quot; <strong>Convenção de prefixos nos edge cases:</strong> [erro] falhas de
+    rede/servidor · [exceção] regras de negócio · [permissão] perfis sem acesso · [vazio] estados
+    sem dados · [loading] carregamentos · [destrutivo] confirmações de exclusão Itens já concluídos
+    em web aparecem marcados [x] com o tag [web].
+  </li>
+</ul>
+<hr />
+<h4>Tarefa 1 — Calendário</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Calendário — Visualizações mês, semana, dia, lista
+  <strong>Status:</strong> DESIGN <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Interface de calendário que centraliza o planejamento. Responde
+  &quot;quando acontecem as atividades?&quot; — diferente do Painel de Reservas (execução), a Agenda
+  é sobre organização temporal. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    RPP002 §3.3 define 5 visualizações: Diária, Semanal, Mensal, Lista (inventário cronológico) e
+    Por Produto (filtro).
+  </li>
+  <li>
+    Visualização Lista: eventos com data específica aparecem completos; eventos &quot;sob
+    demanda&quot; aparecem apenas nos dias com reservas.
+  </li>
+  <li>
+    Testes de usabilidade #3 e #4: visualização de vagas na agenda foi considerada clara e fácil,
+    com esquema de cores ajudando a identificar atividades lotadas.
+  </li>
+  <li>
+    Teste #5: agenda considerada &quot;confortável e visualmente interessante&quot; para encontrar
+    atividade. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Agenda é o ponto central de planejamento — todas as ferramentas que dependem de data se
+    alimentam dela.
+  </li>
+  <li>Arrastar e soltar (visões semana/dia) é de baixa prioridade e não bloqueia usabilidade.</li>
+  <li>
+    Sincronização com Google Agenda depende da integração 9.3 (disponível a partir do plano Quero
+    Crescer). <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Visualização Mês [web]</li>
+  <li>[x] Visualização Semana [web]</li>
+  <li>[x] Visualização Dia [web]</li>
+  <li>[x] Feriados nacionais e datas especiais visíveis [web]</li>
+  <li>[ ] Visualização Lista (inventário cronológico)</li>
+  <li>[ ] Visualização por Produto (filtro)</li>
+  <li>[ ] Navegação entre períodos (setas anterior/próximo)</li>
+  <li>[ ] Seletor rápido de data no header</li>
+  <li>[ ] Indicação visual de atraso em atividades do dia</li>
+  <li>[ ] Arrastar e soltar evento (semana e dia) — baixa prioridade</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Período sem atividades</li>
+  <li>[ ] [vazio] Filtro por produto sem resultados</li>
+  <li>[ ] [loading] Skeleton do calendário durante carregamento</li>
+  <li>[ ] [erro] Falha ao carregar eventos — CTA de retry</li>
+  <li>
+    [ ] [exceção] Revisão de tags de status (Aguardando / Em andamento / Concluído / Cancelado)
+  </li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 2 — Nova Atividade</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Nova Atividade <strong>Status:</strong> BK
+  PRIORIDADE <strong>Tags:</strong> critica · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Fluxo de criação de evento na agenda. É a entrada do fluxo operacional —
+  sem atividade cadastrada, nada acontece no Painel de Reservas, Mapa de Vagas ou Listas.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Cliente (reunião 15/04): Nova Atividade está explicitamente no inventário prioritário do Painel
+    de Operações, junto com Mapa de Vagas e Listas.
+  </li>
+  <li>
+    RPP002 §3.3 define campos obrigatórios: título, data/hora início, data/hora término. Opcionais
+    relevantes: produto vinculado (herda capacidade), capacidade mín/máx, equipe, recorrência,
+    múltiplos horários, visibilidade (interno/público), segmentação de grupo, link WhatsApp.
+  </li>
+  <li>
+    Recorrência suporta diário, semanal, mensal e personalizado — permite selecionar múltiplas datas
+    de uma vez (ex: todos os sábados do mês).
+  </li>
+  <li>
+    Ao criar evento público vinculado a produto, vagas ficam automaticamente disponíveis na loja
+    online.
+  </li>
+  <li>
+    Sistema deve alertar sobre conflitos de horário ao criar ou mover eventos.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Link do grupo WhatsApp é incluído automaticamente no e-mail de confirmação de reserva ao
+    cliente.
+  </li>
+  <li>
+    Segmentação de grupo (assinantes, corporativos, parceiros) só aparece quando Visibilidade =
+    Público.
+  </li>
+  <li>Segmentação por grupo disponível apenas no plano Quero Crescer em diante.</li>
+  <li>
+    Card de validações em tempo real evita descobrir erros só no submit.
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela de Nova Atividade</li>
+  <li>[ ] Seção Dados básicos (título, produto vinculado, descrição)</li>
+  <li>[ ] Seção Data e horário (início, término, multi-dia)</li>
+  <li>[ ] Múltiplos horários no mesmo dia (chips)</li>
+  <li>[ ] Recorrência (diário, semanal, mensal, personalizado, exceções)</li>
+  <li>[ ] Seção Capacidade (mín, máx, herança do produto)</li>
+  <li>[ ] Seção Local (campo livre ou select cadastrado)</li>
+  <li>[ ] Seção Equipe (multi-select de guias)</li>
+  <li>[ ] Seção Visibilidade — Público vs. Interno</li>
+  <li>[ ] Modo Interno: tipo de uso (reserva externa, bloqueio, evento privado, outro)</li>
+  <li>[ ] Modo Interno: prazo de expiração automática do bloqueio</li>
+  <li>[ ] Seção Grupos de cliente (quando modo Público)</li>
+  <li>[ ] Link do grupo WhatsApp (quando modo Público)</li>
+  <li>[ ] Navegação lateral de seções + status de validações em tempo real</li>
+  <li>[ ] Toast de sucesso pós-criação</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [loading] Estado de submissão (loading no CTA)</li>
+  <li>[ ] [erro] Falha ao salvar — preservar dados e mensagem de retry</li>
+  <li>[ ] [exceção] Conflito de horário da equipe — aviso inline</li>
+  <li>[ ] [exceção] Conflito de recurso compartilhado (barco, van)</li>
+  <li>[ ] [exceção] Capacidade máxima menor que mínima — validação lógica</li>
+  <li>[ ] [exceção] Evento recorrente com exceções conflitando com pedidos existentes</li>
+  <li>[ ] [permissão] Operador tentando criar evento — CTA oculto</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 3 — Editar Atividade</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Editar Atividade <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> critica · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Reaproveitar o componente de Nova Atividade em modo edição,
+  pré-preenchido com dados atuais. Para recorrentes, permitir aplicar alteração apenas à ocorrência
+  selecionada ou a todas as futuras. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    RPP002 §3.3: edição permite alterar qualquer campo. Para recorrentes, escopo é &quot;esta
+    ocorrência&quot; ou &quot;todas as futuras&quot;.
+  </li>
+  <li>
+    Eventos com pedidos confirmados não podem ser excluídos — apenas cancelados (regra compartilhada
+    com Tarefa 4). <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Campos que impactam pedidos existentes (data, capacidade) precisam de avisos específicos antes
+    de confirmar.
+  </li>
+  <li>
+    Alteração de data com pedidos confirmados deve informar que clientes serão notificados via
+    canais configurados. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela de Edição (reutilização do componente Nova Atividade)</li>
+  <li>[ ] Pré-preenchimento com dados atuais</li>
+  <li>[ ] Modal &quot;Aplicar alteração a...&quot; (esta / futuras / todas) para recorrentes</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>
+    [ ] [exceção] Tentativa de editar evento com check-ins realizados — limitar campos editáveis
+  </li>
+  <li>[ ] [exceção] Alteração de capacidade abaixo do número de reservas existentes — alerta</li>
+  <li>
+    [ ] [exceção] Alteração de data com pedidos confirmados — aviso de notificação aos clientes
+  </li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 4 — Cancelar e Excluir Atividade</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Cancelar e Excluir Atividade
+  <strong>Status:</strong> BACKLOG <strong>Tags:</strong> critica · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Fluxos destrutivos da agenda. Cancelar mantém o evento no histórico;
+  excluir remove permanentemente — só permitido quando não há pedidos vinculados.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    RPP002 §3.3: cancelar marca evento como cancelado sem excluir do histórico. Pedidos vinculados
+    são notificados conforme configuração de comunicação.
+  </li>
+  <li>Excluir só é permitido para eventos sem pedidos vinculados.</li>
+  <li>
+    RPP002 §3.6: motivo de cancelamento é obrigatório em toda transição para estado Cancelada, sem
+    exceção. <strong>OBSERVAÇÕES</strong> Nenhuma. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Modal de cancelamento de evento (motivo obrigatório)</li>
+  <li>[ ] Aviso &quot;pedidos serão notificados automaticamente&quot;</li>
+  <li>[ ] Modal para recorrentes (esta / futuras / todas)</li>
+  <li>[ ] Modal destrutivo de exclusão (só sem pedidos vinculados)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>
+    [ ] [exceção] Tooltip &quot;Não é possível excluir — há pedidos&quot; quando há pedidos
+    vinculados
+  </li>
+  <li>[ ] [exceção] Cancelamento no mesmo dia da atividade — alerta adicional de impacto</li>
+  <li>[ ] [destrutivo] Confirmação extra para cancelamento de evento com 50+ participantes</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 5 — Atividades do Dia (Painel do Dia)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Atividades do Dia <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Visão diária consolidada com todas as atividades programadas, acessada
+  ao clicar em um dia da agenda. É a porta de entrada para os detalhes da atividade (Visão Geral,
+  Participantes, Atualizações, Conclusão). <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Reunião 08/04: foco do refatoramento foi resolver card de múltiplos dias e estrutura interna do
+    check-in.
+  </li>
+  <li>
+    RPP002 §3.3 define visão geral dos eventos do dia: lista ordenada por horário, status
+    (aguardando/em andamento/concluído/cancelado), participantes confirmados, check-ins realizados,
+    equipe alocada, alerta de atraso.
+  </li>
+  <li>
+    Reunião 15/04: confirmado que o Painel do Dia é o hub de navegação do fluxo operacional
+    completo.
+  </li>
+  <li>
+    Reunião 15/04: listar atividades multi-dia versus individuais é ponto explícito de avaliação no
+    teste de usabilidade. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    CTA &quot;Concluir Atividades do Dia&quot; e &quot;Ficha de Operação&quot; existem, mas o
+    destino da Ficha de Operação ainda não está definido.
+  </li>
+  <li>
+    Equipe incompleta e seguro obrigatório pendente já estão tratados como badges/alertas no design
+    atual. <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Destino do CTA &quot;Ficha de Operação&quot;: aguardando decisão do cliente sobre atalho direto
+    para Ficha 6 ou tela intermediária de escolha.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Tela principal de Atividades do Dia [web]</li>
+  <li>[ ] Cards de atividade com resumo, participantes, equipe, seguros</li>
+  <li>[ ] Breadcrumb e header com data</li>
+  <li>[ ] Navegação dia anterior / próximo (sem voltar ao calendário)</li>
+  <li>[ ] CTA &quot;Concluir Atividades do Dia&quot;</li>
+  <li>[ ] CTA &quot;Ficha de Operação&quot; com destino definido</li>
+  <li>[ ] Linha do tempo do dia (horários agrupados)</li>
+  <li>[ ] Indicador de multi-dia (badge &quot;Atividade multi-dias&quot;)</li>
+  <li>[ ] Horário atual destacado na timeline</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>
+    [x] [exceção] Atividade com equipe incompleta — badge &quot;Sem equipe atribuída&quot; [web]
+  </li>
+  <li>[x] [exceção] Atividade com seguro obrigatório pendente — alerta destacado [web]</li>
+  <li>[ ] [vazio] Dia sem atividades — CTA &quot;Criar nova atividade&quot;</li>
+  <li>[ ] [vazio] Feriado sem atividades — diferenciado visualmente</li>
+  <li>
+    [ ] [exceção] Todas as atividades encerradas — badge &quot;Dia encerrado&quot; + CTAs ocultos
+  </li>
+  <li>[ ] [erro] Falha ao carregar atividades — CTA de retry</li>
+  <li>
+    [ ] [exceção] CTA &quot;Concluir Dia&quot; bloqueado — toast com deep-link para pendências
+  </li>
+  <li>[ ] [exceção] Atividade interrompida por feriado — estado específico</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 6 — Visão Geral da Atividade</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Visão Geral da Atividade
+  <strong>Status:</strong> DESIGN <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Primeira aba da atividade — especificações do produto, equipe escalada,
+  previsão climática e resumo de reservas. Diferente da aba Participantes (execução) e Atualizações
+  (log). <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    RPP002 §3.7 define gestão de equipe em campo: alocação por evento, aceite de escala pelo
+    colaborador, conflito de horário da equipe com bloqueio ou aviso.
+  </li>
+  <li>
+    Reunião 15/04: navegação interna da atividade usa abas (Visão Geral, Participantes,
+    Atualizações) — menu lateral muda para modo contextual ao entrar no fluxo.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Badge de aceite de escala é necessário porque o guia recebe notificação e precisa aceitar antes
+    de ter acesso às informações do evento.
+  </li>
+  <li>Previsão climática usa API OpenWeather (7 dias).</li>
+  <li>
+    Ação &quot;Remover guia&quot; precisa de modal de confirmação — diferente de &quot;Desfazer
+    check-in&quot;, que é toggle imediato. <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Aba Visão Geral com especificações da atividade [web]</li>
+  <li>[x] Seção Equipe Escalada com lista de guias [web]</li>
+  <li>[x] Resumo de Reservas (ocupação, tarifas, adicionais) [web]</li>
+  <li>[ ] Fluxo &quot;+ Adicionar guia&quot; (drawer/modal de busca e seleção)</li>
+  <li>[ ] Badge de aceite de escala por guia (aceitou / pendente)</li>
+  <li>[ ] Ação &quot;Remover guia&quot; com modal de confirmação</li>
+  <li>[ ] Botão &quot;Falar via WhatsApp&quot; por guia</li>
+  <li>[ ] Seção Previsão Climática (API OpenWeather — 7 dias)</li>
+  <li>[ ] Link para editar a atividade (permissão do gestor)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] &quot;Sem equipe atribuída&quot; com CTA primário destacado</li>
+  <li>[ ] [loading] Skeleton da previsão climática</li>
+  <li>[ ] [erro] Falha na API OpenWeather — placeholder com CTA de retry</li>
+  <li>[ ] [exceção] Guia com conflito de horário em outra atividade — aviso no card do guia</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 7 — Participantes (Check-in)</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Participantes <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Aba central da execução da atividade — lista de participantes com busca,
+  filtros, ações individuais e em massa. É onde o operador faz check-in, cancela, contrata seguro e
+  resolve pendências no dia. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Reunião 15/04: card de participante foi segmentado em 3 blocos visuais (Alertas / Observações do
+    Operador / Dados do Pedido). Antes estava tudo misturado e causava confusão.
+  </li>
+  <li>
+    Reunião 15/04: aba renomeada para &quot;Participantes&quot; (era &quot;Check-in&quot;),
+    refletindo que a tela serve para mais que o check-in.
+  </li>
+  <li>
+    Reunião 15/04 (cliente): numeração sequencial das linhas — &quot;se eu tenho 150 participantes e
+    filtro só quem tem problema de saúde, preciso ver o número sem ter que contar&quot;.
+  </li>
+  <li>
+    Reunião 15/04 (cliente): filtro por uso de imagem (autorizou / não autorizou) é requisito
+    direto.
+  </li>
+  <li>
+    Reunião 15/04: confirmado que ações em massa são globais por participante, não por
+    reserva-em-grupo. Fala do cliente: &quot;se eu quero fazer check-in de todo mundo de uma vez,
+    que acontece com mais frequência, é melhor ter ação global&quot;. Isso exigiu checkbox
+    individual por participante no padrão global.
+  </li>
+  <li>
+    Reunião 15/04: substituir rótulo &quot;Reserva em Grupo&quot; pelo nome do comprador, com tipo
+    de grupo como subtítulo.
+  </li>
+  <li>
+    Reunião 15/04: truncamento de nomes longos com &quot;...&quot; — nomes frequentemente passam do
+    tamanho da coluna.
+  </li>
+  <li>
+    Reunião 15/04 (cliente): &quot;Desfazer Check-in&quot; sem confirmação — ação não-crítica,
+    imediatamente reversível.
+  </li>
+  <li>
+    Reunião 15/04: No-Show é conceito separado de Cancelamento. Fala do cliente: &quot;Cancelamento
+    é quando eu cancelo, não vou mais usar. No-show é porque eu não fui mas ainda vou usar, pode ser
+    remarcado dependendo da política&quot;.
+  </li>
+  <li>
+    Reunião 15/04: operador cancela sem querer com frequência — garantir que reativação é possível
+    (cancelada → confirmada).
+  </li>
+  <li>
+    Reunião 08/04: necessidade de busca por nome ou pedido (cliente pode não ter trazido QR Code;
+    lista pode ter 100-200 nomes).
+  </li>
+  <li>
+    Teste de usabilidade #3: simulação de check-in em alto fluxo operacional foi considerada fácil;
+    lista de participantes e check-in em massa aprovados.
+  </li>
+  <li>Teste #4: registro de check-in foi rápido e concluído com agilidade.</li>
+  <li>
+    Teste #5: usuário se sentiu tranquilo para realizar check-in sob pressão operacional.
+    <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Ícones visuais de apoio nos alertas (bolinha colorida ao lado do nome) para leitura rápida —
+    padrão aprovado na 15/04.
+  </li>
+  <li>Ficha individual (detalhes completos) tem seus blocos próprios — ver Tarefa 8.</li>
+  <li>Busca aceita nome, CPF, e-mail, número da reserva ou número do carrinho (RPP002 §3.2).</li>
+  <li>
+    Componente &quot;Ordenar por&quot; é distinto dos filtros — antes eram misturados, foi separado
+    para clareza semântica.
+  </li>
+  <li>
+    QR Code pode pré-configurar qual ação executa: Check-in, Realizada, Confirmada ou Iniciada
+    (RPP002 §3.2). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Participante sem check-in no momento de fechar a atividade: bloquear encerramento ou só avisar?
+    Aguardando cliente.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Lista de participantes com abas de status [web]</li>
+  <li>[x] Agrupamento por reserva (individual ou em grupo) [web]</li>
+  <li>[x] Card expandido com 3 blocos (Alertas / Observações / Dados do pedido) [web]</li>
+  <li>[x] Realizar check-in individual [web]</li>
+  <li>[x] Drawer de Filtros avançados [web]</li>
+  <li>[x] Numeração sequencial de linhas [web]</li>
+  <li>[x] Checkbox de seleção geral (header) [web]</li>
+  <li>[x] Checkbox individual por participante [web]</li>
+  <li>[x] Barra de ações em massa [web]</li>
+  <li>[x] Menu individual: Ver Detalhes Completos [web]</li>
+  <li>[x] Menu individual: Chamar no WhatsApp [web]</li>
+  <li>[x] Menu individual: Cancelar reserva (motivo obrigatório) [web]</li>
+  <li>[x] Menu individual: Marcar como no-show [web]</li>
+  <li>[x] Menu individual: Contratar seguro [web]</li>
+  <li>[ ] Check-in via QR Code</li>
+  <li>[ ] Desfazer check-in (toggle sem confirmação)</li>
+  <li>[ ] Componente &quot;Ordenar por&quot; (alfabética, ID pedido, data reserva)</li>
+  <li>[ ] Ícones visuais de apoio nos alertas (bolinha colorida)</li>
+  <li>[ ] Filtro &quot;Uso de imagem&quot; (autorizou / não autorizou)</li>
+  <li>[ ] Substituir rótulo &quot;Reserva em Grupo&quot; pelo nome do comprador</li>
+  <li>[ ] Truncamento de nomes longos com &quot;...&quot;</li>
+  <li>[ ] Busca por nome, ID do pedido, CPF, e-mail, nº carrinho</li>
+  <li>[ ] Ação em massa: Check-in</li>
+  <li>[ ] Ação em massa: Contratar seguro</li>
+  <li>[ ] Ação em massa: Confirmar reserva</li>
+  <li>[ ] Ação em massa: Cancelar reserva (motivo obrigatório)</li>
+  <li>[ ] Ação em massa: Marcar como realizada</li>
+  <li>[ ] Ação em massa: Marcar como no-show</li>
+  <li>[ ] Ação em massa: Remarcar reserva</li>
+  <li>[ ] Menu individual: Editar dados da reserva</li>
+  <li>[ ] Menu individual: Adicionar observação</li>
+  <li>[ ] Menu individual: Reenviar voucher</li>
+  <li>[ ] Menu individual: Remarcar reserva</li>
+  <li>[ ] Menu individual: Ligar para o participante</li>
+  <li>[ ] Menu individual: Download do comprovante em PDF</li>
+  <li>[ ] Menu individual: Ver histórico da reserva</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Lista vazia sem filtros</li>
+  <li>[ ] [vazio] Filtros sem resultados — CTA limpar filtros</li>
+  <li>[ ] [erro] Falha de rede — check-in offline (fila local)</li>
+  <li>[ ] [erro] QR Code inválido</li>
+  <li>[ ] [erro] Leitor de câmera negado — fallback para busca manual</li>
+  <li>[ ] [exceção] Tentativa de check-in em reserva não confirmada</li>
+  <li>[ ] [exceção] Tentativa de check-in em reserva com seguro obrigatório pendente</li>
+  <li>[ ] [exceção] Check-in de participante já marcado como no-show</li>
+  <li>[ ] [exceção] Desfazer cancelamento feito por engano (cancelada → confirmada)</li>
+  <li>[ ] [exceção] Conflito entre ações em massa (cancelar participante já cancelado)</li>
+  <li>[ ] [permissão] Dados de saúde ocultos para perfis sem permissão</li>
+  <li>[ ] [permissão] Cancelamento não disponível para perfil sem permissão</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 8 — Detalhes Completos da Reserva</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Detalhes Completos da Reserva
+  <strong>Status:</strong> DESIGN <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Ficha expandida da reserva, acessada via &quot;Ver Detalhes
+  Completos&quot; do menu individual do participante. Reúne tudo que existe sobre a reserva em um
+  único local para consulta e resolução de pendências.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    RPP002 §3.2 detalha os blocos da ficha: Dados pessoais, Dados da reserva, Dados de saúde, Status
+    de pagamento, Contrato e aceites, Seguro, Histórico de ações, Observações internas, Dados do
+    pagador, Participante responsável (quando há menor de idade).
+  </li>
+  <li>
+    Aceite digital de contrato com IP, hash e timestamp é requisito jurídico — disponível do plano
+    Quero Crescer em diante.
+  </li>
+  <li>Histórico completo com IP também é do plano Quero Crescer+. <strong>OBSERVAÇÕES</strong></li>
+  <li>Bloco de Saúde restrito a perfis com permissão (Módulo 14.1 — Perfis de Acesso).</li>
+  <li>
+    Dados do pagador ocultos para operadores de campo. O Líder de Operação nunca vê dados
+    financeiros (RPP002 §3.5).
+  </li>
+  <li>
+    Atalho para Central de Vendas facilita correlacionar pagamento manual à reserva.
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>
+    [x] Drawer com todos os blocos (Dados pessoais, Reserva, Saúde, Pagamento, Contrato, Seguro,
+    Histórico, Observações, Pagador, Responsável) [web]
+  </li>
+  <li>[ ] Atalho para Central de Vendas (pagamento vinculado)</li>
+  <li>[ ] Atalho para ficha completa do cliente no CRM</li>
+  <li>[ ] Download dos aceites em PDF (contrato, termo de imagem)</li>
+  <li>[ ] Exibição do hash e IP do aceite digital</li>
+  <li>[ ] Botão &quot;Reenviar voucher&quot; direto da ficha</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [permissão] Bloco de Saúde oculto para perfis sem permissão</li>
+  <li>[ ] [permissão] Dados do pagador ocultos para operadores de campo</li>
+  <li>[ ] [exceção] Menor de idade sem responsável vinculado — alerta destacado</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 9 — Atualizações</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Atualizações <strong>Status:</strong> DESIGN
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Log de registros operacionais por atividade — timeline de avisos, saúde,
+  pagamento, observações, equipamento e transporte. Permite que a equipe comunique em campo o que
+  está acontecendo durante a operação. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Reunião 08/04 (cliente): &quot;vai escrever aqui, vamos supor que eu e o Rafael operando nesse
+    dia, o Rafael na recepção e eu sou o guia. Preciso escrever uma informação escrita aqui, então
+    seria uma caixinha de observação para escrever e salvar e aí fica como atividade&quot;.
+  </li>
+  <li>
+    Reunião 08/04: atualizações da atividade originalmente eram voltadas só a alertas automáticos do
+    sistema; foi ampliado para incluir mensagens manuais da equipe. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Sumário lateral funciona como filtro clicável por categoria.</li>
+  <li>
+    Regra do badge &quot;+9&quot; no menu lateral precisa ser definida (qual critério dispara o
+    contador). <strong>BLOQUEIOS</strong>
+  </li>
+  <li>
+    Critério do badge &quot;+9&quot; no menu lateral: o que dispara? (mensagens não lidas? alertas
+    de severidade alta?) — aguardando definição.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Timeline de atualizações por atividade [web]</li>
+  <li>[ ] Sumário lateral com contagem por categoria</li>
+  <li>[ ] Campo &quot;Digite sua mensagem&quot; com toolbar (B, I, U)</li>
+  <li>
+    [ ] Seletor de categoria antes do envio (avisos / saúde / pagamento / observação / equipamento /
+    transporte)
+  </li>
+  <li>[ ] Sumário lateral clicável como filtro</li>
+  <li>[ ] Ação &quot;Marcar como resolvido&quot; em registros-task</li>
+  <li>[ ] Ação &quot;Editar registro próprio&quot; dentro de janela de tempo definida</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Atividade sem atualizações</li>
+  <li>[ ] [loading] Estado de envio da mensagem (loading no CTA)</li>
+  <li>[ ] [erro] Falha no envio da mensagem — preservar texto e retry</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 10 — Conclusão de Atividade</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Conclusão de Atividade
+  <strong>Status:</strong> DESIGN <strong>Tags:</strong> alta · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Encerramento de uma atividade individual. Operador registra horário
+  real, observações e ocorrências (quando houver). Sempre manual — nunca automático.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Reunião 08/04 (cliente): &quot;não vale a pena ser automático, porque o usuário ele tem que ser
+    responsável pela informação, não o sistema. O sistema é só transportador de dados, aqui é o
+    operador sempre fala as coisas&quot;.
+  </li>
+  <li>
+    Reunião 08/04: definido que há dois fechamentos separados — por atividade (individual) e do dia
+    (coleção). Se todas as atividades do dia foram fechadas individualmente, o fechamento do dia é
+    só um resumo.
+  </li>
+  <li>
+    Reunião 15/04: fluxo expandido com Tipo de Ocorrência + Grau de Severidade (Baixo / Médio /
+    Alto). Severidade Alta dispara notificação automática ao gestor por e-mail e WhatsApp (RPP002
+    §3.8).
+  </li>
+  <li>
+    Reunião 15/04 (cliente): &quot;Os tipos de ocorrência não estão em documentação. Posso
+    criar&quot; — lista definitiva ficou para ser enviada.
+  </li>
+  <li>
+    Reunião 15/04: separação explícita entre Cancelamento e No-Show no resumo de participantes. Fala
+    do cliente: &quot;Cancelamento é quando eu cancelo, não vou mais usar. No-show é porque eu não
+    fui mas ainda vou usar, pode ser remarcado dependendo da política&quot;.
+  </li>
+  <li>
+    Reunião 15/04: início real preenche automaticamente com o horário planejado da atividade
+    (editável). Término real preenche com horário do dispositivo ao abrir o drawer (editável).
+  </li>
+  <li>
+    Reunião 15/04 (Rafael): encerramento não pode acontecer se há check-ins pendentes ou seguro
+    obrigatório não contratado. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>
+    Toast de sucesso deve mostrar operador e horário: &quot;Encerrada por [nome] às HH:MM&quot;.
+  </li>
+  <li>
+    Upload de evidências (fotos/arquivos) para ocorrências — ainda pendente de revisão no design.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Lista definitiva de Tipos de Ocorrência: aguardando cliente enviar.</li>
+  <li>
+    Comportamento de encerramento de atividade multi-dia: aguardando decisão (encerra dia a dia ou
+    só no último? cada dia tem seu registro?).
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[x] Drawer &quot;Concluir Atividade&quot; [web]</li>
+  <li>[x] Resumo de participantes (Compareceram / Cancelaram / No-show / Total esperado) [web]</li>
+  <li>[x] Início real com preenchimento automático (editável) [web]</li>
+  <li>[x] Término real com horário do dispositivo (editável) [web]</li>
+  <li>[x] Duração total calculada automaticamente [web]</li>
+  <li>[x] Campo de Observações da operação [web]</li>
+  <li>[x] Toggle &quot;Ocorreu alguma intercorrência?&quot; [web]</li>
+  <li>[x] Fluxo expandido de registro de ocorrência [web]</li>
+  <li>[x] Campo Tipo de ocorrência [web]</li>
+  <li>[x] Campo Grau de severidade (Baixo / Médio / Alto) [web]</li>
+  <li>[x] Campo de descrição da ocorrência [web]</li>
+  <li>[x] Toast de sucesso com operador e horário [web]</li>
+  <li>[ ] Aviso &quot;Gestor será notificado&quot; quando Severidade = Alta</li>
+  <li>[ ] Upload de evidências (fotos, arquivos)</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [exceção] Bloqueio por check-ins pendentes — lista de pendências</li>
+  <li>[ ] [exceção] Bloqueio por seguro obrigatório não contratado</li>
+  <li>[ ] [exceção] Encerramento de atividade multi-dia — comportamento pendente</li>
+  <li>[ ] [exceção] Desfazer encerramento (transição No-show / Cancelada → Confirmada)</li>
+  <li>[ ] [erro] Falha ao salvar o encerramento — preservar dados e retry</li>
+  <li>[ ] [erro] Falha no upload de evidência — permitir salvar sem a foto</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 11 — Conclusão do Dia</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Conclusão do Dia <strong>Status:</strong> BACKLOG
+  <strong>Tags:</strong> media · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Encerramento coletivo do dia. Depois que todas as atividades individuais
+  foram concluídas, o gestor confirma o fechamento com resumo consolidado. Nunca automático.
+  <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Reunião 08/04 (cliente): &quot;depois a gente vai criar uma tela que é o fechamento do dia que a
+    pessoa vai ver o resumo de tudo. Não vai ver nome das pessoas, vai ver só se tá tudo ok&quot;.
+  </li>
+  <li>
+    Reunião 08/04 (cliente): &quot;vamos lá, vai ser as atividades individuais. A do dia é a coleção
+    de atividades individuais. O responsável de cada atividade vai finalizar a sua, só que tem
+    alguém lá na central que vai ver se fulano finalizou de fato&quot;.
+  </li>
+  <li>
+    Reunião 15/04 (Rafael): tela específica para &quot;passar o senso de conclusão&quot;, ocupando a
+    página inteira com a listagem de todas as atividades encerradas, quais têm ocorrências,
+    quantidade de participantes. <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>CTA bloqueado até que 100% das atividades individuais do dia estejam concluídas.</li>
+  <li>
+    Toast de bloqueio deve ter deep-link para a primeira atividade pendente.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Existe limite de tempo para fechamento do dia? Lembrete automático? — aguardando cliente.</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>
+    [ ] Página/tela de &quot;Concluir Dia&quot; (não modal — página inteira para senso de conclusão)
+  </li>
+  <li>[ ] Listagem de atividades encerradas com status</li>
+  <li>[ ] Resumo consolidado do dia (total de participantes, ocorrências, ausências, receita)</li>
+  <li>[ ] CTA de confirmação final</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [exceção] CTA bloqueado até 100% das atividades concluídas</li>
+  <li>[ ] [exceção] Toast de bloqueio com deep-link para primeira atividade pendente</li>
+  <li>[ ] [vazio] Dia sem atividades programadas</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 12 — Mapa de Vagas</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Mapa de Vagas <strong>Status:</strong> BK PRIORIDADE
+  <strong>Tags:</strong> critica · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Visão de ocupação de todos os produtos e datas — responde &quot;quanto
+  foi preenchido e quanto ainda está disponível?&quot;. Permite planejamento de marketing e gestão
+  de capacidade. <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Cliente (reunião 15/04): Mapa de Vagas está explicitamente no inventário prioritário do Painel
+    de Operações.
+  </li>
+  <li>
+    Reunião 15/04 (cliente): &quot;pensar nesse conceito do mapa de vagas. Além disso, a gente ainda
+    tem a quebra dos horários, então na trilha pico posso ter três horários no dia e aí preciso
+    saber qual horário tenho&quot;.
+  </li>
+  <li>
+    Reunião 15/04 (cliente): objetivo é ter visão para saber &quot;que tempo tenho disponível para
+    ser vendido em um planejamento mensal&quot; — e direcionar marketing (ex: concentrar propaganda
+    no Instagram para data com pouca venda).
+  </li>
+  <li>
+    Reunião 15/04: no web ficou em cards; cliente provocou a equipe a pensar como ficaria melhor no
+    mobile (cards ou outra estrutura).
+  </li>
+  <li>
+    RPP002 §3.1 define cards de evento com: nome, data/horário, capacidade mín/máx, vagas
+    vendidas/disponíveis, status, equipe escalada, ícones de alerta (saúde, adicionais, esgotado,
+    recurso compartilhado).
+  </li>
+  <li>
+    RPP002: bloquear vagas temporariamente para grupo em negociação (ícone de cadeado). Bloquear
+    vendas sem cancelar reservas existentes.
+  </li>
+  <li>
+    RPP002: produtos Day Use / Hospedagem exibem entradas e saídas no mesmo dia (quarto pode ter
+    check-out de manhã e check-in à tarde). <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Controle de recurso compartilhado é do plano Voando Alto.</li>
+  <li>Bloqueio de vagas é do plano Quero Crescer+.</li>
+  <li>Totalizadores do cabeçalho somam todos os eventos do período selecionado.</li>
+  <li>
+    Vagas bloqueadas com menos de 24h para expirar precisam de alerta visual.
+    <strong>BLOQUEIOS</strong>
+  </li>
+  <li>Formato mobile: cards ou lista? Provocação do cliente em 15/04, aguardando proposta.</li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>
+    [ ] Cabeçalho com totalizadores gerais (ocupação, dias confirmados, vendidas, disponíveis)
+  </li>
+  <li>[ ] Filtros (período, produto, status, com vagas / esgotados, guia)</li>
+  <li>[ ] Botão Atualizar (refresh manual)</li>
+  <li>[ ] Cards de evento com dados completos (nome, data, capacidade, status, equipe, alertas)</li>
+  <li>[ ] Ícones de alerta (saúde, adicionais, esgotado, recurso compartilhado)</li>
+  <li>[ ] CTA &quot;Ver reservas&quot; → Painel de Reservas filtrado</li>
+  <li>[ ] Bloquear vagas (modal com quantidade, prazo, motivo)</li>
+  <li>[ ] Bloquear vendas (fechar vendas sem cancelar reservas)</li>
+  <li>[ ] Desbloquear vagas</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [vazio] Período sem eventos</li>
+  <li>[ ] [vazio] Filtros aplicados sem resultado</li>
+  <li>[ ] [loading] Skeleton dos cards</li>
+  <li>[ ] [exceção] Card esgotado (100% ocupação) — destaque visual</li>
+  <li>[ ] [exceção] Card Day Use / Hospedagem — entradas e saídas no mesmo dia</li>
+  <li>[ ] [exceção] Alerta de conflito de recurso compartilhado</li>
+  <li>[ ] [exceção] Alerta de conflito de horário da equipe</li>
+  <li>[ ] [exceção] Vagas bloqueadas expirando em menos de 24h</li>
+  <li>[ ] [erro] Falha ao carregar cards — CTA de retry</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Tarefa 13 — Listas e Manifestos</h4>
+<p>
+  <strong>Título:</strong> [RETRILHAR] [AGENDA] Listas e Manifestos <strong>Status:</strong> BK
+  PRIORIDADE <strong>Tags:</strong> critica · fluxo
+</p>
+<h5>Descrição</h5>
+<p>
+  <strong>OBJETIVO</strong> Geração de 7 fichas operacionais em PDF ou Excel. Necessárias para a
+  equipe em campo (que frequentemente está offline), para o motorista e para obrigações regulatórias
+  (ANTT). <strong>HISTÓRICO DE DECISÕES E MUDANÇAS</strong>
+</p>
+<ul>
+  <li>
+    Cliente (reunião 15/04): Listas e Manifestos está explicitamente no inventário prioritário.
+    &quot;Eles precisam muito de uma informação que às vezes a gente não vai conseguir colocar aqui
+    porque é impossível navegar no painel do dia&quot;.
+  </li>
+  <li>
+    Reunião 15/04 (cliente): &quot;A ideia é que na lista de manifestos ele vai tirar essas listas
+    com o nome dos participantes com todos os dados de saúde para ele poder baixar, por exemplo, e
+    quando ele tiver em campo ele vai estar offline ou ele imprime&quot;.
+  </li>
+  <li>
+    RPP002 §3.4 define as 7 fichas:
+    <ul>
+      <li>Ficha 1 — Lista de Presença com campo de assinatura</li>
+      <li>Ficha 2 — Manifesto de Transporte (ANTT)</li>
+      <li>Ficha 3 — Manifesto de Pontos de Embarque</li>
+      <li>Ficha 4 — Dados de Saúde e Segurança (acesso restrito)</li>
+      <li>Ficha 5 — Dados Completos dos Participantes</li>
+      <li>Ficha 6 — Ficha de Operação (com equipe e inventário)</li>
+      <li>Ficha 7 — Checklist de Inventário por Tarifa e Adicional</li>
+    </ul>
+  </li>
+  <li>
+    Reunião 15/04: o atalho &quot;Ficha de Operação&quot; no Painel do Dia deve levar para essas
+    listas (destino exato pendente — ver Tarefa 5). <strong>OBSERVAÇÕES</strong>
+  </li>
+  <li>Ficha 1 destaca pagamento pendente com linha amarela.</li>
+  <li>Ficha 3 agrupa participantes por ponto de embarque para o motorista.</li>
+  <li>Ficha 4 tem acesso restrito por perfil (Módulo 14.1).</li>
+  <li>
+    Todas as fichas aceitam saída em PDF e Excel (Ficha 6 só PDF, Ficha 7 também mostra em tela).
+  </li>
+  <li>PDF formatado para A4 com cabeçalho da empresa, logo e data de geração.</li>
+  <li>
+    Dados refletem o estado atual das reservas no momento da geração (não são snapshots fixos).
+  </li>
+  <li>
+    Plano Quero Crescer em diante: Ficha 2 (ANTT) e Ficha 4 (Saúde) disponíveis.
+    <strong>BLOQUEIOS</strong> Nenhum.
+  </li>
+</ul>
+<h5>Caminho principal</h5>
+<ul>
+  <li>[ ] Tela principal com filtros globais (produto, data, horário, status da reserva)</li>
+  <li>[ ] Interface de seleção de ficha (grid de cards)</li>
+  <li>[ ] Ficha 1 — Lista de Presença com assinatura (PDF e Excel)</li>
+  <li>[ ] Ficha 2 — Manifesto de Transporte ANTT (PDF e Excel)</li>
+  <li>[ ] Ficha 3 — Manifesto de Pontos de Embarque (PDF e Excel)</li>
+  <li>[ ] Ficha 4 — Dados de Saúde e Segurança (PDF e Excel — acesso restrito)</li>
+  <li>[ ] Ficha 5 — Dados Completos dos Participantes (PDF e Excel)</li>
+  <li>[ ] Ficha 6 — Ficha de Operação com equipe e inventário (PDF)</li>
+  <li>[ ] Ficha 7 — Checklist de Inventário (PDF e tela)</li>
+  <li>[ ] Preview da ficha antes de gerar</li>
+  <li>[ ] CTAs Download PDF, Excel, Imprimir</li>
+  <li>[ ] Destaque visual para problemas de saúde e menores de idade em todas as fichas</li>
+  <li>[ ] Cabeçalho do PDF com logo da empresa e data de geração</li>
+  <li>[ ] Adaptar fluxo para mobile</li>
+</ul>
+<h5>Edge cases</h5>
+<ul>
+  <li>[ ] [loading] Estado de geração (loading no CTA &quot;Gerar&quot;)</li>
+  <li>[ ] [erro] Falha na geração do PDF — CTA de retry</li>
+  <li>[ ] [erro] Falha no download — link alternativo</li>
+  <li>[ ] [permissão] Ficha 4 (Saúde) bloqueada para perfis sem permissão</li>
+  <li>[ ] [exceção] Ficha com zero participantes elegíveis — mensagem informativa</li>
+  <li>[ ] Adaptar edge cases para mobile</li>
+</ul>
+<hr />
+<h4>Resumo do Bloco 1</h4>
+<p><strong>Total de tarefas:</strong> 13 <strong>Por status sugerido:</strong></p>
+<ul>
+  <li>
+    <strong>BK PRIORIDADE (4):</strong> Nova Atividade, Mapa de Vagas, Listas e Manifestos, Cancelar
+    e Excluir Atividade (compartilha prioridade com Nova Atividade e Editar)
+  </li>
+  <li>
+    <strong>DESIGN (7):</strong> Calendário, Atividades do Dia, Visão Geral da Atividade,
+    Participantes, Detalhes Completos, Atualizações, Conclusão de Atividade
+  </li>
+  <li>
+    <strong>BACKLOG (2):</strong> Editar Atividade, Conclusão do Dia
+    <strong>Bloqueios abertos (para o cliente — Cristiano / Katiely):</strong>
+  </li>
+</ul>
+<ol>
+  <li>Destino do CTA &quot;Ficha de Operação&quot; no Painel do Dia</li>
+  <li>Participante sem check-in no fechamento da atividade — bloquear ou avisar?</li>
+  <li>Critério do badge &quot;+9&quot; em Atualizações</li>
+  <li>Lista definitiva de Tipos de Ocorrência</li>
+  <li>Comportamento de encerramento de atividade multi-dia</li>
+  <li>Limite de tempo / lembrete automático para Conclusão do Dia</li>
+  <li>Formato mobile do Mapa de Vagas (cards ou lista)</li>
+</ol>
+<hr />
+<p>
+  <strong>Fim do Bloco 1.</strong> Próximo bloco: Módulo 4 — Vendas (Central Comercial), com 9
+  features.
+</p>

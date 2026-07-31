@@ -9,6 +9,7 @@ export type AppPage =
   | "novaAtividade"
   | "produtos"
   | "gestorAfiliados"
+  | "gestorAfiliadosCentral"
   | "gestorAfiliadosLista"
   | "gestorAfiliadosPropostas"
   | "gestorAfiliadosSolicitacoes"
@@ -19,7 +20,8 @@ export type AppPage =
   | "ganhos"
   | "produtosLinks"
   | "configuracoes"
-  | "ajuda";
+  | "ajuda"
+  | "devBlocos";
 
 export interface ShellNavItem {
   title: string;

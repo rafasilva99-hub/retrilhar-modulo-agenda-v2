@@ -28,7 +28,14 @@ describe("agenda mock service", () => {
   });
 
   it("returns empty day models for days without activities", () => {
-    const day = 31;
+    // Os mocks semeiam atividades no mês corrente; escolher um dia fixo
+    // torna o teste dependente da data em que roda.
+    const day = Array.from({ length: 31 }, (_, index) => index + 1).find(
+      (candidate) =>
+        listActivitiesByDay(candidate).length === 0 &&
+        getAgendaDayViewModel(candidate).holidayName === undefined
+    );
+    if (day === undefined) throw new Error("Expected a day without activities in the mock month");
     const activities = listActivitiesByDay(day);
     const viewModel = getAgendaDayViewModel(day);
 

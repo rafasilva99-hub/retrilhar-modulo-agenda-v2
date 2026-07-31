@@ -55,7 +55,9 @@ const ELIGIBILITY_RULES: Record<BulkAction, EligibilityRule> = {
     reason: "Somente reservas confirmadas podem ter a confirmação desfeita.",
   },
   "mark-performed": {
-    test: (r) => r.status === "CheckedIn" || (r.status === "Confirmed" && r.participants.some((p) => p.checkInStatus === "Done")),
+    test: (r) =>
+      r.status === "CheckedIn" ||
+      (r.status === "Confirmed" && r.participants.some((p) => p.checkInStatus === "Done")),
     reason: "Somente reservas com check-in realizado podem ser marcadas como realizadas.",
   },
   "add-insurance": {
@@ -73,11 +75,8 @@ const ELIGIBILITY_RULES: Record<BulkAction, EligibilityRule> = {
     reason: "Somente reservas confirmadas podem ser marcadas como não comparecimento.",
   },
   cancel: {
-    test: (r) =>
-      r.status !== "Performed" &&
-      r.status !== "Cancelled",
-    reason:
-      "Reservas realizadas ou canceladas não podem ser canceladas.",
+    test: (r) => r.status !== "Performed" && r.status !== "Cancelled",
+    reason: "Reservas realizadas ou canceladas não podem ser canceladas.",
   },
 };
 

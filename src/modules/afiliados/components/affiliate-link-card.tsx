@@ -87,7 +87,7 @@ function AffiliateLinkCard({
   onCopied,
 }: AffiliateLinkCardProps) {
   return (
-    <Card className={cn("rounded-2xl shadow-none", className)}>
+    <Card className={cn("rounded-2xl py-0 shadow-none", className)}>
       <CardContent className="p-5">
         <SectionHeading icon={Link04Icon} title={title} description={description} />
         <div className="mt-3">

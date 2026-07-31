@@ -336,7 +336,7 @@ export function ParticipantAttributeBadge({
 
   if (showLabel) {
     return (
-      <div className="group relative min-w-0 max-w-full" onClick={onClick}>
+      <div className="group relative max-w-full min-w-0" onClick={onClick}>
         <div
           className={cn(
             "flex max-w-full items-center gap-[6px] rounded-full border border-[#e4e4e7] px-[8px] py-[4px] whitespace-nowrap",

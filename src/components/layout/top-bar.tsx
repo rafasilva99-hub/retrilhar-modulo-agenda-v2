@@ -22,7 +22,7 @@ export function TopBar({ collapsed, organization, profile, scrolled, onNavigate 
       className={cn(
         "fixed top-0 right-0 left-0 z-30 border-b transition-[background-color,border-color,padding-left] duration-200",
         scrolled
-          ? "border-[#e5e7eb] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)] dark:bg-background"
+          ? "dark:bg-background border-[#e5e7eb] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.04)]"
           : "border-transparent bg-transparent"
       )}
       style={{ paddingLeft: shellOffset }}

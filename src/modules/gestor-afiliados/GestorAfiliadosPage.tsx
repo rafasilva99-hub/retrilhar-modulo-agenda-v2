@@ -17,12 +17,14 @@ import { Label } from "@/components/ui/label";
 import type { GestorAffiliateSection } from "@/mocks/gestor-afiliados";
 
 import { GestorAffiliatesList } from "./components/affiliates-list";
-import { GestorOverview } from "./components/overview";
+import { GestorCentralFiliacao } from "./components/central-filiacao";
+import { ConvidarAfiliadoDrawer } from "./components/convidar-afiliado-drawer";
 import { GestorPaymentsPage } from "./components/payments";
 import { GestorProposalsPage } from "./components/proposals";
 import { GestorRequestsPage } from "./components/requests";
 import { GestorSubnav } from "./components/shared";
 import { GestorTermPage } from "./components/term";
+import { GestorVisaoGeral } from "./components/visao-geral";
 
 interface GestorAfiliadosPageProps {
   readonly section: GestorAffiliateSection;
@@ -31,6 +33,7 @@ interface GestorAfiliadosPageProps {
 export function GestorAfiliadosPage({ section }: GestorAfiliadosPageProps) {
   const [newAffiliateOpen, setNewAffiliateOpen] = useState(false);
   const [createdMessage, setCreatedMessage] = useState<string | null>(null);
+  const [conviteAberto, setConviteAberto] = useState(false);
 
   useEffect(() => {
     if (window.innerWidth >= 768) return;
@@ -40,6 +43,66 @@ export function GestorAfiliadosPage({ section }: GestorAfiliadosPageProps) {
     );
     collapseButton?.click();
   }, []);
+
+  const ehVisaoGeral = section === "visao";
+
+  if (section === "central") {
+    // [PROPOSTA P10] "Central de filiação" adotado como nome único da tela
+    // (sidebar, título e breadcrumb), no lugar de "Pendências"/"Propostas".
+    return (
+      <AppPage
+        title="Central de filiação"
+        description="Candidaturas e pedidos solicitados por afiliados."
+        breadcrumb={[
+          {
+            title: "Início",
+            onClick: () => {
+              window.location.hash = "#contexto";
+            },
+          },
+          { title: "Afiliados" },
+        ]}
+        actions={
+          <Button className="gap-2" onClick={() => setConviteAberto(true)}>
+            <HugeiconsIcon icon={UserAdd01Icon} size={16} aria-hidden="true" />
+            Convidar afiliado
+          </Button>
+        }
+      >
+        <GestorCentralFiliacao />
+        <ConvidarAfiliadoDrawer aberto={conviteAberto} aoFechar={() => setConviteAberto(false)} />
+      </AppPage>
+    );
+  }
+
+  if (ehVisaoGeral) {
+    return (
+      <AppPage
+        title="Visão geral"
+        description="Visão geral do programa: pendências, desempenho e configuração num só lugar."
+        breadcrumb={[
+          {
+            title: "Início",
+            onClick: () => {
+              window.location.hash = "#contexto";
+            },
+          },
+          { title: "Afiliados" },
+        ]}
+        actions={
+          // Drawer AFI-01.b habilitado por decisão de produto em 31/07/2026,
+          // antecipando o fechamento das pendências P4 e P6.
+          <Button className="gap-2" onClick={() => setConviteAberto(true)}>
+            <HugeiconsIcon icon={UserAdd01Icon} size={16} aria-hidden="true" />
+            Convidar afiliado
+          </Button>
+        }
+      >
+        <GestorVisaoGeral />
+        <ConvidarAfiliadoDrawer aberto={conviteAberto} aoFechar={() => setConviteAberto(false)} />
+      </AppPage>
+    );
+  }
 
   return (
     <AppPage
@@ -137,7 +200,9 @@ function NewAffiliateDialog({
 function renderSection(section: GestorAffiliateSection) {
   switch (section) {
     case "visao":
-      return <GestorOverview />;
+      return <GestorVisaoGeral />;
+    case "central":
+      return <GestorCentralFiliacao />;
     case "afiliados":
       return <GestorAffiliatesList />;
     case "propostas":

@@ -39,7 +39,7 @@ export function AppLayout({
   return (
     <div className="bg-muted/30 text-foreground h-screen overflow-hidden">
       <div
-        className="prototype-shell-surface h-full overflow-y-auto overflow-x-hidden"
+        className="prototype-shell-surface h-full overflow-x-hidden overflow-y-auto"
         style={{ "--shell-offset": contentOffset } as React.CSSProperties}
       >
         {children}

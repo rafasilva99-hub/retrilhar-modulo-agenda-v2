@@ -27,10 +27,7 @@ interface BadgeTooltipProps {
   className?: string;
 }
 
-const positionStyles: Record<
-  TooltipPosition,
-  { container: string; arrow: string }
-> = {
+const positionStyles: Record<TooltipPosition, { container: string; arrow: string }> = {
   top: {
     container: "bottom-full left-1/2 -translate-x-1/2 mb-[8px]",
     arrow:
@@ -73,18 +70,13 @@ const positionStyles: Record<
   },
 };
 
-export function BadgeTooltip({
-  title,
-  subtitle,
-  position = "top",
-  className,
-}: BadgeTooltipProps) {
+export function BadgeTooltip({ title, subtitle, position = "top", className }: BadgeTooltipProps) {
   const pos = positionStyles[position];
 
   return (
     <div
       className={cn(
-        "pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 transition-opacity duration-150 group-hover:opacity-100 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)]",
+        "pointer-events-none absolute z-50 rounded-full bg-[#181d27] px-[14px] py-[6px] text-center whitespace-nowrap opacity-0 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] transition-opacity duration-150 group-hover:opacity-100",
         pos.container,
         className
       )}

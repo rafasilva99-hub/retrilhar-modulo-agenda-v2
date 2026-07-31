@@ -2051,10 +2051,30 @@ export const mockReservations: Reservation[] = [
     paymentMethod: "Transferência",
     paidAt: "2026-05-02T11:00:00",
     history: [
-      { id: "ha1", timestamp: "2026-05-01T08:00:00", action: "Reserva criada via parceiro B2B", actor: "Sistema" },
-      { id: "ha2", timestamp: "2026-05-02T11:00:00", action: "Pagamento confirmado (Transferência)", actor: "Sistema" },
-      { id: "ha3", timestamp: "2026-05-02T11:01:00", action: "Reserva confirmada", actor: "Sistema" },
-      { id: "ha4", timestamp: "2026-05-05T09:15:00", action: "Seguro contratado para o grupo", actor: "Sistema" },
+      {
+        id: "ha1",
+        timestamp: "2026-05-01T08:00:00",
+        action: "Reserva criada via parceiro B2B",
+        actor: "Sistema",
+      },
+      {
+        id: "ha2",
+        timestamp: "2026-05-02T11:00:00",
+        action: "Pagamento confirmado (Transferência)",
+        actor: "Sistema",
+      },
+      {
+        id: "ha3",
+        timestamp: "2026-05-02T11:01:00",
+        action: "Reserva confirmada",
+        actor: "Sistema",
+      },
+      {
+        id: "ha4",
+        timestamp: "2026-05-05T09:15:00",
+        action: "Seguro contratado para o grupo",
+        actor: "Sistema",
+      },
     ],
     participants: [
       {
@@ -2142,8 +2162,18 @@ export const mockReservations: Reservation[] = [
     insurancePrice: 25,
     paymentMethod: "PIX",
     history: [
-      { id: "hb1", timestamp: "2026-05-08T14:30:00", action: "Reserva criada manualmente", actor: "Pedro Lima" },
-      { id: "hb2", timestamp: "2026-05-08T14:31:00", action: "Voucher enviado por email", actor: "Sistema" },
+      {
+        id: "hb1",
+        timestamp: "2026-05-08T14:30:00",
+        action: "Reserva criada manualmente",
+        actor: "Pedro Lima",
+      },
+      {
+        id: "hb2",
+        timestamp: "2026-05-08T14:31:00",
+        action: "Voucher enviado por email",
+        actor: "Sistema",
+      },
     ],
     participants: [
       {

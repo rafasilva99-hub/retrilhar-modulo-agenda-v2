@@ -84,12 +84,7 @@ function Tile({ screen, x, y, width, height }: TileProps) {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="cp-board__tile"
-      data-bounds
-      style={{ left: x, top: y, width }}
-    >
+    <div ref={ref} className="cp-board__tile" data-bounds style={{ left: x, top: y, width }}>
       <div className="cp-board__tile-label">{label}</div>
       {hasBeenVisible ? (
         <iframe
@@ -123,19 +118,19 @@ function Tile({ screen, x, y, width, height }: TileProps) {
  * - On first ever load (no saved state), defaults to fit-all.
  */
 export function BoardCanvas({ manifest = boardManifest }: BoardCanvasProps) {
-  const persisted = useRef<PersistedView | null>(readPersistedView());
+  const [persistedView] = useState<PersistedView | null>(() => readPersistedView());
   const { boardRef, worldRef, state, fit, zoomBy, resetZoom, setView } = useCanvasPanZoom({
-    initial: persisted.current ?? undefined,
+    initial: persistedView ?? undefined,
   });
 
   const { tile, sections } = manifest;
 
   // First mount: if no persisted view, run fit() once layout settles.
   useEffect(() => {
-    if (persisted.current) return;
+    if (persistedView) return;
     const id = window.setTimeout(() => fit(), 200);
     return () => window.clearTimeout(id);
-  }, [fit]);
+  }, [fit, persistedView]);
 
   // Persist view (debounced) on every change.
   useEffect(() => {

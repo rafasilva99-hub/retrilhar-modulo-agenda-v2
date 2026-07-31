@@ -9,7 +9,7 @@ afterEach(() => {
 });
 
 describe("AfiliadosPage", () => {
-  it("keeps KPI filters, code copy feedback, and affiliate navigation available", async () => {
+  it("keeps KPI filters, code copy feedback, and affiliate actions available", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
@@ -24,11 +24,10 @@ describe("AfiliadosPage", () => {
 
     expect(screen.getByRole("heading", { name: /Oi Katiely/ })).toBeInTheDocument();
     expect(screen.getByText("145")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Ganhos" })).toHaveAttribute("href", "#ganhos");
-    expect(screen.getByRole("link", { name: "Configurações" })).toHaveAttribute(
-      "href",
-      "#configuracoes"
-    );
+    expect(screen.queryByRole("navigation", { name: "Atalhos do painel" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Ver links por organização" }));
+    expect(window.location.hash).toBe("#produtosLinks");
 
     fireEvent.click(screen.getByRole("combobox", { name: "Período" }));
     fireEvent.click(screen.getByRole("option", { name: "Últimos 12 meses" }));

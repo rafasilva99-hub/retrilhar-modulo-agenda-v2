@@ -155,3 +155,13 @@ Se houver divergência intencional entre design e implementação (ex.: acessibi
 - **Chrome DevTools MCP exige localhost rodando.** Garantir que `npm run dev` ou equivalente está ativo antes de chamar o MCP. Se a porta mudar, atualizar a URL base.
 - **Trabalhar por seleção menor.** Capturar componentes ou seções individuais em vez do arquivo Figma inteiro ou da página completa do localhost. Resultados ficam mais precisos e o contexto não sobrecarrega.
 - **Iteração é o caminho.** Após a primeira passada de implementação, comparar lado a lado e ajustar — em geral 2-3 iterações fecham gaps que uma única passada não pega.
+
+## Módulo Gestão de Afiliados (Admin)
+
+Spec de implementação da etapa corrente: `Etapa 01 · Fundação + Home de Afiliados (AFI-01)` (raiz do repositório).
+Regras específicas: `.claude/rules/figma.md` e `.claude/rules/gestor-afiliados.md`.
+Tokens extraídos do Figma: `design/tokens.json`.
+
+Antes de qualquer tarefa neste módulo, ler o spec da etapa corrente.
+Não implementar item marcado PENDENTE: renderizar placeholder com TODO e o ID da pendência.
+As telas AFI compõem os blocos de `src/components/blocos/` (vitrine em `#devBlocos`).

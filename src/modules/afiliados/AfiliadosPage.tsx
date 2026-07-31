@@ -93,14 +93,6 @@ const periodOptions: readonly PeriodOption[] = [
 
 const dashboardOrderStatuses = ["Pago", "Aguardando pagamento"] as const;
 
-const dashboardLinks = [
-  { href: "#indicacoes", label: "Indicações" },
-  { href: "#ganhos", label: "Ganhos" },
-  { href: "#produtosLinks", label: "Produtos e links" },
-  { href: "#configuracoes", label: "Configurações" },
-  { href: "#ajuda", label: "Ajuda" },
-] as const;
-
 function getPeriodLabel(value: string): string {
   return periodOptions.find((p) => p.value === value)?.label ?? "Últimos 30 dias";
 }
@@ -728,27 +720,6 @@ function EmptyState({
   );
 }
 
-function DashboardNavigation() {
-  return (
-    <nav
-      aria-label="Atalhos do painel"
-      className="border-border bg-card grid grid-cols-1 gap-2 rounded-xl border p-3 sm:grid-cols-2 lg:grid-cols-5"
-    >
-      {dashboardLinks.map((link) => (
-        <Button
-          key={link.href}
-          asChild
-          variant="outline"
-          size="sm"
-          className="h-auto min-h-8 w-full px-2 py-2 text-center leading-tight whitespace-normal sm:h-8 sm:whitespace-nowrap"
-        >
-          <a href={link.href}>{link.label}</a>
-        </Button>
-      ))}
-    </nav>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
@@ -807,8 +778,6 @@ export function AfiliadosPage() {
 
         {/* KPIs */}
         <KpiRow kpis={kpis} periodLabel={periodLabel} />
-
-        <DashboardNavigation />
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">

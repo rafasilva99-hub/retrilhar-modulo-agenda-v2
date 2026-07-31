@@ -79,7 +79,9 @@ export function AppPage({ children, title, description, actions, breadcrumb }: A
                 )}
                 {description && <p className="text-muted-foreground text-sm">{description}</p>}
               </div>
-              {actions && <div className="flex shrink-0 items-center gap-3">{actions}</div>}
+              {actions && (
+                <div className="flex shrink-0 items-center gap-3 self-end">{actions}</div>
+              )}
             </div>
           )}
         </div>

@@ -9,8 +9,18 @@ import {
 
 import type { AppPage, ShellNavItem } from "@/components/layout/types";
 
+export * from "./motivos";
+export * from "./pendencias";
+export * from "./produtos";
+export * from "./resumo";
+export * from "./solicitacoes";
+export * from "./top-afiliados";
+export * from "./venda-detalhe";
+export * from "./vendas";
+
 export type GestorAffiliateSection =
   | "visao"
+  | "central"
   | "afiliados"
   | "propostas"
   | "solicitacoes"
@@ -76,6 +86,7 @@ interface GestorNavItem {
 
 export const gestorAffiliateSubnav: readonly GestorNavItem[] = [
   { label: "Visão geral", section: "visao", page: "gestorAfiliados" },
+  { label: "Central de filiação", section: "central", page: "gestorAfiliadosCentral" },
   { label: "Afiliados", section: "afiliados", page: "gestorAfiliadosLista" },
   { label: "Propostas", section: "propostas", page: "gestorAfiliadosPropostas", badge: 2 },
   {
@@ -90,6 +101,7 @@ export const gestorAffiliateSubnav: readonly GestorNavItem[] = [
 
 export const gestorAffiliateNavItems: ShellNavItem[] = [
   { title: "Visão geral", page: "gestorAfiliados", icon: Home01Icon },
+  { title: "Central de filiação", page: "gestorAfiliadosCentral", icon: UserGroupIcon },
   { title: "Afiliados", page: "gestorAfiliadosLista", icon: UserStar01Icon },
   { title: "Propostas", page: "gestorAfiliadosPropostas", icon: File02Icon, badge: 2 },
   { title: "Solicitações", page: "gestorAfiliadosSolicitacoes", icon: PackageIcon, badge: 2 },

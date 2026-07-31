@@ -1,6 +1,7 @@
 import { type CSSProperties, lazy, type ReactNode, Suspense, useCallback, useState } from "react";
 
 import ContextoMissao from "@/app/components/ContextoMissao";
+import { DevBlocos } from "@/app/components/DevBlocos";
 import { IntroTeste } from "@/app/components/IntroTeste";
 import { AppShell } from "@/components/layout/app-shell";
 import type { AppPage } from "@/components/layout/types";
@@ -92,6 +93,8 @@ function getGestorAffiliateSection(page: AppPage): GestorAffiliateSection | null
   switch (page) {
     case "gestorAfiliados":
       return "visao";
+    case "gestorAfiliadosCentral":
+      return "central";
     case "gestorAfiliadosLista":
       return "afiliados";
     case "gestorAfiliadosPropostas":
@@ -137,6 +140,11 @@ function AgendaPrototypeApp() {
         <BoardCanvas />
       </Suspense>
     );
+  }
+
+  // Vitrine de blocos da Etapa 01 (#devBlocos): página avulsa, sem AppShell.
+  if (agenda.currentPage === "devBlocos") {
+    return <DevBlocos />;
   }
 
   // Preview mode: render bare screen without AppShell. Used by board iframes.
@@ -202,6 +210,7 @@ function AgendaPrototypeApp() {
           </AffiliatePreviewFrame>
         );
       case "gestorAfiliados":
+      case "gestorAfiliadosCentral":
       case "gestorAfiliadosLista":
       case "gestorAfiliadosPropostas":
       case "gestorAfiliadosSolicitacoes":
@@ -294,7 +303,7 @@ function AgendaPrototypeApp() {
   if (gestorAffiliateSection) {
     return (
       <AppShell
-        activePage="gestorAfiliados"
+        activePage={agenda.currentPage}
         navItems={shellNavItems}
         organization={shellOrganization}
         profile={shellProfile}

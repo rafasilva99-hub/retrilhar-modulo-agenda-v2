@@ -73,6 +73,13 @@ export const systemPages: SystemPage[] = [
     breadcrumb: "Gestão de afiliados",
   },
   {
+    id: "central-filiacao",
+    name: "Central de filiação",
+    icon: UserStar01Icon,
+    page: "gestorAfiliadosCentral",
+    breadcrumb: "Candidaturas e propostas de afiliados",
+  },
+  {
     id: "indicadores",
     name: "Indicadores",
     icon: Chart02Icon,

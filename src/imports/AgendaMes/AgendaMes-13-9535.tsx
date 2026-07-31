@@ -620,7 +620,7 @@ function CalendarHeader({ navLabel, onPrev, onNext, onToday, view, onViewChange 
   return (
     <div className="bg-[rgba(255,255,255,0.95)] relative shrink-0 w-full" data-name="Container">
       <div className="flex flex-row items-center size-full">
-        <div className="content-stretch flex items-center justify-between gap-[24px] pl-[20px] pr-[32px] py-[20px] relative size-full border-b border-[#e2e8f0]">
+        <div className="content-stretch flex items-center justify-between gap-[24px] pl-[20px] pr-[20px] py-[20px] relative size-full border-b border-[#e2e8f0]">
           <div className="flex gap-[8px] items-center shrink-0">
             <p className="font-['Helvetica_Neue:Medium',sans-serif] leading-[normal] not-italic text-[#0f172b] text-[16px] whitespace-nowrap">
               {navLabel}
@@ -643,9 +643,16 @@ function CalendarHeader({ navLabel, onPrev, onNext, onToday, view, onViewChange 
           </div>
           <div className="content-stretch flex gap-[12px] items-center relative shrink-0">
             <ViewToggle view={view} onViewChange={onViewChange} />
-            <HeaderIconButton label="Lista de reservas">
+            <button
+              type="button"
+              aria-label="Lista de reservas"
+              title="Lista de reservas"
+              className="bg-white border border-[#e2e8f0] border-solid flex items-center gap-[8px] relative rounded-[8px] shrink-0 h-[40px] px-[12px] cursor-pointer hover:bg-[#f8fafc] transition-colors"
+              data-name="IconButton"
+            >
               <ReservationsListIcon />
-            </HeaderIconButton>
+              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#314158] whitespace-nowrap">Lista de reservas</span>
+            </button>
             <HeaderIconButton label="Buscar atividade">
               <HugeiconsIcon icon={Search01Icon} className="size-[16px] text-[#314158]" />
             </HeaderIconButton>

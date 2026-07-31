@@ -72,7 +72,9 @@ export function TopBarProfile({ profile }: TopBarProfileProps) {
             Preferências
           </p>
           <DropdownMenuItem
-            onClick={() => { window.location.hash = "#configuracoes"; }}
+            onClick={() => {
+              window.location.hash = "#configuracoes";
+            }}
             className="gap-[0.625em] rounded-lg px-[0.75em] py-[0.5em] text-sm font-normal"
           >
             <HugeiconsIcon
@@ -95,14 +97,12 @@ export function TopBarProfile({ profile }: TopBarProfileProps) {
             <Switch checked={isDark} className="pointer-events-none shrink-0" />
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => { window.location.hash = "#ajuda"; }}
+            onClick={() => {
+              window.location.hash = "#ajuda";
+            }}
             className="gap-[0.625em] rounded-lg px-[0.75em] py-[0.5em] text-sm font-normal"
           >
-            <HugeiconsIcon
-              icon={HelpCircleIcon}
-              size={15}
-              className="text-muted-foreground"
-            />
+            <HugeiconsIcon icon={HelpCircleIcon} size={15} className="text-muted-foreground" />
             Ajuda e Suporte
           </DropdownMenuItem>
         </div>

@@ -14,6 +14,7 @@ const prototypePages: AppPage[] = [
   "novaAtividade",
   "produtos",
   "gestorAfiliados",
+  "gestorAfiliadosCentral",
   "gestorAfiliadosLista",
   "gestorAfiliadosPropostas",
   "gestorAfiliadosSolicitacoes",
@@ -25,6 +26,7 @@ const prototypePages: AppPage[] = [
   "produtosLinks",
   "configuracoes",
   "ajuda",
+  "devBlocos",
 ];
 
 type AgendaUpdatesInitialTab = "atualizacoes" | "participantes" | "visao-geral";
@@ -38,6 +40,7 @@ const previewBases = [
   "novaAtividade",
   "produtos",
   "gestorAfiliados",
+  "gestorAfiliadosCentral",
   "gestorAfiliadosLista",
   "gestorAfiliadosPropostas",
   "gestorAfiliadosSolicitacoes",

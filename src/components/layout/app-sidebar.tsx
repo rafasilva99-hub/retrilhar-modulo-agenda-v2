@@ -40,8 +40,14 @@ export function AppSidebar({
             key={item.title}
             item={item}
             active={
-              item.page === activePage || (activePage === "agendaDia" && item.page === "agenda")
+              item.page === activePage ||
+              (activePage === "agendaDia" && item.page === "agenda") ||
+              // Estado ativo-pai: destaca o item quando uma página filha
+              // (do submenu ou do mesmo prefixo de rota) está ativa.
+              Boolean(item.items?.some((filho) => filho.page === activePage)) ||
+              Boolean(item.page && activePage !== item.page && activePage.startsWith(item.page))
             }
+            activePage={activePage}
             collapsed={collapsed}
             onNavigate={onNavigate}
           />

@@ -13,7 +13,8 @@ const affiliateRoutes = [
   { hash: "ajuda", expectedText: "Como podemos ajudar?" },
 ] as const;
 const managerAffiliateRoutes = [
-  { hash: "gestorAfiliados", expectedText: "Ranking de afiliados" },
+  { hash: "gestorAfiliados", expectedText: "Últimas vendas realizadas" },
+  { hash: "gestorAfiliadosCentral", expectedText: "Candidaturas e pedidos solicitados" },
   { hash: "gestorAfiliadosLista", expectedText: "ANA-4510" },
   { hash: "gestorAfiliadosPropostas", expectedText: "Contraproposta" },
   { hash: "gestorAfiliadosSolicitacoes", expectedText: "Rapel Cachoeira" },
@@ -139,7 +140,7 @@ describe("App hash routing", () => {
 
     await waitFor(() => {
       expect(window.location.hash).toBe("#gestorAfiliados");
-      expect(document.body.textContent).toContain("Gestão de afiliados");
+      expect(document.body.textContent).toContain("Visão geral do programa");
     });
   });
 
@@ -163,7 +164,7 @@ describe("App hash routing", () => {
 
     await waitFor(() => {
       expect(window.location.hash).toBe("#gestorAfiliados");
-      expect(document.body.textContent).toContain("Gestão de afiliados");
+      expect(document.body.textContent).toContain("Visão geral do programa");
     });
   });
 

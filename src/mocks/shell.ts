@@ -43,7 +43,19 @@ export const shellNavItems: ShellNavItem[] = [
   { title: "Vendas", icon: Money01Icon, enabled: false },
   { title: "Clientes", icon: UserGroupIcon, enabled: false },
   { title: "Produtos", page: "produtos", icon: PackageIcon },
-  { title: "Afiliados", page: "gestorAfiliados", icon: UserStar01Icon },
+  {
+    title: "Afiliados",
+    page: "gestorAfiliados",
+    icon: UserStar01Icon,
+    // Submenu conforme o frame AFI-01; Comissões aponta para a fila de
+    // pagamentos existente enquanto a rota definitiva não é criada.
+    items: [
+      { title: "Visão geral", page: "gestorAfiliados", icon: Home01Icon },
+      { title: "Central de filiação", page: "gestorAfiliadosCentral", icon: UserGroupIcon },
+      { title: "Lista de afiliados", page: "gestorAfiliadosLista", icon: UserStar01Icon },
+      { title: "Comissões", page: "gestorAfiliadosPagamentos", icon: Money01Icon },
+    ],
+  },
   { title: "Relatórios", icon: AnalyticsUpIcon, enabled: false },
 ];
 

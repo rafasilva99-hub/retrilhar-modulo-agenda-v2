@@ -1,5 +1,6 @@
 import * as React from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
@@ -125,12 +126,12 @@ function TimeInput({
   const inputRef = useRef<HTMLInputElement>(null);
   const lastCommittedRef = useRef(value);
 
-  // Sync external value changes
-  if (!isFocused && value !== lastCommittedRef.current) {
+  useEffect(() => {
+    if (isFocused || value === lastCommittedRef.current) return;
     lastCommittedRef.current = value;
     setDisplay(value ?? "");
     setError(null);
-  }
+  }, [isFocused, value]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -139,12 +140,7 @@ function TimeInput({
       const currentDisplay = input.value;
 
       // Block non-allowed characters
-      if (
-        e.key.length === 1 &&
-        !e.ctrlKey &&
-        !e.metaKey &&
-        !/[0-9:]/.test(e.key)
-      ) {
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !/[0-9:]/.test(e.key)) {
         e.preventDefault();
         return;
       }
@@ -307,7 +303,7 @@ function TimeInput({
       {error && (
         <p
           id={errorId}
-          className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] text-[#d92d20] leading-[14px]"
+          className="font-['Helvetica_Neue:Regular',sans-serif] text-[11px] leading-[14px] text-[#d92d20]"
           role="alert"
           aria-live="polite"
         >

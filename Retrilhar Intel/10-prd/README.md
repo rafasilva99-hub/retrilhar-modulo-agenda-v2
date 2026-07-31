@@ -20,16 +20,16 @@ Esta area consolida o material de PRD sem substituir as fontes originais. Use es
 
 ## Mapa por modulo
 
-| Modulo | Nota curada | Fonte inicial |
-| --- | --- | --- |
-| Agenda / Operacao | [[20-modulos/agenda]] | Bloco 1, RPP002, reunioes, testes de usabilidade. |
-| Vendas / Central Comercial | [[20-modulos/vendas]] | Bloco 2, Modulo Central de Vendas. |
-| Vendedores e Afiliados | [[20-modulos/afiliados-vendedores]] | Bloco 3, Modulo Central de Vendas, reuniao 25/03. |
-| Catalogo de Produtos | [[20-modulos/produtos]] | Bloco 4, RFP Produto. |
-| Autenticacao e Inicio | pendente | Bloco 5. |
-| CRM, Recursos e Equipe | pendente | Bloco 6. |
-| Configuracoes e Administrativo | pendente | Bloco 7. |
-| Modulos frios | pendente | Bloco 8. |
+| Modulo                         | Nota curada                         | Fonte inicial                                     |
+| ------------------------------ | ----------------------------------- | ------------------------------------------------- |
+| Agenda / Operacao              | [[20-modulos/agenda]]               | Bloco 1, RPP002, reunioes, testes de usabilidade. |
+| Vendas / Central Comercial     | [[20-modulos/vendas]]               | Bloco 2, Modulo Central de Vendas.                |
+| Vendedores e Afiliados         | [[20-modulos/afiliados-vendedores]] | Bloco 3, Modulo Central de Vendas, reuniao 25/03. |
+| Catalogo de Produtos           | [[20-modulos/produtos]]             | Bloco 4, RFP Produto.                             |
+| Autenticacao e Inicio          | pendente                            | Bloco 5.                                          |
+| CRM, Recursos e Equipe         | pendente                            | Bloco 6.                                          |
+| Configuracoes e Administrativo | pendente                            | Bloco 7.                                          |
+| Modulos frios                  | pendente                            | Bloco 8.                                          |
 
 ## Criterios de consolidacao
 

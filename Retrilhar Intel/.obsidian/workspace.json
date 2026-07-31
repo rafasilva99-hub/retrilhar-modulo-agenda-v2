@@ -11,10 +11,14 @@
             "id": "b6397a78506d7d49",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Visualização em gráfico"
+              "type": "markdown",
+              "state": {
+                "file": "00-fontes/catalogo-sources.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "catalogo-sources"
             }
           }
         ]
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "20-modulos/afiliados-vendedores.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Links inversos"
+              "title": "Links inversos para afiliados-vendedores"
             }
           },
           {
@@ -178,6 +183,14 @@
   },
   "active": "b6397a78506d7d49",
   "lastOpenFiles": [
-    "Bem-vindo.md"
+    "20-modulos/afiliados-vendedores.md",
+    "60-reunioes/cronologia-canonica.md",
+    "Sources/Plano_de_Acao_2026-07-13_a_08-31.docx",
+    "50-planejamento/plano-acao-2026-07-13-a-08-31.md",
+    "20-modulos/sala-de-negocios.md",
+    "20-modulos/detalhes-atividade.md",
+    "_inbox/reconciliacao-claude-vs-obsidian.md",
+    "Bem-vindo.md",
+    "crie um link.md"
   ]
 }

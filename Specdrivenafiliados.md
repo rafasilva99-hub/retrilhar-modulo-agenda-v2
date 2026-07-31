@@ -39,16 +39,16 @@ Restrições técnicas herdadas da constituição (valem para todo o projeto):
 
 Cada linha é uma unidade construível. "Prontidão" diz se pode ir pro executor agora ou se está travada por pendência da seção 3.
 
-| Spec | Origem / estado | Prontidão | Observação |
-| --- | --- | --- | --- |
-| Alterar destino de repasse (Formas de recebimento) | Construído, refinar ação | EXECUTAVEL | Totalmente FATO. Spec exemplar na seção 4. |
-| Solicitar filiação de produtos (F5) | A construir | EXECUTAVEL | P6 resolvido: versão leve, afiliado solicita no painel, admin aprova. Toca o painel admin no lado da aprovação. |
-| Interna de "ver links por organização" | A construir | EXECUTAVEL | Hierarquia de links resolvida (P4). Design é PROPOSTA. |
-| Refinamento de Produtos e Links | Construído, refinar | EXECUTAVEL (parcial) | Escopo "todos / específicos" resolvido. Confirmar o "definido com o cliente" que motivou o refino. |
-| Refinamento de Minhas afiliações | Construído, refinar | EXECUTAVEL | Status por afiliação resolvido (P5). |
-| Refinamento de Ajuda e suporte | Construído, refinar | EXECUTAVEL | Baixo risco, conteudo estatico. |
-| Home de primeiro acesso (estado vazio) | Construído em outro projeto, refinar | BLOQUEADO | Trava na direção do vínculo (P-A) e no split de projeto (P-C). |
-| Sala de negócios V1 (landing e cadastro) | Construído, validar | BLOQUEADO | Congelada pelo Cristiano em 15/07 (P-B). |
+| Spec                                               | Origem / estado                      | Prontidão            | Observação                                                                                                      |
+| -------------------------------------------------- | ------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Alterar destino de repasse (Formas de recebimento) | Construído, refinar ação             | EXECUTAVEL           | Totalmente FATO. Spec exemplar na seção 4.                                                                      |
+| Solicitar filiação de produtos (F5)                | A construir                          | EXECUTAVEL           | P6 resolvido: versão leve, afiliado solicita no painel, admin aprova. Toca o painel admin no lado da aprovação. |
+| Interna de "ver links por organização"             | A construir                          | EXECUTAVEL           | Hierarquia de links resolvida (P4). Design é PROPOSTA.                                                          |
+| Refinamento de Produtos e Links                    | Construído, refinar                  | EXECUTAVEL (parcial) | Escopo "todos / específicos" resolvido. Confirmar o "definido com o cliente" que motivou o refino.              |
+| Refinamento de Minhas afiliações                   | Construído, refinar                  | EXECUTAVEL           | Status por afiliação resolvido (P5).                                                                            |
+| Refinamento de Ajuda e suporte                     | Construído, refinar                  | EXECUTAVEL           | Baixo risco, conteudo estatico.                                                                                 |
+| Home de primeiro acesso (estado vazio)             | Construído em outro projeto, refinar | BLOQUEADO            | Trava na direção do vínculo (P-A) e no split de projeto (P-C).                                                  |
+| Sala de negócios V1 (landing e cadastro)           | Construído, validar                  | BLOQUEADO            | Congelada pelo Cristiano em 15/07 (P-B).                                                                        |
 
 ---
 
@@ -75,36 +75,43 @@ Na 15/07 ficou que o campo é referencial (o Instagram ou handle do afiliado), s
 # [RETRILHAR] [AFILIADOS] Alterar destino de repasse (Formas de recebimento)
 
 ## Objetivo
+
 Permitir que o afiliado troque a conta (destino) que recebe a comissão de uma organização, escolhendo entre os destinos que ele já cadastrou. O afiliado não altera o tipo de recebimento, apenas para onde o valor vai.
 
 ## Estado
+
 - Atual: a seção Formas de recebimento já existe em código, lista o tipo de recebimento por organização e os destinos cadastrados, com o botão "Alterar destino" por organização e "Adicionar destino". Print disponível.
 - Alvo: implementar a ação de "Alterar destino" (hoje só o botão existe) e o comportamento de gestão dos destinos.
 - Invariantes: o tipo de recebimento é definido no acordo com cada organização e não é editável pelo afiliado (print: "Para alterá-la, fale com a organização"). Para organização com recebimento em dinheiro, destino não se aplica.
 
 ## Contrato de dados (mock)
+
 - Fonte: fixture em `src/mocks`, sem backend.
 - Destino de recebimento (um afiliado tem N destinos): id, apelido (ex. "Conta principal", "Conta da empresa"), banco, tipo de conta, agência, conta, titular, flag padrão, contagem de organizações em uso. FATO (print: "Você pode cadastrar mais de uma", "Padrão", "Em uso por 2 organizações").
 - Forma de recebimento por organização: organização, tipo (split de pagamento, transferência bancária, dinheiro), descrição do tipo, destino atual (referência a um destino, ou "não se aplica" quando dinheiro). FATO (print e Transcrição 15/07).
 - Regra: o afiliado altera apenas o campo "destino atual" de uma organização, escolhendo entre seus destinos existentes. INFERÊNCIA de UX a partir do print, A VALIDAR se a ação também permite cadastrar um destino novo inline.
 
 ## Referência de design
+
 - Print: Configurações > Formas de recebimento.
 - Figma: (node a preencher).
 
 ## Critérios de aceite
 
 ### Determinístico (checável por máquina)
+
 - [ ] Compila, lint e tipos passam.
 - [ ] Todos os estados da ação renderizam: gatilho, seleção, confirmação, sucesso, erro de validação.
 - [ ] Nenhum fetch ou cliente HTTP. Dados só do mock.
 
 ### Fidelidade (Figma mais render)
+
 - [ ] Tokens do design system aplicados (azul primário, tipografia, fills semânticos, traços HugeIcons).
 - [ ] Bate com o node do Figma dentro da tolerância definida na constituição.
 - [ ] Estados de badge (Padrão, Em uso por N organizações) idênticos ao print.
 
 ### Comportamento (UX)
+
 - [ ] "Alterar destino" abre a seleção entre os destinos existentes do afiliado.
 - [ ] O tipo de recebimento nunca é editável nesta ação (só o destino).
 - [ ] Organização com recebimento em dinheiro não expõe "Alterar destino" (mostra "não se aplica"). FATO.
@@ -112,15 +119,18 @@ Permitir que o afiliado troque a conta (destino) que recebe a comissão de uma o
 - [ ] O destino marcado como Padrão é o pré-selecionado quando a organização ainda não tem destino escolhido. INFERÊNCIA, A VALIDAR.
 
 ## Bordas e o que precisa de decisão
+
 - Excluir um destino "em uso por N organizações": bloquear ou pedir para reatribuir antes. A VALIDAR.
 - Excluir o destino Padrão: exige eleger outro como padrão. A VALIDAR.
 - "Alterar destino" permite cadastrar destino novo na hora, ou só escolher entre os existentes. A VALIDAR (o print separa "Adicionar destino").
 
 ## Fora de escopo
+
 - Alterar o tipo de recebimento (é acordo com a organização).
 - Qualquer integração bancária real (mock-only).
 
 ## Status epistêmico
+
 - FATO: tipo por organização não editável pelo afiliado; N destinos; badges Padrão e "em uso por N"; dinheiro não aplica destino.
 - PROPOSTA: layout da ação de seleção.
 - A VALIDAR: pré-seleção pelo Padrão, exclusão de destino em uso, cadastro inline dentro do "Alterar destino".

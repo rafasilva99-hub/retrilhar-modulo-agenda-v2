@@ -22,16 +22,16 @@ O produto é a base de tudo: define o que a operadora vende, alimenta a criaçã
 
 ## Status das entregas (fonte: Plano de Ação 13/07 a 31/08)
 
-| Status Web | Status Mobile | Entrega | Prazo |
-| --- | --- | --- | --- |
-| ✅ | — | Área de CRUD de produtos web | Entregue |
-| 🟧 | — | Fluxo de cadastro de produtos web | retomar 17 a 21/08 |
-| 🟧 | — | Fluxo de criação de atividade web | retomar 17 a 21/08 |
-| ☐ | — | Validar herança e integração Produto, Atividade e Agenda | Gate 21/08 |
-| ☐ | ☐ | Consolidar inventário dos CRUDs remanescentes e ordem interna | lista congelada até 14/08 |
-| ☐ | ☐ | Executar CRUDs remanescentes priorizados | 17 a 28/08 |
-| ☐ | ☐ | Home / Dashboard principal do painel administrativo | 24 a 28/08 |
-| ☐ | ☐ | Estados, responsividade e consistência dos CRUDs e Home | antes do Gate 3 (28/08) |
+| Status Web | Status Mobile | Entrega                                                       | Prazo                     |
+| ---------- | ------------- | ------------------------------------------------------------- | ------------------------- |
+| ✅         | —             | Área de CRUD de produtos web                                  | Entregue                  |
+| 🟧         | —             | Fluxo de cadastro de produtos web                             | retomar 17 a 21/08        |
+| 🟧         | —             | Fluxo de criação de atividade web                             | retomar 17 a 21/08        |
+| ☐          | —             | Validar herança e integração Produto, Atividade e Agenda      | Gate 21/08                |
+| ☐          | ☐             | Consolidar inventário dos CRUDs remanescentes e ordem interna | lista congelada até 14/08 |
+| ☐          | ☐             | Executar CRUDs remanescentes priorizados                      | 17 a 28/08                |
+| ☐          | ☐             | Home / Dashboard principal do painel administrativo           | 24 a 28/08                |
+| ☐          | ☐             | Estados, responsividade e consistência dos CRUDs e Home       | antes do Gate 3 (28/08)   |
 
 **Gate 3 (28/08)**: CRUDs e Home do recorte congelado concluídos, com estados e responsividade definidos.
 

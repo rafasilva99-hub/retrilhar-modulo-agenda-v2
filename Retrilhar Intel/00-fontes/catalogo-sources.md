@@ -12,15 +12,15 @@ origem: NotebookLM exports em ../Sources/
 
 ## Resumo do acervo
 
-| Grupo | Quantidade aproximada | Observacao |
-| --- | ---: | --- |
-| Exports HTML | 85 | Conteudo legivel extraido das fontes do NotebookLM. |
-| Metadata JSON | 85 | Titulo, data de ingestao e tipo original. |
-| Reunioes/alinhamentos | 9 HTML principais | Datas entre 18/03 e 20/05, mais um arquivo sem data clara. |
-| Blocos de backlog | 8 blocos | Agenda, Vendas, Afiliados/Vendedores, Produtos, Autenticacao, CRM, Configuracoes e modulos frios. |
-| Usabilidade | 5 testes individuais + relatorios/resumos | Inclui achados consolidados e testes do modulo Agenda. |
-| Referencias visuais | imagens e exports HTML | Agenda, atualizacoes, nova atividade, toast e imagens auxiliares. |
-| Regras de UI | components, icons, layout, pages, styling | Materiais de padrao visual e implementacao. |
+| Grupo                 |                     Quantidade aproximada | Observacao                                                                                        |
+| --------------------- | ----------------------------------------: | ------------------------------------------------------------------------------------------------- |
+| Exports HTML          |                                        85 | Conteudo legivel extraido das fontes do NotebookLM.                                               |
+| Metadata JSON         |                                        85 | Titulo, data de ingestao e tipo original.                                                         |
+| Reunioes/alinhamentos |                         9 HTML principais | Datas entre 18/03 e 20/05, mais um arquivo sem data clara.                                        |
+| Blocos de backlog     |                                  8 blocos | Agenda, Vendas, Afiliados/Vendedores, Produtos, Autenticacao, CRM, Configuracoes e modulos frios. |
+| Usabilidade           | 5 testes individuais + relatorios/resumos | Inclui achados consolidados e testes do modulo Agenda.                                            |
+| Referencias visuais   |                    imagens e exports HTML | Agenda, atualizacoes, nova atividade, toast e imagens auxiliares.                                 |
+| Regras de UI          | components, icons, layout, pages, styling | Materiais de padrao visual e implementacao.                                                       |
 
 ## Fontes canonicas de PRD e escopo
 
@@ -29,7 +29,7 @@ origem: NotebookLM exports em ../Sources/
 - [RPP002 Painel de Operacoes](../Sources/RPP002%20PAINEL%20DE%20OPERA%C3%87%C3%95ES.docx.html)
 - [RPP002 Painel Operacional](../Sources/RPP002%20PAINEL%20OPERACIONAL.docx.html)
 - [Modulo Central de Vendas](../Sources/Mo%CC%81dulo_%20Central%20de%20Vendas.docx.html)
-- [Manual Usuario 2.0 - sistema antigo](../Sources/Manual%20Usua%CC%81rio%202.0%20(Sistema%20antigo).pdf.html)
+- [Manual Usuario 2.0 - sistema antigo](<../Sources/Manual%20Usua%CC%81rio%202.0%20(Sistema%20antigo).pdf.html>)
 
 ## Blocos de backlog ClickUp
 
@@ -61,8 +61,8 @@ origem: NotebookLM exports em ../Sources/
 - [Teste de Usabilidade #3](../Sources/Teste%20de%20Usabilidade%20%233%20-%20Retrilhar.docx.html)
 - [Teste de Usabilidade #4](../Sources/Teste%20de%20Usabilidade%20%234%20-%20Retrilhar.docx.html)
 - [Teste de Usabilidade #5](../Sources/Teste%20de%20Usabilidade%20%235%20-%20Retrilhar.docx.html)
-- [Resumo dos testes de usabilidade - Modulo Agenda](../Sources/Resumo_dos_Testes_de_Usabilidade_-_Modulo_de_Agenda%20(1).docx.html)
-- [Relatorio de testes de usabilidade](../Sources/Retrilhar%20-%20Testes%20de%20Usabilidade%20(Relato%CC%81rio).docx.html)
+- [Resumo dos testes de usabilidade - Modulo Agenda](<../Sources/Resumo_dos_Testes_de_Usabilidade_-_Modulo_de_Agenda%20(1).docx.html>)
+- [Relatorio de testes de usabilidade](<../Sources/Retrilhar%20-%20Testes%20de%20Usabilidade%20(Relato%CC%81rio).docx.html>)
 - [Achados consolidados de usabilidade](../Sources/achados_testes_usabilidade.md.html)
 
 ## Referencias visuais de Agenda

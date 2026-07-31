@@ -17,21 +17,21 @@ Página de execução de uma atividade específica: lista de participantes com a
 
 ## Status das entregas (fonte: Plano de Ação 13/07 a 31/08)
 
-| Status Web | Status Mobile | Entrega |
-| --- | --- | --- |
-| ✅ | 🟧 | Listagem completa das reservas, ações individuais e detalhes do participante (interação mobile em 10 a 14/08) |
-| ✅ | ☐ | Multiselect / bulk actions para ações operacionais em massa |
-| ✅ | ✅ | Check-in via QR Code e cenários alternativos |
-| ✅ | ✅ | Resumo da atividade: ocupação, alertas, opcionais, previsão e atalho de QR Code |
-| ✅ | ✅ | Equipe responsável e cenários de conflito, seguro, remoção e WhatsApp |
-| ✅ | ✅ | Histórico da atividade e mensagens de observação |
-| ✅ | ☐ | Fluxo de conclusão da atividade com sucesso e com ocorrências |
-| ✅ | ☐ | Fluxo "Mais ações": editar, comunicar, atribuir equipe, listas, manifestos e cancelar |
-| ✅ | ✅ | Responsividade da área principal, resumo, equipe e histórico em bottom sheet |
-| — | ☐ | Ações do three dot menu no mobile (10 a 14/08) |
-| — | ☐ | Comportamento de bulk actions no mobile (10 a 14/08) |
-| — | ☐ | Ações da função "Mais ações" no mobile (10 a 14/08) |
-| — | ☐ | Conclusão da atividade em tela cheia no mobile (10 a 14/08) |
+| Status Web | Status Mobile | Entrega                                                                                                       |
+| ---------- | ------------- | ------------------------------------------------------------------------------------------------------------- |
+| ✅         | 🟧            | Listagem completa das reservas, ações individuais e detalhes do participante (interação mobile em 10 a 14/08) |
+| ✅         | ☐             | Multiselect / bulk actions para ações operacionais em massa                                                   |
+| ✅         | ✅            | Check-in via QR Code e cenários alternativos                                                                  |
+| ✅         | ✅            | Resumo da atividade: ocupação, alertas, opcionais, previsão e atalho de QR Code                               |
+| ✅         | ✅            | Equipe responsável e cenários de conflito, seguro, remoção e WhatsApp                                         |
+| ✅         | ✅            | Histórico da atividade e mensagens de observação                                                              |
+| ✅         | ☐             | Fluxo de conclusão da atividade com sucesso e com ocorrências                                                 |
+| ✅         | ☐             | Fluxo "Mais ações": editar, comunicar, atribuir equipe, listas, manifestos e cancelar                         |
+| ✅         | ✅            | Responsividade da área principal, resumo, equipe e histórico em bottom sheet                                  |
+| —          | ☐             | Ações do three dot menu no mobile (10 a 14/08)                                                                |
+| —          | ☐             | Comportamento de bulk actions no mobile (10 a 14/08)                                                          |
+| —          | ☐             | Ações da função "Mais ações" no mobile (10 a 14/08)                                                           |
+| —          | ☐             | Conclusão da atividade em tela cheia no mobile (10 a 14/08)                                                   |
 
 ## Diretriz mobile (DECISÃO, plano de ação)
 

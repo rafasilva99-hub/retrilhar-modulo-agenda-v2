@@ -23,15 +23,15 @@ A Agenda é o centro de planejamento temporal da operação: sem atividade cadas
 
 ## Status das entregas (fonte: Plano de Ação 13/07 a 31/08)
 
-| Status Web | Status Mobile | Entrega | Prazo |
-| --- | --- | --- | --- |
-| ✅ | ✅ | Visualizações por mês, semana e atividades do dia | Entregue |
-| ☐ | ☐ | Refatoração da página inicial da Agenda | Web 20 a 24/07 · Mobile 03 a 07/08 |
-| ☐ | ☐ | Área de listagem de reservas | Web 20 a 31/07 · Mobile 03 a 07/08 |
-| ☐ | ☐ | Fluxo de conclusão das atividades do dia | Web 27 a 31/07 · Mobile 10 a 14/08 |
-| ☐ | ☐ | Busca, filtros, ordenação e agrupamentos da listagem | junto da listagem de reservas |
-| ☐ | ☐ | Estados vazio, carregamento, erro, atraso, conflito e sem permissão | obrigatórios antes de cada gate |
-| ☐ | ☐ | Protótipo integrado: Agenda, Reservas, Detalhes, Conclusão | Gate desktop 31/07 · mobile 14/08 |
+| Status Web | Status Mobile | Entrega                                                             | Prazo                              |
+| ---------- | ------------- | ------------------------------------------------------------------- | ---------------------------------- |
+| ✅         | ✅            | Visualizações por mês, semana e atividades do dia                   | Entregue                           |
+| ☐          | ☐             | Refatoração da página inicial da Agenda                             | Web 20 a 24/07 · Mobile 03 a 07/08 |
+| ☐          | ☐             | Área de listagem de reservas                                        | Web 20 a 31/07 · Mobile 03 a 07/08 |
+| ☐          | ☐             | Fluxo de conclusão das atividades do dia                            | Web 27 a 31/07 · Mobile 10 a 14/08 |
+| ☐          | ☐             | Busca, filtros, ordenação e agrupamentos da listagem                | junto da listagem de reservas      |
+| ☐          | ☐             | Estados vazio, carregamento, erro, atraso, conflito e sem permissão | obrigatórios antes de cada gate    |
+| ☐          | ☐             | Protótipo integrado: Agenda, Reservas, Detalhes, Conclusão          | Gate desktop 31/07 · mobile 14/08  |
 
 **Gate 1 (31/07)**: Agenda desktop completa, com página inicial, reservas e conclusão integradas em jornada navegável.
 **Gate 2 (14/08)**: mesma jornada adaptada ao mobile, sem perda de contexto.

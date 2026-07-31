@@ -21,14 +21,14 @@ A Sala de Negócios é o site externo, separado do painel administrativo, onde a
 
 ## Status das entregas (fonte: Plano de Ação 13/07 a 31/08)
 
-| Status | Entrega | Prazo |
-| --- | --- | --- |
-| 🟧 Em andamento | Landing page da Sala de Negócios | 13/07 |
-| 🟧 Em andamento | Formulário de cadastro / criação de conta como afiliado | 13/07 |
-| 🟧 Em andamento | Home inicial da Sala de Negócios do afiliado | 13/07 |
-| ☐ Pendente | Estados essenciais: novo afiliado, perfil incompleto, aguardando oportunidades, convite e vínculo | validar em 13 a 14/07 |
-| ☐ Pendente | Conectar CTAs entre cadastro, Sala de Negócios e Painel de Afiliados | até 14/07 |
-| ☐ Pendente | Organização do protótipo, anotações e handoff | congelar até 17/07 |
+| Status          | Entrega                                                                                           | Prazo                 |
+| --------------- | ------------------------------------------------------------------------------------------------- | --------------------- |
+| 🟧 Em andamento | Landing page da Sala de Negócios                                                                  | 13/07                 |
+| 🟧 Em andamento | Formulário de cadastro / criação de conta como afiliado                                           | 13/07                 |
+| 🟧 Em andamento | Home inicial da Sala de Negócios do afiliado                                                      | 13/07                 |
+| ☐ Pendente      | Estados essenciais: novo afiliado, perfil incompleto, aguardando oportunidades, convite e vínculo | validar em 13 a 14/07 |
+| ☐ Pendente      | Conectar CTAs entre cadastro, Sala de Negócios e Painel de Afiliados                              | até 14/07             |
+| ☐ Pendente      | Organização do protótipo, anotações e handoff                                                     | congelar até 17/07    |
 
 ## Fluxo principal (jornada do afiliado)
 

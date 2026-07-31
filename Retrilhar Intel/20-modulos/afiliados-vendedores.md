@@ -20,20 +20,21 @@ O afiliado é uma pessoa física que se vincula a operadoras de turismo, mantém
 
 - **FATO** (Bloco 3): Vendedores e Afiliados são módulos separados, mas compartilham lógica de listagem, cadastro, performance e comissões.
 - **DECISÃO** (PRD / reuniões): na V1 o modelo de entrada é o afiliado se candidatando à agência, e não a agência convidando o afiliado. Todo copy e fluxo deve refletir essa inversão.
+- **DECISÃO** ([[../40-decisoes/DEC-0002-entrada-afiliado-somente-convite|DEC-0002]], Cristiano, 22/07): na V1 a entrada é **apenas por convite**. O gestor não cadastra o afiliado; envia convite por e-mail e o **próprio afiliado preenche seus dados** ao acessar o link. A **habilitação de produtos não entra no convite** — o afiliado se candidata aos produtos depois do cadastro, já dentro do painel. O modal "Novo Afiliado" (cadastro completo pelo gestor) fica **fora de escopo na V1**.
 - **FATO** (08/07, Cristiano): a pessoa vira usuária do sistema antes de virar afiliada; existe um estado "sem perfil de afiliado". A comissão desejada é informada no próprio cadastro do perfil.
 
 ## Status das entregas (fonte: Plano de Ação 13/07 a 31/08)
 
-| Status | Plataforma | Entrega |
-| --- | --- | --- |
-| ✅ Entregue | Web | Home de início com código, atalhos, KPIs e indicações recentes |
-| ✅ Entregue | Web | Área de indicações com KPIs e listagem geral |
-| ✅ Entregue | Web | Área de ganhos com KPIs, comissões por organização e extratos |
-| ✅ Entregue | Web | Área de produtos e links permitidos para venda e solicitações de filiação |
-| ✅ Entregue | Web | Configurações: perfil, recebimento, organizações, senha e notificações |
-| ✅ Entregue | Web | Ajuda e suporte com FAQ e contato com a Retrilhar |
-| 🟧 Em andamento | Web | Refinamentos finais de UI e consistência entre páginas (conclusão funcional 17/07) |
-| 🟧 Em andamento | Web | Conectar navegação, estados essenciais e protótipo para handoff (congelar até 17/07) |
+| Status          | Plataforma | Entrega                                                                              |
+| --------------- | ---------- | ------------------------------------------------------------------------------------ |
+| ✅ Entregue     | Web        | Home de início com código, atalhos, KPIs e indicações recentes                       |
+| ✅ Entregue     | Web        | Área de indicações com KPIs e listagem geral                                         |
+| ✅ Entregue     | Web        | Área de ganhos com KPIs, comissões por organização e extratos                        |
+| ✅ Entregue     | Web        | Área de produtos e links permitidos para venda e solicitações de filiação            |
+| ✅ Entregue     | Web        | Configurações: perfil, recebimento, organizações, senha e notificações               |
+| ✅ Entregue     | Web        | Ajuda e suporte com FAQ e contato com a Retrilhar                                    |
+| 🟧 Em andamento | Web        | Refinamentos finais de UI e consistência entre páginas (conclusão funcional 17/07)   |
+| 🟧 Em andamento | Web        | Conectar navegação, estados essenciais e protótipo para handoff (congelar até 17/07) |
 
 **Gate 0 (17/07)**: Painel de Afiliados e Sala de Negócios organizados, prototipados e sem decisão estrutural aberta.
 

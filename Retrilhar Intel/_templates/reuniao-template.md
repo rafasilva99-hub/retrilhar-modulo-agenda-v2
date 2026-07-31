@@ -25,7 +25,7 @@ modulos:
 ## Impacto por modulo
 
 | Modulo | Impacto | Acao |
-| --- | --- | --- |
+| ------ | ------- | ---- |
 
 ## Trechos a validar
 

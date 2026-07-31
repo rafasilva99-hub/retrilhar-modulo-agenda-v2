@@ -79,6 +79,7 @@ src/
 ## Phase 1: Project Rules And Tooling Baseline
 
 **Files:**
+
 - Modify: `CLAUDE.md`
 - Modify: `package.json`
 - Modify: `tsconfig.json`
@@ -127,6 +128,7 @@ git commit -m "[front] [ADD] prototipo — documenta alinhamento com admin"
 ## Phase 2: Bring Admin-Compatible Shell Pieces Into The Prototype
 
 **Files:**
+
 - Modify: `src/components/layout/app-layout.tsx`
 - Modify: `src/components/layout/app-shell.tsx`
 - Modify: `src/components/layout/app-sidebar.tsx`
@@ -180,7 +182,8 @@ export function MobileTabBar({ activePage, navItems, onNavigate }: MobileTabBarP
   return (
     <div className="bg-background border-border grid grid-cols-4 border-t px-[0.5em] py-[0.5em]">
       {mobileItems.map((item) => {
-        const isActive = item.page === activePage || (activePage === "agendaDia" && item.page === "agenda");
+        const isActive =
+          item.page === activePage || (activePage === "agendaDia" && item.page === "agenda");
         return (
           <button
             key={item.title}
@@ -230,6 +233,7 @@ git commit -m "[front] [ADD] layout — alinha shell do prototipo ao admin"
 ## Phase 3: Theme And Token Alignment
 
 **Files:**
+
 - Modify: `components.json`
 - Modify: `src/styles/globals.css`
 - Modify: `src/styles/theme.css`
@@ -302,6 +306,7 @@ git commit -m "[front] [UP] tema — aproxima tokens do prototipo ao admin"
 ## Phase 4: Make Agenda Module The Boundary Around Figma Exports
 
 **Files:**
+
 - Modify: `src/app/App.tsx`
 - Modify: `src/modules/agenda/index.ts`
 - Modify: `src/modules/agenda/types.ts`
@@ -382,6 +387,7 @@ git commit -m "[front] [UP] agenda — centraliza entrada do modulo"
 ## Phase 5: Extract Maintained Components From Figma Imports Gradually
 
 **Files:**
+
 - Modify gradually: `src/imports/AgendaMes/AgendaMes-13-9535.tsx`
 - Modify gradually: `src/imports/AgendaAtividadesDoDia/AgendaAtividadesDoDia.tsx`
 - Modify gradually: `src/imports/AgendaAtualizacoes/AgendaAtualizacoes.tsx`
@@ -458,6 +464,7 @@ git commit -m "[front] [UP] agenda — extrai badges de status"
 ## Phase 6: Final Prototype Migration Readiness Audit
 
 **Files:**
+
 - Review: `src/imports/**`
 - Review: `src/modules/agenda/**`
 - Review: `src/components/layout/**`

@@ -99,6 +99,7 @@ Prototype must keep:
 ## Phase 0: Baseline And Safety
 
 **Files:**
+
 - Read only: all files listed below
 - Modify only if missing: `.claude/rules/agenda-fidelity.md`
 
@@ -168,6 +169,7 @@ git commit -m "[front] [ADD] prototipo — planeja alinhamento detalhado ao admi
 ## Phase 1: shadcn Preset And Config Parity
 
 **Files:**
+
 - Modify: `components.json`
 - Modify: `src/styles/index.css`
 - Modify: `src/styles/theme.css`
@@ -281,6 +283,7 @@ git commit -m "[front] [UP] shadcn — alinha preset e tokens ao admin"
 ## Phase 2: Managed UI Component Audit
 
 **Files:**
+
 - Review: `src/components/ui/**`
 - Review: Admin `components/ui/**`
 - Create: `docs/audits/shadcn-ui-parity.md`
@@ -377,6 +380,7 @@ git commit -m "[front] [ADD] shadcn — documenta paridade dos componentes ui"
 ## Phase 3: Layout Shell Parity Without Next.js
 
 **Files:**
+
 - Modify: `src/components/layout/app-layout.tsx`
 - Modify: `src/components/layout/app-shell.tsx`
 - Modify: `src/components/layout/app-sidebar.tsx`
@@ -392,7 +396,13 @@ git commit -m "[front] [ADD] shadcn — documenta paridade dos componentes ui"
 Update `src/components/layout/types.ts` to keep explicit hash-page navigation:
 
 ```ts
-export type AppPage = "intro" | "contexto" | "agenda" | "agendaDia" | "atualizacoes" | "novaAtividade";
+export type AppPage =
+  | "intro"
+  | "contexto"
+  | "agenda"
+  | "agendaDia"
+  | "atualizacoes"
+  | "novaAtividade";
 
 export interface MenuItem {
   readonly title: string;
@@ -479,6 +489,7 @@ git commit -m "[front] [UP] shell — aproxima navegacao do prototipo ao admin"
 ## Phase 4: Shared Custom Components And Skeletons
 
 **Files:**
+
 - Create: `src/components/custom/save-button.tsx`
 - Create: `src/components/skeleton/card.tsx`
 - Create: `src/components/skeleton/table.tsx`
@@ -500,7 +511,12 @@ interface SaveButtonProps extends ComponentProps<typeof Button> {
   readonly loading?: boolean;
 }
 
-export function SaveButton({ children = "Salvar", disabled, loading = false, ...props }: SaveButtonProps) {
+export function SaveButton({
+  children = "Salvar",
+  disabled,
+  loading = false,
+  ...props
+}: SaveButtonProps) {
   return (
     <Button disabled={disabled || loading} {...props}>
       {loading && <HugeiconsIcon icon={Loading01Icon} size={16} className="animate-spin" />}
@@ -559,6 +575,7 @@ git commit -m "[front] [ADD] componentes — adiciona wrappers e skeletons do pa
 ## Phase 5: Module Boundary Cleanup
 
 **Files:**
+
 - Modify: `src/app/App.tsx`
 - Modify: `src/modules/agenda/index.ts`
 - Create: `src/modules/agenda/components/agenda-prototype.tsx`
@@ -615,6 +632,7 @@ git commit -m "[front] [UP] agenda — move orquestracao para modulo"
 ## Phase 6: Mock Service And View Model Discipline
 
 **Files:**
+
 - Modify: `src/types/agenda.ts`
 - Modify: `src/mocks/agenda.ts`
 - Modify: `src/modules/agenda/services/agenda-mock-service.ts`
@@ -648,7 +666,9 @@ Expose functions with names similar to real future use cases:
 export function listAgendaActivities(): readonly AgendaActivitySummary[];
 export function listAgendaActivitiesByDay(day: number): readonly AgendaActivitySummary[];
 export function getAgendaActivityDetails(activityId: string): AgendaActivityDetails | undefined;
-export function listAgendaActivityReservations(activityId: string): readonly AgendaReservationSummary[];
+export function listAgendaActivityReservations(
+  activityId: string
+): readonly AgendaReservationSummary[];
 ```
 
 - [ ] **Step 3: Add view models**
@@ -689,6 +709,7 @@ git commit -m "[front] [UP] agenda — cria view models para mocks"
 ## Phase 7: Figma Export Containment
 
 **Files:**
+
 - Modify: `src/modules/agenda/adapters/*.tsx`
 - Modify: `src/imports/AgendaMes/AgendaMes-13-9535.tsx`
 - Modify: `src/imports/AgendaAtividadesDoDia/AgendaAtividadesDoDia.tsx`
@@ -757,6 +778,7 @@ git commit -m "[front] [ADD] agenda — documenta fronteira dos exports figma"
 ## Phase 8: Component Extraction Passes
 
 **Files:**
+
 - Create: `src/modules/agenda/components/status/*`
 - Create: `src/modules/agenda/components/activity-card/*`
 - Create: `src/modules/agenda/components/day-view/*`
@@ -824,6 +846,7 @@ Repeat the same micro-cycle for each extraction. Do not combine unrelated extrac
 ## Phase 9: Code Quality Tightening
 
 **Files:**
+
 - Modify: `eslint.config.js`
 - Modify: `tsconfig.json`
 - Review: `package.json`
@@ -876,6 +899,7 @@ git commit -m "[front] [UP] qualidade — adiciona auditorias do padrao admin"
 ## Phase 10: Final Migration-Readiness Gate
 
 **Files:**
+
 - Review all changed files
 - Create: `docs/audits/admin-alignment-readiness.md`
 

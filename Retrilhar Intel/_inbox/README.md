@@ -22,3 +22,4 @@ Tudo que ainda nao tem fonte suficiente entra aqui antes de virar PRD, decisao o
 - Promover ou descartar trabalho local de `gestor-afiliados` que existe fora do worktree limpo.
 - Validar se regras de comunicacao de produto vistas no codigo possuem fonte canônica.
 - Resolver [[reconciliacao-claude-vs-obsidian|Reconciliação Claude Project vs Obsidian]].
+- ~~[[drift-cadastro-afiliado-pelo-gestor|Cadastro de afiliado pelo gestor coexiste com a autocandidatura na V1?]]~~ ✅ Resolvido 22/07 → [[../40-decisoes/DEC-0002-entrada-afiliado-somente-convite|DEC-0002]].

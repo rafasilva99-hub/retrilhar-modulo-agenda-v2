@@ -37,12 +37,12 @@ flowchart TD
 
 ## Responsabilidades
 
-| Papel | Responsabilidade | Write set |
-| --- | --- | --- |
-| Maestro | Orquestracao, gates, conflitos, merges e decisao de escopo. | Qualquer area quando necessario, com cuidado de worktree. |
-| Bibliotecario | Curadoria, ingestao de fontes, decisoes, mapas de modulo e pendencias. | `Retrilhar Intel/**` |
-| Agenda Worker | Melhorias da agenda/admin. | Worktree `work/agenda-front`, escopo Agenda. |
-| Afiliados Worker | Melhorias de afiliados. | Worktree `work/afiliados-front`, escopo Afiliados. |
+| Papel            | Responsabilidade                                                       | Write set                                                 |
+| ---------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- |
+| Maestro          | Orquestracao, gates, conflitos, merges e decisao de escopo.            | Qualquer area quando necessario, com cuidado de worktree. |
+| Bibliotecario    | Curadoria, ingestao de fontes, decisoes, mapas de modulo e pendencias. | `Retrilhar Intel/**`                                      |
+| Agenda Worker    | Melhorias da agenda/admin.                                             | Worktree `work/agenda-front`, escopo Agenda.              |
+| Afiliados Worker | Melhorias de afiliados.                                                | Worktree `work/afiliados-front`, escopo Afiliados.        |
 
 ## Gate de atualizacao da intel
 

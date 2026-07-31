@@ -20,33 +20,33 @@ O `AgendaAtualizacoes.tsx` implementa a tela de detalhes da atividade com 13+ dr
 
 ### Ja prontos para mobile (nao precisam de trabalho)
 
-| Componente | Tipo desktop | Tipo mobile | Linhas | Status |
-| --- | --- | --- | --- | --- |
-| Bottom menu (resumo, equipe, histórico) | Tabs desktop | Bottom sheet fullscreen | 8150-8500 | PRONTO |
-| QR Scanner (8 cenários) | Right drawer 576px | Bottom sheet 72vh | 3871-4354 | PRONTO |
-| Check-in modal (single e bulk) | Modal centralizado | Bottom sheet | 5897-6009 | PRONTO |
-| Cancelar reserva modal | Modal centralizado | Bottom sheet | 6010-6062 | PRONTO |
-| No-show modal | Modal centralizado | Bottom sheet | 6064-6104 | PRONTO |
-| Cancelar em lote modal | Modal centralizado | Bottom sheet | 6916-7094 | PRONTO |
-| Resultado cancelamento em lote | Modal centralizado | Bottom sheet | 7095-7160 | PRONTO |
-| No-show em lote modal | Modal centralizado | Bottom sheet | 7161-7217 | PRONTO |
-| Pendentes na conclusão (nested) | Modal centralizado | Bottom sheet | 3029-3075 | PRONTO |
-| Badge sheet | N/A (desktop oculto) | Bottom sheet | 7241-7257 | PRONTO |
-| Header more actions | Dropdown | Bottom sheet (md:hidden) | 4683-4762 | PRONTO |
-| Confirmar saída modal | Modal centralizado | Bottom sheet | 8590-8643 | PRONTO |
+| Componente                              | Tipo desktop         | Tipo mobile              | Linhas    | Status |
+| --------------------------------------- | -------------------- | ------------------------ | --------- | ------ |
+| Bottom menu (resumo, equipe, histórico) | Tabs desktop         | Bottom sheet fullscreen  | 8150-8500 | PRONTO |
+| QR Scanner (8 cenários)                 | Right drawer 576px   | Bottom sheet 72vh        | 3871-4354 | PRONTO |
+| Check-in modal (single e bulk)          | Modal centralizado   | Bottom sheet             | 5897-6009 | PRONTO |
+| Cancelar reserva modal                  | Modal centralizado   | Bottom sheet             | 6010-6062 | PRONTO |
+| No-show modal                           | Modal centralizado   | Bottom sheet             | 6064-6104 | PRONTO |
+| Cancelar em lote modal                  | Modal centralizado   | Bottom sheet             | 6916-7094 | PRONTO |
+| Resultado cancelamento em lote          | Modal centralizado   | Bottom sheet             | 7095-7160 | PRONTO |
+| No-show em lote modal                   | Modal centralizado   | Bottom sheet             | 7161-7217 | PRONTO |
+| Pendentes na conclusão (nested)         | Modal centralizado   | Bottom sheet             | 3029-3075 | PRONTO |
+| Badge sheet                             | N/A (desktop oculto) | Bottom sheet             | 7241-7257 | PRONTO |
+| Header more actions                     | Dropdown             | Bottom sheet (md:hidden) | 4683-4762 | PRONTO |
+| Confirmar saída modal                   | Modal centralizado   | Bottom sheet             | 8590-8643 | PRONTO |
 
 ### Pendentes: drawers desktop-only que precisam de adaptação mobile
 
-| # | Componente | Tipo desktop | Largura | Linhas | Estado mobile |
-| --- | --- | --- | --- | --- | --- |
-| D1 | Drawer de participante | Right drawer | 720px | 1488-1981 | SEM MOBILE |
-| D2 | Drawer de pagamento | Right drawer | 720px | 2305-2456 | SEM MOBILE |
-| D3 | Drawer de filtros | Right drawer | 720px | 2510-2780 | SEM MOBILE |
-| D4 | Concluir atividade | Right drawer | 640px | 2783-3028 | SEM MOBILE |
-| D5 | Reagendamento | Right drawer | 720px | 6106-6916 | SEM MOBILE |
-| D6 | Equipe responsável (header) | Right drawer | 640px | 5492-5595 | SEM MOBILE |
-| D7 | Listas e manifestos | Right drawer | 720px | 5597-5793 | SEM MOBILE |
-| D8 | Ficha do participante | Right drawer | 720px | 5794-5866 | SEM MOBILE |
+| #   | Componente                  | Tipo desktop | Largura | Linhas    | Estado mobile |
+| --- | --------------------------- | ------------ | ------- | --------- | ------------- |
+| D1  | Drawer de participante      | Right drawer | 720px   | 1488-1981 | SEM MOBILE    |
+| D2  | Drawer de pagamento         | Right drawer | 720px   | 2305-2456 | SEM MOBILE    |
+| D3  | Drawer de filtros           | Right drawer | 720px   | 2510-2780 | SEM MOBILE    |
+| D4  | Concluir atividade          | Right drawer | 640px   | 2783-3028 | SEM MOBILE    |
+| D5  | Reagendamento               | Right drawer | 720px   | 6106-6916 | SEM MOBILE    |
+| D6  | Equipe responsável (header) | Right drawer | 640px   | 5492-5595 | SEM MOBILE    |
+| D7  | Listas e manifestos         | Right drawer | 720px   | 5597-5793 | SEM MOBILE    |
+| D8  | Ficha do participante       | Right drawer | 720px   | 5794-5866 | SEM MOBILE    |
 
 ---
 
@@ -95,12 +95,14 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Estado alvo:** No mobile, vira bottom sheet fullscreen (`h-full pt-[46px]`) com handle de arrasto, scroll interno e botões de ação no footer fixo com safe-area-inset-bottom.
 
 **Comportamento mobile:**
+
 - Header: handle + avatar reduzido + nome + botão X
 - Body: scroll vertical com seções colapsáveis preservadas
 - Footer fixo: botões de ação (check-in, desfazer, no-show) empilhados verticalmente (`flex-col gap-[8px]`)
 - Safe area: `pb-[calc(12px+env(safe-area-inset-bottom))]`
 
 **Critérios de aceite:**
+
 - [ ] No mobile (< 768px), drawer abre como bottom sheet fullscreen
 - [ ] No desktop (>= 768px), comportamento inalterado
 - [ ] Todas as seções colapsáveis funcionam no bottom sheet
@@ -120,11 +122,13 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Estado alvo:** No mobile, vira bottom sheet com `max-h-[90vh]` e scroll interno.
 
 **Comportamento mobile:**
+
 - Header: handle + título "Pagamento" + botão X
 - Body: scroll vertical com informações de pagamento
 - Footer: botões de ação se houver
 
 **Critérios de aceite:**
+
 - [ ] No mobile, drawer abre como bottom sheet com max-h-[90vh]
 - [ ] No desktop, comportamento inalterado
 - [ ] Valores e badges de status legíveis em tela estreita
@@ -142,11 +146,13 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Estado alvo:** No mobile, vira bottom sheet com `max-h-[90vh]`, handle de arrasto e botões "Limpar" e "Aplicar" no footer fixo.
 
 **Comportamento mobile:**
+
 - Header: handle + título "Filtros" + botão X
 - Body: scroll vertical com grupos de checkboxes
 - Footer fixo: "Limpar filtros" (secundário) + "Aplicar" (primário)
 
 **Critérios de aceite:**
+
 - [ ] No mobile, filtros abrem como bottom sheet (nao inline)
 - [ ] No desktop, comportamento inalterado
 - [ ] Checkboxes com touch target mínimo de 44px
@@ -165,6 +171,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Estado alvo:** No mobile, vira bottom sheet fullscreen (`h-full pt-[46px]`) com scroll interno e botão "Concluir" no footer fixo.
 
 **Comportamento mobile:**
+
 - Header: handle + título "Concluir atividade" + botão X
 - Body: scroll vertical preservando layout de formulário
 - Resumo de participantes: grid 2x2 em vez de row
@@ -173,6 +180,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 - Footer fixo: "Cancelar" + "Concluir atividade"
 
 **Critérios de aceite:**
+
 - [ ] No mobile, drawer abre como bottom sheet fullscreen
 - [ ] No desktop, comportamento inalterado
 - [ ] Inputs de horário usáveis em touch (não cortados)
@@ -192,6 +200,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Estado alvo:** No mobile, vira bottom sheet fullscreen (`h-full pt-[46px]`) com scroll interno e footer fixo.
 
 **Comportamento mobile:**
+
 - Header: handle + título "Reagendar" + botão X
 - Dropdown de tipo de atividade: largura total (`w-full`)
 - Calendário: adaptado para viewport estreito (cells menores, font-size reduzido)
@@ -200,6 +209,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 - Footer fixo: "Cancelar" + "Confirmar reagendamento"
 
 **Critérios de aceite:**
+
 - [ ] No mobile, drawer abre como bottom sheet fullscreen
 - [ ] No desktop, comportamento inalterado
 - [ ] Calendário legível e navegável em 390px
@@ -221,6 +231,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Nota:** Já existe uma versão mobile de equipe no bottom menu (linha 8227-8500). Avaliar se é possível reutilizar a mesma renderização ou se o drawer do header tem funcionalidades adicionais (busca, menu de 3 pontos, contratar seguro) que o bottom menu nao tem. INFERENCIA: provavelmente o drawer do header é mais completo; o bottom menu pode ser uma versão simplificada de leitura.
 
 **Comportamento mobile:**
+
 - Header: handle + título "Equipe responsável" + botão X
 - Busca: input full-width com ícone
 - Lista: guias com avatar, nome, status do seguro
@@ -228,6 +239,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 - Footer fixo: contagem de seguros + botão "Fechar"
 
 **Critérios de aceite:**
+
 - [ ] No mobile, drawer abre como bottom sheet fullscreen
 - [ ] No desktop, comportamento inalterado
 - [ ] Busca funcional em mobile
@@ -247,6 +259,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Estado alvo:** No mobile, vira bottom sheet fullscreen (`h-full pt-[46px]`) com scroll interno.
 
 **Comportamento mobile:**
+
 - Header: handle + título "Listas e manifestos" + botão X
 - Card de atividade: stack vertical, sem truncar
 - Grupos: acordeon/expand preservado
@@ -254,6 +267,7 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 - Footer fixo: botão "Download manifesto"
 
 **Critérios de aceite:**
+
 - [ ] No mobile, drawer abre como bottom sheet fullscreen
 - [ ] No desktop, comportamento inalterado
 - [ ] Grupos expandíveis funcionam em touch
@@ -272,11 +286,13 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 **Estado alvo:** No mobile, vira bottom sheet fullscreen (`h-full pt-[46px]`) com scroll interno.
 
 **Comportamento mobile:**
+
 - Header: handle + título "Ficha" + botão X
 - Body: scroll vertical com campos de saúde
 - Footer: botões de download/exportar
 
 **Critérios de aceite:**
+
 - [ ] No mobile, drawer abre como bottom sheet fullscreen
 - [ ] No desktop, comportamento inalterado
 - [ ] Campos de texto longos legíveis em tela estreita
@@ -291,38 +307,38 @@ O componente já usa o hook `useIsMobile()` (breakpoint 768px). O padrão recome
 
 ### Wave 1: Fluxo principal do teste (P0)
 
-| Task | Drawer | Complexidade | Dependência |
-| --- | --- | --- | --- |
-| T1 | D1 - Drawer de participante | Alta | Nenhuma |
-| T2 | D3 - Drawer de filtros | Média | Nenhuma |
-| T3 | D4 - Concluir atividade | Alta | Nenhuma |
+| Task | Drawer                      | Complexidade | Dependência |
+| ---- | --------------------------- | ------------ | ----------- |
+| T1   | D1 - Drawer de participante | Alta         | Nenhuma     |
+| T2   | D3 - Drawer de filtros      | Média        | Nenhuma     |
+| T3   | D4 - Concluir atividade     | Alta         | Nenhuma     |
 
 Podem rodar em paralelo. Sem dependências cruzadas.
 
 ### Wave 2: Fluxos secundários (P1)
 
-| Task | Drawer | Complexidade | Dependência |
-| --- | --- | --- | --- |
-| T4 | D2 - Drawer de pagamento | Média | T1 (mesmo contexto de participante) |
-| T5 | D5 - Reagendamento | Muito alta | T1 (abre a partir do participante) |
+| Task | Drawer                   | Complexidade | Dependência                         |
+| ---- | ------------------------ | ------------ | ----------------------------------- |
+| T4   | D2 - Drawer de pagamento | Média        | T1 (mesmo contexto de participante) |
+| T5   | D5 - Reagendamento       | Muito alta   | T1 (abre a partir do participante)  |
 
 T4 e T5 podem rodar em paralelo entre si, mas depois de T1.
 
 ### Wave 3: Fluxos operacionais (P2)
 
-| Task | Drawer | Complexidade | Dependência |
-| --- | --- | --- | --- |
-| T6 | D6 - Equipe responsável | Média | Nenhuma |
-| T7 | D7 - Listas e manifestos | Média | Nenhuma |
-| T8 | D8 - Ficha do participante | Baixa | Nenhuma |
+| Task | Drawer                     | Complexidade | Dependência |
+| ---- | -------------------------- | ------------ | ----------- |
+| T6   | D6 - Equipe responsável    | Média        | Nenhuma     |
+| T7   | D7 - Listas e manifestos   | Média        | Nenhuma     |
+| T8   | D8 - Ficha do participante | Baixa        | Nenhuma     |
 
 Podem rodar em paralelo. Sem dependências cruzadas.
 
 ### Wave 4: QA final
 
-| Task | Escopo | Dependência |
-| --- | --- | --- |
-| T9 | Teste integrado: navegar por todos os drawers no viewport 390x844, verificar transições entre drawers (ex.: participante > pagamento > voltar), confirmar que nenhum drawer quebrou no desktop | T1-T8 |
+| Task | Escopo                                                                                                                                                                                         | Dependência |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| T9   | Teste integrado: navegar por todos os drawers no viewport 390x844, verificar transições entre drawers (ex.: participante > pagamento > voltar), confirmar que nenhum drawer quebrou no desktop | T1-T8       |
 
 ---
 
@@ -385,13 +401,13 @@ O conteúdo interno pode ser compartilhado entre desktop e mobile quando a estru
 
 ## 8. Riscos e decisões
 
-| # | Risco | Mitigação |
-| --- | --- | --- |
-| R1 | Arquivo muito grande (8.600+ linhas) dificulta navegação e diffs | Trabalhar por regiões de linha específicas. Nao reformatar o arquivo inteiro. |
-| R2 | Drawer de participante tem sub-drawers (pagamento abre a partir dele) | Testar transição drawer > sub-drawer no mobile. Manter z-index correto. |
-| R3 | Calendário de reagendamento pode nao caber em 390px | Reduzir font-size das cells e padding. Testar com 3 modos. |
-| R4 | Bottom menu de equipe já existe e pode conflitar com drawer de equipe | Mapear funcionalidades de cada um. Se iguais, reutilizar. Se diferentes, manter ambos. |
-| R5 | Animação de saída pode piscar se o state for limpo antes da animação | Usar pattern isClosing + setTimeout(200) já validado no projeto. |
+| #   | Risco                                                                 | Mitigação                                                                              |
+| --- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| R1  | Arquivo muito grande (8.600+ linhas) dificulta navegação e diffs      | Trabalhar por regiões de linha específicas. Nao reformatar o arquivo inteiro.          |
+| R2  | Drawer de participante tem sub-drawers (pagamento abre a partir dele) | Testar transição drawer > sub-drawer no mobile. Manter z-index correto.                |
+| R3  | Calendário de reagendamento pode nao caber em 390px                   | Reduzir font-size das cells e padding. Testar com 3 modos.                             |
+| R4  | Bottom menu de equipe já existe e pode conflitar com drawer de equipe | Mapear funcionalidades de cada um. Se iguais, reutilizar. Se diferentes, manter ambos. |
+| R5  | Animação de saída pode piscar se o state for limpo antes da animação  | Usar pattern isClosing + setTimeout(200) já validado no projeto.                       |
 
 ---
 

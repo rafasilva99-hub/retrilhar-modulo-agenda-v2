@@ -19,6 +19,7 @@ export * from "./produtos-vinculados";
 export * from "./resumo";
 export * from "./solicitacoes";
 export * from "./solicitacoes-autorizacao";
+export * from "./termo";
 export * from "./top-afiliados";
 export * from "./venda-detalhe";
 export * from "./vendas";
@@ -27,6 +28,7 @@ export type GestorAffiliateSection =
   | "visao"
   | "central"
   | "afiliados"
+  | "ficha"
   | "propostas"
   | "solicitacoes"
   | "pagamentos"

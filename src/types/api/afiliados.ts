@@ -158,6 +158,12 @@ export interface EventoNegociacao {
   criadoEm: string; // ISO 8601
 }
 
+// Condições padrão do termo de afiliação da organização; fonte do rótulo
+// "Padrão do termo (X%)" exibido quando a solicitação não propõe percentual.
+export interface TermoOrganizacao {
+  comissaoPadraoPercentual: number;
+}
+
 // [PENDENTE P3] Este enum pode não pertencer à Solicitação.
 export type MetodoRecebimento = "split" | "pix" | "conta_bancaria";
 

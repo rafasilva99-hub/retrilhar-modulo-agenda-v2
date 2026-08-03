@@ -35,3 +35,36 @@ export const produtosVinculadosCheio: readonly ProdutoVinculado[] = [
     metodoRecebimento: "conta_bancaria",
   },
 ];
+
+// Produtos do catálogo elegíveis para vinculação no modal AFI-03.m.
+// [PENDENTE P1] A comissão inicial segue o padrão do termo até a regra
+// percentual vs valor fixo fechar com o Matheus.
+export const produtosVinculaveis: readonly ProdutoVinculado[] = [
+  {
+    id: "vinc-04",
+    nome: "Expedição Vale do Pati",
+    local: "Chapada Diamantina, BA",
+    thumbnailUrl: trilhaItacolomi,
+    itemAtivo: true,
+    comissao: { formato: "percentual", valor: 10 },
+    metodoRecebimento: "split",
+  },
+  {
+    id: "vinc-05",
+    nome: "Trilha Cachoeira Grande",
+    local: "Serra do Cipó, MG",
+    thumbnailUrl: rapelTombo,
+    itemAtivo: true,
+    comissao: { formato: "percentual", valor: 10 },
+    metodoRecebimento: "split",
+  },
+  {
+    id: "vinc-06",
+    nome: "Canionismo Serra Geral",
+    local: "Praia Grande, SC",
+    thumbnailUrl: trilhaItambe,
+    itemAtivo: true,
+    comissao: { formato: "percentual", valor: 10 },
+    metodoRecebimento: "split",
+  },
+];

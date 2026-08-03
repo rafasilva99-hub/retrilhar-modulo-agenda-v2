@@ -97,6 +97,8 @@ function getGestorAffiliateSection(page: AppPage): GestorAffiliateSection | null
       return "central";
     case "gestorAfiliadosLista":
       return "afiliados";
+    case "gestorAfiliadosFicha":
+      return "ficha";
     case "gestorAfiliadosPropostas":
       return "propostas";
     case "gestorAfiliadosSolicitacoes":
@@ -212,6 +214,7 @@ function AgendaPrototypeApp() {
       case "gestorAfiliados":
       case "gestorAfiliadosCentral":
       case "gestorAfiliadosLista":
+      case "gestorAfiliadosFicha":
       case "gestorAfiliadosPropostas":
       case "gestorAfiliadosSolicitacoes":
       case "gestorAfiliadosPagamentos":

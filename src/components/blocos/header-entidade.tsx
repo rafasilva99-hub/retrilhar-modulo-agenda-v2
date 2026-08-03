@@ -1,8 +1,11 @@
 import { Calendar03Icon, LicenseIcon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { ReactNode } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatarDataExtensa } from "@/lib/formatadores";
+
+import { CodigoCopiavel } from "./codigo-copiavel";
 
 interface HeaderEntidadeProps {
   readonly nome: string;
@@ -10,6 +13,12 @@ interface HeaderEntidadeProps {
   readonly handle?: string | null;
   readonly termosAceitosEm?: string | null;
   readonly afiliadoDesde?: string | null;
+  // Extensões da ficha AFI-03 (Etapa 03): selo de estado ao lado do nome,
+  // código copiável e rótulo da data ("Desativada em" na variante somente
+  // leitura). Opcionais para preservar os usos da Etapa 02.
+  readonly badge?: ReactNode;
+  readonly codigo?: string;
+  readonly dataRotulo?: string;
 }
 
 // Cabeçalho de entidade dos modais de avaliação (AFI-04.a/.b) e da ficha
@@ -21,6 +30,9 @@ export function HeaderEntidade({
   handle,
   termosAceitosEm,
   afiliadoDesde,
+  badge,
+  codigo,
+  dataRotulo,
 }: HeaderEntidadeProps) {
   const meta = [descricao, handle].filter(Boolean).join(" · ");
 
@@ -33,8 +45,16 @@ export function HeaderEntidade({
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="truncate text-base font-semibold tracking-tight">{nome}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="truncate text-base font-semibold tracking-tight">{nome}</p>
+            {badge}
+          </div>
           {meta ? <p className="text-muted-foreground truncate text-sm">{meta}</p> : null}
+          {codigo ? (
+            <div className="mt-1">
+              <CodigoCopiavel codigo={codigo} />
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -62,7 +82,9 @@ export function HeaderEntidade({
         {afiliadoDesde ? (
           <div className="flex items-center gap-3">
             <div className="space-y-0.5 text-right">
-              <p className="text-muted-foreground text-xs">Afiliado(a) ativo(a) desde</p>
+              <p className="text-muted-foreground text-xs">
+                {dataRotulo ?? "Afiliado(a) ativo(a) desde"}
+              </p>
               <p className="text-sm font-medium">{formatarDataExtensa(afiliadoDesde)}</p>
             </div>
             <span className="bg-muted/60 text-muted-foreground grid size-10 shrink-0 place-items-center rounded-xl">

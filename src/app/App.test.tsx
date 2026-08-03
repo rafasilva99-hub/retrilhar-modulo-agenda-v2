@@ -15,7 +15,8 @@ const affiliateRoutes = [
 const managerAffiliateRoutes = [
   { hash: "gestorAfiliados", expectedText: "Últimas vendas realizadas" },
   { hash: "gestorAfiliadosCentral", expectedText: "Candidaturas e pedidos solicitados" },
-  { hash: "gestorAfiliadosLista", expectedText: "ANA-4510" },
+  { hash: "gestorAfiliadosLista", expectedText: "ANA-2201" },
+  { hash: "gestorAfiliadosFicha", expectedText: "Vendas realizadas" },
   { hash: "gestorAfiliadosPropostas", expectedText: "Contraproposta" },
   { hash: "gestorAfiliadosSolicitacoes", expectedText: "Rapel Cachoeira" },
   { hash: "gestorAfiliadosPagamentos", expectedText: "Registrar pagamento" },

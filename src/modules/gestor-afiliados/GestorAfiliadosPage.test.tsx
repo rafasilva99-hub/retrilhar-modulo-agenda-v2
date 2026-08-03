@@ -16,38 +16,60 @@ afterEach(() => {
 });
 
 describe("GestorAfiliadosPage", () => {
-  it("opens the registration dialog and records a local prepared state", () => {
+  it("renders the AFI-02 list with KPIs, badges and pagination", () => {
     render(<GestorAfiliadosPage section="afiliados" />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Cadastrar" }));
-    expect(screen.getByRole("heading", { name: "Cadastrar afiliado" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Lista de afiliados" })).toBeInTheDocument();
+    expect(screen.getByText("Total de afiliados")).toBeInTheDocument();
+    expect(screen.getByText("ANA-2201")).toBeInTheDocument();
+    expect(screen.getAllByText("Filiação ativa").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Mostrando 1 a 5 de 7/)).toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole("textbox", { name: "Nome" }), {
-      target: { value: "Paula Costa" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "Preparar cadastro" }));
-
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Paula Costa foi preparado para cadastro de afiliação."
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Próxima" }));
+    expect(screen.getByText("Maria Eduarda Costa")).toBeInTheDocument();
+    expect(screen.getByText("Convite enviado")).toBeInTheDocument();
   });
 
-  it("opens the affiliate sheet and records menu actions locally", () => {
+  it("pauses and resumes a filiação from the row menu with distinct toasts", () => {
     render(<GestorAfiliadosPage section="afiliados" />);
 
-    fireEvent.click(screen.getAllByRole("button", { name: /Ana Beatriz Ramos/ })[0]!);
+    openMenu(/Ações de Isabelly Beatriz Lopes/);
+    fireEvent.click(screen.getByRole("menuitem", { name: /Filiação ativa/ }));
+    expect(screen.getAllByText("Filiação pausada").length).toBeGreaterThan(0);
 
-    expect(screen.getByRole("heading", { name: "Ana Beatriz Ramos" })).toBeInTheDocument();
-    expect(screen.getByText("Ficha da afiliação nesta organização")).toBeInTheDocument();
-    expect(screen.queryByText("Cerrado Experience")).not.toBeInTheDocument();
+    openMenu(/Ações de Isabelly Beatriz Lopes/);
+    fireEvent.click(screen.getByRole("menuitem", { name: /Filiação pausada/ }));
+    expect(screen.getAllByText("Filiação ativa").length).toBeGreaterThan(0);
+  });
 
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    openMenu(/Ações de Ana Beatriz Ramos/);
-    fireEvent.click(screen.getByRole("menuitem", { name: "Editar afiliação" }));
+  it("gates deactivation by profile and requires a motivo before confirming", () => {
+    render(<GestorAfiliadosPage section="afiliados" />);
 
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Edição de afiliação preparada para Ana Beatriz Ramos."
-    );
+    openMenu(/Ações de Ana Paula Silva/);
+    fireEvent.click(screen.getByRole("menuitem", { name: "Desativar filiação" }));
+    expect(screen.getByRole("heading", { name: "Desativar filiação" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Desativar filiação" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Gestor de afiliados" }));
+    openMenu(/Ações de Ana Paula Silva/);
+    expect(screen.queryByRole("menuitem", { name: "Desativar filiação" })).not.toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "Solicitar desativação" })).toBeInTheDocument();
+  });
+
+  it("renders the AFI-03 ficha and its desativada variant as read only", () => {
+    render(<GestorAfiliadosPage section="ficha" />);
+
+    expect(screen.getByRole("heading", { name: "Detalhes do afiliado" })).toBeInTheDocument();
+    expect(screen.getAllByText("Ana Paula Silva").length).toBeGreaterThan(0);
+    expect(screen.getByText("Vendas realizadas")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Vincular produto/ })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Desativada" }));
+    expect(screen.getByRole("button", { name: "Reativar filiação" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Vincular produto/ })).not.toBeInTheDocument();
+    expect(screen.getByText("Filiação desativada")).toBeInTheDocument();
+    expect(screen.getAllByText("No último mês da filiação").length).toBeGreaterThan(0);
   });
 
   it("records product request decisions locally", () => {

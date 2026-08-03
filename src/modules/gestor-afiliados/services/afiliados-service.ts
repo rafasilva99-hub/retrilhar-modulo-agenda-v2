@@ -16,6 +16,7 @@ import {
   pendenciasCheio,
   pendenciasVazio,
   produtosDivulgaveis,
+  produtosVinculaveis,
   protocoloNovaSolicitacao,
   resumoAfiliadosCheio,
   resumoListaAfiliados,
@@ -23,6 +24,7 @@ import {
   solicitacoesCheio,
   solicitacoesVazio,
   sugestaoConvite,
+  termoOrganizacao,
   topAfiliadosCheio,
   vendasCheio,
   vendasVazio,
@@ -37,11 +39,13 @@ import type {
   MotivoRecusa,
   PendenciaAfiliacao,
   ProdutoDivulgavel,
+  ProdutoVinculado,
   ResumoAfiliados,
   ResumoLista,
   Solicitacao,
   SolicitacaoAutorizacao,
   SugestaoConvite,
+  TermoOrganizacao,
   VendaAfiliado,
 } from "@/types/api/afiliados";
 
@@ -118,6 +122,11 @@ export function listarCategoriasProdutos(): string[] {
 // Sugestão de preenchimento do convite (AFI-01.b) para o roteiro do teste.
 export function obterSugestaoConvite(): SugestaoConvite {
   return sugestaoConvite;
+}
+
+// GET /organizacao/termo
+export function obterTermoOrganizacao(): TermoOrganizacao {
+  return termoOrganizacao;
 }
 
 // ---------------------------------------------------------------------------
@@ -302,4 +311,18 @@ export function obterSolicitacaoPendente(afiliadoId: string): SolicitacaoAutoriz
 // POST /autorizacoes — o protocolo viria do backend; aqui é fixo do mock.
 export function criarSolicitacaoAutorizacao(): string {
   return protocoloNovaSolicitacao;
+}
+
+// GET /organizacao/produtos?vinculaveis=true&busca=
+// Catálogo elegível para o modal Vincular produtos (AFI-03.m), já no
+// formato de vínculo. Exclui os ids informados (produtos já vinculados).
+export function listarProdutosVinculaveis(
+  busca = "",
+  excluirIds: readonly string[] = []
+): ProdutoVinculado[] {
+  const termo = busca.trim().toLocaleLowerCase("pt-BR");
+  return produtosVinculaveis.filter((produto) => {
+    if (excluirIds.includes(produto.id)) return false;
+    return !termo || produto.nome.toLocaleLowerCase("pt-BR").includes(termo);
+  });
 }

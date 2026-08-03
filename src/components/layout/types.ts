@@ -11,6 +11,7 @@ export type AppPage =
   | "gestorAfiliados"
   | "gestorAfiliadosCentral"
   | "gestorAfiliadosLista"
+  | "gestorAfiliadosFicha"
   | "gestorAfiliadosPropostas"
   | "gestorAfiliadosSolicitacoes"
   | "gestorAfiliadosPagamentos"

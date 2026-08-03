@@ -80,6 +80,13 @@ export const systemPages: SystemPage[] = [
     breadcrumb: "Candidaturas e propostas de afiliados",
   },
   {
+    id: "lista-afiliados",
+    name: "Lista de afiliados",
+    icon: UserStar01Icon,
+    page: "gestorAfiliadosLista",
+    breadcrumb: "Afiliados da organização",
+  },
+  {
     id: "indicadores",
     name: "Indicadores",
     icon: Chart02Icon,

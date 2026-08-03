@@ -16,9 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { GestorAffiliateSection } from "@/mocks/gestor-afiliados";
 
-import { GestorAffiliatesList } from "./components/affiliates-list";
 import { GestorCentralFiliacao } from "./components/central-filiacao";
 import { ConvidarAfiliadoDrawer } from "./components/convidar-afiliado-drawer";
+import { GestorFichaAfiliado } from "./components/ficha-afiliado";
+import { GestorListaAfiliados } from "./components/lista-afiliados";
 import { GestorPaymentsPage } from "./components/payments";
 import { GestorProposalsPage } from "./components/proposals";
 import { GestorRequestsPage } from "./components/requests";
@@ -73,6 +74,69 @@ export function GestorAfiliadosPage({ section }: GestorAfiliadosPageProps) {
         }
       >
         <GestorCentralFiliacao />
+        <ConvidarAfiliadoDrawer aberto={conviteAberto} aoFechar={() => setConviteAberto(false)} />
+      </AppPage>
+    );
+  }
+
+  if (section === "ficha") {
+    return (
+      <AppPage
+        title="Detalhes do afiliado"
+        description="Filiação, produtos, histórico e comissões deste afiliado."
+        breadcrumb={[
+          {
+            title: "Início",
+            onClick: () => {
+              window.location.hash = "#contexto";
+            },
+          },
+          {
+            title: "Visão geral",
+            onClick: () => {
+              window.location.hash = "#gestorAfiliados";
+            },
+          },
+          {
+            title: "Lista de afiliados",
+            onClick: () => {
+              window.location.hash = "#gestorAfiliadosLista";
+            },
+          },
+        ]}
+      >
+        <GestorFichaAfiliado />
+      </AppPage>
+    );
+  }
+
+  if (section === "afiliados") {
+    return (
+      <AppPage
+        title="Lista de afiliados"
+        description="Afiliados da organização com filiação, vendas e status num só lugar."
+        breadcrumb={[
+          {
+            title: "Início",
+            onClick: () => {
+              window.location.hash = "#contexto";
+            },
+          },
+          {
+            title: "Visão geral",
+            onClick: () => {
+              window.location.hash = "#gestorAfiliados";
+            },
+          },
+        ]}
+        actions={
+          <Button className="gap-2" onClick={() => setConviteAberto(true)}>
+            <HugeiconsIcon icon={UserAdd01Icon} size={16} aria-hidden="true" />
+            Convidar afiliado
+          </Button>
+        }
+      >
+        <GestorListaAfiliados />
         <ConvidarAfiliadoDrawer aberto={conviteAberto} aoFechar={() => setConviteAberto(false)} />
       </AppPage>
     );
@@ -207,7 +271,7 @@ function renderSection(section: GestorAffiliateSection) {
     case "central":
       return <GestorCentralFiliacao />;
     case "afiliados":
-      return <GestorAffiliatesList />;
+      return <GestorListaAfiliados />;
     case "propostas":
       return <GestorProposalsPage />;
     case "solicitacoes":

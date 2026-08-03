@@ -27,6 +27,9 @@ import type { MotivoRecusa } from "@/types/api/afiliados";
 interface EntidadeDialogMotivo {
   readonly titulo: string;
   readonly subtitulo?: string;
+  // [PROPOSTA §4.1] Informação de consequência financeira com destaque no
+  // card da entidade (variante entidade-com-alerta).
+  readonly alerta?: string;
 }
 
 interface DialogCapturaMotivoProps {
@@ -39,6 +42,10 @@ interface DialogCapturaMotivoProps {
   readonly tomAcao: "destrutivo" | "neutro";
   readonly motivoObrigatorio: boolean;
   readonly rotuloConfirmar: string;
+  // Copy por escopo (§4.1 e §5.4); os padrões preservam o uso da Etapa 02.
+  readonly rotuloMotivo?: string;
+  readonly rotuloDescricao?: string;
+  readonly placeholderDescricao?: string;
   readonly aoConfirmar: (motivoCodigo: string, descricao: string) => void;
   readonly aoCancelar: () => void;
 }
@@ -55,6 +62,9 @@ export function DialogCapturaMotivo({
   tomAcao,
   motivoObrigatorio,
   rotuloConfirmar,
+  rotuloMotivo = "Motivo",
+  rotuloDescricao = "Descreva a razão da recusa",
+  placeholderDescricao = "A comissão pedida consome quase toda a margem deste produto. Podemos retomar com um percentual menor.",
   aoConfirmar,
   aoCancelar,
 }: DialogCapturaMotivoProps) {
@@ -91,6 +101,12 @@ export function DialogCapturaMotivo({
               {entidade.subtitulo ? (
                 <p className="text-muted-foreground truncate text-xs">{entidade.subtitulo}</p>
               ) : null}
+              {entidade.alerta ? (
+                <p className="flex items-center gap-1 text-xs font-medium text-amber-700">
+                  <HugeiconsIcon icon={Alert02Icon} size={12} aria-hidden="true" />
+                  {entidade.alerta}
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -110,7 +126,7 @@ export function DialogCapturaMotivo({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="captura-motivo">Motivo</Label>
+            <Label htmlFor="captura-motivo">{rotuloMotivo}</Label>
             <Select value={motivo} onValueChange={setMotivo}>
               <SelectTrigger id="captura-motivo" className="w-full">
                 <SelectValue placeholder="Selecione um motivo" />
@@ -126,12 +142,12 @@ export function DialogCapturaMotivo({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="captura-descricao">Descreva a razão da recusa</Label>
+            <Label htmlFor="captura-descricao">{rotuloDescricao}</Label>
             <Textarea
               id="captura-descricao"
               value={descricao}
               rows={3}
-              placeholder="A comissão pedida consome quase toda a margem deste produto. Podemos retomar com um percentual menor."
+              placeholder={placeholderDescricao}
               onChange={(event) => setDescricao(event.target.value)}
             />
             <p className="text-muted-foreground text-xs">

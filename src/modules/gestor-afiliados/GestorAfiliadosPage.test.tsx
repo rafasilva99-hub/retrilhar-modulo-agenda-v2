@@ -86,18 +86,29 @@ describe("GestorAfiliadosPage", () => {
     expect(screen.getByText("Todos os produtos")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Enviar convite/ })).toBeDisabled();
 
-    fireEvent.change(screen.getByRole("textbox", { name: "Nome do afiliado (a)" }), {
-      target: { value: "Paula Costa" },
-    });
-    fireEvent.change(screen.getByRole("textbox", { name: "E-mail do afiliado (a)" }), {
-      target: { value: "paula@exemplo.com.br" },
-    });
+    const nomeInput = screen.getByRole("textbox", { name: "Nome do afiliado (a)" });
+    fireEvent.focus(nomeInput);
+    expect(nomeInput).toHaveValue("Mariana Duarte");
+
+    const emailInput = screen.getByRole("textbox", { name: "E-mail do afiliado (a)" });
+    fireEvent.focus(emailInput);
+    expect(emailInput).toHaveValue("mariana.duarte@gmail.com");
+
+    const valorInput = screen.getByRole("textbox", { name: "Valor da comissão" });
+    fireEvent.focus(valorInput);
+    expect(valorInput).toHaveValue("12%");
+
+    // O envio só é liberado após a definição dos produtos do convite.
+    expect(screen.getByRole("button", { name: /Enviar convite/ })).toBeDisabled();
 
     fireEvent.click(screen.getByRole("button", { name: /Produtos selecionados/ }));
     expect(screen.getByRole("button", { name: /Produtos selecionados/ })).toHaveAttribute(
       "aria-pressed",
       "true"
     );
+    expect(screen.getByRole("button", { name: /Enviar convite/ })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Selecionar Trilha Pico do Itambé/ }));
 
     const enviarButton = screen.getByRole("button", { name: /Enviar convite/ });
     expect(enviarButton).toBeEnabled();
@@ -174,7 +185,7 @@ describe("GestorAfiliadosPage", () => {
   it("renders the central de filiação grouped by day", () => {
     render(<GestorAfiliadosPage section="central" />);
 
-    expect(screen.getByRole("heading", { name: "Central de filiação" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Pendências" })).toBeInTheDocument();
     expect(screen.getByText("Hoje")).toBeInTheDocument();
     expect(screen.getByText(/^Ontem, /)).toBeInTheDocument();
     expect(screen.getAllByText("Solicitação de afiliação à sua organização")).toHaveLength(3);
@@ -184,8 +195,15 @@ describe("GestorAfiliadosPage", () => {
   it("filters and searches solicitações in the central de filiação", () => {
     render(<GestorAfiliadosPage section="central" />);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Propostas/ }));
-    expect(screen.queryByText(/Solicitação de afiliação em/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Não visualizadas/ }));
+    expect(screen.queryByText(/Rapel Cachoeira do Tabuleiro/)).not.toBeInTheDocument();
+    expect(screen.getAllByText("Solicitação de afiliação à sua organização")).toHaveLength(3);
+
+    fireEvent.click(screen.getByRole("button", { name: "Propostas aceitas" }));
+    expect(
+      screen.queryByText("Solicitação de afiliação à sua organização")
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByText(/Trilha Pico do Itambé/)).toHaveLength(2);
 
     fireEvent.click(screen.getByRole("button", { name: /^Todas/ }));
     fireEvent.change(screen.getByRole("textbox", { name: "Pesquisar pendências" }), {
@@ -200,6 +218,19 @@ describe("GestorAfiliadosPage", () => {
       target: { value: "termo sem resultado algum" },
     });
     expect(screen.getByText("Nenhum resultado para a busca")).toBeInTheDocument();
+  });
+
+  it("opens the avaliar proposta drawer from a pendência", () => {
+    render(<GestorAfiliadosPage section="central" />);
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Abrir pendência de Ana Beatriz Campos" })[0]!
+    );
+
+    expect(screen.getByRole("heading", { name: "Avaliar proposta" })).toBeInTheDocument();
+    expect(screen.getByText("Termos de uso de afiliado")).toBeInTheDocument();
+    expect(screen.getByText("Comissão solicitada pelo afiliado")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Aprovar e definir comissão/ })).toBeInTheDocument();
   });
 
   it("switches the central de filiação system states", () => {

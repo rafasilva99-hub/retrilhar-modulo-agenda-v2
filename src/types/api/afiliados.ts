@@ -17,6 +17,10 @@ export type EstadoFiliacao =
 // Quando a HP16 fechar, um dos branches é DELETADO, não reescrito.
 export type TipoPendencia = "organizacao" | "produto";
 
+// Situação exibida no selo do item de pendência (refinamento AFI-04):
+// "nova" é pendente ainda não visualizada pelo gestor.
+export type SituacaoPendencia = "nova" | "aguardando" | "aceita" | "recusada";
+
 export interface PendenciaAfiliacao {
   id: string;
   tipo: TipoPendencia;
@@ -24,6 +28,10 @@ export interface PendenciaAfiliacao {
   produto?: { nome: string; local: string }; // só quando tipo === 'produto'
   // Percentual solicitado; 0 significa comissão padrão do termo.
   comissaoSolicitada: number;
+  // Ausente nos contextos que ainda não expõem negociação (home AFI-01).
+  situacao?: SituacaoPendencia;
+  // true quando o percentual exibido veio de contraproposta (rodada 3+).
+  contraproposta?: boolean;
   criadaEm: string; // ISO 8601
 }
 
@@ -34,6 +42,14 @@ export interface ProdutoDivulgavel {
   nome: string;
   categoria: string; // ex.: "Trilha guiada", "Aventura", "Expedição"
   modalidade: string; // ex.: "Atividade comum", "Meio período", "Atividade multi-dias"
+}
+
+// Sugestão de preenchimento do convite (drawer AFI-01.b): valores aplicados
+// ao focar os campos vazios durante o teste de usabilidade.
+export interface SugestaoConvite {
+  nome: string;
+  email: string;
+  valorComissao: string; // ex.: "12%"
 }
 
 export interface ResumoAfiliados {
@@ -176,8 +192,99 @@ export interface Solicitacao {
 
   metodoRecebimento: MetodoRecebimento; // [PENDENTE P3] escopo
   historico: EventoNegociacao[];
+  // Quantidade de anexos da negociação (faixa "Anexos (N)" do AFI-04.a);
+  // ausente quando a solicitação não tem anexos.
+  anexosQtde?: number;
+  // null enquanto o gestor não abriu a pendência; alimenta a aba
+  // "Não visualizadas" e o selo "Nova (aguardando análise)".
+  visualizadaEm: string | null;
   criadaEm: string;
   atualizadaEm: string;
+}
+
+// ---------------------------------------------------------------------------
+// Lista de afiliados (Etapa 03, AFI-02)
+// ---------------------------------------------------------------------------
+
+export interface AfiliadoListaItem {
+  id: string;
+  codigo: string | null; // null quando estado === 'convidada'
+  nome: string;
+  email: string;
+  vendasNoMes: number; // valor monetário
+  vendasQtde: number;
+  estado: EstadoFiliacao;
+  temSolicitacaoPendente: boolean;
+}
+
+export interface ResumoLista {
+  totalAfiliados: number;
+  afiliadosAtivos: number;
+  vendasDosAfiliados: number; // últimos 30 dias
+  comissoesAPagar: number;
+}
+
+// ---------------------------------------------------------------------------
+// Ficha do afiliado (Etapa 03, AFI-03)
+// ---------------------------------------------------------------------------
+
+export interface AfiliadoFicha {
+  id: string;
+  nome: string;
+  codigo: string;
+  estado: EstadoFiliacao;
+  afiliadoDesde: string;
+  desativadaEm: string | null;
+  kpis: KpisFicha;
+  produtos: ProdutoVinculado[];
+  historico: EventoAtividade[];
+}
+
+export interface KpisFicha {
+  vendasRealizadas: number;
+  valorTotalVendas: number;
+  comissoesRecebidas: number;
+  comissoesAReceber: number;
+  // [FATO] Na variante desativada os subtítulos deixam de ser tendência
+  // e viram contexto. O KpiCard trata trend como opcional.
+  tendencias: { vendas: number | null; valor: number | null; recebidas: number | null };
+}
+
+export interface ProdutoVinculado {
+  id: string;
+  nome: string;
+  local: string;
+  thumbnailUrl: string;
+  itemAtivo: boolean;
+  comissao: { formato: "percentual" | "valor"; valor: number };
+  // [PENDENTE P6] Rótulo divergente entre telas: "Transferência bancária"
+  // na AFI-03.n, "Conta bancária" na AFI-03.m. O enum reusa o valor da
+  // Etapa 02; só o rótulo aguarda a Luana.
+  metodoRecebimento: MetodoRecebimento;
+}
+
+export interface EventoAtividade {
+  id: string;
+  descricao: string; // texto pronto do backend, não montar no front
+  origem: "sistema" | "painel_afiliado" | "gestor";
+  ip: string | null;
+  criadoEm: string;
+}
+
+// ---------------------------------------------------------------------------
+// Autorização (Etapa 03, AFI-02.b)
+// ---------------------------------------------------------------------------
+
+// [DECISÃO] Solicitação de autorização é entidade separada, não estado da
+// filiação: a filiação segue ativa enquanto aguarda (aviso do AFI-02.b1).
+export interface SolicitacaoAutorizacao {
+  protocolo: string; // "#AUT-2026-0417"
+  acaoRequisitada: "desativar_filiacao";
+  afiliadoAfetado: { id: string; nome: string };
+  motivo: string;
+  descricao: string | null;
+  solicitadoEm: string;
+  estado: "aguardando" | "aprovada" | "negada" | "expirada";
 }
 
 // [DECISÃO] Recusa exige motivo e ele é visível para o afiliado.

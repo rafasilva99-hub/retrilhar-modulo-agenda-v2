@@ -20,10 +20,12 @@ import type { Solicitacao } from "@/types/api/afiliados";
 import {
   type CenarioCentral,
   contarSolicitacoes,
-  type FiltroPendencias,
+  type FiltroCentral,
   listarSolicitacoes,
   pendenciaDaSolicitacao,
 } from "../services/afiliados-service";
+
+import { AvaliarPropostaDrawer } from "./avaliar-proposta-drawer";
 
 const cenarios: readonly { id: CenarioCentral; rotulo: string }[] = [
   { id: "padrao", rotulo: "Padrão" },
@@ -55,19 +57,14 @@ function agruparPorDia(solicitacoes: readonly Solicitacao[]): GrupoDoDia[] {
   return [...grupos.values()];
 }
 
-// Fora do componente: mutação de global não pertence ao escopo de render
-// analisado pelo React Compiler (react-hooks/immutability).
-function navegarParaFila(tipo: Solicitacao["tipo"]) {
-  window.location.hash =
-    tipo === "organizacao" ? "#gestorAfiliadosPropostas" : "#gestorAfiliadosSolicitacoes";
-}
-
 export function GestorCentralFiliacao() {
   // Estados de sistema z1 (sem pendências) e z3 (carregando); o z2 (busca
   // sem resultado) emerge do próprio campo de busca.
   const [cenario, setCenario] = useState<CenarioCentral>("padrao");
-  const [filtro, setFiltro] = useState<FiltroPendencias>("todas");
+  const [filtro, setFiltro] = useState<FiltroCentral>("todas");
   const [busca, setBusca] = useState("");
+  // Solicitação aberta no drawer de avaliação (AFI-04.a/.b).
+  const [solicitacaoAberta, setSolicitacaoAberta] = useState<Solicitacao | null>(null);
 
   const carregando = cenario === "carregando";
   const solicitacoes = listarSolicitacoes(cenario, filtro, busca);
@@ -77,15 +74,8 @@ export function GestorCentralFiliacao() {
   const centralVazia = !carregando && contagens.todas === 0;
   const buscaSemResultado = !carregando && !centralVazia && solicitacoes.length === 0;
 
-  const abrirSolicitacao = (solicitacao: Solicitacao) => {
-    // TODO: [P1][P2] O ModalAvaliacaoProposta (AFI-04.a/.b) está bloqueado
-    // pelas regras de comissão e do botão primário. Até lá, o item leva às
-    // filas operacionais existentes do módulo.
-    navegarParaFila(solicitacao.tipo);
-  };
-
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-5">
+    <div className="mx-auto w-full max-w-4xl space-y-5">
       <div className="relative">
         <HugeiconsIcon
           icon={Search01Icon}
@@ -97,19 +87,25 @@ export function GestorCentralFiliacao() {
           value={busca}
           placeholder="Pesquisar..."
           aria-label="Pesquisar pendências"
-          className="h-11 rounded-xl pl-10"
+          className="h-10 rounded-lg pl-10"
           onChange={(event) => setBusca(event.target.value)}
         />
       </div>
 
       <FiltroSegmentado
         opcoes={[
-          { id: "todas", rotulo: "Todas", contador: contagens.todas },
-          { id: "solicitacoes", rotulo: "Solicitações", contador: contagens.solicitacoes },
-          { id: "propostas", rotulo: "Propostas", contador: contagens.propostas },
+          { id: "todas", rotulo: "Todas" },
+          {
+            id: "nao-visualizadas",
+            rotulo: "Não visualizadas",
+            contador: contagens["nao-visualizadas"],
+          },
+          { id: "aguardando", rotulo: "Aguardando análise" },
+          { id: "aceitas", rotulo: "Propostas aceitas" },
+          { id: "recusadas", rotulo: "Propostas recusadas" },
         ]}
         valor={filtro}
-        aoMudar={(id) => setFiltro(id as FiltroPendencias)}
+        aoMudar={(id) => setFiltro(id as FiltroCentral)}
       />
 
       {carregando ? (
@@ -120,7 +116,7 @@ export function GestorCentralFiliacao() {
           <Skeleton className="h-40 w-full rounded-2xl" />
         </div>
       ) : centralVazia ? (
-        <Empty className="border-border rounded-xl border border-solid">
+        <Empty className="border-border bg-card rounded-xl border border-solid">
           <EmptyHeader className="py-8">
             <EmptyMedia variant="icon">
               <HugeiconsIcon icon={CheckmarkCircle01Icon} size={20} aria-hidden="true" />
@@ -132,7 +128,7 @@ export function GestorCentralFiliacao() {
           </EmptyHeader>
         </Empty>
       ) : buscaSemResultado ? (
-        <Empty className="border-border rounded-xl border border-solid">
+        <Empty className="border-border bg-card rounded-xl border border-solid">
           <EmptyHeader className="py-8">
             <EmptyMedia variant="icon">
               <HugeiconsIcon icon={Search01Icon} size={20} aria-hidden="true" />
@@ -146,17 +142,22 @@ export function GestorCentralFiliacao() {
       ) : (
         <div className="space-y-5">
           {grupos.map((grupo) => (
-            <section key={grupo.chave} className="space-y-2">
-              <h2 className="text-muted-foreground flex items-center gap-2 text-sm">
-                <HugeiconsIcon icon={Calendar03Icon} size={16} aria-hidden="true" />
-                {grupo.rotulo}
-              </h2>
-              <div className="border-border bg-card divide-border divide-y rounded-2xl border px-4">
+            <section key={grupo.chave} className="space-y-3">
+              <div className="text-muted-foreground flex items-center justify-between gap-3 px-2.5 text-xs">
+                <h2 className="flex items-center gap-2">
+                  <HugeiconsIcon icon={Calendar03Icon} size={16} aria-hidden="true" />
+                  {grupo.rotulo}
+                </h2>
+                <span aria-label={`${grupo.itens.length} pendências no dia`}>
+                  ({String(grupo.itens.length).padStart(2, "0")})
+                </span>
+              </div>
+              <div className="border-border bg-card divide-border/60 divide-y overflow-hidden rounded-xl border">
                 {grupo.itens.map((solicitacao) => (
                   <ItemPendencia
                     key={solicitacao.id}
                     pendencia={pendenciaDaSolicitacao(solicitacao)}
-                    onAbrir={() => abrirSolicitacao(solicitacao)}
+                    onAbrir={() => setSolicitacaoAberta(solicitacao)}
                   />
                 ))}
               </div>
@@ -181,6 +182,12 @@ export function GestorCentralFiliacao() {
           </Button>
         ))}
       </div>
+
+      <AvaliarPropostaDrawer
+        solicitacao={solicitacaoAberta}
+        aberto={solicitacaoAberta !== null}
+        aoFechar={() => setSolicitacaoAberta(null)}
+      />
     </div>
   );
 }

@@ -47,11 +47,9 @@ export function GestorAfiliadosPage({ section }: GestorAfiliadosPageProps) {
   const ehVisaoGeral = section === "visao";
 
   if (section === "central") {
-    // [PROPOSTA P10] "Central de filiação" adotado como nome único da tela
-    // (sidebar, título e breadcrumb), no lugar de "Pendências"/"Propostas".
     return (
       <AppPage
-        title="Central de filiação"
+        title="Pendências"
         description="Candidaturas e pedidos solicitados por afiliados."
         breadcrumb={[
           {
@@ -60,7 +58,12 @@ export function GestorAfiliadosPage({ section }: GestorAfiliadosPageProps) {
               window.location.hash = "#contexto";
             },
           },
-          { title: "Afiliados" },
+          {
+            title: "Visão geral",
+            onClick: () => {
+              window.location.hash = "#gestorAfiliados";
+            },
+          },
         ]}
         actions={
           <Button className="gap-2" onClick={() => setConviteAberto(true)}>

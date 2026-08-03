@@ -26,7 +26,11 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import type { ProdutoDivulgavel } from "@/types/api/afiliados";
 
-import { listarCategoriasProdutos, listarProdutosDivulgaveis } from "../services/afiliados-service";
+import {
+  listarCategoriasProdutos,
+  listarProdutosDivulgaveis,
+  obterSugestaoConvite,
+} from "../services/afiliados-service";
 
 import { FaixaSecao } from "./faixa-secao";
 
@@ -63,13 +67,15 @@ interface ConvidarAfiliadoDrawerProps {
 export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDrawerProps) {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [escopo, setEscopo] = useState<EscopoProdutos>("todos");
+  // Escopo começa sem escolha: o envio só é liberado após o gestor definir
+  // os produtos do convite (roteiro do teste de usabilidade).
+  const [escopo, setEscopo] = useState<EscopoProdutos | null>(null);
   const [buscaProduto, setBuscaProduto] = useState("");
   const [categoriaProduto, setCategoriaProduto] = useState(todasCategorias);
   const [produtosSelecionados, setProdutosSelecionados] = useState<readonly string[]>([]);
   const [aplicacao, setAplicacao] = useState<AplicacaoComissao>("lote");
   const [tipoComissao, setTipoComissao] = useState<TipoComissao>("percentual");
-  const [valorComissao, setValorComissao] = useState("12%");
+  const [valorComissao, setValorComissao] = useState("");
   const [comissoesIndividuais, setComissoesIndividuais] = useState<
     Readonly<Record<string, ComissaoIndividual>>
   >({});
@@ -87,7 +93,16 @@ export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDra
       ? listarProdutosDivulgaveis()
       : listarProdutosDivulgaveis().filter((produto) => produtosSelecionados.includes(produto.id));
 
-  const podeEnviar = nome.trim().length > 0 && email.trim().length > 0;
+  // Preenchimento guiado do teste de usabilidade: focar um campo vazio
+  // aplica a sugestão do roteiro, mantendo o campo editável.
+  const sugestao = obterSugestaoConvite();
+  const preencherSeVazio = (valor: string, definir: (novo: string) => void, sugerido: string) => {
+    if (valor.trim().length === 0) definir(sugerido);
+  };
+
+  const produtosDefinidos =
+    escopo === "todos" || (escopo === "selecionados" && produtosSelecionados.length > 0);
+  const podeEnviar = nome.trim().length > 0 && email.trim().length > 0 && produtosDefinidos;
 
   const alternarProduto = (id: string) => {
     setProdutosSelecionados((atual) =>
@@ -108,13 +123,13 @@ export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDra
   const limpar = () => {
     setNome("");
     setEmail("");
-    setEscopo("todos");
+    setEscopo(null);
     setBuscaProduto("");
     setCategoriaProduto(todasCategorias);
     setProdutosSelecionados([]);
     setAplicacao("lote");
     setTipoComissao("percentual");
-    setValorComissao("12%");
+    setValorComissao("");
     setComissoesIndividuais({});
     setRecebimento("split");
   };
@@ -149,6 +164,7 @@ export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDra
                 id="convite-nome"
                 value={nome}
                 placeholder="Insira o nome"
+                onFocus={() => preencherSeVazio(nome, setNome, sugestao.nome)}
                 onChange={(event) => setNome(event.target.value)}
               />
             </div>
@@ -159,6 +175,7 @@ export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDra
                 type="email"
                 value={email}
                 placeholder="Insira o e-mail"
+                onFocus={() => preencherSeVazio(email, setEmail, sugestao.email)}
                 onChange={(event) => setEmail(event.target.value)}
               />
             </div>
@@ -269,6 +286,10 @@ export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDra
                   <Input
                     id="convite-valor-comissao"
                     value={valorComissao}
+                    placeholder="Insira o valor da comissão"
+                    onFocus={() =>
+                      preencherSeVazio(valorComissao, setValorComissao, sugestao.valorComissao)
+                    }
                     onChange={(event) => setValorComissao(event.target.value)}
                   />
                 </div>
@@ -316,6 +337,13 @@ export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDra
                           placeholder="Insira o valor da comissão"
                           aria-label={`Valor da comissão de ${produto.nome}`}
                           className="min-w-52"
+                          onFocus={() =>
+                            preencherSeVazio(
+                              comissao.valor,
+                              (novo) => definirComissaoIndividual(produto.id, { valor: novo }),
+                              sugestao.valorComissao
+                            )
+                          }
                           onChange={(event) =>
                             definirComissaoIndividual(produto.id, {
                               valor: event.target.value,

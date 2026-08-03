@@ -9,11 +9,16 @@ import {
 
 import type { AppPage, ShellNavItem } from "@/components/layout/types";
 
+export * from "./convite";
+export * from "./ficha";
+export * from "./lista";
 export * from "./motivos";
 export * from "./pendencias";
 export * from "./produtos";
+export * from "./produtos-vinculados";
 export * from "./resumo";
 export * from "./solicitacoes";
+export * from "./solicitacoes-autorizacao";
 export * from "./top-afiliados";
 export * from "./venda-detalhe";
 export * from "./vendas";

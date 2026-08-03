@@ -36,6 +36,7 @@ import {
   formatarTempoRelativo,
 } from "@/lib/formatadores";
 import { cn } from "@/lib/utils";
+import type { PendenciaAfiliacao, Solicitacao } from "@/types/api/afiliados";
 
 import {
   type CenarioVisaoGeral,
@@ -46,8 +47,10 @@ import {
   listarVendas,
   obterDetalheVenda,
   obterResumoAfiliados,
+  obterSolicitacaoDaPendencia,
 } from "../services/afiliados-service";
 
+import { AvaliarPropostaDrawer } from "./avaliar-proposta-drawer";
 import { DetalheVendaDrawer } from "./detalhe-venda-drawer";
 
 const colunasVendas: readonly ColunaTabela[] = [
@@ -67,15 +70,26 @@ const cenarios: readonly { id: CenarioVisaoGeral; rotulo: string }[] = [
   { id: "carregando", rotulo: "Carregando" },
 ];
 
+// Fora do componente: mutação de global não pertence ao escopo de render
+// analisado pelo React Compiler (react-hooks/immutability).
+function irPara(pagina: string) {
+  window.location.hash = `#${pagina}`;
+}
+
 export function GestorVisaoGeral() {
   // Estados de sistema z1 (sem pendências), z2 (sem vendas) e z3 (carregando).
   const [cenario, setCenario] = useState<CenarioVisaoGeral>("padrao");
   const [filtroPendencias, setFiltroPendencias] = useState<FiltroPendencias>("todas");
   const [vendaAbertaId, setVendaAbertaId] = useState<string | null>(null);
+  // Solicitação aberta no drawer de avaliação (AFI-04.a), acionada pelos
+  // itens do painel de pendências.
+  const [solicitacaoAberta, setSolicitacaoAberta] = useState<Solicitacao | null>(null);
 
   const carregando = cenario === "carregando";
   const resumo = obterResumoAfiliados();
-  const pendencias = listarPendencias(cenario, filtroPendencias, 7);
+  // Limite de 6 itens para o painel encerrar na mesma linha do Top afiliados;
+  // o restante fica atrás do link "Ver todas as pendências".
+  const pendencias = listarPendencias(cenario, filtroPendencias, 6);
   const contagens = contarPendencias(cenario);
   const topAfiliados = listarTopAfiliados(5);
   const vendas = listarVendas(cenario, 8);
@@ -83,8 +97,14 @@ export function GestorVisaoGeral() {
   // Sem nenhuma pendência na origem (não apenas no filtro atual): estado z1.
   const pendenciasVazias = !carregando && contagens.todas === 0;
 
-  const irPara = (pagina: string) => {
-    window.location.hash = `#${pagina}`;
+  const abrirPendencia = (pendencia: PendenciaAfiliacao) => {
+    const solicitacao = obterSolicitacaoDaPendencia(pendencia);
+    if (solicitacao) {
+      setSolicitacaoAberta(solicitacao);
+      return;
+    }
+    // Sem negociação correspondente no mock, cai na Central como antes.
+    irPara("gestorAfiliadosCentral");
   };
 
   return (
@@ -141,7 +161,7 @@ export function GestorVisaoGeral() {
               </EmptyHeader>
             </Empty>
           ) : (
-            <div className="space-y-4">
+            <div className="flex h-full flex-col gap-4">
               <FiltroSegmentado
                 opcoes={[
                   { id: "todas", rotulo: "Todas", contador: contagens.todas },
@@ -154,12 +174,12 @@ export function GestorVisaoGeral() {
               {carregando ? (
                 <ListaEsqueleto quantidade={4} />
               ) : (
-                <div className="divide-border divide-y">
+                <div className="border-border divide-border/60 flex-1 divide-y overflow-hidden rounded-xl border">
                   {pendencias.map((pendencia) => (
                     <ItemPendencia
                       key={pendencia.id}
                       pendencia={pendencia}
-                      onAbrir={() => irPara("gestorAfiliadosCentral")}
+                      onAbrir={() => abrirPendencia(pendencia)}
                     />
                   ))}
                 </div>
@@ -278,6 +298,12 @@ export function GestorVisaoGeral() {
           setVendaAbertaId(null);
           irPara("gestorAfiliadosLista");
         }}
+      />
+
+      <AvaliarPropostaDrawer
+        solicitacao={solicitacaoAberta}
+        aberto={solicitacaoAberta !== null}
+        aoFechar={() => setSolicitacaoAberta(null)}
       />
     </div>
   );

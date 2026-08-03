@@ -51,7 +51,6 @@ export const shellNavItems: ShellNavItem[] = [
     // pagamentos existente enquanto a rota definitiva não é criada.
     items: [
       { title: "Visão geral", page: "gestorAfiliados", icon: Home01Icon },
-      { title: "Central de filiação", page: "gestorAfiliadosCentral", icon: UserGroupIcon },
       { title: "Lista de afiliados", page: "gestorAfiliadosLista", icon: UserStar01Icon },
       { title: "Comissões", page: "gestorAfiliadosPagamentos", icon: Money01Icon },
     ],

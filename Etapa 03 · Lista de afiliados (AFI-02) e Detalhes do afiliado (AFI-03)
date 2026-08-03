@@ -1,0 +1,767 @@
+# Etapa 03 · Lista de afiliados (AFI-02) e Detalhes do afiliado (AFI-03)
+
+> Documento de implementação para o Claude Code.
+> Módulo: Gestão de Afiliados (Admin) · Prefixo: `AFI`
+> Depende de: `ETAPA-01-HOME-AFILIADOS.md` concluída. Aproveita blocos da `ETAPA-02` se já existirem.
+> Status do documento: PROPOSTA (validar §4 e §5 antes de executar)
+
+---
+
+## 0. Como ler este documento
+
+| Marcador | Significado |
+|---|---|
+| `[FATO]` | Está no Figma ou em documento de origem |
+| `[DECISÃO]` | Confirmado com o cliente ou pela Luana |
+| `[PROPOSTA]` | Raciocínio de design, ainda não validado |
+| `[PENDENTE]` | Bloqueia a implementação do item |
+| `[EM HOLD]` | Pendência conhecida, decisão adiada por escolha. Implementar com isolamento |
+| `[A VALIDAR]` | Implementável, mas confirmar antes do freeze |
+
+**Regra dura:** item `[PENDENTE]` não é implementado. Item `[EM HOLD]` é implementado com a regra isolada em arquivo próprio, conforme §5.
+
+---
+
+## 1. Objetivo da etapa
+
+Entregar as duas rotas centrais do CRUD de afiliados: a lista e a ficha individual.
+
+### Entra nesta etapa
+
+- Rota `AFI-02` completa: KPIs, busca, filtros, tabela, paginação, seleção
+- Rota `AFI-03` completa: header, KPIs, produtos vinculados, histórico, comissões
+- Menu de ações contextual, em linha e em ficha
+- Ciclo de pausar e retomar filiação
+- Ciclo de desativar filiação, nos dois caminhos (direto e via autorização)
+- Gestão de produtos vinculados: vincular, editar e remover
+- 5 blocos novos
+- Estados de sistema das duas rotas
+
+### NÃO entra nesta etapa
+
+- Variantes de filiação pausada e convidada na `AFI-03`. Ver §11.
+- Aba ou fluxo de execução após autorização aprovada. Ver §12, P4.
+- Reabertura de filiação desativada a partir do histórico.
+
+---
+
+## 2. O que vem pronto
+
+Nada disso é reimplementado. Se faltar, **parar e avisar**.
+
+| Item | Origem |
+|---|---|
+| `tailwind.config.ts`, `types/api/afiliados.ts`, `mocks/afiliados/` | Etapa 01, Fase 0 |
+| `Shell` | Etapa 01, Fase 1 |
+| `KpiCard`, `PainelSecao`, `CodigoCopiavel`, `TabelaBase`, `ItemAfiliado` | Etapa 01, Fase 2 |
+| `TimelineAtividade` | Etapa 01, Fase 4 |
+| Toast (`sonner`) no layout raiz | Etapa 01, Fase 3 |
+| `HeaderEntidade`, `DialogCapturaMotivo` | Etapa 02, Fase 1 (se executada) |
+
+`[FATO]` Se a Etapa 02 ainda não rodou, `HeaderEntidade` e `DialogCapturaMotivo` são construídos aqui. Eles têm mais usos nesta etapa do que lá.
+
+### Ajuste retroativo no Shell
+
+`[EM HOLD]` A sidebar mostra **Relatórios** em todos os frames desta etapa e **Indicadores** nos frames da `AFI-01`. O Shell foi congelado na Etapa 01 com um dos dois.
+
+Como os frames mais recentes usam "Relatórios", **implementar como Relatórios** e corrigir o Shell. Se a decisão for o inverso, é um arquivo.
+
+---
+
+## 3. Nodes do Figma
+
+**File key:** `HDCHTF7DCaSZwknQoLHVPQ` · **Arquivo:** Retrilhar - Admin
+
+> URL usa hífen no node ID, MCP usa dois pontos. Converter sempre.
+
+### AFI-02 · Lista de afiliados
+
+| ID | Node (MCP) | Tipo | Descrição |
+|---|---|---|---|
+| AFI-02 | `16215:98806` | ROTA | Lista de afiliados |
+| AFI-02.a | `16215:99149` | OVERLAY | Desativar filiação |
+| AFI-02.a1 | `16215:100989` | VARIANTE | Toast de desativação |
+| AFI-02.b | `16215:99529` | OVERLAY | Solicitar autorização |
+| AFI-02.b1 | `16215:99900` | VARIANTE | Solicitação enviada, com protocolo |
+| AFI-02.c | `16215:100294` | VARIANTE | Toast de filiação retomada |
+| AFI-02.d | `16215:100639` | VARIANTE | Toast de filiação pausada |
+
+### AFI-03 · Detalhes do afiliado
+
+| ID | Node (MCP) | Tipo | Descrição |
+|---|---|---|---|
+| AFI-03 | `16215:101334` | ROTA | Ficha do afiliado |
+| AFI-03.b | `16215:101965` | VARIANTE | Filiação desativada |
+| AFI-03.i | `16215:104852` | OVERLAY | Menu "Mais ações" |
+| AFI-03.n | `16224:109484` | OVERLAY | Editar produto vinculado (drawer) |
+| AFI-03.n1 | `16226:111585` | VARIANTE | Toast de comissão atualizada |
+| AFI-03.c | `16215:103996` | OVERLAY | Remover produto |
+| AFI-03.c1 | `16215:102945` | VARIANTE | Toast de item removido |
+| AFI-03.m | `16215:104378` | OVERLAY | Vincular produtos |
+| AFI-03.m1 | `16215:103292` | VARIANTE | Toast de produtos vinculados |
+
+---
+
+## 4. Mudança estrutural: o modo edição foi removido
+
+`[DECISÃO]` **Ler antes de implementar. Define a arquitetura de estado da `AFI-03`.**
+
+Nos frames anteriores a ficha tinha dois modos: leitura, e edição acionada por "Editar filiações", com "Cancelar" e "Salvar alterações" no header e um formulário global.
+
+Nos frames atuais (`16215:101334`, `16224:109484`, `16215:104378`):
+
+- o header mostra "Mais ações" e "Filtros", **não** "Salvar alterações"
+- os cards de produto exibem lápis e lixeira **em leitura**, sem entrar em modo algum
+- a edição de comissão acontece dentro do drawer `AFI-03.n`, que tem "Salvar alterações" próprio
+- "+ Vincular produto" está sempre visível no rodapé da lista
+
+`[DECISÃO]` **Não existe mais modo edição.** Confirmado pela Luana em 03/08/2026. Cada ação é autocontida no seu overlay e salva ao confirmar. Isso resolve a ambiguidade transacional que apareceu em três lotes seguidos (editar comissão, remover item, vincular produto) e elimina a necessidade de guarda de saída sem salvar.
+
+### Regras que derivam disso
+
+1. A `AFI-03` **não tem formulário global**. Sem dirty tracking, sem estado compartilhado entre cards, sem guarda de saída.
+2. Cada overlay tem estado local próprio e persiste ao confirmar.
+3. O header da rota **não tem** "Salvar alterações" nem "Cancelar".
+4. O card de produto é leitura pura. As ações abrem overlay.
+5. Cada overlay dispara seu próprio toast ao concluir.
+
+**Consequência de nomenclatura:** o pai de `AFI-03.c` e `.m` passou de `modo-edicao` para `detalhes-afiliado`. Os toasts `.c1` e `.m1` passaram a ter como pai o overlay que os gera, seguindo o padrão do `.n1`. Renomeado no Figma em 03/08/2026.
+
+---
+
+## 5. Pendências em hold e como isolá-las
+
+`[EM HOLD]` Por decisão da Luana, as pendências de permissão não travam esta etapa. Elas são implementadas com regra provisória isolada em arquivo próprio.
+
+### 5.1 Matriz de permissões
+
+A `AFI-02` tem dois caminhos para desativar filiação, e qual aparece depende do perfil:
+
+| Perfil | Ação no menu | Fluxo |
+|---|---|---|
+| Com permissão | Desativar filiação | `AFI-02.a`, executa direto |
+| Sem permissão | Solicitar desativação | `AFI-02.b`, gera protocolo |
+
+Criar `lib/afiliados/permissoes.ts`. **Nenhuma condicional de permissão dentro de JSX.**
+
+```ts
+// lib/afiliados/permissoes.ts
+// [EM HOLD] Matriz provisória. Aguarda definição do Cristiano.
+// Quando a resposta vier, muda só este arquivo.
+
+import type { EstadoFiliacao } from '@/types/api/afiliados'
+
+export interface Usuario {
+  perfil: 'administrador' | 'gestor_afiliados'
+}
+
+export interface Filiacao {
+  estado: EstadoFiliacao
+  temSolicitacaoPendente: boolean
+}
+
+const vinculada = (f: Filiacao) =>
+  f.estado === 'ativa' || f.estado === 'inativa'
+
+const convite = (f: Filiacao) =>
+  f.estado === 'convidada' || f.estado === 'expirada'
+
+// [EM HOLD] Regra provisória: só administrador desativa direto.
+const podeDesativarDireto = (u: Usuario) => u.perfil === 'administrador'
+
+export const PODE = {
+  verDetalhes:          () => true,
+  alternarPausa:        (f: Filiacao) => vinculada(f),
+  editarFiliacoes:      (f: Filiacao) => vinculada(f),
+  vincularProduto:      (f: Filiacao) => vinculada(f),
+  desativarFiliacao:    (f: Filiacao, u: Usuario) =>
+                          vinculada(f) && podeDesativarDireto(u) && !f.temSolicitacaoPendente,
+  solicitarDesativacao: (f: Filiacao, u: Usuario) =>
+                          vinculada(f) && !podeDesativarDireto(u) && !f.temSolicitacaoPendente,
+  reativarFiliacao:     (f: Filiacao) => f.estado === 'desativada',
+  reenviarConvite:      (f: Filiacao) => convite(f),
+} as const
+```
+
+### 5.2 Estado de reativação
+
+`[EM HOLD]` Reativar filiação desativada volta para `ativa` sempre, ou restaura o estado anterior (que podia ser `inativa`)?
+
+`[PROPOSTA]` Sempre `ativa`. O toggle não aparece na variante desativada, então a UI não guarda pista do valor anterior. Restaurar `inativa` seria surpresa sem explicação.
+
+Isolar em `lib/afiliados/transicoes.ts`, uma função pura.
+
+### 5.3 Convite expirado
+
+`[EM HOLD]` O enum tem `expirada`, mas não existe variante desenhada do menu para esse estado.
+
+`[PROPOSTA]` Reusar a variante `convidada`, com um único item: "Reenviar convite". O guarda `PODE.reenviarConvite` já cobre os dois estados.
+
+---
+
+## 6. Contrato de tipos
+
+Acrescentar a `types/api/afiliados.ts`.
+
+```ts
+export interface AfiliadoListaItem {
+  id: string
+  codigo: string | null          // null quando estado === 'convidada'
+  nome: string
+  email: string
+  vendasNoMes: number            // valor monetário
+  vendasQtde: number
+  estado: EstadoFiliacao
+  temSolicitacaoPendente: boolean
+}
+
+export interface ResumoLista {
+  totalAfiliados: number
+  afiliadosAtivos: number
+  vendasDosAfiliados: number     // últimos 30 dias
+  comissoesAPagar: number
+}
+
+// ---------- Ficha ----------
+export interface AfiliadoFicha {
+  id: string
+  nome: string
+  codigo: string
+  estado: EstadoFiliacao
+  afiliadoDesde: string
+  desativadaEm: string | null
+  kpis: KpisFicha
+  produtos: ProdutoVinculado[]
+  historico: EventoAtividade[]
+}
+
+export interface KpisFicha {
+  vendasRealizadas: number
+  valorTotalVendas: number
+  comissoesRecebidas: number
+  comissoesAReceber: number
+  // [FATO] Na variante desativada os subtítulos deixam de ser tendência
+  // e viram contexto. O KpiCard trata trend como opcional.
+  tendencias: { vendas: number | null; valor: number | null; recebidas: number | null }
+}
+
+export interface ProdutoVinculado {
+  id: string
+  nome: string
+  local: string
+  thumbnailUrl: string
+  itemAtivo: boolean
+  comissao: { formato: 'percentual' | 'valor'; valor: number }
+  metodoRecebimento: MetodoRecebimento
+}
+
+// [PENDENTE P6] Rótulos divergentes entre telas.
+// AFI-03.n diz "Transferência bancária", AFI-03.m diz "Conta bancária".
+export type MetodoRecebimento = 'split' | 'pix' | 'transferencia_bancaria'
+
+export interface EventoAtividade {
+  id: string
+  descricao: string      // texto pronto do backend, não montar no front
+  origem: 'sistema' | 'painel_afiliado' | 'gestor'
+  ip: string | null
+  criadoEm: string
+}
+
+// ---------- Autorização ----------
+export interface SolicitacaoAutorizacao {
+  protocolo: string              // "#AUT-2026-0417"
+  acaoRequisitada: 'desativar_filiacao'
+  afiliadoAfetado: { id: string; nome: string }
+  motivo: string
+  descricao: string | null
+  solicitadoEm: string
+  estado: 'aguardando' | 'aprovada' | 'negada' | 'expirada'
+}
+```
+
+`[DECISÃO]` Solicitação de autorização é **entidade separada**, não estado da filiação. Confirmado pelo aviso do `AFI-02.b1`: a filiação segue ativa enquanto aguarda.
+
+---
+
+## Fase 1 · Blocos novos
+
+> Um commit por bloco. Todos entram em `/dev/blocos`.
+
+| # | Bloco | Usos | Node de referência |
+|---|---|---|---|
+| 1 | `BadgeFiliacao` | AFI-02, AFI-03 | `16215:98806` |
+| 2 | `BarraFiltros` | AFI-02, AFI-03, comissões | `16215:98806` |
+| 3 | `AfiliadoAcoes` | AFI-02 (linha), AFI-03 (ficha) | `16215:104852` |
+| 4 | `ProdutoVinculadoCard` | AFI-03 | `16215:101334` |
+| 5 | `ComparativoCondicao` | AFI-03.n, e AFI-04 na Etapa 02 | `16224:109484` |
+
+### 1.1 `BadgeFiliacao`
+
+Um badge por valor do enum. Cinco variantes, uma fonte de verdade.
+
+`[DECISÃO]` Rótulos e concordância no feminino, porque o sujeito é a filiação:
+
+| Estado | Rótulo | Tom |
+|---|---|---|
+| `ativa` | Filiação ativa | verde |
+| `inativa` | Filiação pausada | âmbar |
+| `desativada` | Filiação desativada | neutro |
+| `convidada` | Convite enviado | azul |
+| `expirada` | Convite expirado | neutro |
+
+`[FATO]` Corrigir no Figma e na implementação: o badge de desativada aparece como "Desativado" em alguns frames, e o header da `AFI-03` mostra "Ativo" em vez de "Filiação ativa".
+
+### 1.2 `BarraFiltros`
+
+Busca, botão de filtros e select de status. Layout de três colunas com a busca crescendo.
+
+`[FATO]` O select "Todos os status" filtra pelo enum derivado, os mesmos cinco rótulos do `BadgeFiliacao`.
+
+### 1.3 `AfiliadoAcoes`
+
+**Um componente, dois contextos.** O menu da linha e o menu "Mais ações" da ficha têm os mesmos itens, na mesma ordem, e a ficha só omite "Ver detalhes".
+
+```ts
+<AfiliadoAcoes
+  contexto="linha" | "ficha"
+  filiacao={f}
+  usuario={u}
+/>
+```
+
+Todos os itens passam pelo guarda `PODE` de §5.1. Composição:
+
+| Item | Condição | Tom |
+|---|---|---|
+| Ver detalhes | só em `contexto="linha"` | neutro |
+| Editar filiações | `PODE.editarFiliacoes` | neutro |
+| Filiação ativa / Filiação pausada | `PODE.alternarPausa` | toggle, rótulo espelha o estado |
+| Desativar filiação | `PODE.desativarFiliacao` | destrutivo |
+| Solicitar desativação | `PODE.solicitarDesativacao` | destrutivo |
+| Reativar filiação | `PODE.reativarFiliacao` | azul |
+| Reenviar convite | `PODE.reenviarConvite` | neutro |
+| Solicitação em análise | `f.temSolicitacaoPendente` | desabilitado |
+
+`[DECISÃO]` O rótulo do toggle espelha o estado, não a ação: "Filiação ativa" com toggle ligado, "Filiação pausada" com toggle desligado. O mesmo termo aparece no badge da tabela, então a redundância trabalha a favor.
+
+`[DECISÃO]` No estado `desativada`, o toggle **não é renderizado**. Controle desabilitado que nunca vai habilitar naquele contexto é ruído, e mostraria um valor falso.
+
+`[PROPOSTA]` O item "Solicitação em análise" desabilitado evita que dois gestores solicitem a mesma desativação. Depende de `temSolicitacaoPendente` vir do backend.
+
+### 1.4 `ProdutoVinculadoCard`
+
+Thumbnail, nome, local, badge de item ativo, comissão, método de recebimento, ações de editar e remover.
+
+`[A VALIDAR]` Na variante `AFI-03.b` (filiação desativada) os badges continuam dizendo "Item ativo". Se a filiação está encerrada, nenhum item está ativo. Implementar com prop `somenteLeitura` que neutraliza o badge e oculta as ações.
+
+### 1.5 `ComparativoCondicao`
+
+Bloco antes/depois com seta. Cada lado tem rótulo, valor grande e subtítulo.
+
+`[PROPOSTA]` Este bloco tem uso além daqui: o mesmo problema de comparar o que vale com o que vai valer aparece no `ModalAvaliacaoProposta` da Etapa 02. Construir genérico.
+
+---
+
+## Fase 2 · Rota AFI-02
+
+> Node: `16215:98806`
+
+### Estrutura
+
+```
+/afiliados/lista
+├── Cabeçalho (título, subtítulo, CTA "Convidar afiliado")
+├── 4x KpiCard
+├── BarraFiltros
+└── TabelaBase
+    ├── coluna de seleção (checkbox)
+    ├── Código do afiliado  → CodigoCopiavel
+    ├── Afiliado            → nome + e-mail
+    ├── Vendas no mês       → valor + quantidade
+    ├── Status              → BadgeFiliacao
+    └── ações               → AfiliadoAcoes contexto="linha"
+    └── rodapé: contador de seleção + paginação
+```
+
+`[FATO]` A linha com estado `convidada` tem código nulo, exibido como travessão. Usar um caractere neutro, não travessão, conforme a regra de copy.
+
+### Toasts de pausa
+
+| Frame | Node | Título | Subtítulo |
+|---|---|---|---|
+| `.c` | `16215:100294` | Filiação retomada | Isabelly Beatriz Lopes voltou para a base ativa e já pode voltar a registrar vendas com o código. |
+| `.d` | `16215:100639` | Filiação pausada | Isabelly Beatriz Lopes não pode gerar novas vendas enquanto estiver pausada e será notificada. Você pode retomar quando quiser. |
+
+`[FATO]` Os frames ainda dizem "Afiliado reativado" e "Afiliado inativado". Substituir pelos textos acima. "Retomar" é a volta da pausa, "reativar" é a volta da desativação, e os dois não podem usar a mesma palavra.
+
+### Estados de sistema
+
+```
+AFI-02.z1 · lista-afiliados · variante:empty-sem-afiliados
+AFI-02.z2 · lista-afiliados · variante:empty-busca
+AFI-02.z3 · lista-afiliados · variante:loading
+```
+
+---
+
+## Fase 3 · Rota AFI-03
+
+> Nodes: `16215:101334` (ativa) e `16215:101965` (desativada)
+
+### Estrutura
+
+```
+/afiliados/:id
+├── HeaderEntidade (avatar, nome, BadgeFiliacao, código, data)
+│   └── ações: AfiliadoAcoes contexto="ficha" | botão "Reativar filiação"
+├── 4x KpiCard
+├── Grid 2 colunas
+│   ├── PainelSecao "Produtos do afiliado"
+│   │   ├── busca + Filtrar por
+│   │   ├── lista de ProdutoVinculadoCard
+│   │   └── rodapé: "+ Vincular produto"
+│   └── PainelSecao "Histórico de atividade"
+│       ├── busca + Filtrar por
+│       └── TimelineAtividade agrupada por dia
+└── PainelSecao "Comissões do afiliado"
+    └── TabelaBase + paginação
+```
+
+### Variante desativada (`16215:101965`)
+
+**Um booleano `somenteLeitura` cascateando.** Nenhum arquivo novo, nenhuma duplicação de layout.
+
+| Elemento | Ativa | Desativada |
+|---|---|---|
+| Ação do header | `AfiliadoAcoes` | Botão "Reativar filiação" |
+| Subtítulos dos KPIs | Tendência vs período anterior | Contexto ("No último mês da filiação") |
+| Ações do card de produto | Lápis e lixeira | Ocultas |
+| Badge do item | Item ativo / Item inativo | Neutro ou oculto |
+| "+ Vincular produto" | Visível | Oculto |
+| Header, linha 2 | Afiliado(a) desde 06/01/2026 | Desativada em 07/07/2026 |
+
+`[FATO]` "Comissões a receber" com subtítulo "Pagamento pendente" na variante desativada confirma que comissão pendente sobrevive ao encerramento. Coerente com o aviso do `AFI-02.a`.
+
+`[A VALIDAR]` O motivo capturado na desativação não aparece na timeline. Se ele é declaradamente visível para o afiliado, precisa estar visível para o gestor. Sugerido: expandir a entrada correspondente do histórico.
+
+### Estados de sistema
+
+```
+AFI-03.z1 · detalhes-afiliado · variante:empty-sem-produtos
+AFI-03.z2 · detalhes-afiliado · variante:empty-sem-historico
+AFI-03.z3 · detalhes-afiliado · variante:loading
+```
+
+---
+
+## Fase 4 · Overlays da AFI-02
+
+### 4.1 `AFI-02.a` · Desativar filiação (`16215:99149`)
+
+`DialogCapturaMotivo` com escopo `desativacao_filiacao`, tom destrutivo, motivo obrigatório.
+
+`[FATO]` Copy a corrigir. Os campos dizem "recusa", herança de outro modal:
+
+| Campo | Está | Deveria |
+|---|---|---|
+| Select | Motivo da recusa (visível para o afiliado) | Motivo da desativação (visível para o afiliado) |
+| Textarea | Descreva a razão da recusa | Descreva a razão da desativação |
+| Placeholder | Fala em manter a filiação com percentual menor | Ex.: O afiliado não registra vendas há mais de seis meses e não respondeu aos contatos. |
+
+`[FATO]` O bloco azul trava quatro regras. Manter o texto:
+
+- encerra a filiação
+- desativa os links de divulgação
+- move o afiliado para o histórico
+- comissões pendentes permanecem devidas
+
+`[A VALIDAR]` "Move o afiliado para o histórico" contradiz a tabela, onde a linha desativada continua visível. Ou o texto muda para "mantém o registro no histórico", ou a lista precisa de uma aba de histórico que não existe.
+
+`[PROPOSTA]` O card da entidade mostra "Possui comissões pendentes" com o mesmo peso visual da data de filiação. Sendo a informação de maior consequência financeira da tela, usar a variante `entidade-com-alerta` do `DialogCapturaMotivo`.
+
+### 4.2 `AFI-02.b` · Solicitar autorização (`16215:99529`)
+
+Mesma anatomia do `.a`, botão primário neutro em vez de destrutivo, e o texto do bloco azul muda.
+
+`[FATO]` Corrigir "Solicitar enviada" para "Solicitação enviada" no `.b1`.
+
+### 4.3 `AFI-02.b1` · Solicitação enviada (`16215:99900`)
+
+`[FATO]` Desfecho em modal, não em toast, porque o protocolo é dado persistente que o gestor pode querer guardar.
+
+`[PROPOSTA]` Registrar a regra para não virar arbitrário: **desfecho com dado persistente usa modal, desfecho sem dado usa toast.**
+
+`[PROPOSTA]` O protocolo deve usar `CodigoCopiavel`, o mesmo chip da tabela. Se é para ser guardado, precisa ser copiável.
+
+`[PENDENTE]` "Ver no histórico" não tem destino definido. Renderizar desabilitado com TODO. Ver §12, P3.
+
+### 4.4 `AFI-02.a1` · Toast de desativação (`16215:100989`)
+
+**Título:** Filiação desativada
+**Subtítulo:** Isabelly Beatriz Lopes não pode mais gerar novas vendas e os links de divulgação foram desativados. Comissões pendentes seguem devidas.
+
+`[FATO]` O frame diz "Afiliação desativada". Padronizar em "Filiação", senão afiliação e filiação viram sinônimos soltos no mesmo módulo.
+
+---
+
+## Fase 5 · Overlays da AFI-03
+
+### 5.1 `AFI-03.i` · Menu Mais ações (`16215:104852`)
+
+`AfiliadoAcoes` com `contexto="ficha"`. Não é componente novo.
+
+### 5.2 `AFI-03.n` · Editar produto vinculado (`16224:109484`)
+
+Drawer autocontido. Salva ao confirmar, sem depender de save global.
+
+Composição: dados do produto com link externo, tipo e valor da comissão, `ComparativoCondicao`, segmented control de tipo de recebimento, rodapé com Cancelar e Salvar alterações.
+
+`[PROPOSTA]` "Salvar alterações" deve nascer desabilitado até haver mudança real.
+
+### 5.3 `AFI-03.n1` · Toast (`16226:111585`)
+
+**Título:** Comissão atualizada
+**Subtítulo:** A comissão de Trilha Pico do Itacolomi passou de 50% para 12%. Vale para as próximas vendas de Ana Paula Silva.
+
+Variante quando o método de recebimento também mudou:
+**Subtítulo:** A comissão de Trilha Pico do Itacolomi passou de 50% para 12% e o recebimento agora é via PIX. Vale para as próximas vendas de Ana Paula Silva.
+
+`[FATO]` O frame está com lorem ipsum. Usar os textos acima.
+
+`[A VALIDAR]` "Vale para as próximas vendas" declara que alteração de comissão não é retroativa. Regra do Matheus, confirmar. Ver §12, P1.
+
+### 5.4 `AFI-03.c` · Remover produto (`16215:103996`)
+
+`DialogCapturaMotivo` com escopo `remocao_produto`.
+
+`[DECISÃO]` Este modal **não confirma a ação**, ele captura o motivo para manter o afiliado ciente. Consequência: o motivo é obrigatório e o select não nasce com "Outros" pré-selecionado.
+
+`[FATO]` Copy a corrigir:
+
+| Campo | Está | Deveria |
+|---|---|---|
+| Descrição | Insira abaixo a razão da filiação estar sendo desativada. | Insira abaixo a razão deste item estar sendo removido. |
+| Textarea | Descreva a razão da recusa (opcional) | Descreva a razão da remoção |
+| Placeholder | Fala em margem e percentual menor | Ex.: O produto saiu do catálogo e não está mais disponível para divulgação. |
+
+`[PENDENTE]` O bloco azul explica que os demais produtos seguem vinculados, mas não diz o que acontece com comissões pendentes daquele produto. O `AFI-02.a` resolveu a mesma pergunta explicitamente. Ver §12, P2.
+
+### 5.5 `AFI-03.m` · Vincular produtos (`16215:104378`)
+
+Modal com busca de produtos, seleção múltipla, configurador de comissão em lote ou individual, e tipo de recebimento.
+
+`[FATO]` O configurador de comissão é o mesmo padrão do `AFI-01.b`. Construir como `ConfiguradorComissao` com modos `lote | individual`, não como componente local.
+
+`[PENDENTE]` Depende de `InputComissao`, bloqueado pela regra do Matheus. Ver §12, P1. Se o bloqueio persistir, implementar a busca e a seleção de produtos, e deixar a seção de comissão como placeholder com TODO.
+
+`[PENDENTE]` Escopo do tipo de recebimento. Aqui está por lote de vinculação, no `AFI-03.n` está por produto, e na `AFI-04` está por proposta. Não pode ser os três. Ver §12, P5.
+
+### 5.6 Toasts
+
+| Frame | Node | Título | Subtítulo |
+|---|---|---|---|
+| `.c1` | `16215:102945` | Produto removido | Trilha Pico do Itacolomi não está mais vinculada a Ana Paula Silva. Os demais produtos seguem ativos. |
+| `.m1` | `16215:103292` | Produtos vinculados | 2 produtos foram vinculados a Ana Paula Silva e já aparecem na listagem de produtos vinculados. |
+
+---
+
+## 11. Frames que faltam
+
+```
+AFI-02.z1 · lista-afiliados · variante:empty-sem-afiliados
+AFI-02.z2 · lista-afiliados · variante:empty-busca
+AFI-02.z3 · lista-afiliados · variante:loading
+AFI-02.e  · lista-afiliados · variante:linha-solicitacao-pendente
+AFI-02.f  · lista-afiliados · variante:linha-aprovada-aguardando-execucao
+AFI-02.b2 · solicitar-autorizacao · variante:erro-envio
+AFI-03.z1 · detalhes-afiliado · variante:empty-sem-produtos
+AFI-03.z2 · detalhes-afiliado · variante:empty-sem-historico
+AFI-03.z3 · detalhes-afiliado · variante:loading
+AFI-03.g  · detalhes-afiliado · variante:filiacao-pausada
+AFI-03.h  · detalhes-afiliado · variante:filiacao-convidada
+AFI-03.m2 · vincular-produtos · variante:todos-produtos-ja-vinculados
+AFI-03.m3 · vincular-produtos · variante:busca-sem-resultado
+DS · AfiliadoAcoes · variant:convite-expirado
+DS · AfiliadoAcoes · variant:sem-permissao-desativar
+DS · AfiliadoAcoes · variant:solicitacao-pendente
+```
+
+As `z1` a `z3` das duas rotas entram nesta etapa. As variantes `DS` entram como código, mesmo sem frame, porque derivam do guarda `PODE`.
+
+`AFI-03.g` (pausada) é a mais provável de aparecer em produção e não está definida: em pausa a ficha continua editável ou vira somente leitura? `[PROPOSTA]` Editável, porque pausar é reversível e o gestor pode querer ajustar comissão antes de retomar.
+
+---
+
+## 12. Pendências
+
+| # | Pendência | Dono | Status | Bloqueia |
+|---|---|---|---|---|
+| P1 | Percentual vs valor fixo de comissão | Matheus | PENDENTE | `InputComissao`, seção de comissão do `AFI-03.m` |
+| P2 | Comissões pendentes de produto removido | Matheus | PENDENTE | Texto do bloco azul do `AFI-03.c` |
+| P3 | Destino do "Ver no histórico" do `AFI-02.b1` | Cristiano | PENDENTE | Botão renderizado desabilitado |
+| P4 | Quem executa a desativação após aprovação | Cristiano | PENDENTE | Estado "aprovada, aguardando execução" |
+| P5 | Escopo do método de recebimento | Cristiano | PENDENTE | Campo pode sair de um dos três lugares |
+| P6 | Rótulo: "Transferência bancária" ou "Conta bancária" | Luana | PENDENTE | Enum e copy |
+| P7 | Matriz de permissões por perfil | Cristiano | EM HOLD | Isolado em `permissoes.ts` |
+| P8 | Estado de retorno da reativação | Cristiano | EM HOLD | Isolado em `transicoes.ts` |
+| P9 | Existência de convite expirado | Cristiano | EM HOLD | Reusa variante convidada |
+| P10 | Sidebar: Indicadores ou Relatórios | Luana | EM HOLD | Implementado como Relatórios |
+| P11 | HP16: afiliação por produto ou organização | Cristiano | PENDENTE | Plural em "Editar filiações" e destino do item |
+
+**Resolvida:** remoção do modo edição, confirmada pela Luana em 03/08/2026. Ver §4.
+
+**Nenhuma pendência trava as Fases 1 a 4.** P1 trava parcialmente a Fase 5.5.
+
+---
+
+## 13. Checklist de aceite
+
+- [ ] Nenhum bloco de etapa anterior foi reimplementado
+- [ ] `AfiliadoAcoes` é um componente com dois contextos, não dois componentes
+- [ ] Nenhuma condicional de permissão dentro de JSX, tudo via `PODE`
+- [ ] `BadgeFiliacao` é a única fonte de rótulo de estado, usado na tabela, no header e no select
+- [ ] Toggle não é renderizado no estado desativada
+- [ ] Rótulo do toggle espelha o estado e usa o mesmo termo do badge
+- [ ] "Retomar" e "reativar" nunca aparecem como sinônimos
+- [ ] Variante desativada da `AFI-03` é `somenteLeitura`, sem arquivo novo
+- [ ] `AFI-03` não tem formulário global, dirty tracking nem guarda de saída
+- [ ] Header da `AFI-03` não tem "Salvar alterações" nem "Cancelar"
+- [ ] Cada overlay persiste ao confirmar e dispara o próprio toast
+- [ ] `KpiCard` aceita `trend` nulo sem quebrar layout
+- [ ] `DialogCapturaMotivo` usado nos três escopos sem fork
+- [ ] Botão primário desabilitado enquanto não há motivo selecionado, nos três modais
+- [ ] Protocolo do `AFI-02.b1` é copiável
+- [ ] Toasts usam os textos de §Fase 2, 4.4 e 5.6, não o lorem ipsum dos frames
+- [ ] Estados `z1` a `z3` alternáveis nas duas rotas
+- [ ] Sidebar coerente com a decisão de P10
+- [ ] Nenhum valor arbitrário de Tailwind no diff
+- [ ] Nenhum travessão ou meia-risca em copy, incluindo célula de código nulo
+- [ ] Concordância feminina em toda copy referente à filiação
+- [ ] Comparação visual com `get_screenshot` dos 16 nodes
+
+---
+
+## 14. Sequência de prompts
+
+Uma sessão limpa por fase. Commit ao final de cada uma.
+
+**Fase 0 (isolamento das pendências)**
+```
+Leia .claude/rules/ e docs/ETAPA-03-LISTA-E-FICHA.md.
+Crie lib/afiliados/permissoes.ts e lib/afiliados/transicoes.ts conforme §5.
+Estenda types/api/afiliados.ts conforme §6.
+Crie os mocks correspondentes.
+Não implemente nenhum componente nem tela.
+```
+
+**Fase 1 (blocos)**
+```
+Leia .claude/rules/ e docs/ETAPA-03-LISTA-E-FICHA.md.
+Execute apenas a Fase 1, na ordem da tabela.
+Chame get_metadata antes de get_design_context em cada node.
+Extraia só a região do componente, nunca o frame inteiro.
+Chame get_code_connect_map antes de criar qualquer componente.
+Um commit por bloco. Adicione todos a /dev/blocos.
+```
+
+**Fase 2 (rota AFI-02)**
+```
+Leia .claude/rules/ e docs/ETAPA-03-LISTA-E-FICHA.md.
+Execute apenas a Fase 2, node 16215:98806.
+Componha usando EXCLUSIVAMENTE blocos existentes.
+Se faltar bloco, PARE e me avise em vez de criar.
+Inclua os estados z1, z2 e z3 e os toasts .c e .d.
+Ao final chame get_screenshot no node e compare.
+```
+
+**Fase 3 (rota AFI-03)**
+```
+Leia .claude/rules/ e docs/ETAPA-03-LISTA-E-FICHA.md, seção 4.
+Execute apenas a Fase 3, nodes 16215:101334 e 16215:101965.
+NÃO existe modo edição nesta rota. Sem formulário global, sem dirty
+tracking, sem guarda de saída. Cada overlay tem estado local próprio.
+A variante desativada é a MESMA rota com somenteLeitura, não um arquivo novo.
+Ao final chame get_screenshot nos dois nodes e compare.
+```
+
+**Fase 4 (overlays AFI-02)**
+```
+Leia .claude/rules/ e docs/ETAPA-03-LISTA-E-FICHA.md.
+Execute a Fase 4, nodes 16215:99149, 16215:99529, 16215:99900, 16215:100989.
+Use DialogCapturaMotivo nos dois modais, sem fork.
+Aplique as correções de copy de §4.1 e §4.2.
+```
+
+**Fase 5 (overlays AFI-03)**
+```
+Leia .claude/rules/ e docs/ETAPA-03-LISTA-E-FICHA.md.
+Execute a Fase 5, nodes 16215:104852, 16224:109484, 16226:111585,
+16215:103996, 16215:102945, 16215:104378, 16215:103292.
+Em 16215:104378, se InputComissao não existir, implemente busca e seleção
+de produtos e deixe a seção de comissão como placeholder com TODO P1.
+```
+
+---
+
+## 15. Estrutura de arquivos ao fim da etapa
+
+```
+types/api/
+  afiliados.ts                       (estendido)
+lib/afiliados/
+  permissoes.ts                      (novo, EM HOLD)
+  transicoes.ts                      (novo, EM HOLD)
+mocks/afiliados/
+  lista.ts                           (novo)
+  ficha.ts                           (novo)
+  produtos-vinculados.ts             (novo)
+  solicitacoes-autorizacao.ts        (novo)
+src/components/blocos/
+  BadgeFiliacao.tsx
+  BarraFiltros.tsx
+  AfiliadoAcoes.tsx
+  ProdutoVinculadoCard.tsx
+  ComparativoCondicao.tsx
+  DialogCapturaMotivo.tsx            (se não veio da Etapa 02)
+  HeaderEntidade.tsx                 (se não veio da Etapa 02)
+src/components/overlays/
+  DrawerEditarProdutoVinculado.tsx
+  ModalVincularProdutos.tsx
+  ModalSolicitarAutorizacao.tsx
+  ModalSolicitacaoEnviada.tsx
+src/app/afiliados/
+  lista/page.tsx
+  [id]/page.tsx
+```
+
+---
+
+## 16. Mocks obrigatórios
+
+`mocks/afiliados/lista.ts` precisa cobrir os cinco estados do enum, mais:
+
+- afiliado com solicitação de autorização pendente
+- afiliado com código nulo (estado convidada)
+- nome e e-mail longos
+- lista vazia
+- lista com resultado de busca vazio
+
+`mocks/afiliados/ficha.ts` precisa cobrir:
+
+- filiação ativa com produtos e histórico cheios
+- filiação desativada com data de desativação e KPIs sem tendência
+- ficha sem produtos vinculados
+- ficha sem histórico
+- produto com comissão percentual e produto com comissão em valor fixo
+- os três métodos de recebimento
+
+`[FATO]` Os dados dos frames são placeholder. Manter os mesmos nomes e valores facilita a comparação visual, mas não são dados reais.
+
+---
+
+## Changelog
+
+| Data | Mudança |
+|---|---|
+| 03/08/2026 | Versão inicial. Pendências de permissão em hold com isolamento em `permissoes.ts`. |
+| 03/08/2026 | §4 confirmado pela Luana: modo edição removido. P11 encerrada, Fase 3 desbloqueada. Frames `.c`, `.c1`, `.m` e `.m1` renomeados. |

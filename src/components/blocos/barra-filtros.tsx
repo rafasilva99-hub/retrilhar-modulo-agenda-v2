@@ -1,5 +1,6 @@
 import { FilterHorizontalIcon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,36 +30,44 @@ interface BarraFiltrosProps {
   readonly estado: FiltroEstadoFiliacao;
   readonly aoMudarEstado: (estado: FiltroEstadoFiliacao) => void;
   readonly placeholderBusca?: string;
+  // Ações alinhadas à direita, como a CTA primária da toolbar de Produtos.
+  readonly acoes?: ReactNode;
 }
 
-// Barra da AFI-02 (§1.2): busca crescendo, botão de filtros e select de
-// status. [FATO] O select filtra pelo enum derivado, com os mesmos cinco
-// rótulos do BadgeFiliacao.
+// Barra da AFI-02 (§1.2), na estrutura da toolbar padrão do Admin: busca
+// compacta à esquerda, botão de filtros e select de status, ações à direita.
+// [FATO] O select filtra pelo enum derivado, com os mesmos cinco rótulos do
+// BadgeFiliacao.
 export function BarraFiltros({
   busca,
   aoMudarBusca,
   estado,
   aoMudarEstado,
   placeholderBusca = "Pesquisar...",
+  acoes,
 }: BarraFiltrosProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <div className="relative min-w-56 flex-1">
+    <div className="flex items-center gap-3">
+      <div className="relative flex-1 md:max-w-80">
         <HugeiconsIcon
           icon={Search01Icon}
-          size={18}
-          className="text-muted-foreground absolute top-1/2 left-3.5 -translate-y-1/2"
+          size={16}
+          className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
           aria-hidden="true"
         />
         <Input
           value={busca}
           placeholder={placeholderBusca}
           aria-label={placeholderBusca}
-          className="h-10 rounded-xl pl-10"
+          className="h-9 rounded-md pl-9"
           onChange={(event) => aoMudarBusca(event.target.value)}
         />
       </div>
-      <Button type="button" variant="outline" className="h-10 gap-2 rounded-xl">
+      <Button
+        type="button"
+        variant="outline"
+        className="hidden h-9 gap-1.5 rounded-lg md:inline-flex"
+      >
         <HugeiconsIcon icon={FilterHorizontalIcon} size={16} aria-hidden="true" />
         Filtros
       </Button>
@@ -66,7 +75,7 @@ export function BarraFiltros({
         value={estado}
         onValueChange={(valor) => aoMudarEstado(valor as FiltroEstadoFiliacao)}
       >
-        <SelectTrigger className="h-10 w-48 rounded-xl" aria-label="Filtrar por status">
+        <SelectTrigger className="h-9 w-44 rounded-lg" aria-label="Filtrar por status">
           <SelectValue placeholder="Todos os status" />
         </SelectTrigger>
         <SelectContent>
@@ -78,6 +87,7 @@ export function BarraFiltros({
           ))}
         </SelectContent>
       </Select>
+      {acoes ? <div className="ml-auto hidden items-center gap-3 md:flex">{acoes}</div> : null}
     </div>
   );
 }

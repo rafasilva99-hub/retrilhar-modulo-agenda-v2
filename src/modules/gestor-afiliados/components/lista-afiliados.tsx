@@ -57,10 +57,16 @@ function irPara(pagina: string) {
   window.location.hash = `#${pagina}`;
 }
 
+interface GestorListaAfiliadosProps {
+  // CTA primária da toolbar (padrão da toolbar de Produtos): a página
+  // injeta o botão Convidar afiliado, dono do estado do drawer.
+  readonly acaoPrincipal?: React.ReactNode;
+}
+
 // Rota AFI-02 (node 16215:98806): KPIs, busca, filtros, tabela com seleção
 // e paginação, mais os overlays de desativação (AFI-02.a e AFI-02.b).
 // Composta exclusivamente por blocos existentes.
-export function GestorListaAfiliados() {
+export function GestorListaAfiliados({ acaoPrincipal }: GestorListaAfiliadosProps) {
   const [cenario, setCenario] = useState<CenarioLista>("padrao");
   const [perfil, setPerfil] = useState<Usuario["perfil"]>("administrador");
   const [busca, setBusca] = useState("");
@@ -258,7 +264,7 @@ export function GestorListaAfiliados() {
           setFiltroEstado(estado);
           setPagina(0);
         }}
-        placeholderBusca="Pesquisar por afiliado, e-mail ou código..."
+        acoes={acaoPrincipal}
       />
 
       <TabelaBase

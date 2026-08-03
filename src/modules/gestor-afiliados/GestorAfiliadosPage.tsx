@@ -129,14 +129,15 @@ export function GestorAfiliadosPage({ section }: GestorAfiliadosPageProps) {
             },
           },
         ]}
-        actions={
-          <Button className="gap-2" onClick={() => setConviteAberto(true)}>
-            <HugeiconsIcon icon={UserAdd01Icon} size={16} aria-hidden="true" />
-            Convidar afiliado
-          </Button>
-        }
       >
-        <GestorListaAfiliados />
+        <GestorListaAfiliados
+          acaoPrincipal={
+            <Button className="gap-1.5" onClick={() => setConviteAberto(true)}>
+              <HugeiconsIcon icon={UserAdd01Icon} size={16} aria-hidden="true" />
+              Convidar afiliado
+            </Button>
+          }
+        />
         <ConvidarAfiliadoDrawer aberto={conviteAberto} aoFechar={() => setConviteAberto(false)} />
       </AppPage>
     );

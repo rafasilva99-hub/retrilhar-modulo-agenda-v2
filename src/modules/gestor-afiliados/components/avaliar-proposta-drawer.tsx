@@ -10,7 +10,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { toast } from "sonner";
 
-import { FiltroSegmentado, TimelineAtividade } from "@/components/blocos";
+import { FiltroSegmentado, mostrarToastConfirmacao, TimelineAtividade } from "@/components/blocos";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,10 +108,9 @@ export function AvaliarPropostaDrawer({
       : null;
 
   const aprovar = () => {
-    toast.success("A solicitação foi aprovada", {
-      description:
-        "O afiliado será notificado e já pode divulgar o produto com a comissão aprovada.",
-      action: { label: "Entendido", onClick: () => undefined },
+    mostrarToastConfirmacao({
+      titulo: "A solicitação foi aprovada",
+      descricao: "O afiliado será notificado e já pode divulgar o produto com a comissão aprovada.",
     });
     aoFechar();
   };
@@ -120,9 +119,9 @@ export function AvaliarPropostaDrawer({
   // visível para o afiliado; no protótipo apenas registramos o desfecho.
   const confirmarRecusa = () => {
     setRecusaAberta(false);
-    toast("A solicitação foi recusada", {
-      description: "O afiliado será notificado do motivo. Você pode reabrir esta proposta depois.",
-      action: { label: "Entendido", onClick: () => undefined },
+    mostrarToastConfirmacao({
+      titulo: "A solicitação foi recusada",
+      descricao: "O afiliado será notificado do motivo. Você pode reabrir esta proposta depois.",
     });
     aoFechar();
   };
@@ -273,7 +272,7 @@ export function AvaliarPropostaDrawer({
                     <SelectTrigger id="avaliar-metodo-recebimento" className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper" side="bottom">
                       {Object.entries(rotulosMetodo).map(([id, rotulo]) => (
                         <SelectItem key={id} value={id}>
                           {rotulo}

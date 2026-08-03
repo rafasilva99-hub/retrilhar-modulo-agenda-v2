@@ -1,4 +1,4 @@
-import { ArrowDown01Icon, MoreVerticalCircle01Icon } from "@hugeicons/core-free-icons";
+import { ArrowDown01Icon, MoreVerticalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ export function AfiliadoAcoes({
       <DropdownMenuTrigger asChild>
         {contexto === "linha" ? (
           <Button variant="ghost" size="icon" aria-label={`Ações de ${nomeAfiliado}`}>
-            <HugeiconsIcon icon={MoreVerticalCircle01Icon} size={18} aria-hidden="true" />
+            <HugeiconsIcon icon={MoreVerticalIcon} size={18} aria-hidden="true" />
           </Button>
         ) : (
           <Button variant="outline" className="gap-2" aria-label={`Ações de ${nomeAfiliado}`}>

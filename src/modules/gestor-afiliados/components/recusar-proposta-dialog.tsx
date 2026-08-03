@@ -29,6 +29,11 @@ interface RecusarPropostaDialogProps {
   readonly aoConfirmar: (motivoCodigo: string, descricao: string) => void;
 }
 
+// Sugestão de preenchimento para o roteiro do teste de usabilidade, no mesmo
+// padrão do drawer de convite (AFI-01.b): o campo vazio se preenche ao focar.
+const sugestaoDescricao =
+  "A comissão solicitada consome quase toda a margem deste produto. Conseguimos aprovar com um percentual menor.";
+
 // Modal AFI-04.c do Figma: justificativa da recusa da proposta. O motivo é
 // obrigatório e visível para o afiliado (decisão registrada no contrato).
 export function RecusarPropostaDialog({
@@ -70,8 +75,8 @@ export function RecusarPropostaDialog({
 
         {/* Divisória do cabeçalho: 24px da borda esquerda e 40px da direita
             do modal; como o DialogContent tem p-6, sobra só o mr de 16px.
-            O gap-4 do dialog garante 16px de respiro de cada lado da linha. */}
-        <div aria-hidden="true" className="mr-[16px] h-px bg-[#e9eaeb]" />
+            O gap-4 do dialog dá 16px acima; o mb-1 fecha 20px até o rótulo. */}
+        <div aria-hidden="true" className="mr-[16px] mb-1 h-px bg-[#e9eaeb]" />
 
         <div className="grid gap-4 pb-2">
           <div className="space-y-2">
@@ -80,7 +85,7 @@ export function RecusarPropostaDialog({
               <SelectTrigger id="recusa-motivo" className="w-full">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent position="popper" side="bottom">
                 {motivos.map((opcao) => (
                   <SelectItem key={opcao.codigo} value={opcao.codigo}>
                     {opcao.rotulo}
@@ -97,6 +102,9 @@ export function RecusarPropostaDialog({
               value={descricao}
               placeholder="Ex.: A comissão solicitada consome quase toda a margem deste produto. Conseguimos aprovar com um percentual menor."
               className="min-h-24"
+              onFocus={() => {
+                if (descricao.trim() === "") setDescricao(sugestaoDescricao);
+              }}
               onChange={(event) => setDescricao(event.target.value)}
             />
           </div>
@@ -127,6 +135,7 @@ export function RecusarPropostaDialog({
           </Button>
           <Button
             className="bg-destructive hover:bg-destructive/90 h-10 flex-1 text-white"
+            disabled={descricao.trim() === ""}
             onClick={() => aoConfirmar(motivo, descricao.trim())}
           >
             Confirmar recusa

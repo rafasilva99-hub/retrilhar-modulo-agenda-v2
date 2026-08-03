@@ -14,3 +14,4 @@ export { ProdutoVinculadoCard } from "./produto-vinculado-card";
 export { type LinhaResumoNegociacao, ResumoNegociacao } from "./resumo-negociacao";
 export { type ColunaTabela, TabelaBase } from "./tabela-base";
 export { type EventoTimeline, TimelineAtividade } from "./timeline-atividade";
+export { mostrarToastConfirmacao } from "./toast-confirmacao";

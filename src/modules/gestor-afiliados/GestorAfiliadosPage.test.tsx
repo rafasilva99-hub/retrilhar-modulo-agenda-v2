@@ -23,7 +23,8 @@ describe("GestorAfiliadosPage", () => {
     expect(screen.getByText("Total de afiliados")).toBeInTheDocument();
     expect(screen.getByText("ANA-2201")).toBeInTheDocument();
     expect(screen.getAllByText("Filiação ativa").length).toBeGreaterThan(0);
-    expect(screen.getByText(/Mostrando 1 a 5 de 7/)).toBeInTheDocument();
+    expect(screen.getByText("Nenhum afiliado selecionado.")).toBeInTheDocument();
+    expect(screen.getByText(/Página 1 de 2/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Próxima" }));
     expect(screen.getByText("Maria Eduarda Costa")).toBeInTheDocument();
@@ -265,7 +266,15 @@ describe("GestorAfiliadosPage", () => {
 
     expect(screen.getByRole("heading", { name: "Recusar proposta" })).toBeInTheDocument();
     expect(screen.getByText("Motivo da recusa (visível para o afiliado)")).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Descreva a razão da recusa" })).toBeInTheDocument();
+
+    // Sem descrição a confirmação fica bloqueada; o foco preenche a sugestão.
+    expect(screen.getByRole("button", { name: "Confirmar recusa" })).toBeDisabled();
+    const descricaoInput = screen.getByRole("textbox", { name: "Descreva a razão da recusa" });
+    fireEvent.focus(descricaoInput);
+    expect(descricaoInput).toHaveValue(
+      "A comissão solicitada consome quase toda a margem deste produto. Conseguimos aprovar com um percentual menor."
+    );
+    expect(screen.getByRole("button", { name: "Confirmar recusa" })).toBeEnabled();
 
     fireEvent.click(screen.getByRole("button", { name: "Confirmar recusa" }));
     expect(screen.queryByRole("heading", { name: "Recusar proposta" })).not.toBeInTheDocument();

@@ -51,15 +51,6 @@ const perfis: readonly { id: Usuario["perfil"]; rotulo: string }[] = [
   { id: "gestor_afiliados", rotulo: "Gestor de afiliados" },
 ];
 
-const colunas: readonly ColunaTabela[] = [
-  { id: "selecao", titulo: "" },
-  { id: "codigo", titulo: "Código do afiliado" },
-  { id: "afiliado", titulo: "Afiliado" },
-  { id: "vendas", titulo: "Vendas no mês" },
-  { id: "status", titulo: "Status" },
-  { id: "acoes", titulo: "" },
-];
-
 const TAMANHO_PAGINA = 5;
 
 function irPara(pagina: string) {
@@ -121,6 +112,40 @@ export function GestorListaAfiliados() {
       return proximo;
     });
   };
+
+  const todasDaPaginaSelecionadas =
+    linhas.length > 0 && linhas.every((afiliado) => selecionados.has(afiliado.id));
+
+  const alternarSelecaoDaPagina = () => {
+    setSelecionados((atual) => {
+      const proximo = new Set(atual);
+      for (const afiliado of linhas) {
+        if (todasDaPaginaSelecionadas) proximo.delete(afiliado.id);
+        else proximo.add(afiliado.id);
+      }
+      return proximo;
+    });
+  };
+
+  // Estrutura do frame AFI-02 (15998:132641): seleção no cabeçalho, código,
+  // afiliado, vendas no mês, status e ações.
+  const colunas: readonly ColunaTabela[] = [
+    {
+      id: "selecao",
+      titulo: (
+        <Checkbox
+          checked={todasDaPaginaSelecionadas}
+          aria-label="Selecionar todos da página"
+          onCheckedChange={alternarSelecaoDaPagina}
+        />
+      ),
+    },
+    { id: "codigo", titulo: "Código do afiliado" },
+    { id: "afiliado", titulo: "Afiliado" },
+    { id: "vendas", titulo: "Vendas no mês" },
+    { id: "status", titulo: "Status" },
+    { id: "acoes", titulo: "" },
+  ];
 
   const definirEstadoLocal = (id: string, estado: EstadoFiliacao) => {
     setEstadosLocais((atual) => new Map(atual).set(id, estado));
@@ -238,6 +263,7 @@ export function GestorListaAfiliados() {
 
       <TabelaBase
         colunas={colunas}
+        emCartao
         carregando={carregando}
         linhasEsqueleto={5}
         estaVazia={listaVazia || buscaSemResultado}
@@ -252,17 +278,19 @@ export function GestorListaAfiliados() {
           <>
             <span>
               {selecionados.size > 0
-                ? `${selecionados.size} ${selecionados.size === 1 ? "selecionado" : "selecionados"}`
-                : `${filtrados.length} ${filtrados.length === 1 ? "afiliado" : "afiliados"}`}
+                ? `${selecionados.size} ${selecionados.size === 1 ? "afiliado selecionado" : "afiliados selecionados"}`
+                : "Nenhum afiliado selecionado."}
             </span>
             {carregando || filtrados.length === 0 ? null : (
               <span className="flex items-center gap-3">
-                Mostrando {inicio + 1} a {Math.min(inicio + TAMANHO_PAGINA, filtrados.length)} de{" "}
-                {filtrados.length}
-                <span className="flex items-center gap-1">
+                <span className="text-foreground">
+                  Página {paginaAtual + 1} de {totalPaginas}
+                </span>
+                <span className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
+                    className="rounded-lg"
                     disabled={paginaAtual === 0}
                     onClick={() => setPagina(paginaAtual - 1)}
                   >
@@ -271,6 +299,7 @@ export function GestorListaAfiliados() {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="rounded-lg"
                     disabled={paginaAtual >= totalPaginas - 1}
                     onClick={() => setPagina(paginaAtual + 1)}
                   >
@@ -362,42 +391,34 @@ function LinhaAfiliado({
 }) {
   return (
     <TableRow>
-      <TableCell className="w-10">
+      <TableCell className="w-10 py-3">
         <Checkbox
           checked={selecionado}
           aria-label={`Selecionar ${afiliado.nome}`}
           onCheckedChange={aoAlternarSelecao}
         />
       </TableCell>
-      <TableCell>
-        {afiliado.codigo ? (
-          <CodigoCopiavel codigo={afiliado.codigo} />
-        ) : (
-          // [FATO §Fase 2] Código nulo da convidada usa caractere neutro,
-          // não travessão, conforme a regra de copy.
-          <span className="text-muted-foreground" aria-label="Sem código">
-            ·
-          </span>
-        )}
+      <TableCell className="py-3">
+        <CodigoDaLinha afiliado={afiliado} />
       </TableCell>
-      <TableCell>
+      <TableCell className="py-3">
         <button type="button" className="text-left" onClick={aoAbrir}>
-          <span className="block max-w-56 truncate font-medium">{afiliado.nome}</span>
-          <span className="text-muted-foreground block max-w-56 truncate text-xs">
+          <span className="block max-w-64 truncate font-medium">{afiliado.nome}</span>
+          <span className="text-muted-foreground block max-w-64 truncate text-xs">
             {afiliado.email}
           </span>
         </button>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-3">
         <span className="block font-medium">{formatarMoeda(afiliado.vendasNoMes)}</span>
         <span className="text-muted-foreground block text-xs">
           {afiliado.vendasQtde} {afiliado.vendasQtde === 1 ? "venda" : "vendas"}
         </span>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-3">
         <BadgeFiliacao estado={afiliado.estado} />
       </TableCell>
-      <TableCell className="w-12 text-right">
+      <TableCell className="w-12 py-3 text-right">
         <AfiliadoAcoes
           contexto="linha"
           filiacao={{
@@ -410,5 +431,27 @@ function LinhaAfiliado({
         />
       </TableCell>
     </TableRow>
+  );
+}
+
+// Célula de código do frame 15998:132641: chip copiável só na filiação
+// ativa; pausada e desativada exibem o chip neutro sem ação de cópia
+// (links de divulgação suspensos); código nulo usa hífen simples, não
+// travessão, conforme a regra de copy.
+function CodigoDaLinha({ afiliado }: { readonly afiliado: AfiliadoListaItem }) {
+  if (!afiliado.codigo) {
+    return (
+      <span className="text-muted-foreground" aria-label="Sem código">
+        -
+      </span>
+    );
+  }
+  if (afiliado.estado === "ativa") {
+    return <CodigoCopiavel codigo={afiliado.codigo} />;
+  }
+  return (
+    <span className="border-border bg-muted/40 text-muted-foreground inline-flex items-center rounded-md border px-2 py-0.5 font-mono text-xs font-medium">
+      {afiliado.codigo}
+    </span>
   );
 }

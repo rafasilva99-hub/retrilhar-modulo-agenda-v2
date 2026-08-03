@@ -1,4 +1,8 @@
+export { type AcaoAfiliado, AfiliadoAcoes } from "./afiliado-acoes";
+export { BadgeFiliacao } from "./badge-filiacao";
+export { BarraFiltros, type FiltroEstadoFiliacao } from "./barra-filtros";
 export { CodigoCopiavel } from "./codigo-copiavel";
+export { ComparativoCondicao, type LadoComparativo } from "./comparativo-condicao";
 export { DialogCapturaMotivo } from "./dialog-captura-motivo";
 export { FiltroSegmentado, type OpcaoFiltroSegmentado } from "./filtro-segmentado";
 export { HeaderEntidade } from "./header-entidade";
@@ -6,6 +10,7 @@ export { ItemAfiliado } from "./item-afiliado";
 export { ItemPendencia } from "./item-pendencia";
 export { KpiCard } from "./kpi-card";
 export { PainelSecao } from "./painel-secao";
+export { ProdutoVinculadoCard } from "./produto-vinculado-card";
 export { type LinhaResumoNegociacao, ResumoNegociacao } from "./resumo-negociacao";
 export { type ColunaTabela, TabelaBase } from "./tabela-base";
 export { type EventoTimeline, TimelineAtividade } from "./timeline-atividade";

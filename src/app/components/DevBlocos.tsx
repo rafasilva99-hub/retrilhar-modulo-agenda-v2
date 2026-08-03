@@ -2,15 +2,21 @@ import { useState } from "react";
 import { MoneyBag02Icon, UserCheck01Icon } from "@hugeicons/core-free-icons";
 
 import {
+  AfiliadoAcoes,
+  BadgeFiliacao,
+  BarraFiltros,
   CodigoCopiavel,
   type ColunaTabela,
+  ComparativoCondicao,
   DialogCapturaMotivo,
+  type FiltroEstadoFiliacao,
   FiltroSegmentado,
   HeaderEntidade,
   ItemAfiliado,
   ItemPendencia,
   KpiCard,
   PainelSecao,
+  ProdutoVinculadoCard,
   ResumoNegociacao,
   TabelaBase,
   TimelineAtividade,
@@ -23,6 +29,7 @@ import {
   motivosRecusa,
   pendenciasCheio,
   pendenciasExtremos,
+  produtosVinculadosCheio,
   resumoAfiliadosCheio,
   resumoAfiliadosExtremos,
   topAfiliadosCheio,
@@ -43,6 +50,8 @@ const colunasDemo: readonly ColunaTabela[] = [
 export function DevBlocos() {
   const [filtro, setFiltro] = useState("todas");
   const [dialogMotivo, setDialogMotivo] = useState<"destrutivo" | "neutro" | null>(null);
+  const [buscaFiltros, setBuscaFiltros] = useState("");
+  const [estadoFiltros, setEstadoFiltros] = useState<FiltroEstadoFiliacao>("todos");
 
   return (
     <div className="mx-auto max-w-5xl space-y-8 p-8">
@@ -272,6 +281,88 @@ export function DevBlocos() {
               ]}
             />
           </Card>
+        </div>
+      </Secao>
+
+      <Secao titulo="BadgeFiliacao">
+        <div className="flex flex-wrap items-center gap-3">
+          {(["ativa", "inativa", "desativada", "convidada", "expirada"] as const).map((estado) => (
+            <BadgeFiliacao key={estado} estado={estado} />
+          ))}
+        </div>
+      </Secao>
+
+      <Secao titulo="BarraFiltros">
+        <BarraFiltros
+          busca={buscaFiltros}
+          aoMudarBusca={setBuscaFiltros}
+          estado={estadoFiltros}
+          aoMudarEstado={setEstadoFiltros}
+          placeholderBusca="Pesquisar afiliado..."
+        />
+      </Secao>
+
+      <Secao titulo="AfiliadoAcoes">
+        <div className="flex flex-wrap items-center gap-3">
+          <AfiliadoAcoes
+            contexto="linha"
+            filiacao={{ estado: "ativa", temSolicitacaoPendente: false }}
+            usuario={{ perfil: "administrador" }}
+            nomeAfiliado="Filiação ativa, administrador"
+            aoAcionar={() => undefined}
+          />
+          <AfiliadoAcoes
+            contexto="linha"
+            filiacao={{ estado: "ativa", temSolicitacaoPendente: false }}
+            usuario={{ perfil: "gestor_afiliados" }}
+            nomeAfiliado="Filiação ativa, sem permissão de desativar"
+            aoAcionar={() => undefined}
+          />
+          <AfiliadoAcoes
+            contexto="linha"
+            filiacao={{ estado: "ativa", temSolicitacaoPendente: true }}
+            usuario={{ perfil: "administrador" }}
+            nomeAfiliado="Com solicitação pendente"
+            aoAcionar={() => undefined}
+          />
+          <AfiliadoAcoes
+            contexto="linha"
+            filiacao={{ estado: "desativada", temSolicitacaoPendente: false }}
+            usuario={{ perfil: "administrador" }}
+            nomeAfiliado="Filiação desativada"
+            aoAcionar={() => undefined}
+          />
+          <AfiliadoAcoes
+            contexto="linha"
+            filiacao={{ estado: "expirada", temSolicitacaoPendente: false }}
+            usuario={{ perfil: "administrador" }}
+            nomeAfiliado="Convite expirado"
+            aoAcionar={() => undefined}
+          />
+          <AfiliadoAcoes
+            contexto="ficha"
+            filiacao={{ estado: "inativa", temSolicitacaoPendente: false }}
+            usuario={{ perfil: "administrador" }}
+            nomeAfiliado="Ficha com filiação pausada"
+            aoAcionar={() => undefined}
+          />
+        </div>
+      </Secao>
+
+      <Secao titulo="ProdutoVinculadoCard">
+        <div className="grid max-w-4xl grid-cols-1 gap-3 xl:grid-cols-2">
+          <ProdutoVinculadoCard produto={produtosVinculadosCheio[0]!} />
+          <ProdutoVinculadoCard produto={produtosVinculadosCheio[2]!} />
+          <ProdutoVinculadoCard produto={produtosVinculadosCheio[1]!} somenteLeitura />
+        </div>
+      </Secao>
+
+      <Secao titulo="ComparativoCondicao">
+        <div className="max-w-xl">
+          <ComparativoCondicao
+            antes={{ rotulo: "Comissão atual", valor: "50%", subtitulo: "Sobre o valor da venda" }}
+            depois={{ rotulo: "Nova comissão", valor: "12%", subtitulo: "Sobre o valor da venda" }}
+          />
         </div>
       </Secao>
 

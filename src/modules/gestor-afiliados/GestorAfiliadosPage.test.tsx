@@ -233,6 +233,23 @@ describe("GestorAfiliadosPage", () => {
     expect(screen.getByRole("button", { name: /Aprovar e definir comissão/ })).toBeInTheDocument();
   });
 
+  it("asks for a justification before refusing a proposta", () => {
+    render(<GestorAfiliadosPage section="central" />);
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Abrir pendência de Ana Beatriz Campos" })[0]!
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Recusar proposta/ }));
+
+    expect(screen.getByRole("heading", { name: "Recusar proposta" })).toBeInTheDocument();
+    expect(screen.getByText("Motivo da recusa (visível para o afiliado)")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Descreva a razão da recusa" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar recusa" }));
+    expect(screen.queryByRole("heading", { name: "Recusar proposta" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Avaliar proposta" })).not.toBeInTheDocument();
+  });
+
   it("switches the central de filiação system states", () => {
     render(<GestorAfiliadosPage section="central" />);
 

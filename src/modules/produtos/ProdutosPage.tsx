@@ -3,6 +3,13 @@ import { createPortal } from "react-dom";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
 interface Produto {
@@ -546,15 +553,6 @@ export function ProdutosPage() {
     setSelectedIds((current) =>
       Array.from(new Set([...current, ...filtered.map((produto) => produto.id)]))
     );
-  };
-
-  const applyBulkStatus = (status: Produto["status"]) => {
-    setProdutos((current) =>
-      current.map((produto) =>
-        selectedIds.includes(produto.id) ? { ...produto, status } : produto
-      )
-    );
-    setSelectedIds([]);
   };
 
   /* ── Tipo configuration ── */
@@ -3900,13 +3898,31 @@ export function ProdutosPage() {
 
   return (
     <>
-      <div className="absolute top-[112px] right-[24px] left-[var(--shell-offset,248px)]">
-        <h1 className="font-['Helvetica_Neue:Regular',sans-serif] text-[24px] leading-[normal] text-[#0f172b]">
-          Produtos
-        </h1>
-        <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">
-          Gerencie seu catálogo de atividades, experiências e pacotes.
-        </p>
+      <div className="absolute top-[112px] right-[24px] left-[var(--shell-offset,248px)] flex items-center justify-between gap-4">
+        <div>
+          <h1 className="font-['Helvetica_Neue:Regular',sans-serif] text-[24px] leading-[normal] text-[#0f172b]">
+            Produtos
+          </h1>
+          <p className="mt-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#535862]">
+            Gerencie seu catálogo de atividades, experiências e pacotes.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={openNewProduct}
+          className="group/button bg-primary text-primary-foreground hover:bg-primary/80 inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-3 font-['Helvetica_Neue:Medium',sans-serif] text-sm transition-all"
+        >
+          <svg className="size-[16px]" fill="none" viewBox="0 0 24 24">
+            <path
+              d="M12 4V20M20 12H4"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+            />
+          </svg>
+          Novo produto
+        </button>
       </div>
 
       <div className="absolute top-[178px] right-[24px] left-[var(--shell-offset,248px)] flex flex-col gap-[24px] pb-[40px]">
@@ -4114,50 +4130,21 @@ export function ProdutosPage() {
             </button>
           </div>
           <div className="ml-auto hidden items-center gap-[0.75em] md:flex">
-            <div className="relative">
-              <button
-                type="button"
-                disabled={selectedIds.length === 0}
-                onClick={() => setOpenMenuId(openMenuId === "bulk" ? null : "bulk")}
-                className="group/button border-border bg-background hover:bg-muted hover:text-foreground inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border px-3 font-['Helvetica_Neue:Regular',sans-serif] text-sm text-[#414651] transition-all disabled:pointer-events-none disabled:opacity-50"
-              >
-                Ações em lote
-              </button>
-              {openMenuId === "bulk" ? (
-                <div className="absolute top-[44px] right-0 z-20 w-[180px] overflow-hidden rounded-[8px] border border-[#e9eaeb] bg-white shadow-[0_8px_24px_rgba(15,23,43,0.12)]">
-                  {[
-                    { label: "Ativar selecionados", status: "Ativo" },
-                    { label: "Inativar selecionados", status: "Inativo" },
-                    { label: "Arquivar selecionados", status: "Arquivado" },
-                  ].map((action) => (
-                    <button
-                      key={action.label}
-                      type="button"
-                      onClick={() => applyBulkStatus(action.status as Produto["status"])}
-                      className="block w-full px-[12px] py-[9px] text-left font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] hover:bg-[#f8fafc]"
-                    >
-                      {action.label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <button
-              type="button"
-              onClick={openNewProduct}
-              className="group/button bg-primary text-primary-foreground hover:bg-primary/80 inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-transparent px-3 font-['Helvetica_Neue:Medium',sans-serif] text-sm transition-all"
+            <Select
+              value={statusFilter}
+              onValueChange={(valor) => setStatusFilter(valor as "todos" | Produto["status"])}
             >
-              <svg className="size-[16px]" fill="none" viewBox="0 0 24 24">
-                <path
-                  d="M12 4V20M20 12H4"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                />
-              </svg>
-              Novo produto
-            </button>
+              <SelectTrigger className="h-9 w-44 rounded-lg" aria-label="Filtrar por status">
+                <SelectValue placeholder="Todos os status" />
+              </SelectTrigger>
+              <SelectContent position="popper" side="bottom">
+                <SelectItem value="todos">Todos os status</SelectItem>
+                <SelectItem value="Ativo">Ativos</SelectItem>
+                <SelectItem value="Inativo">Inativos</SelectItem>
+                <SelectItem value="Rascunho">Rascunhos</SelectItem>
+                <SelectItem value="Arquivado">Arquivados</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

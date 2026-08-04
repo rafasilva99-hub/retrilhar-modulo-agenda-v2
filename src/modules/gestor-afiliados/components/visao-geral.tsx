@@ -48,6 +48,7 @@ import {
   obterDetalheVenda,
   obterResumoAfiliados,
   obterSolicitacaoDaPendencia,
+  selecionarAfiliadoPorNome,
 } from "../services/afiliados-service";
 
 import { AvaliarPropostaDrawer } from "./avaliar-proposta-drawer";
@@ -174,7 +175,10 @@ export function GestorVisaoGeral() {
               {carregando ? (
                 <ListaEsqueleto quantidade={4} />
               ) : (
-                <div className="border-border divide-border/60 flex-1 divide-y overflow-hidden rounded-xl border">
+                // A moldura acompanha a quantidade de itens do filtro atual;
+                // apenas o rodapé "Ver todas as pendências" permanece fixo no
+                // pé do painel (slot flex-1 do PainelSecao).
+                <div className="border-border divide-border/60 divide-y overflow-hidden rounded-xl border">
                   {pendencias.map((pendencia) => (
                     <ItemPendencia
                       key={pendencia.id}
@@ -205,7 +209,10 @@ export function GestorVisaoGeral() {
                   key={afiliado.id}
                   afiliado={afiliado}
                   posicao={indice + 1}
-                  onAbrir={() => irPara("gestorAfiliadosLista")}
+                  onAbrir={() => {
+                    selecionarAfiliadoPorNome(afiliado.nome);
+                    irPara("gestorAfiliadosFicha");
+                  }}
                 />
               ))}
             </div>
@@ -219,6 +226,7 @@ export function GestorVisaoGeral() {
       >
         <TabelaBase
           colunas={colunasVendas}
+          emCartao
           carregando={carregando}
           linhasEsqueleto={5}
           estaVazia={vendas.length === 0}
@@ -295,8 +303,9 @@ export function GestorVisaoGeral() {
         aberto={detalheVenda !== null}
         aoFechar={() => setVendaAbertaId(null)}
         aoVerAfiliado={() => {
+          if (detalheVenda) selecionarAfiliadoPorNome(detalheVenda.afiliado.nome);
           setVendaAbertaId(null);
-          irPara("gestorAfiliadosLista");
+          irPara("gestorAfiliadosFicha");
         }}
       />
 

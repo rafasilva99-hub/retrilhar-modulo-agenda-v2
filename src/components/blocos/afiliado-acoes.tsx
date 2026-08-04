@@ -24,8 +24,8 @@ export type AcaoAfiliado =
   | "reenviar-convite";
 
 interface AfiliadoAcoesProps {
-  // Um componente, dois contextos (§1.3): o menu da linha e o "Mais ações"
-  // da ficha têm os mesmos itens; a ficha só omite "Ver detalhes".
+  // Um componente, dois contextos (§1.3): o menu da linha omite "Editar
+  // filiações" (a edição parte da ficha) e a ficha omite "Ver detalhes".
   readonly contexto: "linha" | "ficha";
   readonly filiacao: Filiacao;
   readonly usuario: Usuario;
@@ -43,7 +43,7 @@ export function AfiliadoAcoes({
   aoAcionar,
 }: AfiliadoAcoesProps) {
   const exibeVerDetalhes = contexto === "linha" && PODE.verDetalhes();
-  const exibeEditar = PODE.editarFiliacoes(filiacao);
+  const exibeEditar = contexto === "ficha" && PODE.editarFiliacoes(filiacao);
   // [DECISÃO] O toggle espelha o estado, não a ação, e não é renderizado no
   // estado desativada (o guarda já nega alternarPausa fora de vinculada).
   const exibeToggle = PODE.alternarPausa(filiacao);

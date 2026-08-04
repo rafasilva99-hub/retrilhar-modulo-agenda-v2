@@ -70,7 +70,15 @@ export function TabelaBase({
 
   return (
     <div className={cn(emCartao ? "border-border bg-card rounded-2xl border" : "space-y-3")}>
-      <div className={cn("overflow-x-auto", emCartao && "rounded-t-2xl")}>
+      {/* Sem rodapé interno, a base do cartão também precisa do arredondamento
+          para o hover da última linha não vazar da moldura. */}
+      <div
+        className={cn(
+          "overflow-x-auto",
+          emCartao && "rounded-t-2xl",
+          emCartao && !rodape && "rounded-b-2xl"
+        )}
+      >
         <Table
           className={cn(
             emCartao &&

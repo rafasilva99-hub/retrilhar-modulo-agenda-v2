@@ -169,25 +169,27 @@ export function DetalheVendaDrawer({
               <TimelineAtividade eventos={detalhe.historico} />
             </div>
 
-            <div className="border-border mt-auto flex flex-wrap justify-end gap-3 border-t px-6 py-4">
+            <div className="border-border mt-auto flex flex-wrap items-center justify-between gap-3 border-t px-6 py-4">
               <Button type="button" variant="outline" onClick={aoFechar}>
                 Fechar aba
               </Button>
-              <Button type="button" variant="outline" onClick={aoVerAfiliado}>
-                Ver detalhes do afiliado
-              </Button>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span tabIndex={0}>
-                      <Button type="button" disabled>
-                        Ver pedido completo
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>Disponível em breve</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <div className="flex flex-wrap gap-3">
+                <Button type="button" variant="outline" onClick={aoVerAfiliado}>
+                  Ver detalhes do afiliado
+                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={0}>
+                        <Button type="button" disabled>
+                          Ver pedido completo
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>Disponível em breve</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </div>
           </div>
         ) : null}
@@ -296,7 +298,7 @@ function CampoPedido({
   // à direita; no empilhamento mobile tudo volta ao alinhamento à esquerda.
   return (
     <div className={cn("flex items-center gap-3", alinharDireita && "sm:flex-row-reverse")}>
-      <span className="bg-muted/60 text-muted-foreground grid size-10 shrink-0 place-items-center rounded-xl">
+      <span className="border-border/60 bg-muted/60 text-muted-foreground grid size-10 shrink-0 place-items-center rounded-xl border">
         <HugeiconsIcon icon={icone} size={20} aria-hidden="true" />
       </span>
       <div className={cn("min-w-0 flex-1 space-y-0.5", alinharDireita && "sm:text-right")}>

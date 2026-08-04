@@ -30,12 +30,13 @@ interface BarraFiltrosProps {
   readonly estado: FiltroEstadoFiliacao;
   readonly aoMudarEstado: (estado: FiltroEstadoFiliacao) => void;
   readonly placeholderBusca?: string;
-  // Ações alinhadas à direita, como a CTA primária da toolbar de Produtos.
+  // Ações alinhadas à direita, após o select de status.
   readonly acoes?: ReactNode;
 }
 
 // Barra da AFI-02 (§1.2), na estrutura da toolbar padrão do Admin: busca
-// compacta à esquerda, botão de filtros e select de status, ações à direita.
+// compacta à esquerda, botão de filtros e, à direita, o select de status
+// (a CTA primária da tela vive no cabeçalho da página).
 // [FATO] O select filtra pelo enum derivado, com os mesmos cinco rótulos do
 // BadgeFiliacao.
 export function BarraFiltros({
@@ -71,23 +72,25 @@ export function BarraFiltros({
         <HugeiconsIcon icon={FilterHorizontalIcon} size={16} aria-hidden="true" />
         Filtros
       </Button>
-      <Select
-        value={estado}
-        onValueChange={(valor) => aoMudarEstado(valor as FiltroEstadoFiliacao)}
-      >
-        <SelectTrigger className="h-9 w-44 rounded-lg" aria-label="Filtrar por status">
-          <SelectValue placeholder="Todos os status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="todos">Todos os status</SelectItem>
-          {estadosDoFiltro.map((item) => (
-            <SelectItem key={item} value={item}>
-              {rotuloDaFiliacao(item)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {acoes ? <div className="ml-auto hidden items-center gap-3 md:flex">{acoes}</div> : null}
+      <div className="ml-auto flex items-center gap-3">
+        <Select
+          value={estado}
+          onValueChange={(valor) => aoMudarEstado(valor as FiltroEstadoFiliacao)}
+        >
+          <SelectTrigger className="h-9 w-44 rounded-lg" aria-label="Filtrar por status">
+            <SelectValue placeholder="Todos os status" />
+          </SelectTrigger>
+          <SelectContent position="popper" side="bottom">
+            <SelectItem value="todos">Todos os status</SelectItem>
+            {estadosDoFiltro.map((item) => (
+              <SelectItem key={item} value={item}>
+                {rotuloDaFiliacao(item)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {acoes ? <div className="hidden items-center gap-3 md:flex">{acoes}</div> : null}
+      </div>
     </div>
   );
 }

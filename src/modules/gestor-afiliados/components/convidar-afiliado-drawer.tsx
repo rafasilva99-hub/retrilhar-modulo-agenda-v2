@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Search01Icon, Sent02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { toast } from "sonner";
 
-import { type ColunaTabela, FiltroSegmentado, TabelaBase } from "@/components/blocos";
+import {
+  type ColunaTabela,
+  FiltroSegmentado,
+  mostrarToastConfirmacao,
+  TabelaBase,
+} from "@/components/blocos";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -134,9 +138,11 @@ export function ConvidarAfiliadoDrawer({ aberto, aoFechar }: ConvidarAfiliadoDra
     setRecebimento("split");
   };
 
+  // Toast de conclusão do convite conforme o frame 15998:136576.
   const enviar = () => {
-    toast.success("Convite enviado", {
-      description: `${nome.trim()} receberá o convite em ${email.trim()}.`,
+    mostrarToastConfirmacao({
+      titulo: "Convite enviado com sucesso",
+      descricao: `Enviamos o convite para ${email.trim()}. A filiação será ativa assim que a conta for criada.`,
     });
     limpar();
     aoFechar();

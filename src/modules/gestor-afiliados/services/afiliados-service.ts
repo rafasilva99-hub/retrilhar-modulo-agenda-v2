@@ -295,6 +295,13 @@ export function selecionarAfiliado(id: string) {
   afiliadoSelecionadoId = id;
 }
 
+// Contextos sem o id da ficha (Top afiliados, detalhe da venda) selecionam
+// pelo nome; sem correspondência no mock, cai na ficha padrão como a lista.
+export function selecionarAfiliadoPorNome(nome: string) {
+  const ficha = [...fichasPorAfiliado.values()].find((item) => item.nome === nome);
+  afiliadoSelecionadoId = ficha?.id ?? null;
+}
+
 export function obterFichaSelecionada(): AfiliadoFicha {
   return (afiliadoSelecionadoId && fichasPorAfiliado.get(afiliadoSelecionadoId)) || fichaAtiva;
 }

@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { selecionarAfiliadoPorNome } from "./services/afiliados-service";
 import { GestorAfiliadosPage } from "./GestorAfiliadosPage";
 
 function openMenu(triggerName: RegExp) {
@@ -71,6 +72,21 @@ describe("GestorAfiliadosPage", () => {
     expect(screen.queryByRole("button", { name: /Vincular produto/ })).not.toBeInTheDocument();
     expect(screen.getByText("Filiação desativada")).toBeInTheDocument();
     expect(screen.getAllByText("No último mês da filiação").length).toBeGreaterThan(0);
+  });
+
+  it("opens the ficha of the clicked top afiliado", () => {
+    const { unmount } = render(<GestorAfiliadosPage section="visao" />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Abrir detalhes de Isabelly Beatriz Lopes" })
+    );
+    unmount();
+
+    render(<GestorAfiliadosPage section="ficha" />);
+    expect(screen.getAllByText("Isabelly Beatriz Lopes").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Ana Paula Silva")).not.toBeInTheDocument();
+
+    // Limpa a seleção do módulo para não vazar aos demais testes.
+    selecionarAfiliadoPorNome("");
   });
 
   it("records product request decisions locally", () => {

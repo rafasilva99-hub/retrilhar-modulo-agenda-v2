@@ -1,0 +1,11 @@
+{
+  "result": {
+    "inserted": true,
+    "allCategoriesVisible": true,
+    "recentTabVisible": true,
+    "searchVisible": true,
+    "categoryVisible": true
+  },
+  "consoleMessages": [],
+  "pageErrors": []
+}

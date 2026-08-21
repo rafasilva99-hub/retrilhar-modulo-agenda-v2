@@ -21,7 +21,11 @@ import { GanhosPage } from "@/modules/afiliados/GanhosPage";
 import { IndicacoesPage } from "@/modules/afiliados/IndicacoesPage";
 import { ProdutosLinksPage } from "@/modules/afiliados/ProdutosLinksPage";
 import { GestorAfiliadosPage } from "@/modules/gestor-afiliados/GestorAfiliadosPage";
+import { HomePage } from "@/modules/home";
 import { ProdutosPage } from "@/modules/produtos/ProdutosPage";
+import { RecursosPage } from "@/modules/produtos/RecursosPage";
+import { DesistenciasPage } from "@/modules/vendas/DesistenciasPage";
+import { PedidosPage, VendasPlaceholderPage } from "@/modules/vendas/VendasPage";
 
 import { AgendaDayPage } from "../adapters/figma-agenda-day-page";
 import { AgendaMonthPage } from "../adapters/figma-agenda-month-page";
@@ -157,6 +161,8 @@ function AgendaPrototypeApp() {
         return <IntroTeste onStart={() => undefined} />;
       case "contexto":
         return <ContextoMissao onStart={() => undefined} />;
+      case "home":
+        return <HomePage />;
       case "novaAtividade":
         return <AgendaNovaAtividade onBack={() => undefined} />;
       case "atualizacoes": {
@@ -209,6 +215,33 @@ function AgendaPrototypeApp() {
         return (
           <AffiliatePreviewFrame>
             <ProdutosLinksPage />
+          </AffiliatePreviewFrame>
+        );
+      case "produtosRecursos":
+        return (
+          <AffiliatePreviewFrame>
+            <RecursosPage />
+          </AffiliatePreviewFrame>
+        );
+      case "vendasPedidos":
+        return (
+          <AffiliatePreviewFrame>
+            <PedidosPage />
+          </AffiliatePreviewFrame>
+        );
+      case "vendasDesistencias":
+        return (
+          <AffiliatePreviewFrame>
+            <DesistenciasPage />
+          </AffiliatePreviewFrame>
+        );
+      case "vendasCupons":
+        return (
+          <AffiliatePreviewFrame>
+            <VendasPlaceholderPage
+              title="Cupons"
+              description="Gerencie códigos promocionais e condições comerciais."
+            />
           </AffiliatePreviewFrame>
         );
       case "gestorAfiliados":
@@ -317,6 +350,20 @@ function AgendaPrototypeApp() {
     );
   }
 
+  if (agenda.currentPage === "home") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <HomePage onNovaReserva={() => agenda.navigateTo("agenda")} />
+      </AppShell>
+    );
+  }
+
   if (agenda.currentPage === "configuracoes") {
     return <ConfiguracoesPage />;
   }
@@ -335,6 +382,65 @@ function AgendaPrototypeApp() {
         onNavigate={agenda.navigateTo}
       >
         <ProdutosPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "produtosRecursos") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <RecursosPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "vendasPedidos") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <PedidosPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "vendasDesistencias") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <DesistenciasPage />
+      </AppShell>
+    );
+  }
+
+  if (agenda.currentPage === "vendasCupons") {
+    return (
+      <AppShell
+        activePage={agenda.currentPage}
+        navItems={shellNavItems}
+        organization={shellOrganization}
+        profile={shellProfile}
+        onNavigate={agenda.navigateTo}
+      >
+        <VendasPlaceholderPage
+          title="Cupons"
+          description="Gerencie códigos promocionais e condições comerciais."
+        />
       </AppShell>
     );
   }

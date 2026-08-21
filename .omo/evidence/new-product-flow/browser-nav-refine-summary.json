@@ -1,0 +1,31 @@
+{
+  "assertions": {
+    "hasTitle": true,
+    "hasInfo": true,
+    "hasCommunication": true,
+    "hasRoundedCard": true,
+    "currentStep": true,
+    "noHorizontalOverflow": true
+  },
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    }
+  ],
+  "severeLogs": [],
+  "runtimeErrors": [],
+  "screenshots": [
+    "render-nav-refine-desktop.png",
+    "render-nav-refine-tablet.png",
+    "render-nav-refine-mobile.png"
+  ]
+}

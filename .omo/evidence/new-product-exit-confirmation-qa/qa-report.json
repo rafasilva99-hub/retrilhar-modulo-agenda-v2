@@ -1,0 +1,22 @@
+{
+  "dialogText": "Sair sem salvar rascunho?\n\nVocê preencheu informações deste produto. Deseja prosseguir sem salvar ou salvar o rascunho antes de sair?\n\nContinuar editando\nSair sem salvar\nSalvar e sair",
+  "buttonLineBreaks": [
+    {
+      "text": "Continuar editando",
+      "height": 39.849609375,
+      "scrollHeight": 38
+    },
+    {
+      "text": "Sair sem salvar",
+      "height": 39.849609375,
+      "scrollHeight": 40
+    },
+    {
+      "text": "Salvar e sair",
+      "height": 39.849609375,
+      "scrollHeight": 40
+    }
+  ],
+  "savedDraftName": "Trilha com aviso",
+  "discardedDraftName": ""
+}

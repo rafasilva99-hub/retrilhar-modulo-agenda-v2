@@ -1,0 +1,10 @@
+{
+  "before": {
+    "searchFocusedOnOpen": false
+  },
+  "after": {
+    "searchFocusedAfterProgrammaticFocus": true,
+    "searchValue": "trilha",
+    "visibleEmojiCount": 4
+  }
+}

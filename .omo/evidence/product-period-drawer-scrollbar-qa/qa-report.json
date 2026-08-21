@@ -1,0 +1,45 @@
+{
+  "beforeCustom": {
+    "computedOverflowY": "scroll",
+    "className": "min-h-0 flex-1 overflow-y-scroll px-6 pb-5",
+    "clientWidth": 479,
+    "scrollHeight": 758,
+    "clientHeight": 758,
+    "placeholder": "dd/mm/aaaa",
+    "maxLength": 8,
+    "pattern": "[0-9]*",
+    "value": "11082026",
+    "timeIconViewBoxes": []
+  },
+  "afterCustom": {
+    "computedOverflowY": "scroll",
+    "className": "min-h-0 flex-1 overflow-y-scroll px-6 pb-5",
+    "clientWidth": 479,
+    "scrollHeight": 942,
+    "clientHeight": 758,
+    "placeholder": "dd/mm/aaaa",
+    "maxLength": 8,
+    "pattern": "[0-9]*",
+    "value": "11082026",
+    "timeIconViewBoxes": [
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20",
+      "0 0 20 20"
+    ]
+  },
+  "dateSanitized": true,
+  "placeholderKept": true,
+  "stableClientWidth": true,
+  "timeIconStandardized": true
+}

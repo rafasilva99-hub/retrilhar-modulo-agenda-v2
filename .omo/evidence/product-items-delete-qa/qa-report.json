@@ -1,0 +1,5 @@
+{
+  "initialText": "ITENS DO PRODUTO\n\nHabilitar atribuição de itens\n\nVocê escolhe adicionar itens que já vem inclusos no produto e/ou itens adicionais.\n\nCarro 3\n\nItem incluso na compra, 12 (limite por dia), R$ 12,00 (valor do item).\n\nItem 2\n\nSem item cadastrado, sem valor definido, sem limite por dia.\n\nItem 3\n\nSem item cadastrado, sem valor definido, sem limite por dia.\n\nAdicionar item",
+  "afterEmptyDeleteText": "ITENS DO PRODUTO\n\nHabilitar atribuição de itens\n\nVocê escolhe adicionar itens que já vem inclusos no produto e/ou itens adicionais.\n\nCarro 3\n\nItem incluso na compra, 12 (limite por dia), R$ 12,00 (valor do item).\n\nItem 2\n\nSem item cadastrado, sem valor definido, sem limite por dia.\n\nAdicionar item",
+  "finalText": "ITENS DO PRODUTO\n\nHabilitar atribuição de itens\n\nVocê escolhe adicionar itens que já vem inclusos no produto e/ou itens adicionais.\n\nItem 1\n\nSem item cadastrado, sem valor definido, sem limite por dia.\n\nAdicionar item"
+}

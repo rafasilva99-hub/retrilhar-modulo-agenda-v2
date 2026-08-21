@@ -1,0 +1,30 @@
+{
+  "result": {
+    "searchFocusedOnOpen": false,
+    "activeElementLabelOnOpen": "BODY",
+    "categoryTabCount": 8,
+    "categoryTabsHaveVisibleText": false,
+    "categoryTabsAllHaveSvg": true,
+    "tabLabels": [
+      "Rostos",
+      "Pessoas",
+      "Natureza",
+      "Comida",
+      "Viagem",
+      "Atividades",
+      "Objetos",
+      "Símbolos"
+    ],
+    "tooltipVisible": true,
+    "searchInputFocusedAfterClick": {
+      "focused": false,
+      "visibleEmojiCount": 16
+    }
+  },
+  "consoleMessages": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+  ],
+  "pageErrors": []
+}

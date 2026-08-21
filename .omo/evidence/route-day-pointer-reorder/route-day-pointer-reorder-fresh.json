@@ -1,0 +1,1500 @@
+{
+  "generatedAt": "2026-08-19T19:37:30.743Z",
+  "appUrl": "http://127.0.0.1:5173/",
+  "scenarios": [
+    {
+      "label": "pointercancel keeps original route order",
+      "verdict": "PASS",
+      "before": [
+        "Dia 1 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+        "Dia 2 Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+      ],
+      "afterCancel": [
+        "Dia 1 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+        "Dia 2 Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+      ],
+      "previewCards": [
+        "Dia 1 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+        "Dia 2 Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+      ],
+      "previewTransforms": [
+        "matrix(1, 0, 0, 1, 0, 92)",
+        "matrix(1, 0, 0, 1, 0, -64.9307)"
+      ],
+      "screenshot": ".omo/evidence/route-day-pointer-reorder/route-day-pointercancel-kept-order.png"
+    },
+    {
+      "label": "pointerup commits route reorder",
+      "verdict": "PASS",
+      "before": [
+        "Dia 1 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+        "Dia 2 Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+      ],
+      "afterDrop": [
+        "Dia 1 Sem horários definidos, sem produto selecionado, sem capacidade atribuída.",
+        "Dia 2 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa)."
+      ],
+      "settledTransforms": [
+        "matrix(1, 0, 0, 1, 0, 0)",
+        "matrix(1, 0, 0, 1, 0, 0)"
+      ],
+      "previewCards": [
+        "Dia 1 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+        "Dia 2 Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+      ],
+      "previewTransforms": [
+        "matrix(1, 0, 0, 1, 0, 92)",
+        "matrix(1, 0, 0, 1, 0, -64.8457)"
+      ],
+      "screenshot": ".omo/evidence/route-day-pointer-reorder/route-day-pointerup-committed-order.png"
+    },
+    {
+      "label": "native mouse drag commits route reorder",
+      "verdict": "PASS",
+      "before": [
+        "Dia 1 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+        "Dia 2 Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+      ],
+      "afterDrop": [
+        "Dia 1 Sem horários definidos, sem produto selecionado, sem capacidade atribuída.",
+        "Dia 2 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa)."
+      ],
+      "previewCards": [
+        "Dia 1 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+        "Dia 2 Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+      ],
+      "previewTransforms": [
+        "matrix(1, 0, 0, 1, 0, 92)",
+        "matrix(1, 0, 0, 1, 0, -64.8661)"
+      ],
+      "screenshot": ".omo/evidence/route-day-pointer-reorder/route-day-native-mouse-committed-order.png"
+    },
+    {
+      "label": "keyboard arrow fallback reorders route card",
+      "verdict": "PASS",
+      "afterKey": [
+        "Dia 1 Sem horários definidos, sem produto selecionado, sem capacidade atribuída.",
+        "Dia 2 · Trilha Pico do Itacolomi 15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa)."
+      ]
+    }
+  ],
+  "consoleMessages": [
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 2,
+        "timestamp": 1787168250964.839,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 2,
+        "timestamp": 1787168251097.794,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 2,
+        "timestamp": 1787168251395.214,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 3,
+        "timestamp": 1787168252124.717,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 3,
+        "timestamp": 1787168252164.665,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 3,
+        "timestamp": 1787168252197.801,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 4,
+        "timestamp": 1787168253389.451,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 4,
+        "timestamp": 1787168253465.596,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 4,
+        "timestamp": 1787168253542.65,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 5,
+        "timestamp": 1787168253835.709,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 5,
+        "timestamp": 1787168253915.625,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 5,
+        "timestamp": 1787168253945.886,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 6,
+        "timestamp": 1787168255088.889,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 6,
+        "timestamp": 1787168255173.414,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 6,
+        "timestamp": 1787168255224.486,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 7,
+        "timestamp": 1787168255489.82,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 7,
+        "timestamp": 1787168255528.033,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 7,
+        "timestamp": 1787168255539.452,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 8,
+        "timestamp": 1787168256653.957,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 8,
+        "timestamp": 1787168256727.466,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 8,
+        "timestamp": 1787168256791.23,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connecting..."
+          }
+        ],
+        "executionContextId": 9,
+        "timestamp": 1787168257090.661,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 788,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "debug",
+        "args": [
+          {
+            "type": "string",
+            "value": "[vite] connected."
+          }
+        ],
+        "executionContextId": 9,
+        "timestamp": 1787168257093.073,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "handleMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 911,
+              "columnNumber": 14
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 42
+            },
+            {
+              "functionName": "dequeue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 515,
+              "columnNumber": 9
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 503,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "enqueue",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 497,
+              "columnNumber": 11
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 489,
+              "columnNumber": 28
+            },
+            {
+              "functionName": "onMessage",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 308,
+              "columnNumber": 10
+            },
+            {
+              "functionName": "",
+              "scriptId": "8",
+              "url": "http://127.0.0.1:5173/@vite/client",
+              "lineNumber": 438,
+              "columnNumber": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "info",
+        "args": [
+          {
+            "type": "string",
+            "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+          },
+          {
+            "type": "string",
+            "value": "font-weight:bold"
+          }
+        ],
+        "executionContextId": 9,
+        "timestamp": 1787168257177.587,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21608,
+              "columnNumber": 24
+            },
+            {
+              "functionName": "node_modules/react-dom/cjs/react-dom.development.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21628,
+              "columnNumber": 8
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/index.js",
+              "scriptId": "15",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-CMSQVTYY.js?v=826acd70",
+              "lineNumber": 21640,
+              "columnNumber": 23
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "node_modules/react-dom/client.js",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 12
+            },
+            {
+              "functionName": "__require",
+              "scriptId": "17",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/chunk-DP4XHQAG.js?v=826acd70",
+              "lineNumber": 11,
+              "columnNumber": 49
+            },
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=826acd70",
+              "lineNumber": 37,
+              "columnNumber": 15
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "failures": []
+}

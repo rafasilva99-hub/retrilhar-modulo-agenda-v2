@@ -1,0 +1,6 @@
+{
+  "status": "pass",
+  "scenario": "contract mode only change opens confirmation",
+  "dialogText": "Sair sem salvar rascunho?\n\nVocê preencheu informações deste produto. Deseja prosseguir sem salvar ou salvar o rascunho antes de sair?\n\nContinuar editando\nSair sem salvar\nSalvar e sair",
+  "screenshot": "04-contract-mode-change-confirmation.png"
+}

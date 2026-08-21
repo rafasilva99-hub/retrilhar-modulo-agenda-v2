@@ -1,0 +1,14 @@
+{
+  "found": true,
+  "switchChecked": "false",
+  "hasCidade": false,
+  "hasUf": false,
+  "text": "Transporte incluso\n\nO produto contempla deslocamento a partir de um ponto de origem.",
+  "rect": {
+    "x": 307,
+    "y": 521.5,
+    "width": 740,
+    "height": 56,
+    "scale": 1
+  }
+}

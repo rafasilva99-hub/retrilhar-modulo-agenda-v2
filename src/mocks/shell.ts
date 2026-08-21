@@ -1,6 +1,9 @@
 import {
   AnalyticsUpIcon,
   Calendar03Icon,
+  Cancel01Icon,
+  CouponPercentIcon,
+  File02Icon,
   Home01Icon,
   Link04Icon,
   Money01Icon,
@@ -38,11 +41,28 @@ export const affiliateOrganization: ShellOrganization = {
 };
 
 export const shellNavItems: ShellNavItem[] = [
-  { title: "Início", page: "contexto", icon: Home01Icon },
+  { title: "Início", page: "home", icon: Home01Icon },
   { title: "Agenda", page: "agenda", icon: Calendar03Icon, badge: 4 },
-  { title: "Vendas", icon: Money01Icon, enabled: false },
+  {
+    title: "Vendas",
+    page: "vendasPedidos",
+    icon: Money01Icon,
+    items: [
+      { title: "Pedidos", page: "vendasPedidos", icon: File02Icon },
+      { title: "Desistências", page: "vendasDesistencias", icon: Cancel01Icon },
+      { title: "Cupons", page: "vendasCupons", icon: CouponPercentIcon },
+    ],
+  },
   { title: "Clientes", icon: UserGroupIcon, enabled: false },
-  { title: "Produtos", page: "produtos", icon: PackageIcon },
+  {
+    title: "Produtos",
+    page: "produtos",
+    icon: PackageIcon,
+    items: [
+      { title: "Catálogo", page: "produtos", icon: PackageIcon },
+      { title: "Recursos", page: "produtosRecursos", icon: PackageIcon },
+    ],
+  },
   {
     title: "Afiliados",
     page: "gestorAfiliados",

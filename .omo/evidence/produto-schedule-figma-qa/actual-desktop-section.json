@@ -1,0 +1,10 @@
+{
+  "x": 290,
+  "y": 24,
+  "width": 774,
+  "height": 1393,
+  "fullHeight": 1393,
+  "viewportWidth": 1280,
+  "viewportHeight": 1800,
+  "text": "Programação e vagas\n\nQuando este produto acontece, quantas pessoas atende e como funciona a logística.\n\nFORMA DE CONTRATAÇÃO\n\nSob demanda\nO produto fica à venda todos os dias, sem precisar cadastrar datas. Se quiser, você limita os dias de funcionamento logo abaixo.\nApenas com evento\nO produto só fica à venda nas datas que você criar como eventos na agenda. Cada data pode ter vagas, horários e preços próprios.\n\nFUNCIONAMENTO\n\nTodos os dias\nO produto fica disponível continuamente, sem nenhuma configuração extra.\nCom períodos específicos\nO produto funciona só nos períodos e dias cadastrados aqui. Exemplos: fins de semana e etc...\n\nCAPACIDADE E DURAÇÃO\n\nParticipantes (mínimo)\nSelecione\n1\n10\nParticipantes (máximo)\nSelecione\n45\n123\nQuantidade de dias\n\nHORÁRIOS DAS SAÍDAS\n\nSaída 1\n\n15:45 - 18:30, 3 colaboradores atribuídos, 123 vagas (máxima) e 45 vagas (mínima)\n\nSaída 2\n\nSem horários definidos, sem equipe atribuída, sem capacidade atribuída\n\nAdicionar saída\n\nROTEIRO\n\nDia 1\n\n15:45 - 18:30, Trilha Pico do Itacolomi (produto), obrigatório, R$ 250,00 (por pessoa).\n\nAdicionar roteiro\n\nITENS DO PRODUTO\n\nHabilitar atribuição de itens\n\nVocê escolhe adicionar itens que já vem inclusos no produto e/ou itens adicionais.\n\nCarro 3\n\nItem incluso na compra, 4 (capacidade máxima), R$ 124,00 (valor do item).\n\nAdicionar item\n\nTRANSPORTE\n\nTransporte incluso\n\nO produto contempla deslocamento a partir de um ponto de origem.\n\nCidade de origem\nSelecione\nSão Domingos\nUF de origem\nSelecione\nGO\nConfigurações avançadas de estoque\nSKU\nSAM-CEL-S24-CZ-256\nCódigo de barras\n7622300847791\nIntegração entre empresas\nHabilitado\nAfiliados reservam vagas do estoque\nHabilitado\nLimite de cupons\nHabilitado\nOverbooking\nHabilitado"
+}

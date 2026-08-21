@@ -1,0 +1,33 @@
+{
+  "viewport": [
+    1440,
+    1200
+  ],
+  "rect": {
+    "x": 290,
+    "y": 24,
+    "width": 774,
+    "height": 895
+  },
+  "sectionBorderRadius": "16px",
+  "fieldGroupGap": "4px",
+  "counters": [
+    "0/75 caracteres",
+    "0/150 caracteres"
+  ],
+  "fieldRadii": [
+    "8px",
+    "8px",
+    "8px",
+    "12px",
+    "8px",
+    "8px",
+    "8px",
+    "8px"
+  ],
+  "uploadBorderWidth": "2px",
+  "uploadBorderStyle": "dashed",
+  "uploadRadius": "8px",
+  "textareaRadius": "12px",
+  "horizontalOverflow": false
+}

@@ -1,0 +1,91 @@
+{
+  "ok": true,
+  "stateChecks": [
+    {
+      "expected": "Informações do produto",
+      "activeLabel": "Informações do produto",
+      "circleColor": "rgb(21, 112, 239)",
+      "labelColor": "rgb(11, 94, 215)"
+    },
+    {
+      "expected": "Programação e vagas",
+      "activeLabel": "Programação e vagas",
+      "circleColor": "rgb(21, 112, 239)",
+      "labelColor": "rgb(11, 94, 215)"
+    },
+    {
+      "expected": "Preço e pagamento",
+      "activeLabel": "Preço e pagamento",
+      "circleColor": "rgb(21, 112, 239)",
+      "labelColor": "rgb(11, 94, 215)"
+    },
+    {
+      "expected": "Participante e termos",
+      "activeLabel": "Participante e termos",
+      "circleColor": "rgb(21, 112, 239)",
+      "labelColor": "rgb(11, 94, 215)"
+    },
+    {
+      "expected": "Comunicação",
+      "activeLabel": "Comunicação",
+      "circleColor": "rgb(21, 112, 239)",
+      "labelColor": "rgb(11, 94, 215)"
+    },
+    {
+      "expected": "Configurações adicionais",
+      "activeLabel": "Configurações adicionais",
+      "circleColor": "rgb(21, 112, 239)",
+      "labelColor": "rgb(11, 94, 215)"
+    }
+  ],
+  "statePass": true,
+  "focus": {
+    "activeText": "Informações do produto",
+    "focusVisible": true,
+    "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.571995 -0.0398672 -0.203765 / 0.2) 0px 0px 0px 3px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+  },
+  "rect": {
+    "x": 24,
+    "y": 24,
+    "width": 234,
+    "height": 300
+  },
+  "card": {
+    "borderRadius": "15px",
+    "borderColor": "rgb(233, 234, 235)",
+    "padding": "16px",
+    "gap": "16px",
+    "background": "rgb(255, 255, 255)",
+    "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 1px 1.5px 0px, rgba(0, 0, 0, 0.1) 0px 1px 1px 0px"
+  },
+  "firstCircle": {
+    "width": 31,
+    "height": 31,
+    "borderColor": "rgb(21, 112, 239)",
+    "borderWidth": "1px",
+    "background": "rgb(240, 249, 255)",
+    "color": "rgb(21, 112, 239)"
+  },
+  "firstSvg": {
+    "width": 12,
+    "height": 15
+  },
+  "firstLabel": {
+    "fontSize": "14px",
+    "lineHeight": "14px",
+    "color": "rgb(11, 94, 215)",
+    "text": "Informações do produto"
+  },
+  "connectorCount": 5,
+  "noHorizontalOverflow": true,
+  "runtimeIssues": [],
+  "restCapture": {
+    "rect": {
+      "x": 24,
+      "y": 85,
+      "width": 234,
+      "height": 300
+    },
+    "activeText": "Novo produtoRascunhoPré-visualizarSalvar rascunhoPublicar produtoFecharInformações do produtoProgramação e vagasPreço e pagamentoParticipante e termosComunicaçãoConfigurações adicionaisInformações do produtoIdentificação, descrição e localização do item que será criado.O que você está vendendo?AtividadeAtividadeTreinamento / aulasExcursão de 1 diaExcursãoTour privadoEventoIngressoTransporteMeio de hospedagemMercadoriasAluguelComida e BebidaAssinaturaCartão presenteProduto personalizadoNome e descriçãoNome do produto *Descrição curtaDescrição completaImagens do produtoArraste imagens ou clique para enviarLocalizaçãoPaísCidadeUFPonto de encontroLink do mapa (Google Maps)Ver no MapsProgramação e vagasQuando este produto acontece, quantas pessoas atende e como funciona a logística.Tipo de programaçãoApenas com eventoProduto vendido a partir das saídas criadas.Sob demandaCliente solicita data e horário disponíveis.Sem agendaProduto sem controle de dia, horário ou vagas.SaídasSaída 1VagasEquipeSaída 2VagasAdicionar saídaPreço e pagamentoComo o produto é cobrado, valores, tarifário e regras da reserva.Preço simplificadoPreços variáveisTarifas por pessoa, idade, lote ou dia.Preço fixoUm único valor por reserva.ExclusivoReserva por item ou carrinho.Valor do anúncioConfigurações de promoçãoHabilitar preço promocionalO valor com desconto aparece na loja com o preço original riscado.Preço originalPreço promocionalVálido atéRegras da reservaPolítica de cancelamentoTempo de reserva do carrinhoGateway de pagamentoParcelamentoParticipante e termosExigências de participação, ficha do participante e termo de responsabilidade.Exigências de participaçãoHabilitar limite de idadeControla idade mínima e máxima por participante.Idade mínimaIdade máximaNível de esforçoLeveModeradoIntensoTécnicoTermos e fichaTermo de responsabilidadeSolicitar ficha do participanteColeta dados de emergência e restrições antes da experiência.ComunicaçãoMensagens enviadas ao participante no pré-evento, voucher e pós-evento.Mensagens automáticasConfigure os avisos enviados ao participante após a compra e antes da saída.Canais habilitados para aviso automáticoE-mailWhatsAppSMSLembrete pré eventoReforço no dia da experiênciaEnviar resumo pós-eventoSolicita avaliação da atividade e sugere outros produtos e cupom exclusivo.Conteúdo das mensagensMensagem pré-eventoChegue 30 minutos antes para conferência do grupo.Instruções no voucherLeve documento com foto, água e calçado fechado.Resumo de envioE-mail, WhatsAppPré-evento configuradoPrévia do voucherLeve documento com foto, água e calçado fechado.Chegue 30 minutos antes para conferência do grupo.Configurações avançadasCanais de venda, loja online e visibilidade do produto.URL do produtoCanais de vendaLoja onlinePágina pública da operadora.MarketplaceCatálogo compartilhado Retrilhar.BalcãoVenda interna pela equipe.AfiliadosLinks e parceiros habilitados.Destaque na lojaDestacar produto na vitrineO produto ganha a primeira posição na seção de destaques da loja.Configurações de SEOTítulo da páginaMeta descriptionCancelarPublicar produtoPronto para publicar?Nome e tipo de produtoAo menos 1 canal de vendaConfigurar horário e capacidade da Saída 2Definir o valor do anúncioAo menos 1 tarifa com preçoEscolher a política de cancelamentoVocê pode salvar como rascunho a qualquer momento.ResumoCategoriaExperiênciaA partir deR$ 75 / pessoaProgramaçãoSeg a sexSaídas2Capacidade30 pax / saídaCanaisLoja onlineProduto sem nomeInícioAgenda4VendasClientesProdutosAfiliadosRelatóriosEncolher menuBuscar...EEliasTurismoTrocar empresaESEEliasTurismoTrocar empresaES"
+  }
+}

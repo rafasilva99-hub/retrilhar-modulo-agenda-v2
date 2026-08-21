@@ -1,0 +1,16 @@
+{
+  "values": [
+    "1",
+    "11/",
+    "11/0",
+    "11/08/",
+    "11/08/2",
+    "11/08/20",
+    "11/08/202",
+    "11/08/2026"
+  ],
+  "afterDaySlash": true,
+  "afterMonthSlash": true,
+  "finalValue": "11/08/2026",
+  "finalFormatted": true
+}

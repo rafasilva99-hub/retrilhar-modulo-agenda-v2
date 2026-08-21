@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "result": {
+    "eventOnlyPressed": "true",
+    "onDemandPressed": "false",
+    "hasNotice": true,
+    "hasRequiredCopy": true,
+    "hasDifferentPricesCopy": true,
+    "hasFuncionamento": false,
+    "noticeText": "Este produto só fica disponível para reserva nas datas cadastradas como eventos na agenda. Cadastrar as datas é obrigatório: sem eventos criados, nada é vendido. É no cadastro de cada data que o valor do produto e dos itens vinculados pode ser ajustado, então o mesmo produto pode ter preços diferentes por data.",
+    "noticeClass": "bg-info-callout text-info-callout-foreground border-info-callout-border flex items-center gap-2.5 rounded-lg border px-3 py-2",
+    "noticeTextClass": "text-callout",
+    "noticeIconSize": "text-info-callout-icon size-6 shrink-0",
+    "noticeBackground": "rgb(248, 249, 252)",
+    "noticeBorderColor": "rgb(245, 245, 245)",
+    "noticeRadius": "10px",
+    "noticeFontFamily": "\"Helvetica Neue:Regular\", \"Helvetica Neue\", ui-sans-serif, system-ui, sans-serif"
+  },
+  "consoleMessages": [],
+  "pageErrors": [],
+  "screenshotPath": ".omo/evidence/event-only-callout/event-only-callout.png",
+  "checkedAt": "2026-08-19T18:18:16.556Z"
+}

@@ -8,11 +8,16 @@ import type { AgendaViewMode } from "../types";
 const prototypePages: AppPage[] = [
   "intro",
   "contexto",
+  "home",
   "agenda",
   "agendaDia",
   "atualizacoes",
   "novaAtividade",
+  "vendasPedidos",
+  "vendasDesistencias",
+  "vendasCupons",
   "produtos",
+  "produtosRecursos",
   "gestorAfiliados",
   "gestorAfiliadosCentral",
   "gestorAfiliadosLista",
@@ -35,11 +40,16 @@ type AgendaUpdatesInitialTab = "atualizacoes" | "participantes" | "visao-geral";
 const previewBases = [
   "intro",
   "contexto",
+  "home",
   "agenda",
   "agendaDia",
   "atualizacoes",
   "novaAtividade",
+  "vendasPedidos",
+  "vendasDesistencias",
+  "vendasCupons",
   "produtos",
+  "produtosRecursos",
   "gestorAfiliados",
   "gestorAfiliadosCentral",
   "gestorAfiliadosLista",
@@ -73,7 +83,7 @@ function isBoardHash(): boolean {
 
 function getPageFromHash(): AppPage {
   const value = window.location.hash.replace("#", "") as AppPage;
-  return prototypePages.includes(value) ? value : "agenda";
+  return prototypePages.includes(value) ? value : "home";
 }
 
 export function useAgendaPrototypeNavigation() {

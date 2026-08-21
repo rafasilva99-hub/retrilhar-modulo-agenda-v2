@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-08-19T15:07:22.053Z",
+  "viewport": {
+    "width": 1440,
+    "height": 1000,
+    "deviceScaleFactor": 1
+  },
+  "url": "http://127.0.0.1:5173/#produtos",
+  "routeDrawerOk": true,
+  "itemDrawerOk": true,
+  "savedDescriptionOk": true,
+  "contentStyle": {
+    "opacity": "1",
+    "backgroundColor": "rgb(255, 255, 255)",
+    "width": 480,
+    "height": 1000
+  },
+  "screenshotPath": ".omo/evidence/item-config-drawer-qa/item-drawer-fresh.png",
+  "consoleMessages": [],
+  "pageErrors": []
+}

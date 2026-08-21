@@ -1,0 +1,11 @@
+{
+  "before": [
+    "Dia 1·Trilha Pico do Itacolomi15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa).",
+    "Dia 2Sem horários definidos, sem produto selecionado, sem capacidade atribuída."
+  ],
+  "after": [
+    "Dia 1Sem horários definidos, sem produto selecionado, sem capacidade atribuída.",
+    "Dia 2·Trilha Pico do Itacolomi15:45 - 18:30, Carro 3 (produto), obrigatório, R$ 250,00 (por pessoa)."
+  ],
+  "consoleMessages": []
+}

@@ -30,10 +30,16 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-info-callout: var(--info-callout-background);
+  --color-info-callout-border: var(--info-callout-border);
+  --color-info-callout-foreground: var(--info-callout-foreground);
+  --color-info-callout-icon: var(--info-callout-icon);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --text-callout: 0.75rem;
+  --text-callout--line-height: 0.875rem;
   --radius-sm: calc(var(--radius) * 0.75);
   --radius-md: calc(var(--radius) * 1);
   --radius-lg: var(--radius);
@@ -69,6 +75,11 @@
   --input-background: oklch(0.97 0 0);
   --switch-background: oklch(0.922 0 0);
   --ring: oklch(0.558 0.191 259);
+  --info-callout-background: #f8f9fc;
+  --info-callout-border: #f5f5f5;
+  --info-callout-foreground: #414651;
+  --info-callout-icon: #4a7bf7;
+  --info-callout-icon-foreground: #ffffff;
   --chart-1: oklch(0.845 0.143 164.978);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.596 0.145 163.225);
@@ -105,6 +116,11 @@ html.dark {
   --input-background: oklch(1 0 0 / 10%);
   --switch-background: oklch(1 0 0 / 15%);
   --ring: oklch(0.558 0.191 259);
+  --info-callout-background: oklch(0.269 0 0);
+  --info-callout-border: oklch(1 0 0 / 10%);
+  --info-callout-foreground: oklch(0.985 0 0);
+  --info-callout-icon: oklch(0.623 0.214 259.815);
+  --info-callout-icon-foreground: #ffffff;
   --chart-1: oklch(0.845 0.143 164.978);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.596 0.145 163.225);
@@ -162,6 +178,30 @@ html.dark {
   * {
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+  }
+}
+
+@layer components {
+  .rich-text-editor :where(ul) {
+    list-style-type: disc;
+    margin-block: 0.5rem;
+    padding-left: 1.25rem;
+  }
+
+  .rich-text-editor :where(ol) {
+    list-style-type: decimal;
+    margin-block: 0.5rem;
+    padding-left: 1.25rem;
+  }
+
+  .rich-text-editor :where(li) {
+    padding-left: 0.25rem;
+  }
+
+  .rich-text-editor :where([data-editor-accordion-title], [data-editor-accordion-answer]):empty::before {
+    color: #a4a7ae;
+    content: attr(data-placeholder);
+    pointer-events: none;
   }
 }
 

@@ -29,6 +29,7 @@ Product code uses Tailwind v4 semantic tokens from `src/styles/tailwind.css:1-5`
 | Border and input        | `--border`, `--input` / `border-border`            | light `oklch(0.922 0 0)`; dark `oklch(1 0 0 / 10%)`                   | Card outlines, dividers, fields                                 |
 | Focus ring              | `--ring` / `ring-ring`                             | `oklch(0.558 0.191 259)`                                              | Keyboard focus and validation affordance                        |
 | Destructive             | `--destructive` / `text-destructive`               | light `oklch(0.577 0.245 27.325)`; dark `oklch(0.704 0.191 22.216)`   | Destructive actions and errors                                  |
+| Info callout            | `--info-callout-*` / `bg-info-callout`             | light `#f8f9fc`, border `#f5f5f5`, text `#414651`, icon `#4a7bf7`     | Compact informational notices that reuse the blue info icon     |
 | Status fills            | semantic status classes                            | existing emerald, red, amber, blue, and orange fills                  | Trends, statuses, notices; use semantic meaning, not decoration |
 | Sidebar                 | `--sidebar-*` / `bg-sidebar-*`                     | `src/styles/theme.css:77-84,113-120`                                  | Navigation surface, active item, divider                        |
 
@@ -127,6 +128,7 @@ The Primitive Showcase must be built and reviewed before any new product screen 
 
 - Reuse shadcn primitives in `src/components/ui/**` for Badge, Input, Select, Tabs, Table, Dialog, Drawer, Sheet, Calendar, Switch, Checkbox, Skeleton, Empty, and Error State.
 - Reuse custom `DataList` for label/value relationships and `CardStats` for repeated KPI blocks. App-specific repeated patterns belong in custom/module components, as recorded in `docs/audits/shadcn-ui-quarantine.md:24-34`.
+- Reuse custom `InfoCallout` for compact informational notices with the blue info icon, 10px gap, 10px radius, and 12px/14px copy scale. It consumes `--info-callout-*` and `--text-callout` tokens from `src/styles/theme.css`.
 - New maintained icons use HugeIcons with the existing rounded stroke character (`CLAUDE.md:129-138`, `.claude/rules/agenda-fidelity.md:12`). Existing generated exceptions remain quarantined and are not a reason for broad generated-file edits (`docs/audits/shadcn-ui-quarantine.md:12-22`).
 
 ## 6. Motion & Interaction

@@ -1,0 +1,22 @@
+# Gate Review — Emoji Picker Tabs
+
+- recommendation: APPROVE
+- blockers: []
+- originalIntent: Expand the emoji picker laterally so every emoji category tab remains in one horizontal row.
+- desiredOutcome: All nine tabs, including Recentes and Símbolos, render on one line; the final icon is fully visible inside the popover; the wider picker remains visually aligned with the editor toolbar/context.
+- userOutcomeReview: The screenshot shows all nine category icons in one uninterrupted row. The final flag icon has visible clearance from the popover's right edge and is not clipped. The 384px picker is centered over the editor area and remains visually coherent with the toolbar and surrounding layout.
+- checkedArtifacts:
+  - /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/emoji-picker-qa/emoji-picker-expanded-tabs.png
+  - /Users/rafaelsilva/Documents/Projetos HTML/Retrilhar - Módulo de Agenda V2/.omo/evidence/emoji-picker-qa/qa-result-expanded-tabs.json
+- evidenceChecks:
+  - Capture signature: valid 1280×900, 8-bit RGB PNG.
+  - Screenshot: nine tabs appear in one horizontal row.
+  - Screenshot: final flag icon is fully contained with right-side clearance.
+  - Screenshot: popover is centered over and visually anchored to the editor/toolbar context.
+  - Script evidence: initial rowCount=1 and wraps=false for eight tabs.
+  - Script evidence: withRecent rowCount=1, wraps=false, and lastTabRightWithinContainer=true for nine tabs.
+  - Source facts supplied: popover width 384px with viewport constraint; tablist uses flex-nowrap.
+- slopAndProgrammingPass: No production diff, test diff, or changed source files were supplied for this screenshot-only review; therefore no code/test slop or maintenance-burden finding applies. The behavioral script evidence directly measures the requested layout outcome and is not being treated as sole proof; visual inspection independently confirms it.
+- exactEvidenceGaps:
+  - `omo ulw-loop status --json` could not be run because the `omo` command is unavailable, so the required no-plan fallback report path was used.
+  - No code-review report, manual QA matrix, diff, executor report, or notepad path was supplied. None is required by the three stated screenshot checks, and direct artifact inspection supports completion.

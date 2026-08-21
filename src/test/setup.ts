@@ -34,3 +34,21 @@ if (!window.IntersectionObserver) {
     value: MockIntersectionObserver,
   });
 }
+
+if (!window.ResizeObserver) {
+  class MockResizeObserver implements ResizeObserver {
+    disconnect = () => undefined;
+    observe = () => undefined;
+    unobserve = () => undefined;
+  }
+
+  Object.defineProperty(window, "ResizeObserver", {
+    writable: true,
+    value: MockResizeObserver,
+  });
+
+  Object.defineProperty(globalThis, "ResizeObserver", {
+    writable: true,
+    value: MockResizeObserver,
+  });
+}

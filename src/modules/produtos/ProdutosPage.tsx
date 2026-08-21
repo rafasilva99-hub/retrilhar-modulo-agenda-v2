@@ -1,8 +1,22 @@
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
+import {
+  ArrowDown01Icon,
+  Copy01Icon,
+  Delete02Icon,
+  Edit04Icon,
+  FileSearchIcon,
+  StatusIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -11,6 +25,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+import { NewProductFlow } from "./NewProductFlow";
+
+export type ProdutoStatus = "Ativo" | "Inativo" | "Rascunho" | "Arquivado";
+
+const PRODUCT_ACTION_ICON_STROKE_WIDTH = 1.5;
 
 interface Produto {
   id: string;
@@ -20,7 +41,7 @@ interface Produto {
   preco: number;
   duracao: string;
   capacidade: number | null;
-  status: "Ativo" | "Inativo" | "Rascunho" | "Arquivado";
+  status: ProdutoStatus;
   ultimaVenda: string;
   totalVendas: number;
   descricao: string;
@@ -28,14 +49,14 @@ interface Produto {
   destaque: boolean;
 }
 
-interface ProdutoFormState {
+export interface ProdutoFormState {
   nome: string;
   categoria: string;
   tipo: string;
   preco: string;
   duracao: string;
   capacidade: string;
-  status: Produto["status"];
+  status: ProdutoStatus;
   descricao: string;
   pontoEncontro: string;
   destaque: boolean;
@@ -217,6 +238,112 @@ const emptyForm: ProdutoFormState = {
   destaque: false,
 };
 
+const newProductFormDraftStorageKey = "retrilhar:produtos:new-product-form:v1";
+const newProductFlowDraftStorageKey = "retrilhar:produtos:new-product-flow:v1";
+
+type NewProductFormDraft = {
+  readonly version: 1;
+  readonly isOpen: boolean;
+  readonly form: ProdutoFormState;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isProdutoStatus(value: unknown): value is ProdutoStatus {
+  return value === "Ativo" || value === "Inativo" || value === "Rascunho" || value === "Arquivado";
+}
+
+function readStringField(record: Record<string, unknown>, key: keyof ProdutoFormState): string {
+  const value = record[key];
+  return typeof value === "string" ? value : emptyForm[key].toString();
+}
+
+function getProductDraftStorage(): Storage | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const storage = window.localStorage;
+    if (
+      typeof storage.getItem !== "function" ||
+      typeof storage.setItem !== "function" ||
+      typeof storage.removeItem !== "function"
+    ) {
+      return null;
+    }
+    return storage;
+  } catch (error) {
+    if (error instanceof DOMException) return null;
+    throw error;
+  }
+}
+
+function readNewProductFormDraft(): NewProductFormDraft | null {
+  const storage = getProductDraftStorage();
+  if (!storage) return null;
+
+  try {
+    const raw = storage.getItem(newProductFormDraftStorageKey);
+    if (!raw) return null;
+
+    const parsed: unknown = JSON.parse(raw);
+    if (!isRecord(parsed) || parsed["version"] !== 1 || !isRecord(parsed["form"])) {
+      return null;
+    }
+
+    const formRecord = parsed["form"];
+    const status = isProdutoStatus(formRecord["status"]) ? formRecord["status"] : emptyForm.status;
+
+    return {
+      version: 1,
+      isOpen: parsed["isOpen"] === true,
+      form: {
+        nome: readStringField(formRecord, "nome"),
+        categoria: readStringField(formRecord, "categoria"),
+        tipo: readStringField(formRecord, "tipo"),
+        preco: readStringField(formRecord, "preco"),
+        duracao: readStringField(formRecord, "duracao"),
+        capacidade: readStringField(formRecord, "capacidade"),
+        status,
+        descricao: readStringField(formRecord, "descricao"),
+        pontoEncontro: readStringField(formRecord, "pontoEncontro"),
+        destaque: formRecord["destaque"] === true,
+      },
+    };
+  } catch (error) {
+    if (error instanceof SyntaxError || error instanceof DOMException) return null;
+    throw error;
+  }
+}
+
+function writeNewProductFormDraft(isOpen: boolean, form: ProdutoFormState): void {
+  const storage = getProductDraftStorage();
+  if (!storage) return;
+
+  try {
+    const draft: NewProductFormDraft = { version: 1, isOpen, form };
+    storage.setItem(newProductFormDraftStorageKey, JSON.stringify(draft));
+  } catch (error) {
+    if (error instanceof DOMException) return;
+    throw error;
+  }
+}
+
+function clearNewProductFormDraft(): void {
+  const storage = getProductDraftStorage();
+  if (!storage) return;
+
+  storage.removeItem(newProductFormDraftStorageKey);
+}
+
+function clearNewProductFlowDraft(): void {
+  const storage = getProductDraftStorage();
+  if (!storage) return;
+
+  storage.removeItem(newProductFlowDraftStorageKey);
+}
+
 const fieldClass =
   "h-[40px] w-full rounded-[8px] border border-[#e9eaeb] bg-[#fbfcfd] px-[12px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#252b37] outline-none transition-colors placeholder:text-[#a4a7ae] focus:border-[#0b5ed7] focus:bg-white";
 
@@ -265,15 +392,18 @@ function buildProdutoFromForm(form: ProdutoFormState, current?: Produto): Produt
 }
 
 export function ProdutosPage() {
+  const [initialNewProductDraft] = useState(readNewProductFormDraft);
   const [produtos, setProdutos] = useState<Produto[]>(mockProdutos);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"todos" | Produto["status"]>("todos");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
-  const [mode, setMode] = useState<ProdutoMode>("list");
+  const [mode, setMode] = useState<ProdutoMode>(
+    initialNewProductDraft?.isOpen === true ? "new" : "list"
+  );
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<ProdutoFormState>(emptyForm);
+  const [form, setForm] = useState<ProdutoFormState>(initialNewProductDraft?.form ?? emptyForm);
   const [formError, setFormError] = useState("");
   const [tipoDropdownOpen, setTipoDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("info-basicas");
@@ -425,15 +555,22 @@ export function ProdutosPage() {
   const allFilteredSelected =
     filtered.length > 0 && filtered.every((produto) => selectedIds.includes(produto.id));
 
+  useEffect(() => {
+    if (mode !== "new") return;
+
+    writeNewProductFormDraft(true, form);
+  }, [form, mode]);
+
   const updateForm = <K extends keyof ProdutoFormState>(key: K, value: ProdutoFormState[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
     setFormError("");
   };
 
   const openNewProduct = () => {
+    const draft = readNewProductFormDraft();
     setMode("new");
     setEditingId(null);
-    setForm(emptyForm);
+    setForm(draft?.form ?? emptyForm);
     setFormError("");
     setOpenMenuId(null);
     setTipoDropdownOpen(false);
@@ -481,7 +618,16 @@ export function ProdutosPage() {
     );
   };
 
-  const closeForm = () => {
+  const closeForm = ({ discardNewProductDraft = false } = {}) => {
+    if (mode === "new") {
+      if (discardNewProductDraft) {
+        clearNewProductFormDraft();
+        clearNewProductFlowDraft();
+      } else {
+        writeNewProductFormDraft(false, form);
+      }
+    }
+
     setMode("list");
     setEditingId(null);
     setForm(emptyForm);
@@ -508,7 +654,7 @@ export function ProdutosPage() {
       return [nextProduto, ...current];
     });
     setSelectedIds([]);
-    closeForm();
+    closeForm({ discardNewProductDraft: true });
   };
 
   const duplicateProduto = (produto: Produto) => {
@@ -535,6 +681,13 @@ export function ProdutosPage() {
     });
     setSelectedIds((current) => current.filter((id) => id !== produto.id));
     setOpenMenuId(null);
+  };
+
+  const toggleProdutoAtivo = (produto: Produto) => {
+    const nextStatus = produto.status === "Ativo" ? "Inativo" : "Ativo";
+    setProdutos((current) =>
+      current.map((item) => (item.id === produto.id ? { ...item, status: nextStatus } : item))
+    );
   };
 
   const toggleSelected = (id: string) => {
@@ -761,6 +914,21 @@ export function ProdutosPage() {
     },
   ];
 
+  const editorMode = mode === "list" ? null : mode;
+
+  if (editorMode) {
+    return (
+      <NewProductFlow
+        mode={editorMode}
+        form={form}
+        formError={formError}
+        onClose={closeForm}
+        onSave={saveProduto}
+        updateForm={updateForm}
+      />
+    );
+  }
+
   /* ── Editor — sidebar nav + content area ── */
   if (mode !== "list") {
     const tabs = getTabsForType(form.tipo);
@@ -875,12 +1043,35 @@ export function ProdutosPage() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-[6px]">
-                      <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">
-                        Link do mapa (Google Maps)
-                      </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#181d27]">
+                          Link do mapa (Google Maps)
+                        </p>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-primary flex h-5 shrink-0 cursor-pointer items-center rounded-md bg-transparent font-['Helvetica_Neue:Regular',sans-serif] text-xs transition-colors hover:text-[#084fb7] focus-visible:ring-3 focus-visible:ring-[#1570ef]/20 focus-visible:outline-none"
+                              >
+                                Como funciona?
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="top"
+                              align="end"
+                              sideOffset={6}
+                              className="max-w-[240px] text-center font-['Helvetica_Neue:Regular',sans-serif]"
+                            >
+                              Cole o link do Google Maps do ponto de encontro para abrir a
+                              localização rapidamente.
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                       <div className="relative">
                         <input
-                          className={`${fieldClass} pr-[150px]`}
+                          className={`${fieldClass} pr-[122px]`}
                           value={linkMapa}
                           onChange={(e) => setLinkMapa(e.target.value)}
                           placeholder="https://maps.google.com/..."
@@ -890,21 +1081,19 @@ export function ProdutosPage() {
                           onClick={() =>
                             window.open(linkMapa.trim() || "https://maps.google.com", "_blank")
                           }
-                          className="absolute top-1/2 right-[10px] flex -translate-y-1/2 cursor-pointer items-center gap-[4px] font-['Helvetica_Neue:Regular',sans-serif] text-[12px] text-[#0b5ed7] transition-colors hover:text-[#084fb7]"
+                          className="absolute top-1/2 right-3 flex h-5 -translate-y-1/2 cursor-pointer items-center gap-1.5 rounded-md bg-transparent font-['Helvetica_Neue:Regular',sans-serif] text-xs text-[#0b5ed7] transition-colors hover:text-[#084fb7] focus-visible:ring-3 focus-visible:ring-[#1570ef]/20 focus-visible:outline-none"
                         >
-                          Ver no Google Maps
+                          Ver no Maps
                           <svg
-                            className="size-[14px]"
+                            className="size-4"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
-                            strokeWidth="2"
+                            strokeWidth="1.5"
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           >
-                            <path d="M11 3H7C4.79086 3 3 4.79086 3 7V17C3 19.2091 4.79086 21 7 21H17C19.2091 21 21 19.2091 21 17V13" />
-                            <path d="M14 3H21V10" />
-                            <path d="M21 3L12 12" />
+                            <path d="M9 6.65032C9 6.65032 15.9383 6.10759 16.9154 7.08463C17.8924 8.06167 17.3496 15 17.3496 15M16.5 7.5L6.5 17.5" />
                           </svg>
                         </button>
                       </div>
@@ -3228,7 +3417,7 @@ export function ProdutosPage() {
             </button>
             <button
               type="button"
-              onClick={closeForm}
+              onClick={() => closeForm()}
               className="flex cursor-pointer items-center gap-[6px] rounded-[8px] border border-[#e9eaeb] bg-white px-[14px] py-[8px] transition-colors hover:bg-[#f8fafc]"
             >
               <svg className="size-[14px]" fill="none" viewBox="0 0 18 18">
@@ -4281,14 +4470,7 @@ export function ProdutosPage() {
                     <div className="flex w-[84px] shrink-0 justify-center">
                       <button
                         type="button"
-                        onClick={() => {
-                          const nextStatus = produto.status === "Ativo" ? "Inativo" : "Ativo";
-                          setProdutos((current) =>
-                            current.map((item) =>
-                              item.id === produto.id ? { ...item, status: nextStatus } : item
-                            )
-                          );
-                        }}
+                        onClick={() => toggleProdutoAtivo(produto)}
                         className="rounded-full px-[8px] py-[2px] font-['Helvetica_Neue:Regular',sans-serif] text-[12px]"
                         style={{
                           color: sc.text,
@@ -4300,45 +4482,99 @@ export function ProdutosPage() {
                       </button>
                     </div>
                     <div className="flex w-[60px] shrink-0 justify-center">
-                      <button
-                        type="button"
-                        onClick={() => setOpenMenuId(openMenuId === produto.id ? null : produto.id)}
-                        className="flex size-[32px] cursor-pointer items-center justify-center rounded-[8px] border border-[#e9eaeb] bg-white transition-colors hover:bg-[#f8fafc]"
-                        aria-label={`Ações de ${produto.nome}`}
+                      <DropdownMenu
+                        open={openMenuId === produto.id}
+                        onOpenChange={(open) => setOpenMenuId(open ? produto.id : null)}
                       >
-                        <svg className="size-[14px]" fill="none" viewBox="0 0 16 16">
-                          <circle cx="8" cy="3.5" r="1" fill="#717680" />
-                          <circle cx="8" cy="8" r="1" fill="#717680" />
-                          <circle cx="8" cy="12.5" r="1" fill="#717680" />
-                        </svg>
-                      </button>
-                      {openMenuId === produto.id ? (
-                        <div className="absolute top-[46px] right-[12px] z-20 w-[166px] overflow-hidden rounded-[8px] border border-[#e9eaeb] bg-white shadow-[0_8px_24px_rgba(15,23,43,0.12)]">
+                        <DropdownMenuTrigger asChild>
                           <button
                             type="button"
+                            className="flex size-[32px] cursor-pointer items-center justify-center rounded-[8px] border border-[#e9eaeb] bg-white transition-colors hover:bg-[#f8fafc]"
+                            aria-label={`Ações de ${produto.nome}`}
+                          >
+                            <svg className="size-[14px]" fill="none" viewBox="0 0 16 16">
+                              <circle cx="8" cy="3.5" r="1" fill="#717680" />
+                              <circle cx="8" cy="8" r="1" fill="#717680" />
+                              <circle cx="8" cy="12.5" r="1" fill="#717680" />
+                            </svg>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          sideOffset={4}
+                          className="w-[220px] rounded-[8px] border border-[#f5f5f5] bg-white p-[6px] text-[#0f172a] shadow-[0_8px_24px_rgba(15,23,42,0.12)] ring-0 before:hidden"
+                        >
+                          <DropdownMenuItem
                             onClick={() => openEditProduct(produto)}
-                            className="block w-full px-[12px] py-[9px] text-left font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] hover:bg-[#f8fafc]"
+                            className="h-[37px] cursor-pointer gap-[8px] rounded-[6px] px-[12px] py-[10px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#0f172a] focus:bg-[#f8fafc] focus:text-[#0f172a]"
                           >
-                            Editar
-                          </button>
-                          <button
-                            type="button"
+                            <HugeiconsIcon
+                              icon={Edit04Icon}
+                              size={16}
+                              strokeWidth={PRODUCT_ACTION_ICON_STROKE_WIDTH}
+                              aria-hidden="true"
+                            />
+                            Editar produto
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => openEditProduct(produto)}
+                            className="h-[37px] cursor-pointer gap-[8px] rounded-[6px] px-[12px] py-[10px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#0f172a] focus:bg-[#f8fafc] focus:text-[#0f172a]"
+                          >
+                            <HugeiconsIcon
+                              icon={FileSearchIcon}
+                              size={16}
+                              strokeWidth={PRODUCT_ACTION_ICON_STROKE_WIDTH}
+                              aria-hidden="true"
+                            />
+                            Ver detalhes
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => toggleProdutoAtivo(produto)}
+                            className="h-[37px] cursor-pointer gap-[8px] rounded-[6px] px-[12px] py-[10px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#0f172a] focus:bg-[#f8fafc] focus:text-[#0f172a]"
+                          >
+                            <HugeiconsIcon
+                              icon={StatusIcon}
+                              size={16}
+                              strokeWidth={PRODUCT_ACTION_ICON_STROKE_WIDTH}
+                              aria-hidden="true"
+                            />
+                            <span className="min-w-0 flex-1">Produto ativo</span>
+                            <Switch
+                              checked={produto.status === "Ativo"}
+                              aria-label={
+                                produto.status === "Ativo" ? "Desativar produto" : "Ativar produto"
+                              }
+                              tabIndex={-1}
+                            />
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             onClick={() => duplicateProduto(produto)}
-                            className="block w-full px-[12px] py-[9px] text-left font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#414651] hover:bg-[#f8fafc]"
+                            className="h-[37px] cursor-pointer gap-[8px] rounded-[6px] px-[12px] py-[10px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#0f172a] focus:bg-[#f8fafc] focus:text-[#0f172a]"
                           >
-                            Duplicar
-                          </button>
-                          <button
-                            type="button"
+                            <HugeiconsIcon
+                              icon={Copy01Icon}
+                              size={16}
+                              strokeWidth={PRODUCT_ACTION_ICON_STROKE_WIDTH}
+                              aria-hidden="true"
+                            />
+                            Clonar produto
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="my-[4px] bg-[#f5f5f5]" />
+                          <DropdownMenuItem
                             onClick={() => archiveProduto(produto)}
-                            className="block w-full px-[12px] py-[9px] text-left font-['Helvetica_Neue:Regular',sans-serif] text-[13px] text-[#b42318] hover:bg-[#fef3f2]"
+                            className="h-[37px] cursor-pointer gap-[8px] rounded-[6px] px-[12px] py-[10px] font-['Helvetica_Neue:Regular',sans-serif] text-[14px] text-[#F04438] focus:bg-[#fef3f2] focus:text-[#F04438] [&_svg]:text-[#F04438]"
+                            style={{ color: "#F04438" }}
                           >
-                            {produto.status === "Rascunho" && produto.totalVendas === 0
-                              ? "Excluir rascunho"
-                              : "Arquivar"}
-                          </button>
-                        </div>
-                      ) : null}
+                            <HugeiconsIcon
+                              icon={Delete02Icon}
+                              size={16}
+                              strokeWidth={PRODUCT_ACTION_ICON_STROKE_WIDTH}
+                              aria-hidden="true"
+                            />
+                            Excluir produto
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 );

@@ -1,0 +1,33 @@
+{
+  "assertions": {
+    "hasFlowTitle": true,
+    "hasInfo": true,
+    "hasSchedule": true,
+    "hasPricing": true,
+    "hasCommunication": true,
+    "hasSidebar": true,
+    "hasSummaryName": true,
+    "selectedChannels": true
+  },
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+    }
+  ],
+  "severeLogs": [],
+  "runtimeErrors": [],
+  "screenshots": [
+    "render-desktop-new-product.png",
+    "render-tablet-new-product.png",
+    "render-mobile-new-product.png"
+  ]
+}

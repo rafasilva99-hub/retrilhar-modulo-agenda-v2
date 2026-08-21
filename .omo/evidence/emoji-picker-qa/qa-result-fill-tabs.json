@@ -1,0 +1,62 @@
+{
+  "initial": {
+    "tablistDisplay": "grid",
+    "gridTemplateColumns": "41.25px 41.25px 41.25px 41.25px 41.25px 41.25px 41.25px 41.25px",
+    "tabCount": 8,
+    "rowCount": 1,
+    "wraps": false,
+    "widths": [
+      39.19,
+      39.19,
+      39.19,
+      39.19,
+      39.19,
+      39.19,
+      39.19,
+      39.19
+    ],
+    "tabLabels": [
+      "Rostos",
+      "Pessoas",
+      "Natureza",
+      "Comida",
+      "Viagem",
+      "Atividades",
+      "Objetos",
+      "Símbolos"
+    ],
+    "widthsEqual": true
+  },
+  "withRecent": {
+    "tablistDisplay": "grid",
+    "gridTemplateColumns": "36.2188px 36.2188px 36.2188px 36.2188px 36.2344px 36.2188px 36.2188px 36.2188px 36.2188px",
+    "contentWidth": 340.0999755859375,
+    "lastTabRightWithinContainer": true,
+    "tabCount": 9,
+    "rowCount": 1,
+    "wraps": false,
+    "widths": [
+      34.41,
+      34.41,
+      34.41,
+      34.41,
+      34.42,
+      34.41,
+      34.41,
+      34.41,
+      34.41
+    ],
+    "tabLabels": [
+      "Recentes",
+      "Rostos",
+      "Pessoas",
+      "Natureza",
+      "Comida",
+      "Viagem",
+      "Atividades",
+      "Objetos",
+      "Símbolos"
+    ],
+    "widthsEqual": true
+  }
+}

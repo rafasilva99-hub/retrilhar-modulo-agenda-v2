@@ -1,0 +1,40 @@
+{
+  "result": {
+    "searchFocusedOnOpen": false,
+    "inputPlaceholder": "Buscar emoji",
+    "oldPlaceholderRemoved": true,
+    "visibleSearchLabelRemoved": true,
+    "tabsBeforeInput": true,
+    "tabCount": 8,
+    "rowCount": 1,
+    "wraps": false,
+    "widths": [
+      41.1,
+      41.1,
+      41.1,
+      41.1,
+      41.1,
+      41.1,
+      41.1,
+      41.1
+    ],
+    "widthsEqual": true,
+    "tabLabels": [
+      "Rostos",
+      "Pessoas",
+      "Natureza",
+      "Comida",
+      "Viagem",
+      "Atividades",
+      "Objetos",
+      "Símbolos"
+    ],
+    "consoleBodyTextHasSearchLabel": false
+  },
+  "consoleMessages": [
+    "debug: [vite] connecting...",
+    "debug: [vite] connected.",
+    "info: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold"
+  ],
+  "pageErrors": []
+}

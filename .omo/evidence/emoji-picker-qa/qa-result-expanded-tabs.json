@@ -1,0 +1,36 @@
+{
+  "initial": {
+    "popoverWidth": 384,
+    "tabCount": 8,
+    "rowCount": 1,
+    "wraps": false,
+    "tabLabels": [
+      "Rostos",
+      "Pessoas",
+      "Natureza",
+      "Comida",
+      "Viagem",
+      "Atividades",
+      "Objetos",
+      "Símbolos"
+    ]
+  },
+  "withRecent": {
+    "contentWidth": 340.0999755859375,
+    "lastTabRightWithinContainer": true,
+    "tabCount": 9,
+    "rowCount": 1,
+    "wraps": false,
+    "tabLabels": [
+      "Recentes",
+      "Rostos",
+      "Pessoas",
+      "Natureza",
+      "Comida",
+      "Viagem",
+      "Atividades",
+      "Objetos",
+      "Símbolos"
+    ]
+  }
+}

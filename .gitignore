@@ -8,3 +8,5 @@ coverage/
 *.local
 .DS_Store
 .vercel
+.omo/tmp/
+.omo/evidence/**/chrome-profile*/

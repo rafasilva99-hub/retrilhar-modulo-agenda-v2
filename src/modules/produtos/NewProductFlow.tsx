@@ -5,6 +5,7 @@ import {
   type FormEvent,
   Fragment,
   type KeyboardEvent,
+  memo,
   type MouseEvent,
   type PointerEvent,
   type ReactNode,
@@ -242,14 +243,29 @@ type RouteDayConfig = {
   readonly price: string;
   readonly includedInPrice: boolean;
 };
+type RouteDayDragPhase = "dragging" | "settling";
 type RouteDayDragState = {
   readonly sourceIndex: number;
   readonly targetIndex: number;
   readonly pointerId: number;
   readonly startClientY: number;
-  readonly currentClientY: number;
-  readonly rowHeight: number;
-  readonly cardCentersY: readonly number[];
+  readonly currentOffsetY: number;
+  readonly sourceMovementUnit: number;
+  readonly phase: RouteDayDragPhase;
+  readonly measurements: readonly RouteDayMeasurement[];
+};
+type RouteDayMeasurement = {
+  readonly index: number;
+  readonly element: HTMLElement;
+  readonly top: number;
+  readonly height: number;
+  readonly centerY: number;
+  readonly movementUnit: number;
+};
+type RouteDaySettleCommit = {
+  readonly sourceIndex: number;
+  readonly targetIndex: number;
+  readonly measurements: readonly RouteDayMeasurement[];
 };
 type ItemConfig = {
   readonly item: string;
@@ -887,6 +903,9 @@ const selectContentClass =
 const locationSelectTriggerClass =
   "focus-visible:border-ring focus-visible:ring-ring/30 flex w-full items-center justify-between gap-1.5 border py-2 whitespace-nowrap transition-[color,box-shadow,background-color] outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50 !h-[40px] rounded-[8px] border-[#cbd5e1] bg-white px-3 font-['Helvetica_Neue:Regular',sans-serif] text-sm text-[#717680]";
 const routeDayReorderGap = 12;
+const routeDaySettleDurationMs = 180;
+const routeDaySettleFallbackMs = 220;
+const routeDayHighlightDurationMs = 700;
 const virtualOptionHeight = 36;
 const virtualListHeight = 288;
 const virtualOptionOverscan = 6;
@@ -2153,29 +2172,160 @@ function formatTimeInput(value: string) {
   return `${hours}:${minutes}`;
 }
 
+function getRouteDayMovementUnit(rowHeight: number) {
+  if (rowHeight <= 0) return 0;
+
+  return rowHeight + routeDayReorderGap;
+}
+
 function getRouteDayReorderTargetIndex({
   sourceIndex,
-  currentClientY,
-  cardCentersY,
+  offsetY,
+  measurements,
 }: {
   readonly sourceIndex: number;
-  readonly currentClientY: number;
-  readonly cardCentersY: readonly number[];
+  readonly offsetY: number;
+  readonly measurements: readonly RouteDayMeasurement[];
 }) {
-  if (cardCentersY.length === 0) return sourceIndex;
+  const sourceMeasurement = measurements[sourceIndex];
+  if (!sourceMeasurement || measurements.length <= 1) return sourceIndex;
 
-  return cardCentersY.reduce((targetIndex, centerY, index) => {
-    const previousCenterY = cardCentersY[index - 1];
-    const nextCenterY = cardCentersY[index + 1];
-    const topBoundary =
-      previousCenterY === undefined ? Number.NEGATIVE_INFINITY : (previousCenterY + centerY) / 2;
-    const bottomBoundary =
-      nextCenterY === undefined ? Number.POSITIVE_INFINITY : (centerY + nextCenterY) / 2;
+  const currentCenterY = sourceMeasurement.centerY + offsetY;
 
-    if (currentClientY >= topBoundary && currentClientY < bottomBoundary) return index;
+  return measurements.reduce((targetIndex, measurement, index) => {
+    const previousMeasurement = measurements[index - 1];
+    const nextMeasurement = measurements[index + 1];
+    const topBoundary = previousMeasurement
+      ? (previousMeasurement.centerY + measurement.centerY) / 2
+      : Number.NEGATIVE_INFINITY;
+    const bottomBoundary = nextMeasurement
+      ? (measurement.centerY + nextMeasurement.centerY) / 2
+      : Number.POSITIVE_INFINITY;
+
+    if (currentCenterY >= topBoundary && currentCenterY < bottomBoundary) return index;
 
     return targetIndex;
   }, sourceIndex);
+}
+
+function getRouteDaySettledOffset({
+  sourceIndex,
+  targetIndex,
+  measurements,
+}: {
+  readonly sourceIndex: number;
+  readonly targetIndex: number;
+  readonly measurements: readonly RouteDayMeasurement[];
+}) {
+  const sourceMeasurement = measurements[sourceIndex];
+  const targetMeasurement = measurements[targetIndex];
+
+  if (!sourceMeasurement || !targetMeasurement) return 0;
+
+  return targetMeasurement.top - sourceMeasurement.top;
+}
+
+function getRouteDayNeighborOffset({
+  index,
+  sourceIndex,
+  targetIndex,
+  sourceMovementUnit,
+}: {
+  readonly index: number;
+  readonly sourceIndex: number;
+  readonly targetIndex: number;
+  readonly sourceMovementUnit: number;
+}) {
+  if (targetIndex > sourceIndex && index > sourceIndex && index <= targetIndex) {
+    return -sourceMovementUnit;
+  }
+
+  if (targetIndex < sourceIndex && index >= targetIndex && index < sourceIndex) {
+    return sourceMovementUnit;
+  }
+
+  return 0;
+}
+
+function setRouteDayElementTransform(
+  element: HTMLElement,
+  offsetY: number,
+  options?: { readonly active?: boolean }
+) {
+  const scaleTransform = options?.active ? " scale(1.02)" : "";
+
+  if (offsetY === 0 && !options?.active) {
+    element.style.transform = "";
+    return;
+  }
+
+  element.style.transform = `translateY(${offsetY}px)${scaleTransform}`;
+}
+
+function resetRouteDayElementStyles(element: HTMLElement) {
+  element.style.transform = "";
+  element.style.transition = "";
+  element.style.zIndex = "";
+  element.style.userSelect = "";
+  element.style.touchAction = "";
+  element.style.willChange = "";
+  element.classList.remove("shadow-sm");
+}
+
+function resetRouteDayMeasurementsStyles(measurements: readonly RouteDayMeasurement[]) {
+  measurements.forEach((measurement) => resetRouteDayElementStyles(measurement.element));
+}
+
+function applyRouteDayNeighborTransforms({
+  measurements,
+  sourceIndex,
+  targetIndex,
+  sourceMovementUnit,
+}: {
+  readonly measurements: readonly RouteDayMeasurement[];
+  readonly sourceIndex: number;
+  readonly targetIndex: number;
+  readonly sourceMovementUnit: number;
+}) {
+  measurements.forEach((measurement) => {
+    if (measurement.index === sourceIndex) return;
+
+    setRouteDayElementTransform(
+      measurement.element,
+      getRouteDayNeighborOffset({
+        index: measurement.index,
+        sourceIndex,
+        targetIndex,
+        sourceMovementUnit,
+      })
+    );
+  });
+}
+
+function reorderRouteDayConfigs(
+  currentConfigs: readonly RouteDayConfig[],
+  sourceIndex: number,
+  targetIndex: number
+) {
+  if (
+    sourceIndex === targetIndex ||
+    sourceIndex < 0 ||
+    targetIndex < 0 ||
+    sourceIndex >= currentConfigs.length ||
+    targetIndex >= currentConfigs.length
+  ) {
+    return currentConfigs;
+  }
+
+  const nextConfigs = [...currentConfigs];
+  const sourceConfig = nextConfigs[sourceIndex];
+
+  if (!sourceConfig) return currentConfigs;
+
+  nextConfigs.splice(sourceIndex, 1);
+  nextConfigs.splice(targetIndex, 0, sourceConfig);
+
+  return nextConfigs;
 }
 
 function hasScheduleTimeConfig(config: ScheduleTimeConfig) {
@@ -6726,8 +6876,8 @@ function ScheduleActionButton({
 
 type ScheduleRowReorder = {
   readonly enabled: boolean;
-  readonly active: boolean;
-  readonly offsetY: number;
+  readonly highlighted: boolean;
+  readonly cardRef: (element: HTMLDivElement | null) => void;
   readonly onPointerDown: (event: PointerEvent<HTMLButtonElement>) => void;
   readonly onPointerMove: (event: PointerEvent<HTMLButtonElement>) => void;
   readonly onPointerUp: (event: PointerEvent<HTMLButtonElement>) => void;
@@ -6735,7 +6885,7 @@ type ScheduleRowReorder = {
   readonly onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
 };
 
-function ScheduleRow({
+const ScheduleRow = memo(function ScheduleRow({
   title,
   titleDetail,
   description,
@@ -6753,23 +6903,14 @@ function ScheduleRow({
   onDelete?: () => void;
 }) {
   const trimmedTitleDetail = titleDetail?.trim();
-  const rowStyle: CSSProperties | undefined = reorder
-    ? {
-        transform: `translateY(${reorder.offsetY}px)`,
-        transformOrigin: "50% 50% 0px",
-        zIndex: reorder.active ? 20 : undefined,
-        userSelect: reorder.active ? "none" : undefined,
-        touchAction: reorder.enabled ? "pan-x" : undefined,
-      }
-    : undefined;
 
   return (
     <div
+      ref={reorder?.cardRef}
       data-route-day-card={reorder?.enabled ? "true" : undefined}
-      style={rowStyle}
-      className={`relative flex items-center gap-3 rounded-xl border border-[#e5e5e5] bg-[#f5f5f5]/40 px-4 py-3 ${
-        reorder?.active ? "shadow-sm" : "transition-transform duration-150 ease-out"
-      }`}
+      className={`relative flex items-center gap-3 rounded-xl border border-[#e5e5e5] px-4 py-3 ${
+        reorder?.highlighted ? "bg-[#dbeafe]" : "bg-[#f5f5f5]/40"
+      } [transition:transform_150ms_ease-out,background-color_700ms_ease-out]`}
     >
       <button
         type="button"
@@ -6820,7 +6961,7 @@ function ScheduleRow({
       </div>
     </div>
   );
-}
+});
 
 function ProductCollaboratorsSection({
   enabled,
@@ -10541,8 +10682,17 @@ export function NewProductFlow({
   const productItemsSectionRef = useRef<HTMLDivElement | null>(null);
   const productItemsHighlightTimeoutRef = useRef<number | null>(null);
   const [isProductItemsHighlighted, setIsProductItemsHighlighted] = useState(false);
-  const [routeDayDragState, setRouteDayDragState] = useState<RouteDayDragState | null>(null);
   const routeDayDragStateRef = useRef<RouteDayDragState | null>(null);
+  const routeDayCardElementsRef = useRef<Map<number, HTMLDivElement>>(new Map());
+  const routeDayDragHandleRef = useRef<HTMLButtonElement | null>(null);
+  const routeDayDragCardRef = useRef<HTMLElement | null>(null);
+  const routeDaySettleCommitRef = useRef<RouteDaySettleCommit | null>(null);
+  const routeDaySettleCleanupRef = useRef<(() => void) | null>(null);
+  const routeDaySettleTimeoutRef = useRef<number | null>(null);
+  const routeDayAnimationFrameRef = useRef<number | null>(null);
+  const routeDayCommitFrameRef = useRef<number | null>(null);
+  const routeDayHighlightTimeoutRef = useRef<number | null>(null);
+  const [highlightedRouteDayIndex, setHighlightedRouteDayIndex] = useState<number | null>(null);
   const [activeItemConfigIndex, setActiveItemConfigIndex] = useState<number | null>(null);
   const [pendingItemRemovalIndex, setPendingItemRemovalIndex] = useState<number | null>(null);
   const [isExitConfirmationOpen, setIsExitConfirmationOpen] = useState(false);
@@ -10993,10 +11143,6 @@ export function NewProductFlow({
     () => variablePricingRules.map((rule) => createVariablePricingRuleDescription(rule)),
     [variablePricingRules]
   );
-  const routeDayDescriptions = useMemo(
-    () => routeDayConfigs.map((config) => createRouteDayDescription(config)),
-    [routeDayConfigs]
-  );
   const itemDescriptions = useMemo(
     () => itemConfigs.map((config) => createItemDescription(config)),
     [itemConfigs]
@@ -11303,165 +11449,320 @@ export function NewProductFlow({
     });
   };
   const moveRouteDay = useCallback((sourceIndex: number, targetIndex: number) => {
-    setRouteDayConfigs((currentConfigs) => {
-      if (
-        sourceIndex === targetIndex ||
-        sourceIndex < 0 ||
-        targetIndex < 0 ||
-        sourceIndex >= currentConfigs.length ||
-        targetIndex >= currentConfigs.length
-      ) {
-        return currentConfigs;
+    setRouteDayConfigs((currentConfigs) =>
+      reorderRouteDayConfigs(currentConfigs, sourceIndex, targetIndex)
+    );
+  }, []);
+  const cancelRouteDayAnimationFrame = useCallback(() => {
+    if (routeDayAnimationFrameRef.current !== null) {
+      window.cancelAnimationFrame(routeDayAnimationFrameRef.current);
+      routeDayAnimationFrameRef.current = null;
+    }
+  }, []);
+  const clearRouteDaySettleEffects = useCallback(() => {
+    routeDaySettleCleanupRef.current?.();
+    routeDaySettleCleanupRef.current = null;
+
+    if (routeDaySettleTimeoutRef.current !== null) {
+      window.clearTimeout(routeDaySettleTimeoutRef.current);
+      routeDaySettleTimeoutRef.current = null;
+    }
+
+    if (routeDayCommitFrameRef.current !== null) {
+      window.cancelAnimationFrame(routeDayCommitFrameRef.current);
+      routeDayCommitFrameRef.current = null;
+    }
+  }, []);
+  const startRouteDayHighlight = useCallback((targetIndex: number) => {
+    if (routeDayHighlightTimeoutRef.current !== null) {
+      window.clearTimeout(routeDayHighlightTimeoutRef.current);
+    }
+
+    setHighlightedRouteDayIndex(targetIndex);
+    routeDayHighlightTimeoutRef.current = window.setTimeout(() => {
+      setHighlightedRouteDayIndex(null);
+      routeDayHighlightTimeoutRef.current = null;
+    }, routeDayHighlightDurationMs);
+  }, []);
+  const registerRouteDayCardElement = useCallback(
+    (index: number, element: HTMLDivElement | null) => {
+      if (element) {
+        routeDayCardElementsRef.current.set(index, element);
+        return;
       }
 
-      const nextConfigs = [...currentConfigs];
-      const sourceConfig = nextConfigs[sourceIndex];
+      routeDayCardElementsRef.current.delete(index);
+    },
+    []
+  );
+  const measureRouteDayRows = useCallback(() => {
+    const measurements: RouteDayMeasurement[] = [];
 
-      if (!sourceConfig) return currentConfigs;
+    for (let index = 0; index < routeDayConfigs.length; index += 1) {
+      const element = routeDayCardElementsRef.current.get(index);
+      if (!element) return [];
 
-      nextConfigs.splice(sourceIndex, 1);
-      nextConfigs.splice(targetIndex, 0, sourceConfig);
+      const rect = element.getBoundingClientRect();
+      measurements.push({
+        index,
+        element,
+        top: rect.top,
+        height: rect.height,
+        centerY: rect.top + rect.height / 2,
+        movementUnit: getRouteDayMovementUnit(rect.height),
+      });
+    }
 
-      return nextConfigs;
+    return measurements;
+  }, [routeDayConfigs.length]);
+  const completeRouteDaySettle = useCallback(() => {
+    const pendingCommit = routeDaySettleCommitRef.current;
+    if (!pendingCommit) return;
+
+    clearRouteDaySettleEffects();
+    routeDaySettleCommitRef.current = null;
+    routeDayDragStateRef.current = null;
+    routeDayDragHandleRef.current = null;
+    routeDayDragCardRef.current = null;
+
+    routeDayCommitFrameRef.current = window.requestAnimationFrame(() => {
+      routeDayCommitFrameRef.current = null;
+      resetRouteDayMeasurementsStyles(pendingCommit.measurements);
+      setRouteDayConfigs((currentConfigs) =>
+        reorderRouteDayConfigs(currentConfigs, pendingCommit.sourceIndex, pendingCommit.targetIndex)
+      );
+
+      if (pendingCommit.sourceIndex !== pendingCommit.targetIndex) {
+        startRouteDayHighlight(pendingCommit.targetIndex);
+      }
+    });
+  }, [clearRouteDaySettleEffects, startRouteDayHighlight]);
+  const applyRouteDayDragFrame = useCallback(() => {
+    routeDayAnimationFrameRef.current = null;
+
+    const currentState = routeDayDragStateRef.current;
+    const activeElement = routeDayDragCardRef.current;
+    if (!currentState || currentState.phase !== "dragging" || !activeElement) return;
+
+    const targetIndex = getRouteDayReorderTargetIndex({
+      sourceIndex: currentState.sourceIndex,
+      offsetY: currentState.currentOffsetY,
+      measurements: currentState.measurements,
+    });
+
+    setRouteDayElementTransform(activeElement, currentState.currentOffsetY, { active: true });
+
+    if (targetIndex === currentState.targetIndex) return;
+
+    routeDayDragStateRef.current = {
+      ...currentState,
+      targetIndex,
+    };
+    applyRouteDayNeighborTransforms({
+      measurements: currentState.measurements,
+      sourceIndex: currentState.sourceIndex,
+      targetIndex,
+      sourceMovementUnit: currentState.sourceMovementUnit,
     });
   }, []);
+  const scheduleRouteDayDragFrame = useCallback(
+    (pointerId: number, clientY: number) => {
+      const currentState = routeDayDragStateRef.current;
+
+      if (
+        !currentState ||
+        currentState.pointerId !== pointerId ||
+        currentState.phase !== "dragging"
+      ) {
+        return;
+      }
+
+      routeDayDragStateRef.current = {
+        ...currentState,
+        currentOffsetY: clientY - currentState.startClientY,
+      };
+
+      cancelRouteDayAnimationFrame();
+      routeDayAnimationFrameRef.current = window.requestAnimationFrame(applyRouteDayDragFrame);
+    },
+    [applyRouteDayDragFrame, cancelRouteDayAnimationFrame]
+  );
   const handleRouteDayPointerDown = (
     event: PointerEvent<HTMLButtonElement>,
     sourceIndex: number
   ) => {
     if (routeDayConfigs.length < 2) return;
+    if (event.button !== 0) return;
+    if (routeDaySettleCommitRef.current || routeDayDragStateRef.current?.phase === "settling") {
+      return;
+    }
+
+    const cardElement = event.currentTarget.closest('[data-route-day-card="true"]');
+    if (!(cardElement instanceof HTMLElement)) return;
+    const measurements = measureRouteDayRows();
+    const sourceMeasurement = measurements[sourceIndex];
+    if (!sourceMeasurement) return;
 
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
 
-    const cardElement = event.currentTarget.closest('[data-route-day-card="true"]');
-    const listElement = event.currentTarget.closest('[data-route-day-list="true"]');
-    const cardElements =
-      listElement instanceof HTMLElement
-        ? Array.from(listElement.querySelectorAll('[data-route-day-card="true"]'))
-        : [];
-    const rowHeight =
-      cardElement instanceof HTMLElement ? cardElement.getBoundingClientRect().height : 0;
-    const cardCentersY = cardElements.map((element) => {
-      const rect = element.getBoundingClientRect();
-      return rect.top + rect.height / 2;
-    });
-
-    const nextDragState = {
+    const nextDragState: RouteDayDragState = {
       sourceIndex,
       targetIndex: sourceIndex,
       pointerId: event.pointerId,
       startClientY: event.clientY,
-      currentClientY: event.clientY,
-      rowHeight,
-      cardCentersY,
+      currentOffsetY: 0,
+      sourceMovementUnit: sourceMeasurement.movementUnit,
+      phase: "dragging",
+      measurements,
     };
 
+    routeDayDragHandleRef.current = event.currentTarget;
+    routeDayDragCardRef.current = cardElement;
     routeDayDragStateRef.current = nextDragState;
-    setRouteDayDragState(nextDragState);
-  };
-  const updateRouteDayPointerDrag = useCallback((pointerId: number, clientY: number) => {
-    const currentState = routeDayDragStateRef.current;
-
-    if (!currentState || currentState.pointerId !== pointerId) return;
-
-    const targetIndex = getRouteDayReorderTargetIndex({
-      sourceIndex: currentState.sourceIndex,
-      currentClientY: clientY,
-      cardCentersY: currentState.cardCentersY,
+    cardElement.style.transition = "none";
+    cardElement.style.transformOrigin = "50% 50% 0px";
+    cardElement.style.zIndex = "20";
+    cardElement.style.userSelect = "none";
+    cardElement.style.touchAction = "pan-x";
+    cardElement.style.willChange = "transform";
+    cardElement.classList.add("shadow-sm");
+    setRouteDayElementTransform(cardElement, 0, { active: true });
+    applyRouteDayNeighborTransforms({
+      measurements,
+      sourceIndex,
+      targetIndex: sourceIndex,
+      sourceMovementUnit: sourceMeasurement.movementUnit,
     });
-
-    const nextDragState = {
-      ...currentState,
-      currentClientY: clientY,
-      targetIndex,
-    };
-
-    routeDayDragStateRef.current = nextDragState;
-    setRouteDayDragState(nextDragState);
-  }, []);
-  const releaseRouteDayPointerCapture = (event: PointerEvent<HTMLButtonElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
   };
-  const commitRouteDayPointerDrag = useCallback(
+  const releaseRouteDayPointerCapture = useCallback((pointerId: number) => {
+    const dragHandle = routeDayDragHandleRef.current;
+
+    if (dragHandle?.hasPointerCapture(pointerId)) {
+      dragHandle.releasePointerCapture(pointerId);
+    }
+  }, []);
+  const settleRouteDayPointerDrag = useCallback(
     (pointerId: number, clientY: number) => {
+      const currentState = routeDayDragStateRef.current;
+
+      if (
+        !currentState ||
+        currentState.pointerId !== pointerId ||
+        currentState.phase !== "dragging"
+      ) {
+        return;
+      }
+
+      cancelRouteDayAnimationFrame();
+      const offsetY = clientY - currentState.startClientY;
+      const targetIndex = getRouteDayReorderTargetIndex({
+        sourceIndex: currentState.sourceIndex,
+        offsetY,
+        measurements: currentState.measurements,
+      });
+      const settledOffsetY = getRouteDaySettledOffset({
+        sourceIndex: currentState.sourceIndex,
+        targetIndex,
+        measurements: currentState.measurements,
+      });
+      const settlingState: RouteDayDragState = {
+        ...currentState,
+        currentOffsetY: settledOffsetY,
+        targetIndex,
+        phase: "settling",
+      };
+
+      // eslint-disable-next-line no-console -- Log temporário solicitado para validar o cálculo do drag.
+      console.log("[route-day-reorder]", {
+        sourceIndex: currentState.sourceIndex,
+        targetIndex,
+      });
+
+      clearRouteDaySettleEffects();
+      routeDaySettleCommitRef.current = {
+        sourceIndex: currentState.sourceIndex,
+        targetIndex,
+        measurements: currentState.measurements,
+      };
+      routeDayDragStateRef.current = settlingState;
+
+      const cardElement = routeDayDragCardRef.current;
+      if (cardElement) {
+        cardElement.style.transition = `transform ${routeDaySettleDurationMs}ms ease-out, background-color ${routeDayHighlightDurationMs}ms ease-out`;
+        setRouteDayElementTransform(cardElement, settledOffsetY, { active: true });
+        applyRouteDayNeighborTransforms({
+          measurements: currentState.measurements,
+          sourceIndex: currentState.sourceIndex,
+          targetIndex,
+          sourceMovementUnit: currentState.sourceMovementUnit,
+        });
+
+        const handleTransitionEnd = (event: TransitionEvent) => {
+          if (event.target !== cardElement || event.propertyName !== "transform") return;
+          completeRouteDaySettle();
+        };
+
+        cardElement.addEventListener("transitionend", handleTransitionEnd);
+        routeDaySettleCleanupRef.current = () => {
+          cardElement.removeEventListener("transitionend", handleTransitionEnd);
+        };
+      }
+
+      routeDaySettleTimeoutRef.current = window.setTimeout(
+        completeRouteDaySettle,
+        routeDaySettleFallbackMs
+      );
+    },
+    [cancelRouteDayAnimationFrame, clearRouteDaySettleEffects, completeRouteDaySettle]
+  );
+  const resetRouteDayPointerDrag = useCallback(
+    (pointerId: number) => {
       const currentState = routeDayDragStateRef.current;
 
       if (!currentState || currentState.pointerId !== pointerId) return;
 
-      const targetIndex = getRouteDayReorderTargetIndex({
-        sourceIndex: currentState.sourceIndex,
-        currentClientY: clientY,
-        cardCentersY: currentState.cardCentersY,
-      });
-
-      if (targetIndex !== currentState.sourceIndex) {
-        moveRouteDay(currentState.sourceIndex, targetIndex);
-      }
-
+      cancelRouteDayAnimationFrame();
+      clearRouteDaySettleEffects();
+      routeDaySettleCommitRef.current = null;
+      resetRouteDayMeasurementsStyles(currentState.measurements);
       routeDayDragStateRef.current = null;
-      setRouteDayDragState(null);
+      routeDayDragHandleRef.current = null;
+      routeDayDragCardRef.current = null;
     },
-    [moveRouteDay]
+    [cancelRouteDayAnimationFrame, clearRouteDaySettleEffects]
   );
-  const resetRouteDayPointerDrag = useCallback((pointerId: number) => {
-    const currentState = routeDayDragStateRef.current;
-
-    if (!currentState || currentState.pointerId !== pointerId) return;
-
-    routeDayDragStateRef.current = null;
-    setRouteDayDragState(null);
-  }, []);
   const handleRouteDayPointerMove = (event: PointerEvent<HTMLButtonElement>) => {
-    updateRouteDayPointerDrag(event.pointerId, event.clientY);
+    event.preventDefault();
+    scheduleRouteDayDragFrame(event.pointerId, event.clientY);
   };
   const finishRouteDayPointerDrag = (event: PointerEvent<HTMLButtonElement>) => {
-    releaseRouteDayPointerCapture(event);
-    commitRouteDayPointerDrag(event.pointerId, event.clientY);
+    releaseRouteDayPointerCapture(event.pointerId);
+    settleRouteDayPointerDrag(event.pointerId, event.clientY);
   };
   const cancelRouteDayPointerDrag = (event: PointerEvent<HTMLButtonElement>) => {
-    releaseRouteDayPointerCapture(event);
+    releaseRouteDayPointerCapture(event.pointerId);
     resetRouteDayPointerDrag(event.pointerId);
   };
   useEffect(() => {
-    if (!routeDayDragState) return undefined;
-
-    const handleWindowPointerMove = (event: globalThis.PointerEvent) => {
-      const currentState = routeDayDragStateRef.current;
-
-      if (!currentState || currentState.pointerId !== event.pointerId) return;
-
-      event.preventDefault();
-      updateRouteDayPointerDrag(event.pointerId, event.clientY);
-    };
-    const handleWindowPointerUp = (event: globalThis.PointerEvent) => {
-      commitRouteDayPointerDrag(event.pointerId, event.clientY);
-    };
-    const handleWindowPointerCancel = (event: globalThis.PointerEvent) => {
-      resetRouteDayPointerDrag(event.pointerId);
-    };
-
-    window.addEventListener("pointermove", handleWindowPointerMove, { passive: false });
-    window.addEventListener("pointerup", handleWindowPointerUp);
-    window.addEventListener("pointercancel", handleWindowPointerCancel);
-
     return () => {
-      window.removeEventListener("pointermove", handleWindowPointerMove);
-      window.removeEventListener("pointerup", handleWindowPointerUp);
-      window.removeEventListener("pointercancel", handleWindowPointerCancel);
+      cancelRouteDayAnimationFrame();
+      clearRouteDaySettleEffects();
+
+      if (routeDayHighlightTimeoutRef.current !== null) {
+        window.clearTimeout(routeDayHighlightTimeoutRef.current);
+        routeDayHighlightTimeoutRef.current = null;
+      }
     };
-  }, [
-    commitRouteDayPointerDrag,
-    resetRouteDayPointerDrag,
-    routeDayDragState,
-    updateRouteDayPointerDrag,
-  ]);
+  }, [cancelRouteDayAnimationFrame, clearRouteDaySettleEffects]);
   const handleRouteDayReorderKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
     sourceIndex: number
   ) => {
+    if (routeDaySettleCommitRef.current || routeDayDragStateRef.current?.phase === "settling") {
+      return;
+    }
+
     if (event.key === "ArrowUp") {
       event.preventDefault();
       moveRouteDay(sourceIndex, Math.max(0, sourceIndex - 1));
@@ -11472,33 +11773,6 @@ export function NewProductFlow({
       event.preventDefault();
       moveRouteDay(sourceIndex, Math.min(routeDayConfigs.length - 1, sourceIndex + 1));
     }
-  };
-  const getRouteDayReorderOffset = (index: number) => {
-    if (!routeDayDragState) return 0;
-
-    const movementUnit = routeDayDragState.rowHeight + routeDayReorderGap;
-
-    if (index === routeDayDragState.sourceIndex) {
-      return routeDayDragState.currentClientY - routeDayDragState.startClientY;
-    }
-
-    if (
-      routeDayDragState.targetIndex > routeDayDragState.sourceIndex &&
-      index > routeDayDragState.sourceIndex &&
-      index <= routeDayDragState.targetIndex
-    ) {
-      return -movementUnit;
-    }
-
-    if (
-      routeDayDragState.targetIndex < routeDayDragState.sourceIndex &&
-      index >= routeDayDragState.targetIndex &&
-      index < routeDayDragState.sourceIndex
-    ) {
-      return movementUnit;
-    }
-
-    return 0;
   };
   const requestRouteDayRemoval = (targetIndex: number, config: RouteDayConfig) => {
     if (hasRouteDayConfig(config)) {
@@ -12045,14 +12319,12 @@ export function NewProductFlow({
                           key={`route-day-${index}`}
                           title={`Dia ${index + 1}`}
                           titleDetail={config.title.trim()}
-                          description={
-                            routeDayDescriptions[index] ?? createRouteDayDescription(config)
-                          }
+                          description={createRouteDayDescription(config)}
                           deletable={routeDayConfigs.length > 1 || hasRouteDayConfig(config)}
                           reorder={{
                             enabled: routeDayConfigs.length > 1,
-                            active: routeDayDragState?.sourceIndex === index,
-                            offsetY: getRouteDayReorderOffset(index),
+                            highlighted: highlightedRouteDayIndex === index,
+                            cardRef: (element) => registerRouteDayCardElement(index, element),
                             onPointerDown: (event) => handleRouteDayPointerDown(event, index),
                             onPointerMove: handleRouteDayPointerMove,
                             onPointerUp: finishRouteDayPointerDrag,

@@ -85,6 +85,16 @@ function getInputByDialogFieldLabel(dialog: HTMLElement, label: string): HTMLInp
   return input;
 }
 
+function placeCaretAtEnd(element: HTMLElement): void {
+  element.focus();
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+}
+
 function mockLocationOptionsFetch(): void {
   vi.stubGlobal(
     "fetch",
@@ -2457,9 +2467,12 @@ describe("ProdutosPage", () => {
     ).toHaveTextContent("Lembrete");
 
     expect(screen.getAllByRole("button", { name: "Central de Comunicação" })).toHaveLength(2);
-    expect(screen.getAllByText("{participante_nome}")).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Inserir informação" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "+ Nome do participante" })).toHaveLength(2);
 
     const emailEditor = screen.getByRole("textbox", { name: "Conteúdo de Template de e-mail" });
+    expect(emailEditor.querySelector('[data-var="participante_nome"]')).toBeInTheDocument();
+    expect(emailEditor.querySelector('[data-var="ponto_encontro"]')).toBeInTheDocument();
     const emailSourceButton = screen.getByRole("button", {
       name: "Ver código fonte em Template de e-mail",
     });
@@ -2555,6 +2568,90 @@ describe("ProdutosPage", () => {
     } else {
       Reflect.deleteProperty(document, "execCommand");
     }
+  });
+
+  it("opens communication variables from the toolbar and renders the example preview", async () => {
+    const user = userEvent.setup();
+
+    mockLocationOptionsFetch();
+    render(<ProdutosPage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Novo produto" }));
+    fireEvent.click(screen.getByRole("button", { name: "Comunicação" }));
+
+    const variableButtons = screen.getAllByRole("button", { name: "Inserir informação" });
+    const emailVariableButton = variableButtons[0];
+    if (!emailVariableButton) throw new Error("Botão de informação do e-mail não encontrado");
+
+    await user.click(emailVariableButton);
+
+    expect(screen.getByLabelText("Buscar informação")).toHaveFocus();
+    expect(screen.getByText("Participante")).toBeInTheDocument();
+    expect(screen.getByText("Reserva e pagamento")).toBeInTheDocument();
+    expect(screen.getByText("pode estar vazio")).toBeInTheDocument();
+
+    await user.clear(screen.getByLabelText("Buscar informação"));
+    await user.type(screen.getByLabelText("Buscar informação"), "inexistente");
+
+    expect(
+      screen.getByText("Nenhuma informação encontrada para 'inexistente'")
+    ).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    const previewSwitches = screen.getAllByRole("switch", {
+      name: "Visualizar com dados de exemplo",
+    });
+    const emailPreviewSwitch = previewSwitches[0];
+    if (!emailPreviewSwitch) throw new Error("Switch de preview do e-mail não encontrado");
+
+    await user.click(emailPreviewSwitch);
+
+    expect(
+      screen.getByText("Reserva de exemplo: Maria Silva, Trilha Pico do Itacolomi")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Maria Silva")).toHaveClass("bg-[#dcfce7]");
+    expect(screen.getByText("sem valor: ponto de encontro")).toHaveClass("bg-[#fee2e2]");
+  });
+
+  it("opens communication variables with typing shortcuts only at the start of a word", () => {
+    mockLocationOptionsFetch();
+    render(<ProdutosPage />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Novo produto" }));
+    fireEvent.click(screen.getByRole("button", { name: "Comunicação" }));
+
+    const emailEditor = screen.getByRole("textbox", { name: "Conteúdo de Template de e-mail" });
+    emailEditor.innerHTML = "contato";
+    fireEvent.input(emailEditor);
+    placeCaretAtEnd(emailEditor);
+
+    fireEvent.keyDown(emailEditor, { key: "@" });
+
+    expect(
+      screen.queryByRole("listbox", { name: "Informações do template" })
+    ).not.toBeInTheDocument();
+
+    emailEditor.innerHTML = "Olá ";
+    fireEvent.input(emailEditor);
+    placeCaretAtEnd(emailEditor);
+
+    fireEvent.keyDown(emailEditor, { key: "/" });
+
+    const lastTextNode = emailEditor.lastChild;
+    if (!(lastTextNode instanceof Text)) {
+      throw new Error("Texto do atalho não encontrado");
+    }
+    lastTextNode.data = `${lastTextNode.data}nom`;
+    placeCaretAtEnd(emailEditor);
+    fireEvent.input(emailEditor);
+
+    expect(screen.getByRole("option", { name: /Nome do participante/ })).toBeInTheDocument();
+
+    fireEvent.keyDown(emailEditor, { key: "Enter" });
+
+    expect(emailEditor.textContent).not.toContain("/nom");
+    expect(emailEditor.querySelector('[data-var="participante_nome"]')).toBeInTheDocument();
   });
 
   it("hides communication template controls when the channel switch is disabled", () => {

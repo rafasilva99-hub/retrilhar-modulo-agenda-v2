@@ -52,6 +52,7 @@ import {
   Store02Icon,
   SwimmingIcon,
   TapeMeasureIcon,
+  TextVariableFrontIcon,
   Undo02Icon,
   UnfoldMoreIcon,
   UserDollarIcon,
@@ -79,7 +80,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -98,6 +99,15 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  quickTemplateVariableIds,
+  type TemplateVariable,
+  templateVariableById,
+  type TemplateVariableCategory,
+  templateVariableCategoryLabels,
+  type TemplateVariableId,
+  templateVariables,
+} from "@/types/api/template-variables";
 
 import emojiLibraryPt from "./emoji-library-pt.json";
 import {
@@ -114,6 +124,11 @@ import {
   LocationOptionsError,
 } from "./location-options";
 import { type ProdutoFormState } from "./ProdutosPage";
+import {
+  createTemplateVariableChipHtml,
+  deserializeTemplate,
+  serializeTemplate,
+} from "./template-serialization";
 import { getVirtualWindow } from "./virtual-list";
 
 type FlowMode = "new" | "edit";
@@ -875,9 +890,9 @@ const defaultParticipantDataFields: readonly ParticipantDataField[] = ["weight",
 const defaultEmailTemplate = "booking-confirmation";
 const defaultWhatsappTemplate = "short-reminder";
 const defaultEmailTemplateBody =
-  'Olá <span class="communication-template-token">{participante_nome}</span>, sua reserva de <span class="communication-template-token">{produto_nome}</span> para <span class="communication-template-token">{evento_data}</span> às <span class="communication-template-token">{evento_horario}</span> está confirmada. O ponto de encontro é <span class="communication-template-token">{ponto_encontro}</span>. Até lá!';
+  "Olá {{participante_nome}}, sua reserva de {{produto_nome}} para {{evento_data}} às {{evento_horario}} está confirmada. O ponto de encontro é {{ponto_encontro}}. Até lá!";
 const defaultWhatsappTemplateBody =
-  'Olá <span class="communication-template-token">{participante_nome}</span>!<br>Lembrete: <span class="communication-template-token">{produto_nome}</span> em <span class="communication-template-token">{evento_data}</span> às <span class="communication-template-token">{evento_horario}</span>.<br>O ponto de encontro é em <span class="communication-template-token">{ponto_encontro}</span>.<br>Vemos você lá!';
+  "Olá {{participante_nome}}!<br>Lembrete: {{produto_nome}} em {{evento_data}} às {{evento_horario}}.<br>O ponto de encontro é em {{ponto_encontro}}.<br>Vemos você lá!";
 const communicationTemplateHint = "Os templates salvos são cadastrados na ";
 const emailTemplateOptions = [
   { value: defaultEmailTemplate, label: "Confirmação de reserva após pagamento" },
@@ -3009,6 +3024,39 @@ type EditorLinkConfig = {
 type EditorKeyboardShortcutAction =
   | { readonly kind: "command"; readonly command: string }
   | { readonly kind: "link" };
+type TemplateVariablePopoverMode = "toolbar" | "shortcut";
+type TemplateVariableShortcutState = {
+  readonly range: Range;
+  readonly trigger: "/" | "@";
+};
+type TemplateVariableAnchorPosition = {
+  readonly left: number;
+  readonly top: number;
+};
+
+const templateVariableCategoryOrder: readonly TemplateVariableCategory[] = [
+  "participante",
+  "produto",
+  "evento",
+  "reserva_pagamento",
+];
+const templateVariableTokenPattern = /\{\{([a-z0-9_]+)\}\}/g;
+const templateVariableQuickSuggestions = quickTemplateVariableIds
+  .map((id) => templateVariableById.get(id))
+  .filter((variable): variable is TemplateVariable => Boolean(variable));
+const templateVariableExampleValues: Record<TemplateVariableId, string> = {
+  participante_nome: "Maria Silva",
+  participante_email: "maria.silva@email.com",
+  participante_telefone: "(31) 98888-1234",
+  produto_nome: "Trilha Pico do Itacolomi",
+  ponto_encontro: "",
+  produto_duracao: "5 horas",
+  evento_data: "12/09/2026",
+  evento_horario: "07:30",
+  reserva_codigo: "RES-48291",
+  pagamento_valor: "R$ 240,00",
+  pagamento_parcelas: "3x de R$ 80,00",
+};
 
 function getEditorToolbarTooltipLabel(ariaLabel: string) {
   const templateContextIndex = ariaLabel.indexOf(" em ");
@@ -3027,6 +3075,254 @@ function normalizeEditorEmojiText(value: string) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+}
+
+function escapeTemplatePreviewHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getTemplateVariableSearchValue(variable: TemplateVariable) {
+  return normalizeEditorEmojiText(`${variable.label} ${variable.id} ${variable.example}`);
+}
+
+function getFilteredTemplateVariables(query: string) {
+  const normalizedQuery = normalizeEditorEmojiText(query.trim());
+  if (!normalizedQuery) return templateVariables;
+
+  return templateVariables.filter((variable) =>
+    getTemplateVariableSearchValue(variable).includes(normalizedQuery)
+  );
+}
+
+function getGroupedTemplateVariables(variables: readonly TemplateVariable[]) {
+  return templateVariableCategoryOrder.flatMap((category) => {
+    const items = variables.filter((variable) => variable.category === category);
+    return items.length > 0
+      ? [
+          {
+            category,
+            items,
+          },
+        ]
+      : [];
+  });
+}
+
+function createTemplateVariableElement(variable: TemplateVariable) {
+  const template = document.createElement("template");
+  template.innerHTML = createTemplateVariableChipHtml(variable);
+  const chip = template.content.firstElementChild;
+  if (!(chip instanceof HTMLSpanElement)) {
+    const fallbackChip = document.createElement("span");
+    fallbackChip.contentEditable = "false";
+    fallbackChip.dataset.var = variable.id;
+    fallbackChip.className = "communication-template-token";
+    fallbackChip.textContent = variable.label;
+    return fallbackChip;
+  }
+
+  return chip;
+}
+
+function getCommunicationTemplateSerializableHtml(editorElement: HTMLDivElement) {
+  return serializeTemplate(getSerializableEditorHtml(editorElement));
+}
+
+function isEditorTemplateVariableChip(node: Node | null): node is HTMLSpanElement {
+  return node instanceof HTMLSpanElement && Boolean(node.dataset.var);
+}
+
+function getPreviousTemplateVariableChipFromText(textNode: Text, offset: number) {
+  if (offset === 0) {
+    return isEditorTemplateVariableChip(textNode.previousSibling) ? textNode.previousSibling : null;
+  }
+
+  if (
+    textNode.data[offset - 1] === "\u00a0" &&
+    textNode.data.slice(0, offset - 1).trim().length === 0 &&
+    isEditorTemplateVariableChip(textNode.previousSibling)
+  ) {
+    return textNode.previousSibling;
+  }
+
+  return null;
+}
+
+function getNextTemplateVariableChipFromText(textNode: Text, offset: number) {
+  if (offset === textNode.length) {
+    return isEditorTemplateVariableChip(textNode.nextSibling) ? textNode.nextSibling : null;
+  }
+
+  if (
+    textNode.data[offset] === "\u00a0" &&
+    textNode.data.slice(offset + 1).trim().length === 0 &&
+    isEditorTemplateVariableChip(textNode.nextSibling)
+  ) {
+    return textNode.nextSibling;
+  }
+
+  return null;
+}
+
+function getAdjacentTemplateVariableChip(range: Range, direction: "previous" | "next") {
+  const container = range.startContainer;
+  const offset = range.startOffset;
+
+  if (container instanceof Text) {
+    return direction === "previous"
+      ? getPreviousTemplateVariableChipFromText(container, offset)
+      : getNextTemplateVariableChipFromText(container, offset);
+  }
+
+  if (!(container instanceof Element)) return null;
+
+  const adjacentNode =
+    direction === "previous"
+      ? container.childNodes.item(offset - 1)
+      : container.childNodes.item(offset);
+
+  if (isEditorTemplateVariableChip(adjacentNode)) return adjacentNode;
+
+  if (adjacentNode instanceof Text) {
+    return direction === "previous"
+      ? getPreviousTemplateVariableChipFromText(adjacentNode, adjacentNode.length)
+      : getNextTemplateVariableChipFromText(adjacentNode, 0);
+  }
+
+  return null;
+}
+
+function removeAdjacentTemplateVariableChip(
+  editorElement: HTMLDivElement,
+  direction: "previous" | "next"
+) {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || !selection.isCollapsed) return false;
+
+  const range = selection.getRangeAt(0);
+  if (!editorElement.contains(range.commonAncestorContainer)) return false;
+
+  const chip = getAdjacentTemplateVariableChip(range, direction);
+  if (!chip) return false;
+
+  const nextRange = document.createRange();
+  const siblingText = direction === "previous" ? chip.nextSibling : chip.previousSibling;
+  if (siblingText instanceof Text && siblingText.data === "\u00a0") {
+    siblingText.remove();
+  }
+  nextRange.setStartBefore(chip);
+  nextRange.collapse(true);
+  chip.remove();
+  selection.removeAllRanges();
+  selection.addRange(nextRange);
+
+  return true;
+}
+
+function isTemplateVariableShortcutStart(editorElement: HTMLDivElement) {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || !selection.isCollapsed) return false;
+
+  const range = selection.getRangeAt(0);
+  if (!editorElement.contains(range.commonAncestorContainer)) return false;
+
+  const textBeforeCaret =
+    range.startContainer instanceof Text
+      ? range.startContainer.textContent?.slice(0, range.startOffset)
+      : range.startContainer.childNodes.item(range.startOffset - 1)?.textContent;
+  if (!textBeforeCaret) return true;
+
+  return /[\s\u00a0]$/.test(textBeforeCaret);
+}
+
+function getTemplateVariableAnchorPosition(editorElement: HTMLDivElement) {
+  const selection = window.getSelection();
+  const selectedRange = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+  const range = selectedRange?.cloneRange();
+  const rect =
+    range && typeof range.getBoundingClientRect === "function"
+      ? range.getBoundingClientRect()
+      : null;
+  const editorRect = editorElement.getBoundingClientRect();
+
+  return {
+    left: rect && rect.left > 0 ? rect.left : editorRect.left + 16,
+    top: rect && rect.bottom > 0 ? rect.bottom : editorRect.top + 32,
+  };
+}
+
+function insertTemplateVariableAtSelection(
+  editorElement: HTMLDivElement,
+  variable: TemplateVariable
+) {
+  editorElement.focus();
+
+  const selection = window.getSelection();
+  const chip = createTemplateVariableElement(variable);
+  const spacer = document.createTextNode("\u00a0");
+  const range =
+    selection &&
+    selection.rangeCount > 0 &&
+    editorElement.contains(selection.getRangeAt(0).commonAncestorContainer)
+      ? selection.getRangeAt(0)
+      : document.createRange();
+
+  if (!editorElement.contains(range.commonAncestorContainer)) {
+    range.selectNodeContents(editorElement);
+    range.collapse(false);
+  }
+
+  range.deleteContents();
+  range.insertNode(spacer);
+  range.insertNode(chip);
+  range.setStartAfter(spacer);
+  range.collapse(true);
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+}
+
+function insertTemplateVariableForShortcut(
+  editorElement: HTMLDivElement,
+  variable: TemplateVariable,
+  shortcutState: TemplateVariableShortcutState
+) {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) return false;
+
+  const currentRange = selection.getRangeAt(0);
+  if (
+    !editorElement.contains(shortcutState.range.commonAncestorContainer) ||
+    !editorElement.contains(currentRange.commonAncestorContainer)
+  ) {
+    return false;
+  }
+
+  const replacementRange = shortcutState.range.cloneRange();
+  replacementRange.setEnd(currentRange.endContainer, currentRange.endOffset);
+  selection.removeAllRanges();
+  selection.addRange(replacementRange);
+  insertTemplateVariableAtSelection(editorElement, variable);
+
+  return true;
+}
+
+function createTemplatePreviewHtml(serializedText: string) {
+  return serializedText.replace(templateVariableTokenPattern, (token, id: string) => {
+    const variable = templateVariableById.get(id);
+    if (!variable) return token;
+
+    const value = templateVariableExampleValues[variable.id as TemplateVariableId];
+    if (value) {
+      return `<span class="inline rounded-[5px] bg-[#dcfce7] px-1.5 py-0.5 font-['Helvetica_Neue:Medium',sans-serif] text-[#166534]">${escapeTemplatePreviewHtml(value)}</span>`;
+    }
+
+    return `<span class="inline rounded-[5px] bg-[#fee2e2] px-1.5 py-0.5 font-['Helvetica_Neue:Medium',sans-serif] text-[#991b1b]">sem valor: ${escapeTemplatePreviewHtml(variable.label.toLowerCase())}</span>`;
+  });
 }
 
 function getEditorEmojiSearchValue(item: EditorEmojiItem) {
@@ -4990,25 +5286,45 @@ function CommunicationTemplateEditor({
   );
   const [isTextColorPickerOpen, setIsTextColorPickerOpen] = useState(false);
   const [isSourceDialogOpen, setIsSourceDialogOpen] = useState(false);
+  const [isVariablePopoverOpen, setIsVariablePopoverOpen] = useState(false);
+  const [variablePopoverMode, setVariablePopoverMode] =
+    useState<TemplateVariablePopoverMode>("toolbar");
+  const [variableSearchQuery, setVariableSearchQuery] = useState("");
+  const [activeVariableIndex, setActiveVariableIndex] = useState(0);
+  const [variableAnchorPosition, setVariableAnchorPosition] =
+    useState<TemplateVariableAnchorPosition | null>(null);
+  const [isPreviewEnabled, setIsPreviewEnabled] = useState(false);
+  const savedVariableSelectionRangeRef = useRef<Range | null>(null);
+  const variableShortcutStateRef = useRef<TemplateVariableShortcutState | null>(null);
   const hasSourceContent = hasSerializableEditorContent(text);
+  const displayHtml = useMemo(() => deserializeTemplate(text), [text]);
+  const filteredTemplateVariables = useMemo(
+    () => getFilteredTemplateVariables(variableSearchQuery),
+    [variableSearchQuery]
+  );
+  const previewHtml = useMemo(() => createTemplatePreviewHtml(text), [text]);
 
   useEffect(() => {
     const editorElement = editorRef.current;
     if (
       !editorElement ||
       (document.activeElement instanceof Node && editorElement.contains(document.activeElement)) ||
-      editorElement.innerHTML === text
+      editorElement.innerHTML === displayHtml
     )
       return;
 
-    editorElement.innerHTML = text;
-  }, [text]);
+    editorElement.innerHTML = displayHtml;
+  }, [displayHtml]);
+
+  useEffect(() => {
+    setActiveVariableIndex(0);
+  }, [variableSearchQuery]);
 
   const syncEditorHtml = useCallback(() => {
     const editorElement = editorRef.current;
     if (!editorElement) return;
 
-    onTextChange(getSerializableEditorHtml(editorElement));
+    onTextChange(getCommunicationTemplateSerializableHtml(editorElement));
   }, [onTextChange]);
 
   const { handleEditorClick, handleEditorKeyDown, handleEditorPointerDown } =
@@ -5019,6 +5335,113 @@ function CommunicationTemplateEditor({
   );
   const { handleEmojiPopoverOpenChange, handleSelectEmoji, isEmojiPopoverOpen, recentEmojis } =
     useEditorEmojiControl(editorRef, syncEditorHtml);
+
+  const closeVariablePopover = useCallback(() => {
+    setIsVariablePopoverOpen(false);
+    setVariableSearchQuery("");
+    setActiveVariableIndex(0);
+    variableShortcutStateRef.current = null;
+    savedVariableSelectionRangeRef.current = null;
+  }, []);
+
+  const handleVariablePopoverOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        closeVariablePopover();
+        return;
+      }
+
+      savedVariableSelectionRangeRef.current = getEditorSelectionRange(editorRef.current);
+      variableShortcutStateRef.current = null;
+      setVariablePopoverMode("toolbar");
+      setVariableSearchQuery("");
+      setActiveVariableIndex(0);
+      setIsVariablePopoverOpen(true);
+    },
+    [closeVariablePopover]
+  );
+
+  const handleSelectTemplateVariable = useCallback(
+    (variable: TemplateVariable) => {
+      const editorElement = editorRef.current;
+      if (!editorElement) return;
+
+      const shortcutState = variableShortcutStateRef.current;
+      const insertedByShortcut =
+        variablePopoverMode === "shortcut" && shortcutState
+          ? insertTemplateVariableForShortcut(editorElement, variable, shortcutState)
+          : false;
+
+      if (!insertedByShortcut) {
+        const savedRange = savedVariableSelectionRangeRef.current;
+        if (savedRange && editorElement.contains(savedRange.commonAncestorContainer)) {
+          restoreEditorSelection(savedRange);
+        }
+        insertTemplateVariableAtSelection(editorElement, variable);
+      }
+
+      closeVariablePopover();
+      syncEditorHtml();
+    },
+    [closeVariablePopover, syncEditorHtml, variablePopoverMode]
+  );
+
+  const openVariableShortcutPopover = useCallback((trigger: "/" | "@") => {
+    const editorElement = editorRef.current;
+    const selection = window.getSelection();
+    if (!editorElement || !selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    if (!editorElement.contains(range.commonAncestorContainer)) return;
+
+    range.deleteContents();
+    const triggerNode = document.createTextNode(trigger);
+    range.insertNode(triggerNode);
+
+    const nextRange = document.createRange();
+    nextRange.setStart(triggerNode, trigger.length);
+    nextRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(nextRange);
+
+    const triggerRange = document.createRange();
+    triggerRange.setStart(triggerNode, 0);
+    triggerRange.setEnd(triggerNode, trigger.length);
+    variableShortcutStateRef.current = { range: triggerRange, trigger };
+    savedVariableSelectionRangeRef.current = null;
+    setVariablePopoverMode("shortcut");
+    setVariableSearchQuery("");
+    setActiveVariableIndex(0);
+    setVariableAnchorPosition(getTemplateVariableAnchorPosition(editorElement));
+    setIsVariablePopoverOpen(true);
+  }, []);
+
+  const updateVariableShortcutQuery = useCallback(() => {
+    const editorElement = editorRef.current;
+    const shortcutState = variableShortcutStateRef.current;
+    const selection = window.getSelection();
+    if (!editorElement || !shortcutState || !selection || selection.rangeCount === 0) return;
+
+    const currentRange = selection.getRangeAt(0);
+    if (
+      !editorElement.contains(shortcutState.range.commonAncestorContainer) ||
+      !editorElement.contains(currentRange.commonAncestorContainer)
+    ) {
+      closeVariablePopover();
+      return;
+    }
+
+    const queryRange = shortcutState.range.cloneRange();
+    queryRange.setEnd(currentRange.endContainer, currentRange.endOffset);
+    const queryText = queryRange.toString();
+    if (!queryText.startsWith(shortcutState.trigger) || /[\s\u00a0]/.test(queryText.slice(1))) {
+      closeVariablePopover();
+      return;
+    }
+
+    setVariableSearchQuery(queryText.slice(1));
+    setVariableAnchorPosition(getTemplateVariableAnchorPosition(editorElement));
+  }, [closeVariablePopover]);
 
   const runEditorCommand = useCallback(
     (command: string, value?: string) => {
@@ -5040,6 +5463,72 @@ function CommunicationTemplateEditor({
 
   const handleEditorShortcutKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
+      if (isVariablePopoverOpen) {
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          setActiveVariableIndex((currentIndex) =>
+            filteredTemplateVariables.length === 0
+              ? 0
+              : Math.min(currentIndex + 1, filteredTemplateVariables.length - 1)
+          );
+          return;
+        }
+
+        if (event.key === "ArrowUp") {
+          event.preventDefault();
+          setActiveVariableIndex((currentIndex) => Math.max(currentIndex - 1, 0));
+          return;
+        }
+
+        if (event.key === "Enter") {
+          event.preventDefault();
+          const selectedVariable = filteredTemplateVariables[activeVariableIndex];
+          if (selectedVariable) handleSelectTemplateVariable(selectedVariable);
+          return;
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeVariablePopover();
+          return;
+        }
+
+        if (event.key === " ") {
+          closeVariablePopover();
+          return;
+        }
+      }
+
+      if (
+        (event.key === "/" || event.key === "@") &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        isTemplateVariableShortcutStart(event.currentTarget)
+      ) {
+        event.preventDefault();
+        openVariableShortcutPopover(event.key);
+        return;
+      }
+
+      if (
+        event.key === "Backspace" &&
+        removeAdjacentTemplateVariableChip(event.currentTarget, "previous")
+      ) {
+        event.preventDefault();
+        syncEditorHtml();
+        return;
+      }
+
+      if (
+        event.key === "Delete" &&
+        removeAdjacentTemplateVariableChip(event.currentTarget, "next")
+      ) {
+        event.preventDefault();
+        syncEditorHtml();
+        return;
+      }
+
       const shortcutAction = getEditorKeyboardShortcutAction(event);
       if (!shortcutAction) {
         handleEditorKeyDown(event);
@@ -5054,7 +5543,28 @@ function CommunicationTemplateEditor({
 
       runEditorCommand(shortcutAction.command);
     },
-    [handleEditorKeyDown, handleLinkPopoverOpenChange, runEditorCommand]
+    [
+      activeVariableIndex,
+      closeVariablePopover,
+      filteredTemplateVariables,
+      handleEditorKeyDown,
+      handleLinkPopoverOpenChange,
+      handleSelectTemplateVariable,
+      isVariablePopoverOpen,
+      openVariableShortcutPopover,
+      runEditorCommand,
+      syncEditorHtml,
+    ]
+  );
+
+  const handleCommunicationEditorInput = useCallback(
+    (event: FormEvent<HTMLDivElement>) => {
+      onTextChange(getCommunicationTemplateSerializableHtml(event.currentTarget));
+      if (isVariablePopoverOpen && variablePopoverMode === "shortcut") {
+        updateVariableShortcutQuery();
+      }
+    },
+    [isVariablePopoverOpen, onTextChange, updateVariableShortcutQuery, variablePopoverMode]
   );
 
   const handleInsertImage = useCallback(() => {
@@ -5242,10 +5752,10 @@ function CommunicationTemplateEditor({
               tabIndex={-1}
               onChange={handleImageFileChange}
             />
-            <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="flex w-full items-center gap-x-3 gap-y-2 overflow-x-auto pb-1">
               {fullToolbar ? (
                 <div
-                  className="relative flex gap-2"
+                  className="relative flex shrink-0 gap-2"
                   onBlur={(event) => {
                     if (!event.currentTarget.contains(event.relatedTarget))
                       setIsFontSizeListOpen(false);
@@ -5291,7 +5801,7 @@ function CommunicationTemplateEditor({
                 </div>
               ) : null}
 
-              <div className="flex flex-wrap gap-0.5">
+              <div className="flex shrink-0 flex-nowrap gap-0.5">
                 <TextEditorToolbarButton
                   ariaLabel={`Negrito em ${templateLabel}`}
                   shortcutLabel={editorShortcutLabels.bold}
@@ -5326,6 +5836,16 @@ function CommunicationTemplateEditor({
                   recentEmojis={recentEmojis}
                   onOpenChange={handleEmojiPopoverOpenChange}
                   onSelectEmoji={handleSelectEmoji}
+                />
+                <EditorVariableToolbarControl
+                  isOpen={isVariablePopoverOpen && variablePopoverMode === "toolbar"}
+                  searchQuery={variableSearchQuery}
+                  activeIndex={activeVariableIndex}
+                  filteredVariables={filteredTemplateVariables}
+                  onOpenChange={handleVariablePopoverOpenChange}
+                  onSearchQueryChange={setVariableSearchQuery}
+                  onActiveIndexChange={setActiveVariableIndex}
+                  onSelectVariable={handleSelectTemplateVariable}
                 />
                 {fullToolbar ? (
                   <>
@@ -5420,19 +5940,93 @@ function CommunicationTemplateEditor({
               aria-multiline="true"
               suppressContentEditableWarning
               tabIndex={0}
-              className="rich-text-editor border-input bg-card focus:border-primary focus:ring-primary/20 min-h-[242px] w-full resize-y overflow-auto rounded-xl border p-5 font-['Helvetica_Neue:Regular',sans-serif] text-sm leading-5 text-[#717680] shadow-[0px_1px_2px_rgba(10,13,18,0.05)] transition-colors outline-none focus:ring-3 [&_.communication-template-token]:inline-flex [&_.communication-template-token]:rounded-full [&_.communication-template-token]:border [&_.communication-template-token]:border-[#dbeafe] [&_.communication-template-token]:bg-[#e8f0fe] [&_.communication-template-token]:px-1.5 [&_.communication-template-token]:py-0.5 [&_.communication-template-token]:font-['Helvetica_Neue:Regular',sans-serif] [&_.communication-template-token]:text-xs [&_.communication-template-token]:leading-[18px] [&_.communication-template-token]:text-[#0b5ed7] [&_li]:pl-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5"
+              className="rich-text-editor border-input bg-card focus:border-primary focus:ring-primary/20 min-h-[242px] w-full resize-y overflow-auto rounded-xl border p-5 font-['Helvetica_Neue:Regular',sans-serif] text-sm leading-5 text-[#717680] shadow-[0px_1px_2px_rgba(10,13,18,0.05)] transition-colors outline-none focus:ring-3 [&_.communication-template-token]:inline-flex [&_.communication-template-token]:cursor-default [&_.communication-template-token]:items-center [&_.communication-template-token]:gap-1 [&_.communication-template-token]:rounded-[5px] [&_.communication-template-token]:border [&_.communication-template-token]:border-[#bfdbfe] [&_.communication-template-token]:bg-[#dbeafe] [&_.communication-template-token]:px-[7px] [&_.communication-template-token]:py-px [&_.communication-template-token]:font-['Helvetica_Neue:Medium',sans-serif] [&_.communication-template-token]:text-[12.5px] [&_.communication-template-token]:leading-[18px] [&_.communication-template-token]:font-medium [&_.communication-template-token]:text-[#1E40AF] [&_.communication-template-token]:select-all [&_.communication-template-token-prefix]:text-[10px] [&_.communication-template-token-prefix]:text-[#1E40AF]/70 [&_li]:pl-1 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5"
               onClick={handleEditorClick}
-              onInput={(event) => onTextChange(getSerializableEditorHtml(event.currentTarget))}
+              onInput={handleCommunicationEditorInput}
               onKeyDown={handleEditorShortcutKeyDown}
               onPointerDown={handleEditorPointerDown}
             />
+            {variablePopoverMode === "shortcut" &&
+            isVariablePopoverOpen &&
+            variableAnchorPosition ? (
+              <Popover open={isVariablePopoverOpen} onOpenChange={handleVariablePopoverOpenChange}>
+                <PopoverAnchor asChild>
+                  <span
+                    aria-hidden="true"
+                    className="fixed size-px"
+                    style={{
+                      left: variableAnchorPosition.left,
+                      top: variableAnchorPosition.top,
+                    }}
+                  />
+                </PopoverAnchor>
+                <TemplateVariablePopoverContent
+                  searchQuery={variableSearchQuery}
+                  activeIndex={activeVariableIndex}
+                  filteredVariables={filteredTemplateVariables}
+                  autoFocusSearch={false}
+                  onSearchQueryChange={setVariableSearchQuery}
+                  onActiveIndexChange={setActiveVariableIndex}
+                  onSelectVariable={handleSelectTemplateVariable}
+                />
+              </Popover>
+            ) : null}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-xs leading-[18px] text-[#717680]">
+                Adicionar:
+              </span>
+              {templateVariableQuickSuggestions.map((variable) => (
+                <button
+                  key={variable.id}
+                  type="button"
+                  className="focus-visible:ring-primary/20 rounded-full border border-[#d5d7da] bg-white px-2.5 py-1 font-['Helvetica_Neue:Regular',sans-serif] text-xs leading-[18px] text-[#535862] transition-colors hover:border-[#1E40AF] hover:bg-[#f0f5ff] hover:text-[#1E40AF] focus-visible:ring-3 focus-visible:outline-none"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    savedVariableSelectionRangeRef.current = getEditorSelectionRange(
+                      editorRef.current
+                    );
+                  }}
+                  onClick={() => handleSelectTemplateVariable(variable)}
+                >
+                  + {variable.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={isPreviewEnabled}
+                onCheckedChange={setIsPreviewEnabled}
+                aria-label="Visualizar com dados de exemplo"
+              />
+              <span className="font-['Helvetica_Neue:Regular',sans-serif] text-sm leading-5 text-[#414651]">
+                Visualizar com dados de exemplo
+              </span>
+            </div>
+            {isPreviewEnabled ? (
+              <div className="rounded-[8px] border border-[#e9eaeb] bg-[#fbfcfd]">
+                <div className="border-b border-[#e9eaeb] px-4 py-3">
+                  <p className="font-['Helvetica_Neue:Medium',sans-serif] text-sm leading-5 text-[#181d27]">
+                    Reserva de exemplo: Maria Silva, Trilha Pico do Itacolomi
+                  </p>
+                </div>
+                <div
+                  aria-label={`Preview de ${templateLabel}`}
+                  className="min-h-[96px] px-4 py-3 font-['Helvetica_Neue:Regular',sans-serif] text-sm leading-6 text-[#414651]"
+                  dangerouslySetInnerHTML={{ __html: previewHtml }}
+                />
+                <p className="border-t border-[#e9eaeb] px-4 py-3 font-['Helvetica_Neue:Regular',sans-serif] text-xs leading-[18px] text-[#717680]">
+                  Valores em verde vêm dos dados da reserva. Em vermelho, informações sem valor
+                  neste produto.
+                </p>
+              </div>
+            ) : null}
             <EditorSourceDialog
               open={isSourceDialogOpen}
               title={`Código fonte de ${templateLabel}`}
               description="Edite o HTML do campo para ajustar diretamente o conteúdo exibido no editor."
               source={text}
               onOpenChange={setIsSourceDialogOpen}
-              onSourceChange={onTextChange}
+              onSourceChange={(source) => onTextChange(serializeTemplate(source))}
             />
           </div>
         </div>
@@ -5606,6 +6200,193 @@ function EditorLinkToolbarControl({
         </form>
       </PopoverContent>
     </Popover>
+  );
+}
+
+function EditorVariableToolbarControl({
+  isOpen,
+  searchQuery,
+  activeIndex,
+  filteredVariables,
+  onOpenChange,
+  onSearchQueryChange,
+  onActiveIndexChange,
+  onSelectVariable,
+}: {
+  readonly isOpen: boolean;
+  readonly searchQuery: string;
+  readonly activeIndex: number;
+  readonly filteredVariables: readonly TemplateVariable[];
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSearchQueryChange: (query: string) => void;
+  readonly onActiveIndexChange: (index: number | ((currentIndex: number) => number)) => void;
+  readonly onSelectVariable: (variable: TemplateVariable) => void;
+}) {
+  return (
+    <Popover open={isOpen} onOpenChange={onOpenChange}>
+      <span className="group/toolbar-tooltip relative inline-flex">
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label="Inserir informação"
+            className="text-muted-foreground hover:bg-muted/50 hover:text-foreground focus-visible:ring-primary/20 flex size-7 cursor-pointer items-center justify-center rounded-md p-0 transition duration-100 ease-linear outline-none focus-visible:ring-3"
+            onMouseDown={(event) => event.preventDefault()}
+          >
+            <HugeiconsIcon icon={TextVariableFrontIcon} size={18} strokeWidth={1.67} />
+          </button>
+        </PopoverTrigger>
+        <ToolbarActionTooltipBubble label="Inserir informação" />
+      </span>
+      <TemplateVariablePopoverContent
+        searchQuery={searchQuery}
+        activeIndex={activeIndex}
+        filteredVariables={filteredVariables}
+        autoFocusSearch
+        onSearchQueryChange={onSearchQueryChange}
+        onActiveIndexChange={onActiveIndexChange}
+        onSelectVariable={onSelectVariable}
+      />
+    </Popover>
+  );
+}
+
+function TemplateVariablePopoverContent({
+  searchQuery,
+  activeIndex,
+  filteredVariables,
+  autoFocusSearch,
+  onSearchQueryChange,
+  onActiveIndexChange,
+  onSelectVariable,
+}: {
+  readonly searchQuery: string;
+  readonly activeIndex: number;
+  readonly filteredVariables: readonly TemplateVariable[];
+  readonly autoFocusSearch: boolean;
+  readonly onSearchQueryChange: (query: string) => void;
+  readonly onActiveIndexChange: (index: number | ((currentIndex: number) => number)) => void;
+  readonly onSelectVariable: (variable: TemplateVariable) => void;
+}) {
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const groupedVariables = useMemo(
+    () => getGroupedTemplateVariables(filteredVariables),
+    [filteredVariables]
+  );
+
+  useEffect(() => {
+    if (autoFocusSearch) {
+      searchInputRef.current?.focus({ preventScroll: true });
+    }
+  }, [autoFocusSearch]);
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        onActiveIndexChange((currentIndex) =>
+          filteredVariables.length === 0
+            ? 0
+            : Math.min(currentIndex + 1, filteredVariables.length - 1)
+        );
+        return;
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        onActiveIndexChange((currentIndex) => Math.max(currentIndex - 1, 0));
+        return;
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const selectedVariable = filteredVariables[activeIndex];
+        if (selectedVariable) onSelectVariable(selectedVariable);
+      }
+    },
+    [activeIndex, filteredVariables, onActiveIndexChange, onSelectVariable]
+  );
+
+  return (
+    <PopoverContent
+      align="start"
+      side="bottom"
+      onOpenAutoFocus={(event) => {
+        if (!autoFocusSearch) event.preventDefault();
+      }}
+      className="z-50 w-[360px] max-w-[calc(100vw-2rem)] gap-0 overflow-hidden rounded-[10px] border border-[#e9eaeb] bg-white p-0 shadow-[0px_8px_12px_rgba(0,0,0,0.12)]"
+      onKeyDown={handleKeyDown}
+    >
+      <div className="border-b border-[#e9eaeb] p-3">
+        <input
+          ref={searchInputRef}
+          aria-label="Buscar informação"
+          value={searchQuery}
+          onChange={(event) => onSearchQueryChange(event.target.value)}
+          className="focus:border-primary focus:ring-primary/20 h-9 w-full rounded-[8px] border border-[#cbd5e1] bg-white px-3 font-['Helvetica_Neue:Regular',sans-serif] text-sm text-[#414651] transition-colors outline-none placeholder:text-[#94a3b8] focus:ring-3"
+          placeholder="Buscar informação"
+        />
+      </div>
+      <div
+        role="listbox"
+        aria-label="Informações do template"
+        className="max-h-[320px] overflow-y-auto p-1.5"
+      >
+        {groupedVariables.length > 0 ? (
+          groupedVariables.map((section) => (
+            <section key={section.category} className="pb-2 last:pb-0">
+              <p className="px-2.5 py-1 font-['Helvetica_Neue:Medium',sans-serif] text-[11px] leading-4 tracking-[0.08em] text-[#717680] uppercase">
+                {templateVariableCategoryLabels[section.category]}
+              </p>
+              <div className="flex flex-col gap-0.5">
+                {section.items.map((variable) => {
+                  const variableIndex = filteredVariables.findIndex(
+                    (item) => item.id === variable.id
+                  );
+                  const isActive = variableIndex === activeIndex;
+
+                  return (
+                    <button
+                      key={variable.id}
+                      type="button"
+                      role="option"
+                      aria-selected={isActive}
+                      className={`focus-visible:ring-primary/20 flex w-full cursor-pointer flex-col rounded-[8px] px-2.5 py-2 text-left transition-colors outline-none focus-visible:ring-3 ${
+                        isActive
+                          ? "bg-[#f0f5ff] text-[#1E40AF]"
+                          : "text-[#414651] hover:bg-[#f8fafc]"
+                      }`}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => onSelectVariable(variable)}
+                    >
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className="font-['Helvetica_Neue:Medium',sans-serif] text-sm leading-5">
+                          {variable.label}
+                        </span>
+                        {variable.canBeEmpty ? (
+                          <span className="rounded-full bg-[#fef3c7] px-2 py-0.5 font-['Helvetica_Neue:Medium',sans-serif] text-[11px] leading-4 text-[#92400e]">
+                            pode estar vazio
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="mt-0.5 font-['Helvetica_Neue:Regular',sans-serif] text-xs leading-[18px] text-[#717680]">
+                        Ex.: {variable.example}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ))
+        ) : (
+          <p className="px-2.5 py-6 text-center font-['Helvetica_Neue:Regular',sans-serif] text-sm leading-5 text-[#717680]">
+            Nenhuma informação encontrada para '{searchQuery}'
+          </p>
+        )}
+      </div>
+      <p className="border-t border-[#e9eaeb] bg-white px-3 py-2.5 font-['Helvetica_Neue:Regular',sans-serif] text-xs leading-[18px] text-[#717680]">
+        Dica: digitando "/" ou "@" no texto, esta lista abre direto onde você está
+      </p>
+    </PopoverContent>
   );
 }
 

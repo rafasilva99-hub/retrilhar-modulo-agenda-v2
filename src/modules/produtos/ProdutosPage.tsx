@@ -4418,7 +4418,7 @@ export function ProdutosPage() {
                 return (
                   <div
                     key={produto.id}
-                    className={`relative flex h-[58px] items-center px-[16px] transition-colors hover:bg-[#f8fafc] ${idx > 0 ? "border-t border-[#f5f5f5]" : ""}`}
+                    className={`relative flex h-[61px] items-center px-[16px] transition-colors hover:bg-[#f8fafc] ${idx > 0 ? "border-t border-[#f5f5f5]" : ""}`}
                   >
                     <div className="w-[40px] shrink-0">
                       <button
